@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+  <head>
+    <base target="_top" />
+  </head>
+  <body>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .player-container {
+        max-width: 400px;
+      }
+      .controls-container {
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .playback-rate-slider {
+        flex: 1;
+      }
+      .playback-rate-label {
+        min-width: 50px;
+        text-align: right;
+        font-weight: bold;
+      }
+    </style>
+    <? if (audioData) { ?>
+    <div class="player-container">
+      <h2><?!= title ?></h2>
+      <audio id="audioPlayer" controls>
+        <source src="<?!= audioData ?>" type="audio/mpeg" />
+        El teu navegador no suporta l'àudio.
+      </audio>
+      <div class="controls-container">
+        <label for="playbackRateSlider">Velocitat:</label>
+        <input
+          type="range"
+          id="playbackRateSlider"
+          class="playback-rate-slider"
+          min="0.5"
+          max="2"
+          step="0.1"
+          value="1"
+        />
+        <span class="playback-rate-label" id="playbackRateValue">1x</span>
+      </div>
+    </div>
+    <script>
+      var audio = document.getElementById("audioPlayer");
+      var slider = document.getElementById("playbackRateSlider");
+      var label = document.getElementById("playbackRateValue");
+
+      audio.playbackRate = 1;
+
+      slider.addEventListener("input", function () {
+        audio.playbackRate = parseFloat(this.value);
+        label.textContent = this.value + "x";
+      });
+
+      audio.onplay = function () {
+        audio.playbackRate = parseFloat(slider.value);
+      };
+    </script>
+    <? } else { ?>
+    <p>No s'ha trobat cap fitxer d'àudio.</p>
+    <? } ?>
+  </body>
+</html>

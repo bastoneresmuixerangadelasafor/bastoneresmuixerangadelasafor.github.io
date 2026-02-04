@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="{{ language_code }}">
+    <head>
+        <base target="_top">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Expires" content="0">
+        <meta name="theme-color" content="#7C3AED">
+        <meta name="theme-color" content="#7C3AED" media="(prefers-color-scheme: light)">
+        <meta name="theme-color" content="#7C3AED" media="(prefers-color-scheme: dark)">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-title" content="{{ title }}">
+        <meta name="application-name" content="{{ title }}">
+        <meta name="msapplication-TileColor" content="#7C3AED">
+        
+        <title>{{ title }}</title>
+
+        {% if embedded %}
+        {% else %}
+        <link rel="icon" type="image/x-icon" href="favicon.ico">
+        {% endif %}
+
+        {% if embedded %}
+        {% else %}
+        <link rel="manifest" href="manifest.webmanifest">
+        {% endif %}
+        
+        {% if embedded %}
+        <style>
+        {% include "../../docs/styles/main.css" %}
+        </style>
+        {% else %}
+        <link rel="stylesheet" href="styles/main.css">
+        {% endif %}
+    </head>
+    <body>
+        {% include "loader.njk" %}
+        
+        {% include "app.njk" %}
+
+        {% if embedded %}
+        <script>
+        {% include "../../docs/scripts/logger.js" %}
+        </script>
+        {% else %}
+        <script src="scripts/logger.js" defer></script>
+        {% endif %}
+
+        {% if embedded %}
+        <script>
+        {% include "../../docs/scripts/dances.js" %}
+        </script>
+        {% else %}
+        <script src="scripts/dances.js" defer></script>
+        {% endif %}
+
+        {% include "env.njk" %}
+
+        {% if embedded %}
+        <script>
+        {% include "../../docs/scripts/api.js" %}
+        </script>
+        {% else %}
+        <script src="scripts/api.js" defer></script>
+        {% endif %}
+
+        {% if embedded %}
+        <script>
+        {% include "../../docs/scripts/main.js" %}
+        </script>
+        {% else %}
+        <script src="scripts/main.js" defer></script>
+        {% endif %}
+
+        {% if embedded %}
+        <script>
+        {% include "../../docs/scripts/validation.js" %}
+        </script>
+        {% else %}
+        <script src="scripts/validation.js" defer></script>
+        {% endif %}
+
+        {% if embedded %}
+        <script>
+        {% include "../../docs/scripts/button-feedback.js" %}
+        </script>
+        {% else %}
+        <script src="scripts/button-feedback.js" defer></script>
+        {% endif %}
+    </body>
+</html>

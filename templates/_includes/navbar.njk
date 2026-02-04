@@ -1,0 +1,51 @@
+<!-- Navigation Bar -->
+<nav id="navbar" class="navbar">
+    <div class="navbar-brand">
+        <a href="#" data-route="home" style="display: flex; align-items: center; gap: 8px;">
+            <span class="brand-text">{{ title }}</span>
+        </a>
+    </div>
+    <button class="navbar-toggle auth-required" id="navbar-toggle" aria-label="Toggle navigation menu" style="display: none;">☰</button>
+    <div class="navbar-menu" id="navbar-menu">
+        <!-- Mobile user info section (shown only in mobile menu) -->
+        <div id="mobile-user-section" class="mobile-user-section auth-required" style="display: none;">
+            <div class="mobile-user-info">
+                <img id="mobile-user-avatar" class="mobile-user-avatar" src="" alt="User">
+                <span id="mobile-user-name" class="mobile-user-name"></span>
+            </div>
+            <div class="mobile-user-actions">
+                <a href="#" class="nav-link" data-menu-view="profile">Perfil</a>
+                <a href="#" class="nav-link" data-menu-view="dashboard">Tauler</a>
+                <a href="#" id="mobile-logout-btn" class="nav-link mobile-logout">Tancar sessió</a>
+            </div>
+            <div class="mobile-user-divider"></div>
+        </div>
+        <a href="#" data-route="members" class="nav-link auth-required admin-only">Administració</a>
+        <a href="#" data-route="planning-event" class="nav-link auth-required">Actuacions</a>
+        <a href="#" data-route="planning-training" class="nav-link auth-required">Assajos</a>
+    </div>
+    <div class="navbar-auth">
+        <div id="user-info" class="user-info" style="display: none;">
+            <div class="user-menu-trigger">
+                <div class="member-name" style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+                    <img id="user-avatar" class="user-avatar" src="" alt="User" style="cursor:pointer;">
+                    <span id="user-name" class="user-name-text"></span>
+                </div>
+                <div id="user-menu" class="user-menu">
+                    <a href="#" class="user-menu-item" data-menu-view="profile">Perfil</a>
+                    <a href="#" class="user-menu-item" data-menu-view="dashboard">Tauler</a>
+                    <div class="user-menu-divider" style="height:1px;background:#eee;margin:0.3rem 0;"></div>
+                    <a href="#" id="logout-btn" class="user-menu-item" style="font-weight:600;">Tancar
+                        sessió</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+{% if embedded %}
+<style>
+{% include "../../docs/styles/navbar.css" %}
+</style>
+{% else %}
+<link rel="stylesheet" href="styles/navbar.css">
+{% endif %}
