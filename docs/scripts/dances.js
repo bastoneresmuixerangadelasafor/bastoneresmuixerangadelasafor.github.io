@@ -83,7 +83,18 @@ const DANCES = [
       }
     ],
     "minGroups": 1,
-    "audios": []
+    "audios": [
+      {
+        "fileId": "1Oz7GCasuPWfVLZeHJytelv85zCw3PhOx",
+        "title": "La polca - Per assajar",
+        "artist": "Reina, Josep i Quim"
+      },
+      {
+        "fileId": "1znGxmydFqQHy8dyjlNnFcHmfZe9wLpPn",
+        "title": "La polca - A plaça",
+        "artist": "-"
+      }
+    ]
   },
   {
     "name": "Ara i sempre",
@@ -407,7 +418,13 @@ const DANCES = [
       }
     ],
     "minGroups": 1,
-    "audios": []
+    "audios": [
+      {
+        "fileId": "1q10nIzTSyRAFZRtiPVo8r_2Ga3kiEPnM",
+        "title": "No en volem cap - A plaça",
+        "artist": "-"
+      }
+    ]
   },
   {
     "name": "Joan del riu",
@@ -663,6 +680,12 @@ const DANCES = [
       }
     ],
     "minGroups": 1,
-    "audios": []
+    "audios": [
+      {
+        "fileId": "1gNplR0UF5LpWZrWv4O-zP1WbVtz6DRuu",
+        "title": "Passi-ho bé - A plaça",
+        "artist": "-"
+      }
+    ]
   }
 ];
