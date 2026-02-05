@@ -1301,8 +1301,6 @@ function loadTrainingData(trainingId) {
 
       if (trainingDescriptionInput && trainingData.description) {
         trainingDescriptionInput.value = trainingData.description;
-        // Detect dances from the loaded description
-        detectAndDisplayDancesFromDescription();
       }
 
       // Update page header to "Assaig" (editing mode)
@@ -1310,6 +1308,9 @@ function loadTrainingData(trainingId) {
 
       // Apply editable state based on admin role
       applyTrainingEditableState();
+
+      // Detect dances from the loaded description (visible to all users)
+      detectAndDisplayDancesFromDescription();
 
       // Initialize form event listeners for dance detection
       initializeTrainingFormListeners();

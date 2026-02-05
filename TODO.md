@@ -20,3 +20,4 @@
 - ~~Passi-ho bé~~
 - Ramonet
 - Share event email
+- Handle 401

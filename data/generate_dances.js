@@ -24,7 +24,8 @@ const DANCES = [
       new DancePosition({ order: 8, tag: "1", positionType: new PositionType({ label: "DALT" }), specifications: "Cantó dret/esquena plaça" }),
     ],
     audios: [
-      
+      new DanceMusic({ fileId: "1Oz7GCasuPWfVLZeHJytelv85zCw3PhOx", title: "La polca - Per assajar", artist: "Reina, Josep i Quim" }),
+      new DanceMusic({ fileId: "1znGxmydFqQHy8dyjlNnFcHmfZe9wLpPn", title: "La polca - A plaça", artist: "-" }),
     ],
   }),
   new Dance({
@@ -98,7 +99,10 @@ const DANCES = [
       new DancePosition({ order: 2, tag: "4", positionType: new PositionType({ label: "DINS" }), specifications: "Dreta/cara plaça" }),
       new DancePosition({ order: 3, tag: "2", positionType: new PositionType({ label: "DINS" }), specifications: "Esquerre/esquena plaça" }),
       new DancePosition({ order: 4, tag: "1", positionType: new PositionType({ label: "FORA" }), specifications: "Dreta/esquena plaça" }),
-    ]
+    ],
+    audios: [
+      new DanceMusic({ fileId: "1q10nIzTSyRAFZRtiPVo8r_2Ga3kiEPnM", title: "No en volem cap - A plaça", artist: "-" }),
+    ],
   }),
   new Dance({
     name: "Joan del riu",
@@ -146,6 +150,9 @@ const DANCES = [
       new DancePosition({ order: 2, tag: "3", positionType: new PositionType({ label: "POSICIÓ" }), specifications: "Cantó dret/cara plaça" }),
       new DancePosition({ order: 3, tag: "2", positionType: new PositionType({ label: "POSICIÓ" }), specifications: "Cantó equerre/esquena plaça" }),
       new DancePosition({ order: 4, tag: "1", positionType: new PositionType({ label: "POSICIÓ" }), specifications: "Cantó dret/esquena plaça" }),
+    ],
+    audios: [
+      new DanceMusic({ fileId: "1gNplR0UF5LpWZrWv4O-zP1WbVtz6DRuu", title: "Passi-ho bé - A plaça", artist: "-" }),
     ],
   }),
 ];
