@@ -6,11 +6,23 @@
 - [ ] Initial page => home
 - [ ] Click app name => home
 - [ ] Menu
+- [ ] Perfil
+- [ ] Tauler
+- [ ] Member list
+- [ ] Sort list
+- [ ] Filter list
 - [ ] Next event
 - [ ] Next training
-- [ ]
-- [ ]
-- [ ]
+- [ ] Event list
+- [ ] Load event
+- [ ] Edit past event
+- [ ] Edit future event
+- [ ] Share event
+- [ ] Training list
+- [ ] Load training
+- [ ] Edit past training
+- [ ] Edit future training
+- [ ] Share training
 - [ ] Session persistance
 - [ ] Register
 - [ ] Access link email

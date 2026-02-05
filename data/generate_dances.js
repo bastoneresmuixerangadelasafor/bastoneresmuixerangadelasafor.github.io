@@ -53,8 +53,8 @@ const DANCES = [
       new DancePosition({ order: 8, tag: "1", positionType: new PositionType({ label: "CORRER" }), specifications: "Cantó dret/esquena plaça" }),
     ],
     audios: [
-      new DanceMusic({ fileId: "1mcknQWXDlXidTRYXY6piFQ3NIrcCT76V", title: "La boja - Per assajar", artist: "Reina, Josep i Quim" }),
-      new DanceMusic({ fileId: "1beaLCPNq4jUjrIh3ZUqtCrgYRQgZ8Ajp", title: "La boja - A plaça", artist: "-" }),
+      new DanceMusic({ fileId: "1IV0yshP7Xly9L-B07dqq2xCfAmCPRTkg", title: "La boja - Per assajar", artist: "Reina, Josep i Quim" }),
+      new DanceMusic({ fileId: "1Qp5hcUzq25SIJPsEq6QyKvvFv4KhnR4t", title: "La boja - A plaça", artist: "-" }),
     ],
   }),
   new Dance({
@@ -71,8 +71,8 @@ const DANCES = [
       new DancePosition({ order: 6, tag: "1", positionType: new PositionType({ label: "CORRER" }), specifications: "Cantó dret/esquena plaça" }),
     ],
     audios: [
-      new DanceMusic({ fileId: "1mcknQWXDlXidTRYXY6piFQ3NIrcCT76V", title: "La boja - Per assajar", artist: "Reina, Josep i Quim" }),
-      new DanceMusic({ fileId: "1beaLCPNq4jUjrIh3ZUqtCrgYRQgZ8Ajp", title: "La boja - A plaça", artist: "-" }),
+      new DanceMusic({ fileId: "1IV0yshP7Xly9L-B07dqq2xCfAmCPRTkg", title: "La boja - Per assajar", artist: "Reina, Josep i Quim" }),
+      new DanceMusic({ fileId: "1Qp5hcUzq25SIJPsEq6QyKvvFv4KhnR4t", title: "La boja - A plaça", artist: "-" }),
     ],
   }),
   // FALTA CONFIG

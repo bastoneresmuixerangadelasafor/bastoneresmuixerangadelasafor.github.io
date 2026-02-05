@@ -19,3 +19,4 @@
 - User temp cache
 - ~~Passi-ho bé~~
 - Ramonet
+- Share event email
