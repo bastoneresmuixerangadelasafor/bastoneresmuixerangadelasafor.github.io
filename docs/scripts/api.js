@@ -54,22 +54,22 @@ const API = new (class GAppsApiClient {
 
   clearSession() {
     this.saveToken();
-    this._write({ action: "user", data: null });
+    this._write({ key: "user", data: null });
   }
 
-  _write({ action, data } = {}) {
-    if(action){
+  _write({ key, data } = {}) {
+    if(key){
       if(!data){
-        localStorage.removeItem(action);
+        localStorage.removeItem(key);
       }else{
-        localStorage.setItem(action, JSON.stringify(data));
+        localStorage.setItem(key, JSON.stringify(data));
       }
     }
   }
 
-  _read({ action } = {}) {
-    if(action){
-      return JSON.parse(localStorage.getItem(action));
+  _read({ key } = {}) {
+    if(key){
+      return JSON.parse(localStorage.getItem(key));
     }
   }
 
@@ -86,7 +86,8 @@ const API = new (class GAppsApiClient {
       }
 
       if (useCache) {
-        const savedData = this._read({ action });
+        const cacheKey = `${action}${parameters ? `_${new URLSearchParams(parameters).toString()}` : ""}`;
+        const savedData = this._read({ key: cacheKey });
         if (savedData) {
           return resolve(savedData);
         }
@@ -101,7 +102,8 @@ const API = new (class GAppsApiClient {
       const token = this.getToken() || "";
       const returnResult = (data) => {
         if (data?.success) {
-          this._write({ action, data: data.result });
+          const cacheKey = `${action}${parameters ? `_${new URLSearchParams(parameters).toString()}` : ""}`;
+          this._write({ key: cacheKey, data: data.result });
           resolve(data.result);
         } else {
           let errorMessage = "Ha ocorregut un error en la petició. Si el problema persistix, contacta a l'administrador.";
