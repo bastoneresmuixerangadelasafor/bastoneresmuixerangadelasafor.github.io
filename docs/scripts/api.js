@@ -306,6 +306,6 @@ const API = new (class GAppsApiClient {
   }
 
   getAudioById({ audioId } = {}) {
-    return this._get({ action: "audio", parameters: { audioId }, requiresAuth: true });
+    return this._get({ action: "audio", parameters: { audioId }, requiresAuth: true, useCache: true });
   }
 })();
