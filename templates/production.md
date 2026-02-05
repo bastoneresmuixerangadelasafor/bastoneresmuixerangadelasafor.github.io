@@ -3,7 +3,7 @@ layout: base.njk
 permalink: index.html
 development: false
 script_id: 1MygwiQrXzxFWbKJ1xmro8jJzB4dPjv0glaTXJ71O5nf6RtvX_Z_usW7B
-api_url: https://script.google.com/macros/s/AKfycbwzEQ741jUHoYHpCY_v9yhYuzhRJAoflKI1i4LMXIzFfxguoE80U8s73xM7nHql4Pxc/exec
+api_url: https://script.google.com/macros/s/AKfycbz9PxglZL_JO524qWuvkW9O1jeOHtlXdHs4IY9xJILTvOvCQXgJttqBEjr9RHiDwntw/exec
 embedded: false
 language_code: ca
 title: Bastoneres de la Safor

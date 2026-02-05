@@ -2802,12 +2802,12 @@ table tbody tr:last-child td {
                     <div class="form-group">
                         <label for="login-email">Correu electrònic</label>
                         <input type="email" id="login-email" name="email"
-                            placeholder="Introdueix el teu correu electrònic" required>
+                            placeholder="Introdueix el teu correu electrònic" autocomplete="email" required>
                     </div>
                     <div class="form-group">
                         <label for="login-password">Contrasenya</label>
                         <input type="password" id="login-password" name="password"
-                            placeholder="Introdueix la teua contrasenya" required>
+                            placeholder="Introdueix la teua contrasenya" autocomplete="current-password" required>
                     </div>
                     <div class="form-group form-actions-login">
                         <a href="#" id="forgot-password-link" class="forgot-password-link">Has oblidat la
@@ -3151,12 +3151,12 @@ table tbody tr:last-child td {
                     <div class="form-group">
                         <label for="register-name">Nom en la colla</label>
                         <input type="text" id="register-name" name="name"
-                            placeholder="Introdueix el teu nom en la colla" required>
+                            placeholder="Introdueix el teu nom en la colla" autocomplete="name" required>
                     </div>
                     <div class="form-group">
                         <label for="register-email">Email</label>
                         <input type="email" id="register-email" name="email"
-                            placeholder="Introdueix el teu correu electrònic" required>
+                            placeholder="Introdueix el teu correu electrònic" autocomplete="email" required>
                     </div>
                     <button type="submit" class="btn btn-primary btn-block"
                         id="register-btn">Registrar-se</button>
@@ -7175,23 +7175,7 @@ ${descriptionHtml}
             <p>Introdueix el teu correu electrònic per rebre un enllaç d'accés</p>
             <div class="form-group">
                 <label for="access-link-email">Correu electrònic</label>
-                <input type="email" id="access-link-email" placeholder="Introdueix el teu correu electrònic" required>
-            </div>
-        </div>
-        <div class="password-dialog-actions">
-            <button type="button" class="btn btn-secondary" id="access-link-cancel-btn">Cancel·lar</button>
-            <button type="button" class="btn btn-primary" id="access-link-send-btn">Enviar accés</button>
-        </div>
-    </dialog>
-
-    <!-- Access Link Dialog -->
-    <dialog id="access-link-dialog">
-        <div class="password-dialog-content">
-            <h3>Sol·licitar accés</h3>
-            <p>Introdueix el teu correu electrònic per rebre un enllaç d'accés</p>
-            <div class="form-group">
-                <label for="access-link-email">Correu electrònic</label>
-                <input type="email" id="access-link-email" placeholder="Introdueix el teu correu electrònic" required>
+                <input type="email" id="access-link-email" placeholder="Introdueix el teu correu electrònic" autocomplete="email" required>
             </div>
         </div>
         <div class="password-dialog-actions">
@@ -7207,11 +7191,11 @@ ${descriptionHtml}
             <p id="password-change-member-name"></p>
             <div class="form-group">
                 <label for="new-password">Nova contrasenya</label>
-                <input type="password" id="new-password" placeholder="Mínim 8 caràcters" required>
+                <input type="password" id="new-password" placeholder="Mínim 8 caràcters" autocomplete="new-password" required>
             </div>
             <div class="form-group">
                 <label for="confirm-password">Confirmar contrasenya</label>
-                <input type="password" id="confirm-password" placeholder="Repeteix la contrasenya" required>
+                <input type="password" id="confirm-password" placeholder="Repeteix la contrasenya" autocomplete="new-password" required>
             </div>
         </div>
         <div class="password-dialog-actions">
