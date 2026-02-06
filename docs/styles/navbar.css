@@ -112,7 +112,7 @@
   }
 
   .brand-text {
-    max-width: 250px;
+    max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -126,13 +126,13 @@
 
 @media (max-width: 480px) {
   .brand-text {
-    max-width: 250px;
+    max-width: 160px;
   }
 }
 
 @media (max-width: 360px) {
   .brand-text {
-    max-width: 250px;
+    max-width: 140px;
     font-size: 0.85em;
   }
 
