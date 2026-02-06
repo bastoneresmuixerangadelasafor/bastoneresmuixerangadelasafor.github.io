@@ -149,6 +149,7 @@ const CACHE = new class GAppsServerCache {
         meetingPlace: row[2] || '',
         placeUrl: row[3] || '',
         confirmed: row[4] === '' || row[4] === undefined ? false : Boolean(row[4]),
+        visible: row[5] === '' || row[5] === undefined ? false : Boolean(row[5]),
       };
 
       events.push(event);

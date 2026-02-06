@@ -840,31 +840,34 @@ function renderPlanningEventsList(events) {
 
   // Helper function to create event card HTML
   function createEventCardHTML(event) {
-    const formattedDate = formatEventDate(event.date);
-    let meetingPlaceHtml = "";
-    if (event.meetingPlace) {
-      if (event.placeUrl) {
-        meetingPlaceHtml = `<a href="${escapeHtml(event.placeUrl)}" target="_blank" class="event-card-place">📍 ${escapeHtml(event.meetingPlace)}</a>`;
-      } else {
-        meetingPlaceHtml = `<span class="event-card-place">📍 ${escapeHtml(event.meetingPlace)}</span>`;
-      }
-    }
     const isAdmin = AppState.currentUser && (AppState.currentUser.roles || []).includes("ADMIN");
-    const actionHtml = event.confirmed || isAdmin
-      ? `<button type="button" class="event-card-btn view-btn" onclick="viewEvent('${escapeHtml(event.id)}')">Detalls</button>`
-      : `<span class="event-tbc" style="font-style: italic; color: var(--text-secondary, #666);">TBC</span>`;
-    return `
-    <div class="event-card" data-event-id="${event.id}">
-    <div class="event-card-info">
-    <span class="event-card-name">${event.name}</span>
-    <span class="event-card-date">${formattedDate}</span>
-    ${meetingPlaceHtml}
-    </div>
-    <div class="event-card-actions">
-    ${actionHtml}
-    </div>
-    </div>
-    `;
+    const showEvent = event.visible || isAdmin;
+    if(showEvent) {
+      const formattedDate = formatEventDate(event.date);
+      let meetingPlaceHtml = "";
+      if (event.meetingPlace) {
+        if (event.placeUrl) {
+          meetingPlaceHtml = `<a href="${escapeHtml(event.placeUrl)}" target="_blank" class="event-card-place">📍 ${escapeHtml(event.meetingPlace)}</a>`;
+        } else {
+          meetingPlaceHtml = `<span class="event-card-place">📍 ${escapeHtml(event.meetingPlace)}</span>`;
+        }
+      }
+      const actionHtml = event.confirmed || isAdmin
+        ? `<button type="button" class="event-card-btn view-btn" onclick="viewEvent('${escapeHtml(event.id)}')">Detalls</button>`
+        : `<span class="event-tbc" style="font-style: italic; color: var(--text-secondary, #666);">TBC</span>`;
+      return `
+      <div class="event-card" data-event-id="${event.id}">
+      <div class="event-card-info">
+      <span class="event-card-name">${event.name}</span>
+      <span class="event-card-date">${formattedDate}</span>
+      ${meetingPlaceHtml}
+      </div>
+      <div class="event-card-actions">
+      ${actionHtml}
+      </div>
+      </div>
+      `;
+    }
   }
 
   // Render upcoming events
