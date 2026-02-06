@@ -1109,9 +1109,6 @@ function loadEventData(eventId) {
   }
   
   AppState.currentEventId = eventId;
-
-  // Set flag to prevent form reset when navigating
-  isLoadingExistingEvent = true;
   
   showLoading(true);
 
@@ -1121,7 +1118,6 @@ function loadEventData(eventId) {
 
       if (!eventData) {
         showToast("No s'ha trobat l'esdeveniment", "error");
-        isLoadingEventFromHash = false;
         return;
       }
 
@@ -1210,8 +1206,6 @@ function loadEventData(eventId) {
       // Load diagrams after a short delay to ensure dances data is loaded
       setTimeout(function () {
         loadEventDiagrams(eventData);
-        // Clear flag after diagrams are loaded to allow subsequent hash changes
-        isLoadingEventFromHash = false;
       }, 500);
 
       showToast("Esdeveniment carregat", "success");
@@ -1220,8 +1214,6 @@ function loadEventData(eventId) {
       showLoading(false);
       console.error("Error loading event:", error);
       showToast("Error carregant l'esdeveniment", "error");
-      // Clear flag on error
-      isLoadingEventFromHash = false;
     });
 }
 
@@ -1259,7 +1251,6 @@ function loadTrainingData(trainingId) {
 
       if (!trainingData) {
         showToast("No s'ha trobat l'assaig", "error");
-        isLoadingTrainingFromHash = false;
         return;
       }
 
@@ -1314,9 +1305,6 @@ function loadTrainingData(trainingId) {
 
       // Initialize form event listeners for dance detection
       initializeTrainingFormListeners();
-
-      // Clear flag after loading completes
-      isLoadingTrainingFromHash = false;
 
       showToast("Assaig carregat", "success");
     })
@@ -1629,6 +1617,80 @@ function navigateToTraining(trainingId) {
 }
 
 /**
+ * Render diagrams once dances data is available
+ * Used by loadEventDiagrams after dances are loaded
+ */
+function renderDiagrams() {
+  if (typeof dancesData === "undefined" || !Array.isArray(dancesData) || dancesData.length === 0) {
+    return false;
+  }
+
+  if (!pendingEventData || !pendingEventData.diagrams) {
+    return false;
+  }
+
+  const diagramsList = document.getElementById("diagrams-list");
+  if (!diagramsList) {
+    return false;
+  }
+
+  pendingEventData.diagrams.forEach(function (diagramData) {
+    // Find the dance info to get colors and other metadata
+    const danceInfo = dancesData.find(function (d) {
+      return d.name === diagramData.danceName;
+    });
+
+    const newDiagram = {
+      id: diagramIdCounter++,
+      danceName: diagramData.danceName,
+      description: diagramData.description || "",
+      rows: diagramData.rows || 2,
+      columns: diagramData.columns || 2,
+      positions: diagramData.positions || [],
+      diagram: danceInfo
+        ? danceInfo.diagram
+        : { backgroundColor: {}, textColor: {} },
+      groups: diagramData.groups || [],
+    };
+
+    // If positions don't have colors, try to get them from dance info
+    if (danceInfo && danceInfo.positions) {
+      newDiagram.positions = danceInfo.positions;
+    }
+
+    diagrams.push(newDiagram);
+
+    const element = createDiagramElement(newDiagram);
+    diagramsList.appendChild(element);
+
+    // Setup canvas click handler
+    const canvas = document.getElementById(
+      "diagram-canvas-" + newDiagram.id,
+    );
+    if (canvas) {
+      setupCanvasClickHandlerForDiagram(newDiagram.id);
+    }
+
+    drawDiagram(newDiagram);
+  });
+
+  // Mark as not dirty since we just loaded
+  if (typeof diagramsIsDirty !== "undefined") {
+    diagramsIsDirty = false;
+  }
+
+  // Apply editability state to hide diagram-header-actions and floating-save-btn when event is not editable
+  if (typeof applyEditableState !== "undefined") {
+    applyEditableState();
+  }
+
+  return true;
+}
+
+// Store event data for renderDiagrams to access
+let pendingEventData = null;
+
+/**
  * Load diagrams from event data into the events view
  * @param {Object} eventData - The event data with diagrams
  */
@@ -1637,6 +1699,9 @@ function loadEventDiagrams(eventData) {
 
   const diagramsList = document.getElementById("diagrams-list");
   if (!diagramsList) return;
+
+  // Store event data for renderDiagrams to access
+  pendingEventData = eventData;
 
   // Clear any existing pending diagram load interval
   if (pendingDiagramLoadInterval !== null) {
@@ -1651,65 +1716,6 @@ function loadEventDiagrams(eventData) {
   if (typeof diagrams !== "undefined") {
     diagrams.length = 0;
     diagramIdCounter = 0;
-  }
-
-  // Function to render diagrams once dances data is available
-  function renderDiagrams() {
-    if (typeof dancesData === "undefined" || !Array.isArray(dancesData) || dancesData.length === 0) {
-      return false;
-    }
-
-    eventData.diagrams.forEach(function (diagramData) {
-      // Find the dance info to get colors and other metadata
-      const danceInfo = dancesData.find(function (d) {
-        return d.name === diagramData.danceName;
-      });
-
-      const newDiagram = {
-        id: diagramIdCounter++,
-        danceName: diagramData.danceName,
-        description: diagramData.description || "",
-        rows: diagramData.rows || 2,
-        columns: diagramData.columns || 2,
-        positions: diagramData.positions || [],
-        diagram: danceInfo
-          ? danceInfo.diagram
-          : { backgroundColor: {}, textColor: {} },
-        groups: diagramData.groups || [],
-      };
-
-      // If positions don't have colors, try to get them from dance info
-      if (danceInfo && danceInfo.positions) {
-        newDiagram.positions = danceInfo.positions;
-      }
-
-      diagrams.push(newDiagram);
-
-      const element = createDiagramElement(newDiagram);
-      diagramsList.appendChild(element);
-
-      // Setup canvas click handler
-      const canvas = document.getElementById(
-        "diagram-canvas-" + newDiagram.id,
-      );
-      if (canvas) {
-        setupCanvasClickHandlerForDiagram(newDiagram.id);
-      }
-
-      drawDiagram(newDiagram);
-    });
-
-    // Mark as not dirty since we just loaded
-    if (typeof diagramsIsDirty !== "undefined") {
-      diagramsIsDirty = false;
-    }
-
-    // Apply editability state to hide diagram-header-actions and floating-save-btn when event is not editable
-    if (typeof applyEditableState !== "undefined") {
-      applyEditableState();
-    }
-
-    return true;
   }
 
   // Try to render immediately if dances are already loaded
@@ -1742,11 +1748,6 @@ function loadEventDiagrams(eventData) {
 function setupCanvasClickHandlerForDiagram(diagramId) {
   const canvas = document.getElementById("diagram-canvas-" + diagramId);
   if (!canvas) return;
-
-  const dialog = document.getElementById("person-dialog");
-  const personCombo = document.getElementById("person-combo");
-  const personList = document.getElementById("person-list");
-  const personLoading = document.getElementById("person-loading");
 
   canvas.addEventListener("click", function (e) {
     const diagram = diagrams.find(function (d) {
@@ -1841,15 +1842,15 @@ function populatePersonListForDiagram(diagram, g, squareIdx) {
   }
 
   // Filter members: only active for future events, all for past events
-  const personNames = membersData
+  const personAliases = membersData
     .filter(function (m) {
       return isEventInPast || m.active;
     })
     .map(function (m) {
-      return m.name;
+      return m.alias;
     })
     .filter(Boolean);
-  window.currentOptions = personNames.filter(function (name) {
+  window.currentOptions = personAliases.filter(function (name) {
     return !usedNames.includes(name) || diagram.groups[g][squareIdx] === name;
   });
 
@@ -3591,9 +3592,6 @@ function clearUserData() {
   if (typeof dancesData !== "undefined") {
     dancesData = [];
   }
-
-  // Reset loading event flag
-  isLoadingExistingEvent = false;
 }
 
 /**

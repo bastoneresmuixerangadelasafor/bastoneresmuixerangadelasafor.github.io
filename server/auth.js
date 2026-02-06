@@ -1,19 +1,13 @@
 function loginWithEmailPassword_({ email, password }) {
   try {
     if (!email || !password) {
-      return {
-        success: false,
-        error: "Cal proporcionar el correu electrònic i la contrasenya",
-      };
+      return API.newError_({ error: "Cal proporcionar el correu electrònic i la contrasenya" });
     }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return {
-        success: false,
-        error: "Format de correu electrònic no vàlid",
-      };
+      return API.newError_({ error: "Format de correu electrònic no vàlid" });
     }
 
     // Get stored credentials from Script Properties (admin-managed)
@@ -23,19 +17,13 @@ function loginWithEmailPassword_({ email, password }) {
     // Check if user exists
     const storedUser = users[email.toLowerCase()];
     if (!storedUser) {
-      return {
-        success: false,
-        error: "Correu electrònic o contrasenya incorrectes",
-      };
+      return API.newError_({ error: "Correu electrònic o contrasenya incorrectes" });
     }
 
     // Verify password (using simple hash comparison)
     const hashedPassword = hashPassword_({ password });
     if (storedUser.passwordHash !== hashedPassword) {
-      return {
-        success: false,
-        error: "Correu electrònic o contrasenya incorrectes",
-      };
+      return API.newError_({ error: "Correu electrònic o contrasenya incorrectes" });
     }
 
     // Find matching member from MEMBERS
@@ -44,10 +32,7 @@ function loginWithEmailPassword_({ email, password }) {
     });
 
     if (!member) {
-      return {
-        success: false,
-        error: "L'usuari no és un membre registrat",
-      };
+      return API.newError_({ error: "L'usuari no és un membre registrat" });
     }
 
     // Generate session token
@@ -56,46 +41,34 @@ function loginWithEmailPassword_({ email, password }) {
 
     const displayName = member.name;
     const roles = member.roles || [];
-    return {
-      success: true,
-      result: {
-        user: {
-          email: email,
-          displayName: displayName,
-          avatar: generateAvatarUrl_(displayName, roles),
-          memberType: member.type,
-          roles: roles,
-          relations: member.relations || [],
-          relatedMembers: member.relatedMembers || [],
-        },
-        token: token,
+    return API.newResult_({ result: {
+      user: {
+        email: email,
+        displayName: displayName,
+        avatar: generateAvatarUrl_(displayName, roles),
+        memberType: member.type,
+        roles: roles,
+        relations: member.relations || [],
+        relatedMembers: member.relatedMembers || [],
       },
-    };
+      token: token,
+    } });
   } catch (error) {
     console.log("Error in loginWithEmailPassword: " + error.toString());
-    return {
-      success: false,
-      error: "Error en iniciar sessió. Si us plau, torna-ho a provar.",
-    };
+    return API.newError_({ error: "Error en iniciar sessió. Si us plau, torna-ho a provar." });
   }
 }
 
 function sendAccessLink_({ email }) {
   try {
     if (!email) {
-      return {
-        success: false,
-        error: "Cal proporcionar el correu electrònic",
-      };
+      return API.newError_({ error: "Cal proporcionar el correu electrònic" });
     }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return {
-        success: false,
-        error: "Format de correu electrònic no vàlid",
-      };
+      return API.newError_({ error: "Format de correu electrònic no vàlid" });
     }
 
     const accessUrl = `${WEBSITE_URL}#home`;
@@ -125,43 +98,28 @@ function sendAccessLink_({ email }) {
       htmlBody: htmlBody,
     });
 
-    return {
-      success: true,
-      result: { message: "Enllaç d'accés enviat al correu correctament" },
-    };
+    return API.newResult_({ result: { message: "Enllaç d'accés enviat al correu correctament" } });
   } catch (error) {
     console.log("Error in sendAccessLink: " + error.toString());
-    return {
-      success: false,
-      error: "Error en enviar l'accés. Si us plau, torna-ho a provar.",
-    };
+    return API.newError_({ error: "Error en enviar l'accés. Si us plau, torna-ho a provar." });
   }
 }
 
 function registerWithEmailPassword_({ email, password }) {
   try {
     if (!email || !password) {
-      return {
-        success: false,
-        error: "Cal proporcionar el correu electrònic i la contrasenya",
-      };
+      return API.newError_({ error: "Cal proporcionar el correu electrònic i la contrasenya" });
     }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return {
-        success: false,
-        error: "Format de correu electrònic no vàlid",
-      };
+      return API.newError_({ error: "Format de correu electrònic no vàlid" });
     }
 
     // Validate password strength
     if (password.length < 8) {
-      return {
-        success: false,
-        error: "La contrasenya ha de tenir almenys 8 caràcters",
-      };
+      return API.newError_({ error: "La contrasenya ha de tenir almenys 8 caràcters" });
     }
 
     // Get stored credentials
@@ -170,10 +128,7 @@ function registerWithEmailPassword_({ email, password }) {
 
     // Check if user already exists
     if (users[email.toLowerCase()]) {
-      return {
-        success: false,
-        error: "Ja existeix un compte amb aquest correu electrònic",
-      };
+      return API.newError_({ error: "Ja existeix un compte amb aquest correu electrònic" });
     }
 
     // Hash password and store user
@@ -184,34 +139,22 @@ function registerWithEmailPassword_({ email, password }) {
 
     scriptProps.setProperty(USER_CREDS, JSON.stringify(users));
 
-    return {
-      success: true,
-      message: "Compte creat correctament. Si us plau, inicia sessió.",
-    };
+    return API.newResult_({ result: { message: "Compte creat correctament. Si us plau, inicia sessió." } });
   } catch (error) {
     console.log("Error in registerWithEmailPassword: " + error.toString());
-    return {
-      success: false,
-      error: "Error en el registre. Si us plau, torna-ho a provar.",
-    };
+    return API.newError_({ error: "Error en el registre. Si us plau, torna-ho a provar." });
   }
 }
 
 function changeUserPassword_({ email, newPassword }) {
   try {
     if (!email || !newPassword) {
-      return {
-        success: false,
-        error: "Cal proporcionar el correu electrònic i la nova contrasenya",
-      };
+      return API.newError_({ error: "Cal proporcionar el correu electrònic i la nova contrasenya" });
     }
 
     // Validate password strength
     if (newPassword.length < 8) {
-      return {
-        success: false,
-        error: "La contrasenya ha de tenir almenys 8 caràcters",
-      };
+      return API.newError_({ error: "La contrasenya ha de tenir almenys 8 caràcters" });
     }
 
     // Get stored credentials
@@ -231,16 +174,10 @@ function changeUserPassword_({ email, newPassword }) {
 
     scriptProps.setProperty(USER_CREDS, JSON.stringify(users));
 
-    return {
-      success: true,
-      result: { message: "Contrasenya canviada correctament" },
-    };
+    return API.newResult_({ result: { message: "Contrasenya canviada correctament" } });
   } catch (error) {
     console.log("Error in changeUserPassword: " + error.toString());
-    return {
-      success: false,
-      error: "Error en canviar la contrasenya. Si us plau, torna-ho a provar.",
-    };
+    return API.newError_({ error: "Error en canviar la contrasenya. Si us plau, torna-ho a provar." });
   }
 }
 
@@ -366,16 +303,10 @@ function clearSession_({ token }) {
 function logoutUser_({ token }) {
   try {
     clearSession_({ token });
-    return {
-      success: true,
-      result: { message: "Sessió tancada correctament" },
-    };
+    return API.newResult_({ result: { message: "Sessió tancada correctament" } });
   } catch (error) {
     console.log(error);
-    return {
-      success: false,
-      error: error.toString(),
-    };
+    return API.newError_({ error: error.toString() });
   }
 }
 
@@ -387,33 +318,24 @@ function getCurrentUser_({ token }) {
       const userProfile = getUserProfile_({ email: user.email });
       const displayName = userProfile.displayName || user.email.split("@")[0];
       const roles = userProfile.roles || [];
-      return {
-        success: true,
-        result: {
-          user: {
-            email: user.email,
-            displayName: displayName,
-            avatar: generateAvatarUrl_(displayName, roles),
-            memberType: userProfile.memberType || "",
-            roles: roles,
-            relations: userProfile.relations || [],
-            relatedMembers: userProfile.relatedMembers || [],
-          },
+      return API.newResult_({ result: {
+        user: {
+          email: user.email,
+          displayName: displayName,
+          avatar: generateAvatarUrl_(displayName, roles),
+          memberType: userProfile.memberType || "",
+          roles: roles,
+          relations: userProfile.relations || [],
+          relatedMembers: userProfile.relatedMembers || [],
         },
-      };
+      } });
     }
 
     // No valid session
-    return {
-      success: false,
-      error: "Usuari no autenticat",
-    };
+    return API.newError_({ error: "Usuari no autenticat" });
   } catch (error) {
     console.log("Error getting current user: " + error.toString());
-    return {
-      success: false,
-      error: error.toString(),
-    };
+    return API.newError_({ error: error.toString() });
   }
 }
 
@@ -441,10 +363,7 @@ function getUserProfile_({ email, forceRefresh } = {}) {
   });
 
   if (!member) {
-    return {
-      success: false,
-      error: "Membre no trobat",
-    };
+    return API.newError_({ error: "Membre no trobat" });
   }
 
   // Create a map of ID to member for resolving relations
@@ -520,19 +439,13 @@ function generateAvatarUrl_(name, roles) {
 function sendRegistrationRequest_({ name, email }) {
   try {
     if (!name || !email) {
-      return {
-        success: false,
-        error: "Cal proporcionar el nom i el correu electrònic",
-      };
+      return API.newError_({ error: "Cal proporcionar el nom i el correu electrònic" });
     }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return {
-        success: false,
-        error: "Format de correu electrònic no vàlid",
-      };
+      return API.newError_({ error: "Format de correu electrònic no vàlid" });
     }
 
     // Get the owner email (the user who deployed the script)
@@ -577,16 +490,10 @@ function sendRegistrationRequest_({ name, email }) {
       htmlBody: htmlBody,
     });
 
-    return {
-      success: true,
-      result: { message: "Sol·licitud de registre enviada correctament" },
-    };
+    return API.newResult_({ result: { message: "Sol·licitud de registre enviada correctament" } });
   } catch (error) {
     console.log("Error in sendRegistrationRequest: " + error.toString());
-    return {
-      success: false,
-      error: "Error en enviar la sol·licitud. Si us plau, torna-ho a provar.",
-    };
+    return API.newError_({ error: "Error en enviar la sol·licitud. Si us plau, torna-ho a provar." });
   }
 }
 

@@ -223,7 +223,7 @@ body {
   box-shadow: var(--shadow);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 9999;
 }
 
 .navbar-brand a {
@@ -808,8 +808,10 @@ table tbody tr:last-child td {
 
 .page-title {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 12px;
+  width: 100%;
 }
 
 .btn-refresh {
@@ -1948,6 +1950,7 @@ table tbody tr:last-child td {
     width: 100%;
     padding: 12px 15px;
   }
+}
 
 /* Touch-friendly improvements for mobile */
 @media (hover: none) and (pointer: coarse) {

@@ -3403,7 +3403,8 @@
                             ctx.font = 'bold ' + nameFontSize + 'px sans-serif';
                             ctx.textAlign = 'center';
                             ctx.textBaseline = 'middle';
-                            ctx.fillText(group[i], x + squareWidth / 2, y + squareHeight / 2);
+                            const displayName =  group[i];
+                            ctx.fillText(displayName, x + squareWidth / 2, y + squareHeight / 2);
                         }
                     }
                 }
@@ -3682,6 +3683,7 @@ ${descriptionHtml}
             // Event name and datetime validation - show dance selection when both filled
             const eventNameInput = document.getElementById('event-name-input');
             const eventDatetimeInput = document.getElementById('event-datetime-input');
+            const eventMeetingPlaceInput = document.getElementById('event-meeting-place-input');
             const danceSelectorSection = document.getElementById('dance-selector-section');
 
             function checkEventFieldsAndShowDances() {
@@ -3694,10 +3696,15 @@ ${descriptionHtml}
                 }
                 // Check if event is in the past and update editability
                 applyEditableState();
+                // Mark event data as dirty when any event field changes
+                setDiagramsDirty(true);
             }
 
             eventNameInput.addEventListener('input', checkEventFieldsAndShowDances);
             eventDatetimeInput.addEventListener('input', checkEventFieldsAndShowDances);
+            if (eventMeetingPlaceInput) {
+                eventMeetingPlaceInput.addEventListener('input', checkEventFieldsAndShowDances);
+            }
 
             // Helper to show/hide loading state in dialog
             function setDialogLoading(isLoading) {
@@ -3729,11 +3736,11 @@ ${descriptionHtml}
                 }
 
                 const cellCount = (diagram.rows || 2) * (diagram.columns || 2);
-                let usedNames = [];
+                let usedIds = [];
                 for (let gi = 0; gi < diagram.groups.length; gi++) {
                     for (let si = 0; si < cellCount; si++) {
                         if (gi === g && si === squareIdx) continue;
-                        if (diagram.groups[gi][si]) usedNames.push(diagram.groups[gi][si]);
+                        if (diagram.groups[gi][si]) usedIds.push(diagram.groups[gi][si]);
                     }
                 }
 
@@ -3747,11 +3754,11 @@ ${descriptionHtml}
                 }
 
                 // Filter members: only active for future events, all for past events
-                const personNames = membersData
+                const personAliases = membersData
                     .filter(m => isEventInPast || m.active)
-                    .map(m => m.name)
+                    .map(m => m.alias)
                     .filter(Boolean);
-                window.currentOptions = personNames.filter(name => !usedNames.includes(name) || diagram.groups[g][squareIdx] === name);
+                window.currentOptions = personAliases.filter(id => !usedIds.includes(id) || diagram.groups[g][squareIdx] === id);
                 personList.innerHTML = '';
 
                 if (window.currentOptions.length === 0) {
@@ -3794,14 +3801,14 @@ ${descriptionHtml}
                 }
             });
 
-            // Handle dialog form - auto-submit when a valid name is selected
+            // Handle dialog form - auto-submit when a valid ID is selected
             // If openNextBlock is true, automatically open the dialog for the next empty block
             function handlePersonSelection(openNextBlock) {
-                const name = personCombo.value.trim();
-                if (window.selectedDiagramId !== null && window.selectedGroup !== null && window.selectedSquare !== null && name && window.currentOptions.includes(name)) {
+                const id = personCombo.value.trim();
+                if (window.selectedDiagramId !== null && window.selectedGroup !== null && window.selectedSquare !== null && id && window.currentOptions.includes(id)) {
                     const diagram = diagrams.find(d => d.id === window.selectedDiagramId);
                     if (diagram) {
-                        diagram.groups[window.selectedGroup][window.selectedSquare] = name;
+                        diagram.groups[window.selectedGroup][window.selectedSquare] = id;
                         setDiagramsDirty(true);
                         drawDiagram(diagram);
 
@@ -3842,16 +3849,15 @@ ${descriptionHtml}
             // Track highlighted index for keyboard navigation
             let highlightedIndex = -1;
 
-            // Update dropdown options with filtered list
             function updateDropdownOptions(options) {
                 personList.innerHTML = '';
                 highlightedIndex = -1;
-                options.forEach(function (name, index) {
+                options.forEach(function (id, index) {
                     const li = document.createElement('li');
-                    li.textContent = name;
-                    li.dataset.value = name;
+                    li.textContent = id;
+                    li.dataset.value = id;
                     li.addEventListener('click', function () {
-                        personCombo.value = name;
+                        personCombo.value = id;
                         personList.classList.remove('open');
                         handlePersonSelection(true);
                     });
@@ -3867,8 +3873,8 @@ ${descriptionHtml}
                 if (typedValue === '') {
                     filteredOptions = window.currentOptions;
                 } else {
-                    filteredOptions = window.currentOptions.filter(function (name) {
-                        return normalizeText(name).includes(typedValue);
+                    filteredOptions = window.currentOptions.filter(function (id) {
+                        return normalizeText(id).includes(typedValue);
                     });
                 }
 
@@ -3883,8 +3889,8 @@ ${descriptionHtml}
                 if (typedValue === '') {
                     filteredOptions = window.currentOptions;
                 } else {
-                    filteredOptions = window.currentOptions.filter(function (name) {
-                        return normalizeText(name).includes(typedValue);
+                    filteredOptions = window.currentOptions.filter(function (id) {
+                        return normalizeText(id).includes(typedValue);
                     });
                 }
                 updateDropdownOptions(filteredOptions);
@@ -4121,7 +4127,6 @@ ${descriptionHtml}
             // Floating save button functionality
             const floatingSaveBtn = document.getElementById('floating-save-btn');
             const saveIcon = floatingSaveBtn.querySelector('.save-icon');
-            const eventMeetingPlaceInput = document.getElementById('event-meeting-place-input');
 
             floatingSaveBtn.addEventListener('click', function () {
                 // Validate required fields

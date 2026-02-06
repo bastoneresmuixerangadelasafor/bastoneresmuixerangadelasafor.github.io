@@ -16,6 +16,14 @@ function isDevMode_() {
 const API = class GAppsApiServer {
   constructor() {}
 
+  static newResult_({ result }) {
+    return { success: true, result };
+  }
+
+  static newError_({ error }) {
+    return { success: false, error };
+  }
+
   static validateUserToken_({fn, token, requiresAuth = false, requiresAdmin = false}) {
     return function(...args) {
       console.log("Validating token:", token);

@@ -252,7 +252,7 @@ body {
   box-shadow: var(--shadow);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 9999;
 }
 
 .navbar-brand a {
@@ -837,8 +837,10 @@ table tbody tr:last-child td {
 
 .page-title {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 12px;
+  width: 100%;
 }
 
 .btn-refresh {
@@ -1977,6 +1979,7 @@ table tbody tr:last-child td {
     width: 100%;
     padding: 12px 15px;
   }
+}
 
 /* Touch-friendly improvements for mobile */
 @media (hover: none) and (pointer: coarse) {
@@ -2145,7 +2148,7 @@ table tbody tr:last-child td {
     padding: 20px;
     display: none;
     box-shadow: var(--shadow);
-    z-index: 99;
+    z-index: 9998;
     overflow-y: auto;
   }
 
@@ -5641,7 +5644,8 @@ table tbody tr:last-child td {
                             ctx.font = 'bold ' + nameFontSize + 'px sans-serif';
                             ctx.textAlign = 'center';
                             ctx.textBaseline = 'middle';
-                            ctx.fillText(group[i], x + squareWidth / 2, y + squareHeight / 2);
+                            const displayName =  group[i];
+                            ctx.fillText(displayName, x + squareWidth / 2, y + squareHeight / 2);
                         }
                     }
                 }
@@ -5920,6 +5924,7 @@ ${descriptionHtml}
             // Event name and datetime validation - show dance selection when both filled
             const eventNameInput = document.getElementById('event-name-input');
             const eventDatetimeInput = document.getElementById('event-datetime-input');
+            const eventMeetingPlaceInput = document.getElementById('event-meeting-place-input');
             const danceSelectorSection = document.getElementById('dance-selector-section');
 
             function checkEventFieldsAndShowDances() {
@@ -5932,10 +5937,15 @@ ${descriptionHtml}
                 }
                 // Check if event is in the past and update editability
                 applyEditableState();
+                // Mark event data as dirty when any event field changes
+                setDiagramsDirty(true);
             }
 
             eventNameInput.addEventListener('input', checkEventFieldsAndShowDances);
             eventDatetimeInput.addEventListener('input', checkEventFieldsAndShowDances);
+            if (eventMeetingPlaceInput) {
+                eventMeetingPlaceInput.addEventListener('input', checkEventFieldsAndShowDances);
+            }
 
             // Helper to show/hide loading state in dialog
             function setDialogLoading(isLoading) {
@@ -5967,11 +5977,11 @@ ${descriptionHtml}
                 }
 
                 const cellCount = (diagram.rows || 2) * (diagram.columns || 2);
-                let usedNames = [];
+                let usedIds = [];
                 for (let gi = 0; gi < diagram.groups.length; gi++) {
                     for (let si = 0; si < cellCount; si++) {
                         if (gi === g && si === squareIdx) continue;
-                        if (diagram.groups[gi][si]) usedNames.push(diagram.groups[gi][si]);
+                        if (diagram.groups[gi][si]) usedIds.push(diagram.groups[gi][si]);
                     }
                 }
 
@@ -5985,11 +5995,11 @@ ${descriptionHtml}
                 }
 
                 // Filter members: only active for future events, all for past events
-                const personNames = membersData
+                const personAliases = membersData
                     .filter(m => isEventInPast || m.active)
-                    .map(m => m.name)
+                    .map(m => m.alias)
                     .filter(Boolean);
-                window.currentOptions = personNames.filter(name => !usedNames.includes(name) || diagram.groups[g][squareIdx] === name);
+                window.currentOptions = personAliases.filter(id => !usedIds.includes(id) || diagram.groups[g][squareIdx] === id);
                 personList.innerHTML = '';
 
                 if (window.currentOptions.length === 0) {
@@ -6032,14 +6042,14 @@ ${descriptionHtml}
                 }
             });
 
-            // Handle dialog form - auto-submit when a valid name is selected
+            // Handle dialog form - auto-submit when a valid ID is selected
             // If openNextBlock is true, automatically open the dialog for the next empty block
             function handlePersonSelection(openNextBlock) {
-                const name = personCombo.value.trim();
-                if (window.selectedDiagramId !== null && window.selectedGroup !== null && window.selectedSquare !== null && name && window.currentOptions.includes(name)) {
+                const id = personCombo.value.trim();
+                if (window.selectedDiagramId !== null && window.selectedGroup !== null && window.selectedSquare !== null && id && window.currentOptions.includes(id)) {
                     const diagram = diagrams.find(d => d.id === window.selectedDiagramId);
                     if (diagram) {
-                        diagram.groups[window.selectedGroup][window.selectedSquare] = name;
+                        diagram.groups[window.selectedGroup][window.selectedSquare] = id;
                         setDiagramsDirty(true);
                         drawDiagram(diagram);
 
@@ -6080,16 +6090,15 @@ ${descriptionHtml}
             // Track highlighted index for keyboard navigation
             let highlightedIndex = -1;
 
-            // Update dropdown options with filtered list
             function updateDropdownOptions(options) {
                 personList.innerHTML = '';
                 highlightedIndex = -1;
-                options.forEach(function (name, index) {
+                options.forEach(function (id, index) {
                     const li = document.createElement('li');
-                    li.textContent = name;
-                    li.dataset.value = name;
+                    li.textContent = id;
+                    li.dataset.value = id;
                     li.addEventListener('click', function () {
-                        personCombo.value = name;
+                        personCombo.value = id;
                         personList.classList.remove('open');
                         handlePersonSelection(true);
                     });
@@ -6105,8 +6114,8 @@ ${descriptionHtml}
                 if (typedValue === '') {
                     filteredOptions = window.currentOptions;
                 } else {
-                    filteredOptions = window.currentOptions.filter(function (name) {
-                        return normalizeText(name).includes(typedValue);
+                    filteredOptions = window.currentOptions.filter(function (id) {
+                        return normalizeText(id).includes(typedValue);
                     });
                 }
 
@@ -6121,8 +6130,8 @@ ${descriptionHtml}
                 if (typedValue === '') {
                     filteredOptions = window.currentOptions;
                 } else {
-                    filteredOptions = window.currentOptions.filter(function (name) {
-                        return normalizeText(name).includes(typedValue);
+                    filteredOptions = window.currentOptions.filter(function (id) {
+                        return normalizeText(id).includes(typedValue);
                     });
                 }
                 updateDropdownOptions(filteredOptions);
@@ -6359,7 +6368,6 @@ ${descriptionHtml}
             // Floating save button functionality
             const floatingSaveBtn = document.getElementById('floating-save-btn');
             const saveIcon = floatingSaveBtn.querySelector('.save-icon');
-            const eventMeetingPlaceInput = document.getElementById('event-meeting-place-input');
 
             floatingSaveBtn.addEventListener('click', function () {
                 // Validate required fields
@@ -7813,7 +7821,18 @@ console = new Proxy(console, {
       }
     ],
     "minGroups": 1,
-    "audios": []
+    "audios": [
+      {
+        "fileId": "1Oz7GCasuPWfVLZeHJytelv85zCw3PhOx",
+        "title": "La polca - Per assajar",
+        "artist": "Reina, Josep i Quim"
+      },
+      {
+        "fileId": "1znGxmydFqQHy8dyjlNnFcHmfZe9wLpPn",
+        "title": "La polca - A plaça",
+        "artist": "-"
+      }
+    ]
   },
   {
     "name": "Ara i sempre",
@@ -8137,7 +8156,13 @@ console = new Proxy(console, {
       }
     ],
     "minGroups": 1,
-    "audios": []
+    "audios": [
+      {
+        "fileId": "1q10nIzTSyRAFZRtiPVo8r_2Ga3kiEPnM",
+        "title": "No en volem cap - A plaça",
+        "artist": "-"
+      }
+    ]
   },
   {
     "name": "Joan del riu",
@@ -8393,7 +8418,13 @@ console = new Proxy(console, {
       }
     ],
     "minGroups": 1,
-    "audios": []
+    "audios": [
+      {
+        "fileId": "1gNplR0UF5LpWZrWv4O-zP1WbVtz6DRuu",
+        "title": "Passi-ho bé - A plaça",
+        "artist": "-"
+      }
+    ]
   }
 ];
         </script>
@@ -8430,6 +8461,12 @@ const SESSION_TOKEN = "session_token"
         ////// BACKEND
 const API = new (class GAppsApiClient {
   constructor() {}
+
+  _getCacheKey({ action, parameters } = {}) {
+    const params = parameters ? Object.fromEntries(Object.entries(parameters).filter(([key]) => key !== "forceRefresh")) : {};
+    const cacheKey = `${action}${params && Object.keys(params).length > 0 ? `_${new URLSearchParams(params).toString()}` : ""}`;
+    return cacheKey;
+  }
 
   getToken() {
     try {
@@ -8483,22 +8520,22 @@ const API = new (class GAppsApiClient {
 
   clearSession() {
     this.saveToken();
-    this._write({ action: "user", data: null });
+    this._write({ key: "user", data: null });
   }
 
-  _write({ action, data } = {}) {
-    if(action){
+  _write({ key, data } = {}) {
+    if(key){
       if(!data){
-        localStorage.removeItem(action);
+        localStorage.removeItem(key);
       }else{
-        localStorage.setItem(action, JSON.stringify(data));
+        localStorage.setItem(key, JSON.stringify(data));
       }
     }
   }
 
-  _read({ action } = {}) {
-    if(action){
-      return JSON.parse(localStorage.getItem(action));
+  _read({ key } = {}) {
+    if(key){
+      return JSON.parse(localStorage.getItem(key));
     }
   }
 
@@ -8515,7 +8552,8 @@ const API = new (class GAppsApiClient {
       }
 
       if (useCache) {
-        const savedData = this._read({ action });
+        const cacheKey = this._getCacheKey({ action, parameters });
+        const savedData = this._read({ key: cacheKey });
         if (savedData) {
           return resolve(savedData);
         }
@@ -8530,7 +8568,8 @@ const API = new (class GAppsApiClient {
       const token = this.getToken() || "";
       const returnResult = (data) => {
         if (data?.success) {
-          this._write({ action, data: data.result });
+          const cacheKey = this._getCacheKey({ action, parameters });
+          this._write({ key: cacheKey, data: data.result });
           resolve(data.result);
         } else {
           let errorMessage = "Ha ocorregut un error en la petició. Si el problema persistix, contacta a l'administrador.";
@@ -8735,7 +8774,7 @@ const API = new (class GAppsApiClient {
   }
 
   getAudioById({ audioId } = {}) {
-    return this._get({ action: "audio", parameters: { audioId }, requiresAuth: true });
+    return this._get({ action: "audio", parameters: { audioId }, requiresAuth: true, useCache: true });
   }
 })();
 
@@ -9855,9 +9894,6 @@ function loadEventData(eventId) {
   }
   
   AppState.currentEventId = eventId;
-
-  // Set flag to prevent form reset when navigating
-  isLoadingExistingEvent = true;
   
   showLoading(true);
 
@@ -9867,7 +9903,6 @@ function loadEventData(eventId) {
 
       if (!eventData) {
         showToast("No s'ha trobat l'esdeveniment", "error");
-        isLoadingEventFromHash = false;
         return;
       }
 
@@ -9956,8 +9991,6 @@ function loadEventData(eventId) {
       // Load diagrams after a short delay to ensure dances data is loaded
       setTimeout(function () {
         loadEventDiagrams(eventData);
-        // Clear flag after diagrams are loaded to allow subsequent hash changes
-        isLoadingEventFromHash = false;
       }, 500);
 
       showToast("Esdeveniment carregat", "success");
@@ -9966,8 +9999,6 @@ function loadEventData(eventId) {
       showLoading(false);
       console.error("Error loading event:", error);
       showToast("Error carregant l'esdeveniment", "error");
-      // Clear flag on error
-      isLoadingEventFromHash = false;
     });
 }
 
@@ -10005,7 +10036,6 @@ function loadTrainingData(trainingId) {
 
       if (!trainingData) {
         showToast("No s'ha trobat l'assaig", "error");
-        isLoadingTrainingFromHash = false;
         return;
       }
 
@@ -10047,8 +10077,6 @@ function loadTrainingData(trainingId) {
 
       if (trainingDescriptionInput && trainingData.description) {
         trainingDescriptionInput.value = trainingData.description;
-        // Detect dances from the loaded description
-        detectAndDisplayDancesFromDescription();
       }
 
       // Update page header to "Assaig" (editing mode)
@@ -10057,11 +10085,11 @@ function loadTrainingData(trainingId) {
       // Apply editable state based on admin role
       applyTrainingEditableState();
 
+      // Detect dances from the loaded description (visible to all users)
+      detectAndDisplayDancesFromDescription();
+
       // Initialize form event listeners for dance detection
       initializeTrainingFormListeners();
-
-      // Clear flag after loading completes
-      isLoadingTrainingFromHash = false;
 
       showToast("Assaig carregat", "success");
     })
@@ -10374,6 +10402,80 @@ function navigateToTraining(trainingId) {
 }
 
 /**
+ * Render diagrams once dances data is available
+ * Used by loadEventDiagrams after dances are loaded
+ */
+function renderDiagrams() {
+  if (typeof dancesData === "undefined" || !Array.isArray(dancesData) || dancesData.length === 0) {
+    return false;
+  }
+
+  if (!pendingEventData || !pendingEventData.diagrams) {
+    return false;
+  }
+
+  const diagramsList = document.getElementById("diagrams-list");
+  if (!diagramsList) {
+    return false;
+  }
+
+  pendingEventData.diagrams.forEach(function (diagramData) {
+    // Find the dance info to get colors and other metadata
+    const danceInfo = dancesData.find(function (d) {
+      return d.name === diagramData.danceName;
+    });
+
+    const newDiagram = {
+      id: diagramIdCounter++,
+      danceName: diagramData.danceName,
+      description: diagramData.description || "",
+      rows: diagramData.rows || 2,
+      columns: diagramData.columns || 2,
+      positions: diagramData.positions || [],
+      diagram: danceInfo
+        ? danceInfo.diagram
+        : { backgroundColor: {}, textColor: {} },
+      groups: diagramData.groups || [],
+    };
+
+    // If positions don't have colors, try to get them from dance info
+    if (danceInfo && danceInfo.positions) {
+      newDiagram.positions = danceInfo.positions;
+    }
+
+    diagrams.push(newDiagram);
+
+    const element = createDiagramElement(newDiagram);
+    diagramsList.appendChild(element);
+
+    // Setup canvas click handler
+    const canvas = document.getElementById(
+      "diagram-canvas-" + newDiagram.id,
+    );
+    if (canvas) {
+      setupCanvasClickHandlerForDiagram(newDiagram.id);
+    }
+
+    drawDiagram(newDiagram);
+  });
+
+  // Mark as not dirty since we just loaded
+  if (typeof diagramsIsDirty !== "undefined") {
+    diagramsIsDirty = false;
+  }
+
+  // Apply editability state to hide diagram-header-actions and floating-save-btn when event is not editable
+  if (typeof applyEditableState !== "undefined") {
+    applyEditableState();
+  }
+
+  return true;
+}
+
+// Store event data for renderDiagrams to access
+let pendingEventData = null;
+
+/**
  * Load diagrams from event data into the events view
  * @param {Object} eventData - The event data with diagrams
  */
@@ -10382,6 +10484,9 @@ function loadEventDiagrams(eventData) {
 
   const diagramsList = document.getElementById("diagrams-list");
   if (!diagramsList) return;
+
+  // Store event data for renderDiagrams to access
+  pendingEventData = eventData;
 
   // Clear any existing pending diagram load interval
   if (pendingDiagramLoadInterval !== null) {
@@ -10396,65 +10501,6 @@ function loadEventDiagrams(eventData) {
   if (typeof diagrams !== "undefined") {
     diagrams.length = 0;
     diagramIdCounter = 0;
-  }
-
-  // Function to render diagrams once dances data is available
-  function renderDiagrams() {
-    if (typeof dancesData === "undefined" || !Array.isArray(dancesData) || dancesData.length === 0) {
-      return false;
-    }
-
-    eventData.diagrams.forEach(function (diagramData) {
-      // Find the dance info to get colors and other metadata
-      const danceInfo = dancesData.find(function (d) {
-        return d.name === diagramData.danceName;
-      });
-
-      const newDiagram = {
-        id: diagramIdCounter++,
-        danceName: diagramData.danceName,
-        description: diagramData.description || "",
-        rows: diagramData.rows || 2,
-        columns: diagramData.columns || 2,
-        positions: diagramData.positions || [],
-        diagram: danceInfo
-          ? danceInfo.diagram
-          : { backgroundColor: {}, textColor: {} },
-        groups: diagramData.groups || [],
-      };
-
-      // If positions don't have colors, try to get them from dance info
-      if (danceInfo && danceInfo.positions) {
-        newDiagram.positions = danceInfo.positions;
-      }
-
-      diagrams.push(newDiagram);
-
-      const element = createDiagramElement(newDiagram);
-      diagramsList.appendChild(element);
-
-      // Setup canvas click handler
-      const canvas = document.getElementById(
-        "diagram-canvas-" + newDiagram.id,
-      );
-      if (canvas) {
-        setupCanvasClickHandlerForDiagram(newDiagram.id);
-      }
-
-      drawDiagram(newDiagram);
-    });
-
-    // Mark as not dirty since we just loaded
-    if (typeof diagramsIsDirty !== "undefined") {
-      diagramsIsDirty = false;
-    }
-
-    // Apply editability state to hide diagram-header-actions and floating-save-btn when event is not editable
-    if (typeof applyEditableState !== "undefined") {
-      applyEditableState();
-    }
-
-    return true;
   }
 
   // Try to render immediately if dances are already loaded
@@ -10487,11 +10533,6 @@ function loadEventDiagrams(eventData) {
 function setupCanvasClickHandlerForDiagram(diagramId) {
   const canvas = document.getElementById("diagram-canvas-" + diagramId);
   if (!canvas) return;
-
-  const dialog = document.getElementById("person-dialog");
-  const personCombo = document.getElementById("person-combo");
-  const personList = document.getElementById("person-list");
-  const personLoading = document.getElementById("person-loading");
 
   canvas.addEventListener("click", function (e) {
     const diagram = diagrams.find(function (d) {
@@ -10586,15 +10627,15 @@ function populatePersonListForDiagram(diagram, g, squareIdx) {
   }
 
   // Filter members: only active for future events, all for past events
-  const personNames = membersData
+  const personAliases = membersData
     .filter(function (m) {
       return isEventInPast || m.active;
     })
     .map(function (m) {
-      return m.name;
+      return m.alias;
     })
     .filter(Boolean);
-  window.currentOptions = personNames.filter(function (name) {
+  window.currentOptions = personAliases.filter(function (name) {
     return !usedNames.includes(name) || diagram.groups[g][squareIdx] === name;
   });
 
@@ -12336,9 +12377,6 @@ function clearUserData() {
   if (typeof dancesData !== "undefined") {
     dancesData = [];
   }
-
-  // Reset loading event flag
-  isLoadingExistingEvent = false;
 }
 
 /**

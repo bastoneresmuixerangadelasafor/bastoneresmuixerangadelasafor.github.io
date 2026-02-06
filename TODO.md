@@ -21,3 +21,5 @@
 - Ramonet
 - Share event email
 - Handle 401
+- ~~Menu lateral per damunt de tot~~
+- Improve event edition

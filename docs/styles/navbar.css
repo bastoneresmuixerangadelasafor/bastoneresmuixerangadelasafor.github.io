@@ -17,7 +17,7 @@
     padding: 20px;
     display: none;
     box-shadow: var(--shadow);
-    z-index: 99;
+    z-index: 9998;
     overflow-y: auto;
   }
 

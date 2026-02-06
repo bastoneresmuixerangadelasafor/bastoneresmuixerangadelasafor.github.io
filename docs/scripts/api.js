@@ -2,6 +2,12 @@
 const API = new (class GAppsApiClient {
   constructor() {}
 
+  _getCacheKey({ action, parameters } = {}) {
+    const params = parameters ? Object.fromEntries(Object.entries(parameters).filter(([key]) => key !== "forceRefresh")) : {};
+    const cacheKey = `${action}${params && Object.keys(params).length > 0 ? `_${new URLSearchParams(params).toString()}` : ""}`;
+    return cacheKey;
+  }
+
   getToken() {
     try {
       const tokenData = localStorage.getItem(SESSION_TOKEN);
@@ -86,7 +92,7 @@ const API = new (class GAppsApiClient {
       }
 
       if (useCache) {
-        const cacheKey = `${action}${parameters ? `_${new URLSearchParams(parameters).toString()}` : ""}`;
+        const cacheKey = this._getCacheKey({ action, parameters });
         const savedData = this._read({ key: cacheKey });
         if (savedData) {
           return resolve(savedData);
@@ -102,7 +108,7 @@ const API = new (class GAppsApiClient {
       const token = this.getToken() || "";
       const returnResult = (data) => {
         if (data?.success) {
-          const cacheKey = `${action}${parameters ? `_${new URLSearchParams(parameters).toString()}` : ""}`;
+          const cacheKey = this._getCacheKey({ action, parameters });
           this._write({ key: cacheKey, data: data.result });
           resolve(data.result);
         } else {
