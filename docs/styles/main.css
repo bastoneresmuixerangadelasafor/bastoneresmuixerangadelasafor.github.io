@@ -1836,7 +1836,7 @@ table tbody tr:last-child td {
   }
 
   .navbar-brand a span {
-    max-width: 185px;
+    max-width: 120px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1918,7 +1918,7 @@ table tbody tr:last-child td {
   }
 
   .navbar-brand a span {
-    max-width: 175px;
+    max-width: 100px;
   }
 
   .navbar-toggle {
