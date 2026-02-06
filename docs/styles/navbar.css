@@ -126,7 +126,8 @@
 
 @media (max-width: 480px) {
   .brand-text {
-    max-width: 160px;
+    max-width: 140px;
+    font-size: 0.95em;
   }
 }
 
