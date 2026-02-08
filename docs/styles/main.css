@@ -3085,6 +3085,35 @@ input::placeholder {
   color: #aaa;
 }
 
+/* Training attendance indicator (for past trainings) */
+.training-attendance {
+  display: inline-block;
+  width: fit-content;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.training-attendance.attending {
+  color: #4caf50;
+  background-color: rgba(76, 175, 80, 0.1);
+}
+
+.dark-mode .training-attendance.attending {
+  background-color: rgba(76, 175, 80, 0.2);
+}
+
+.training-attendance.not-attending {
+  color: #f44336;
+  background-color: rgba(244, 67, 54, 0.1);
+}
+
+.dark-mode .training-attendance.not-attending {
+  background-color: rgba(244, 67, 54, 0.2);
+}
+
 @media (max-width: 600px) {
   .planning-training-section {
     width: 100%;

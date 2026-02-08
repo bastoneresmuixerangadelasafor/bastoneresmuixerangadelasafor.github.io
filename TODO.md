@@ -25,3 +25,4 @@
 - Improve event edition
 - Allow members to confirm/decline assistance to training
 - Check training session assistance
+- Edit members: All members or individually

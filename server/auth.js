@@ -45,6 +45,7 @@ function loginWithEmailPassword_({ email, password }) {
       user: {
         email: email,
         displayName: displayName,
+        alias: member.alias,
         avatar: generateAvatarUrl_(displayName, roles),
         memberType: member.type,
         roles: roles,
@@ -205,6 +206,7 @@ function generateSessionToken_({ member }) {
     sub: member.id,
     email: member.email,
     name: member.name,
+    alias: member.alias,
     roles: member.roles || [],
     type: member.type,
     relations: member.relations || [],
@@ -265,6 +267,7 @@ function getUserFromSession_({ token }) {
         return {
           email: payload.email,
           name: payload.name,
+          alias: payload.alias,
           roles: payload.roles,
           memberId: payload.sub,
           memberType: payload.type,
@@ -322,6 +325,7 @@ function getCurrentUser_({ token }) {
         user: {
           email: user.email,
           displayName: displayName,
+          alias: userProfile.alias,
           avatar: generateAvatarUrl_(displayName, roles),
           memberType: userProfile.memberType || "",
           roles: roles,
@@ -397,6 +401,7 @@ function getUserProfile_({ email, forceRefresh } = {}) {
     success: true,
     email: member.email,
     displayName: member.name || email.split("@")[0],
+    alias: member.alias,
     memberId: member.id,
     memberType: member.type || "",
     roles: member.roles || [],

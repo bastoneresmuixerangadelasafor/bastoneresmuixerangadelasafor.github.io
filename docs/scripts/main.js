@@ -976,12 +976,27 @@ function renderPlanningTrainingsList(trainings) {
   });
 
   // Helper function to create training card HTML
-  function createTrainingCardHTML(training) {
+  function createTrainingCardHTML(training, isPast = false) {
     const formattedDate = formatEventDate(training.date);
     let meetingPlaceHtml = "";
     if (training.meetingPlace) {
       meetingPlaceHtml = `<span class="training-card-location">📍 ${escapeHtml(training.meetingPlace)}</span>`;
     }
+    
+    // For past trainings, show attendance indicator
+    let attendanceIndicatorHtml = "";
+    if (isPast && AppState.currentUser) {
+      const isAttending = (training.assistance || []).some(function(attendee) {
+        return attendee === AppState.currentUser.alias;
+      });
+      
+      if (isAttending) {
+        attendanceIndicatorHtml = `<span class="training-attendance attending">✓ Has assistit</span>`;
+      } else {
+        attendanceIndicatorHtml = `<span class="training-attendance not-attending">✕ No has assistit</span>`;
+      }
+    }
+    
     const actionHtml = `
       <div class="training-card-action-group">
         <button type="button" class="btn btn-sm btn-primary" onclick="navigateToTraining('${escapeHtml(training.id)}')">Detalls</button>
@@ -994,6 +1009,7 @@ function renderPlanningTrainingsList(trainings) {
     <span class="training-card-date">${formattedDate}</span>
     <span class="training-count">${training.assistance ? training.assistance.length : 0} persones apuntades</span>
     ${meetingPlaceHtml}
+    ${attendanceIndicatorHtml}
 </div>
 <div class="training-card-actions">
     ${actionHtml}
@@ -1019,7 +1035,7 @@ function renderPlanningTrainingsList(trainings) {
       return dateB - dateA;
     });
 
-    const upcomingHTML = upcomingTrainings.map(createTrainingCardHTML).join("");
+    const upcomingHTML = upcomingTrainings.map(function(t) { return createTrainingCardHTML(t, false); }).join("");
     container.innerHTML = upcomingHTML;
   }
 
@@ -1034,7 +1050,7 @@ function renderPlanningTrainingsList(trainings) {
         const dateB = new Date(b.date);
         return dateB - dateA;
       });
-      const pastHTML = pastTrainings.map(createTrainingCardHTML).join("");
+      const pastHTML = pastTrainings.map(function(t) { return createTrainingCardHTML(t, true); }).join("");
       pastTrainingsContainer.innerHTML = pastHTML;
     }
   }
@@ -2398,7 +2414,7 @@ function renderMembersTable() {
     tr.classList.add("clickable-row");
     tr.setAttribute("data-member-id", member.id);
     const isEditing =
-      currentEditingMemberId === member.id || isEditingAllMembers;
+      String(currentEditingMemberId) === String(member.id) || isEditingAllMembers;
 
     if (isEditing) {
       tr.classList.add("editing-row");
@@ -2423,9 +2439,13 @@ function renderMembersTable() {
       const passwordBtnHtml = showPasswordBtn
         ? `
         <button type="button" class="btn-change-password" title="Canviar contrasenya" data-member-id="${member.id}" data-member-name="${member.alias}" data-member-email="${member.email}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-            </svg>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" style="vertical-align: middle;">
+            <path
+              d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4">
+            </path>
+          </svg>
         </button>`
         : "";
       tr.innerHTML = `
@@ -2440,6 +2460,84 @@ function renderMembersTable() {
 `;
     }
     tbody.appendChild(tr);
+  });
+
+  // Initialize long tap listeners on table rows
+  initMembersTableLongTap();
+}
+
+/**
+ * Initialize long tap (touch hold) listeners on members table rows
+ * Allows editing members by long tapping on a row
+ */
+function initMembersTableLongTap() {
+  const rows = document.querySelectorAll("#members-table tbody tr.clickable-row");
+
+  rows.forEach(function (row) {
+    // Skip if already initialized
+    if (row.dataset.longtapInitialized) {
+      return;
+    }
+
+    let longPressTimer = null;
+    let hasMovedDuringPress = false;
+    const longPressDuration = 500; // milliseconds
+
+    function startLongPress() {
+      hasMovedDuringPress = false;
+      longPressTimer = setTimeout(function () {
+        const memberId = row.getAttribute("data-member-id");
+        if (memberId) {
+          startInlineEdit(memberId);
+        }
+      }, longPressDuration);
+    }
+
+    function cancelLongPress() {
+      if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+      }
+    }
+
+    // Touch events for mobile
+    row.addEventListener("touchstart", function () {
+      startLongPress();
+    }, { passive: true });
+
+    row.addEventListener("touchmove", function () {
+      hasMovedDuringPress = true;
+      cancelLongPress();
+    }, { passive: true });
+
+    row.addEventListener("touchend", function () {
+      cancelLongPress();
+    });
+
+    row.addEventListener("touchcancel", function () {
+      cancelLongPress();
+    });
+
+    // Mouse events for desktop
+    row.addEventListener("mousedown", function () {
+      startLongPress();
+    });
+
+    row.addEventListener("mouseup", function () {
+      cancelLongPress();
+    });
+
+    row.addEventListener("mouseleave", function () {
+      cancelLongPress();
+    });
+
+    row.addEventListener("mousemove", function () {
+      if (longPressTimer) {
+        cancelLongPress();
+      }
+    });
+
+    row.dataset.longtapInitialized = "true";
   });
 }
 
@@ -2462,12 +2560,12 @@ function startAddNewMember() {
 
   // Create a temporary member object
   const newMember = {
-    ID: "__new__",
-    Name: "",
-    Email: "",
-    Type: "ADULT",
-    Roles: [],
-    Relations: [],
+    id: "__new__",
+    name: "",
+    email: "",
+    type: "ADULT",
+    roles: [],
+    relations: [],
   };
 
   currentEditingMemberId = "__new__";
@@ -2580,7 +2678,7 @@ function handleInlineTypeChange(selectEl) {
   const relationsCell = row.querySelector(".relations-cell");
   const memberId = row.getAttribute("data-member-id");
   const member = membersData.find(function (m) {
-    return m.id === memberId;
+    return String(m.id) === String(memberId);
   });
 
   if (selectEl.value === "KID") {
@@ -2613,7 +2711,7 @@ function handleInlineTypeChange(selectEl) {
       relationsHtml +=
         '<div class="relations-dropdown-content" style="display:none;">';
       membersData.forEach(function (m) {
-        if (m.id !== memberId) {
+        if (String(m.id) !== String(memberId)) {
           const checked =
             member && (member.relations || []).includes(m.id)
               ? "checked"
@@ -2629,18 +2727,19 @@ function handleInlineTypeChange(selectEl) {
 
 /**
  * Start inline editing for a member
- * @param {string} memberId - ID of the member to edit
+ * @param {string|number} memberId - ID of the member to edit
  */
 function startInlineEdit(memberId) {
   // If already editing another member, cancel that edit first
-  if (currentEditingMemberId && currentEditingMemberId !== memberId) {
+  if (currentEditingMemberId && String(currentEditingMemberId) !== String(memberId)) {
     cancelInlineEdit();
   }
 
   const member = membersData.find(function (m) {
-    return m.id === memberId;
+    return String(m.id) === String(memberId);
   });
   if (!member) {
+    console.error("Member not found. memberId:", memberId, "Available IDs:", membersData.map(m => m.id));
     showToast("Membre no trobat", "error");
     return;
   }
@@ -2925,13 +3024,13 @@ function applyInlineEdit() {
 
   const activeCheckbox = row.querySelector('input[name="inline-active"]');
   const memberData = {
-    ID: currentEditingMemberId === "__new__" ? null : currentEditingMemberId,
-    Name: row.querySelector('input[name="inline-name"]').value.trim(),
-    Email: "",
-    Type: row.querySelector('select[name="inline-type"]').value,
-    Roles: [],
-    Relations: [],
-    Active: activeCheckbox ? activeCheckbox.checked : true,
+    id: currentEditingMemberId === "__new__" ? null : currentEditingMemberId,
+    name: row.querySelector('input[name="inline-name"]').value.trim(),
+    email: "",
+    type: row.querySelector('select[name="inline-type"]').value,
+    roles: [],
+    relations: [],
+    active: activeCheckbox ? activeCheckbox.checked : true,
     isNew: isAddingNewMember,
   };
 
@@ -3026,13 +3125,13 @@ function applyAllMembersEdit() {
     const activeCheckbox = row.querySelector('input[name="inline-active"]');
     const typeSelect = row.querySelector('select[name="inline-type"]');
     const memberData = {
-      ID: memberId,
-      Name: row.querySelector('input[name="inline-name"]').value.trim(),
-      Email: "",
-      Type: typeSelect ? typeSelect.value : "ADULT",
-      Roles: [],
-      Relations: [],
-      Active: activeCheckbox ? activeCheckbox.checked : true,
+      id: memberId,
+      name: row.querySelector('input[name="inline-name"]').value.trim(),
+      email: "",
+      type: typeSelect ? typeSelect.value : "ADULT",
+      roles: [],
+      relations: [],
+      active: activeCheckbox ? activeCheckbox.checked : true,
     };
 
     // Only get email, roles, and relations for ADULT members

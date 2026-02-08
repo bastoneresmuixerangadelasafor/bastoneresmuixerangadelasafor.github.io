@@ -11238,12 +11238,12 @@ function startAddNewMember() {
 
   // Create a temporary member object
   const newMember = {
-    ID: "__new__",
-    Name: "",
-    Email: "",
-    Type: "ADULT",
-    Roles: [],
-    Relations: [],
+    id: "__new__",
+    name: "",
+    email: "",
+    type: "ADULT",
+    roles: [],
+    relations: [],
   };
 
   currentEditingMemberId = "__new__";
@@ -11701,13 +11701,13 @@ function applyInlineEdit() {
 
   const activeCheckbox = row.querySelector('input[name="inline-active"]');
   const memberData = {
-    ID: currentEditingMemberId === "__new__" ? null : currentEditingMemberId,
-    Name: row.querySelector('input[name="inline-name"]').value.trim(),
-    Email: "",
-    Type: row.querySelector('select[name="inline-type"]').value,
-    Roles: [],
-    Relations: [],
-    Active: activeCheckbox ? activeCheckbox.checked : true,
+    id: currentEditingMemberId === "__new__" ? null : currentEditingMemberId,
+    name: row.querySelector('input[name="inline-name"]').value.trim(),
+    email: "",
+    type: row.querySelector('select[name="inline-type"]').value,
+    roles: [],
+    relations: [],
+    active: activeCheckbox ? activeCheckbox.checked : true,
     isNew: isAddingNewMember,
   };
 
@@ -11802,13 +11802,13 @@ function applyAllMembersEdit() {
     const activeCheckbox = row.querySelector('input[name="inline-active"]');
     const typeSelect = row.querySelector('select[name="inline-type"]');
     const memberData = {
-      ID: memberId,
-      Name: row.querySelector('input[name="inline-name"]').value.trim(),
-      Email: "",
-      Type: typeSelect ? typeSelect.value : "ADULT",
-      Roles: [],
-      Relations: [],
-      Active: activeCheckbox ? activeCheckbox.checked : true,
+      id: memberId,
+      name: row.querySelector('input[name="inline-name"]').value.trim(),
+      email: "",
+      type: typeSelect ? typeSelect.value : "ADULT",
+      roles: [],
+      relations: [],
+      active: activeCheckbox ? activeCheckbox.checked : true,
     };
 
     // Only get email, roles, and relations for ADULT members
