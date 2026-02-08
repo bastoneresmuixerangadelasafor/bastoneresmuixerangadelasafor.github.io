@@ -166,6 +166,13 @@ const CACHE = new class GAppsServerCache {
     return this.retrieveTrainingsFromDB();
   }
 
+  addTraining({ training }) {
+    const trainings = this.getTrainings();
+    const dateKey = training.date || new Date().toISOString().split('T')[0];
+    trainings[dateKey] = training;
+    this.cache_.setProperty(TRAINING_CACHE, JSON.stringify(trainings));
+  }
+
   getNextTraining(){
     const trainings = CACHE.getTrainings();
     const now = new Date();

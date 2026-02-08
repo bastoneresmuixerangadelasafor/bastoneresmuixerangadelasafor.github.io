@@ -3174,7 +3174,7 @@ input::placeholder {
 .training-field label {
   font-weight: bold;
   font-size: 1rem;
-  color: #fff;
+  color: var(--text-color);
   white-space: nowrap;
 }
 
@@ -3186,9 +3186,11 @@ input::placeholder {
 .training-field textarea {
   padding: 0.5em 0.8em;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
   font-size: 1rem;
   font-family: inherit;
+  background-color: var(--bg-color);
+  color: var(--text-color);
   transition:
     border-color 0.2s,
     box-shadow 0.2s;
@@ -3214,9 +3216,9 @@ input::placeholder {
 .training-field-label {
   padding: 0.5em 0.8em;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--card-bg);
   font-size: 1rem;
-  color: #fff;
+  color: var(--text-color);
   display: block;
   width: 600px;
   word-break: break-word;
@@ -3239,7 +3241,7 @@ input::placeholder {
 .training-detected-dances-header h3 {
   margin: 0;
   font-size: 1rem;
-  color: #fff;
+  color: var(--text-color);
   font-weight: 600;
 }
 
@@ -3512,7 +3514,7 @@ input::placeholder {
 .event-field label {
   font-weight: bold;
   font-size: 1rem;
-  color: #fff;
+  color: var(--text-color);
   white-space: nowrap;
 }
 
@@ -3523,8 +3525,10 @@ input::placeholder {
 .event-field input {
   padding: 0.5em 0.8em;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
   font-size: 1rem;
+  background-color: var(--bg-color);
+  color: var(--text-color);
   transition:
     border-color 0.2s,
     box-shadow 0.2s;
@@ -3545,9 +3549,9 @@ input::placeholder {
 .event-field-label {
   padding: 0.5em 0.8em;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--card-bg);
   font-size: 1rem;
-  color: #fff;
+  color: var(--text-color);
   min-width: 125px;
   max-width: 175px;
   display: inline-block;

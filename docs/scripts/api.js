@@ -313,6 +313,10 @@ const API = new (class GAppsApiClient {
     return this._put({ action: "saveEvent", body: { event }, requiresAuth: true });
   }
 
+  saveTraining({ training } = {}) {
+    return this._put({ action: "saveTraining", body: { training }, requiresAuth: true });
+  }
+
   getAudioById({ audioId } = {}) {
     return this._get({ action: "audio", parameters: { audioId }, requiresAuth: true, useCache: true });
   }

@@ -432,3 +432,98 @@ function formatEventSheet_(sheet, event) {
   // Freeze first column for easier navigation
   sheet.setFrozenColumns(1);
 }
+/**
+ * Save/update a training session
+ * @param {Object} training - Training object with date (training ID or new date), description, and optionally attendance
+ * @returns {Object} Result object with success status
+ */
+function saveTraining_({training}) {
+  if (!training || !training.date) {
+    return {
+      success: false,
+      error: 'La data de l\'assaig és obligatòria',
+    };
+  }
+
+  try {
+    const spreadsheet = SpreadsheetApp.openById(TRAINING_SPREADSHEET_ID);
+    const sheet = spreadsheet.getSheetByName(ASSISTANCE_SHEET_NAME);
+    const data = sheet.getDataRange().getValues();
+
+    if (!data || data.length < 2) {
+      return { success: false, error: 'No hi ha dades de entrenament' };
+    }
+
+    // The training.date is the training ID (either existing or new)
+    const trainingId = training.date;
+    const headerRow = data[0];
+    let dateColumn = -1;
+
+    // Find the column index that matches this training ID
+    for (let i = 1; i < headerRow.length; i++) {
+      const headerDate = headerRow[i];
+      // Compare the header date with the training ID
+      if (String(headerDate) === String(trainingId)) {
+        dateColumn = i + 1; // Sheets columns are 1-indexed
+        break;
+      }
+    }
+
+    // If column doesn't exist, create it (for new trainings)
+    if (dateColumn === -1) {
+      // Insert a new column after the last training column
+      const lastDataColumn = headerRow.length;
+      dateColumn = lastDataColumn + 1;
+      
+      // Expand the data range to include the new column
+      const newHeaderRow = headerRow.slice();
+      newHeaderRow.push(trainingId);
+      
+      // Set the new header value and the description note
+      sheet.getRange(1, dateColumn).setValue(trainingId);
+      sheet.getRange(1, dateColumn).setNote(training.description || '');
+      
+      console.log("Created new training column:", dateColumn, "for date:", trainingId);
+    } else {
+      // Update the description in header notes for existing column
+      sheet.getRange(1, dateColumn).setNote(training.description || '');
+    }
+
+    // If attendance data is provided, update it
+    if (training.assistance && Array.isArray(training.assistance)) {
+      // First clear all existing marks in this column (start from row 2, skipping header)
+      for (let i = 2; i <= data.length; i++) {
+        sheet.getRange(i, dateColumn).setValue('');
+      }
+
+      // Then add marks for attendees
+      training.assistance.forEach(function (memberName) {
+        // Search for the member in the first column
+        for (let i = 1; i < data.length; i++) {
+          const cellName = String(data[i][0]).trim();
+          if (cellName === String(memberName).trim()) {
+            sheet.getRange(i + 1, dateColumn).setValue('X');
+            break;
+          }
+        }
+      });
+    }
+
+    // Invalidate cache so next read gets fresh data
+    CACHE.addTraining({ training });
+
+    return {
+      success: true,
+      result: {
+        message: 'Assaig actualitzat correctament',
+        trainingId: trainingId,
+      },
+    };
+  } catch (error) {
+    console.error('Error saving training:', error.toString());
+    return { 
+      success: false, 
+      error: 'Error desant l\'assaig: ' + error.toString() 
+    };
+  }
+}

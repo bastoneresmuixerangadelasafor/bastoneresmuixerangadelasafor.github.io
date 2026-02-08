@@ -169,6 +169,11 @@ const API = class GAppsApiServer {
         const eventRequest = JSON.parse(e.postData?.contents);
         data = saveEventWorker({ event: eventRequest?.event });
         break;
+      case "saveTraining":
+        const saveTrainingWorker = this.validateUserToken_({fn: saveTraining_, requiresAuth: true, requiresAdmin: true, token: e.parameter?.token});
+        const trainingRequest = JSON.parse(e.postData?.contents);
+        data = saveTrainingWorker({ training: trainingRequest?.training });
+        break;
       default:
         return { success: false, error: `Unknown GET action: ${action}` };
     }

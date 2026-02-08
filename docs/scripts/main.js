@@ -712,6 +712,9 @@ function resetEventsForm() {
  * Reset the training form to empty state for creating a new training
  */
 function resetTrainingForm() {
+  // Clear the current training ID (we're creating a new one)
+  AppState.currentTrainingId = null;
+
   // Clear training inputs
   const trainingDatetimeInput = document.getElementById("training-datetime-input");
   const trainingDescriptionInput = document.getElementById("training-description-input");
@@ -1364,6 +1367,7 @@ function applyTrainingEditableState() {
     // Enable fields
     if (trainingDatetimeInput) trainingDatetimeInput.disabled = false;
     if (trainingDescriptionInput) trainingDescriptionInput.disabled = false;
+    if (saveBtnTraining) saveBtnTraining.disabled = false;
   } else {
     // Show labels, hide inputs
     if (trainingDatetimeInput) trainingDatetimeInput.style.display = "none";
@@ -1375,6 +1379,7 @@ function applyTrainingEditableState() {
     // Disable fields
     if (trainingDatetimeInput) trainingDatetimeInput.disabled = true;
     if (trainingDescriptionInput) trainingDescriptionInput.disabled = true;
+    if (saveBtnTraining) saveBtnTraining.disabled = true;
     
     // Populate labels with current values
     if (trainingDatetimeLabel && trainingDatetimeInput && trainingDatetimeInput.value) {
@@ -1483,6 +1488,7 @@ function detectDancesFromText(text) {
  */
 function initializeTrainingFormListeners() {
   const trainingDescriptionInput = document.getElementById("training-description-input");
+  const saveBtnTraining = document.getElementById("floating-save-training-btn");
   
   if (!trainingDescriptionInput) {
     return;
@@ -1494,6 +1500,73 @@ function initializeTrainingFormListeners() {
 
   // Add input event listener to detect dances as description changes
   newInput.addEventListener("input", detectAndDisplayDancesFromDescription);
+
+  // Add save button listener
+  if (saveBtnTraining) {
+    // Clone to remove old listeners
+    const newSaveBtn = saveBtnTraining.cloneNode(true);
+    saveBtnTraining.parentNode.replaceChild(newSaveBtn, saveBtnTraining);
+    
+    newSaveBtn.addEventListener("click", handleTrainingSave);
+  }
+}
+
+/**
+ * Handle training session save
+ */
+function handleTrainingSave() {
+  const trainingDatetimeInput = document.getElementById("training-datetime-input");
+  const trainingDescriptionInput = document.getElementById("training-description-input");
+  const saveBtnTraining = document.getElementById("floating-save-training-btn");
+
+  // Validate required fields
+  if (!trainingDatetimeInput || !trainingDatetimeInput.value) {
+    showToast("La data de l'assaig és obligatòria", "error");
+    return;
+  }
+
+  // Determine if we're editing or creating
+  // If currentTrainingId is set, we're editing; otherwise we're creating
+  const isEditing = !!AppState.currentTrainingId;
+  const trainingId = isEditing ? AppState.currentTrainingId : trainingDatetimeInput.value;
+
+  // Prepare training data
+  // The 'date' field is the training ID (key in the system)
+  const training = {
+    date: trainingId,
+    description: trainingDescriptionInput ? trainingDescriptionInput.value : "",
+  };
+
+  // Show loading state
+  if (saveBtnTraining) {
+    saveBtnTraining.disabled = true;
+  }
+  showLoading(true);
+
+  // Call API to save training
+  API.saveTraining({ training })
+    .then(function (response) {
+      showLoading(false);
+      if (saveBtnTraining) {
+        saveBtnTraining.disabled = false;
+      }
+
+      // If we reach here, the save was successful (API client would have rejected on error)
+      showToast(response?.message || "Assaig desat correctament", "success");
+      
+      // If this was a new training, update the current ID
+      if (!isEditing && response?.trainingId) {
+        AppState.currentTrainingId = response.trainingId;
+      }
+    })
+    .catch(function (error) {
+      showLoading(false);
+      if (saveBtnTraining) {
+        saveBtnTraining.disabled = false;
+      }
+      console.error("Error saving training:", error);
+      showToast(error || "Error desant l'assaig", "error");
+    });
 }
 
 /**
