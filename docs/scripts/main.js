@@ -1012,11 +1012,11 @@ function renderPlanningTrainingsList(trainings) {
 </div>
 `;
   } else {
-    // Sort upcoming trainings by date ascending (closest first)
+    // Sort upcoming trainings by date descending (newer/furthest future first)
     upcomingTrainings.sort(function (a, b) {
       const dateA = new Date(a.date);
       const dateB = new Date(b.date);
-      return dateA - dateB;
+      return dateB - dateA;
     });
 
     const upcomingHTML = upcomingTrainings.map(createTrainingCardHTML).join("");
@@ -1028,6 +1028,12 @@ function renderPlanningTrainingsList(trainings) {
     if (pastTrainings.length === 0) {
       pastTrainingsContainer.innerHTML = '<div class="past-training-empty">No hi ha assajos passats</div>';
     } else {
+      // Sort past trainings by date descending (newest/most recent first)
+      pastTrainings.sort(function (a, b) {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateB - dateA;
+      });
       const pastHTML = pastTrainings.map(createTrainingCardHTML).join("");
       pastTrainingsContainer.innerHTML = pastHTML;
     }

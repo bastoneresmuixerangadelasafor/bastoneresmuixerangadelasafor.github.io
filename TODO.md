@@ -23,3 +23,5 @@
 - Handle 401
 - ~~Menu lateral per damunt de tot~~
 - Improve event edition
+- Allow members to confirm/decline assistance to training
+- Check training session assistance
