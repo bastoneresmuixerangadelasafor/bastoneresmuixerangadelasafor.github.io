@@ -187,21 +187,33 @@ function getEvents_({forceRefresh}) {
 	}
 }
 
-function getTrainings_({forceRefresh}) {
+function getTrainings_({forceRefresh, token}) {
   forceRefresh = forceRefresh || false;
   
   try {
     // Reload from database if force refresh is requested
     const trainings = forceRefresh ? CACHE.retrieveTrainingsFromDB() : CACHE.getTrainings();
+    const user = getUserFromSession_({ token });
+    
     const sortedTrainings = Object.keys(trainings)
     .sort(function(a,b) { return a > b })
     .map(function(k) { 
-      return {
+      const training = trainings[k];
+      const result = {
         id: k,
         date: k,
-        assistance: trainings[k].attendees,
-        description: trainings[k].description,
+        assistance: training.attendees,
+        description: training.description,
       };
+      
+      // Add per-user status if user is authenticated
+      if (user && user.alias) {
+        // Get user's status for this training from the spreadsheet
+        const userStatus = getTrainingUserStatus_({ trainingId: k, userAlias: user.alias });
+        result.userStatus = userStatus;
+      }
+      
+      return result;
     });
     
     return {success: true, result: sortedTrainings};
@@ -211,7 +223,7 @@ function getTrainings_({forceRefresh}) {
   }
 }
 
-function getTrainingById_({trainingId}) {
+function getTrainingById_({trainingId, token}) {
   if (!trainingId) return { success: false, error: 'No s\'ha especificat l\'ID de l\'assaig.' };
   
   try {
@@ -223,18 +235,73 @@ function getTrainingById_({trainingId}) {
       return { success: false, error: 'Training session not found: ' + trainingId };
     }
     
+    const result = {
+      id: trainingId,
+      date: trainingId,
+      assistance: training.attendees,
+      description: training.description
+    };
+    
+    // Add per-user status if user is authenticated
+    if (token) {
+      const user = getUserFromSession_({ token });
+      if (user && user.alias) {
+        const userStatus = getTrainingUserStatus_({ trainingId: trainingId, userAlias: user.alias });
+        result.userStatus = userStatus;
+      }
+    }
+    
     return {
       success: true,
-      result: {
-        id: trainingId,
-        date: trainingId,
-        assistance: training.attendees,
-        description: training.description
-      },
+      result: result,
     };
   } catch (error) {
     console.log('Error getting training by ID: ' + error.toString());
     return { success: false, error: error.toString() };
+  }
+}
+
+
+/**
+ * Get the current user's status for a specific training.
+ * @param {string} trainingId - The training date/ID
+ * @param {string} userAlias - The user's alias
+ * @returns {string} 'confirmed' (SI), 'not-attending' (NO), or 'not-confirmed' (empty)
+ */
+function getTrainingUserStatus_({trainingId, userAlias}) {
+  try {
+    const spreadsheet = SpreadsheetApp.openById(TRAINING_SPREADSHEET_ID);
+    const sheet = spreadsheet.getSheetByName(ASSISTANCE_SHEET_NAME);
+    const data = sheet.getDataRange().getValues();
+
+    if (!data || data.length < 2) return 'not-confirmed';
+
+    const headerRow = data[0];
+    let dateColumn = -1;
+
+    for (let i = 1; i < headerRow.length; i++) {
+      if (String(headerRow[i]) === String(trainingId)) {
+        dateColumn = i;
+        break;
+      }
+    }
+
+    if (dateColumn === -1) return 'not-confirmed';
+
+    // Find the user's row by alias
+    for (let i = 1; i < data.length; i++) {
+      if (String(data[i][0]).trim() === String(userAlias).trim()) {
+        const cellValue = String(data[i][dateColumn]).trim();
+        if (cellValue === 'SI') return 'confirmed';
+        if (cellValue === 'NO') return 'not-attending';
+        return 'not-confirmed';
+      }
+    }
+
+    return 'not-confirmed';
+  } catch (error) {
+    console.error('Error getting training user status:', error.toString());
+    return 'not-confirmed';
   }
 }
 
@@ -502,7 +569,7 @@ function saveTraining_({training}) {
         for (let i = 1; i < data.length; i++) {
           const cellName = String(data[i][0]).trim();
           if (cellName === String(memberName).trim()) {
-            sheet.getRange(i + 1, dateColumn).setValue('X');
+            sheet.getRange(i + 1, dateColumn).setValue('SI');
             break;
           }
         }
@@ -524,6 +591,106 @@ function saveTraining_({training}) {
     return { 
       success: false, 
       error: 'Error desant l\'assaig: ' + error.toString() 
+    };
+  }
+}
+
+/**
+ * Toggle attendance for the current user on a training session (cycles through 3 states).
+ * Empty → 'SI' (Confirmat) → 'NO' (No assistiré) → Empty (No confirmat)
+ * @param {Object} params
+ * @param {string} params.trainingId - The training date/ID
+ * @param {string} params.token - The user's auth token
+ * @returns {Object} Result with updated attendance status
+ */
+function toggleTrainingAttendance_({trainingId, token}) {
+  if (!trainingId) {
+    return { success: false, error: 'La data de l\'assaig és obligatòria' };
+  }
+
+  const user = getUserFromSession_({ token });
+  if (!user || !user.alias) {
+    return { success: false, error: 'No s\'ha pogut identificar l\'usuari.' };
+  }
+
+  try {
+    const spreadsheet = SpreadsheetApp.openById(TRAINING_SPREADSHEET_ID);
+    const sheet = spreadsheet.getSheetByName(ASSISTANCE_SHEET_NAME);
+    const data = sheet.getDataRange().getValues();
+
+    if (!data || data.length < 2) {
+      return { success: false, error: 'No hi ha dades d\'entrenament' };
+    }
+
+    const headerRow = data[0];
+    let dateColumn = -1;
+
+    for (let i = 1; i < headerRow.length; i++) {
+      if (String(headerRow[i]) === String(trainingId)) {
+        dateColumn = i + 1; // Sheets columns are 1-indexed
+        break;
+      }
+    }
+
+    if (dateColumn === -1) {
+      return { success: false, error: 'No s\'ha trobat l\'assaig: ' + trainingId };
+    }
+
+    // Find the user's row by alias
+    let userRow = -1;
+    for (let i = 1; i < data.length; i++) {
+      if (String(data[i][0]).trim() === String(user.alias).trim()) {
+        userRow = i + 1; // Sheets rows are 1-indexed
+        break;
+      }
+    }
+
+    if (userRow === -1) {
+      return { success: false, error: 'No s\'ha trobat el membre: ' + user.alias };
+    }
+
+    // Cycle through 3 states: empty → 'SI' → 'NO' → empty
+    const currentValue = String(data[userRow - 1][dateColumn - 1]).trim();
+    let newValue = '';
+    let newStatus = 'not-confirmed';
+    let statusMessage = 'El teu estat s\'ha actualitzat';
+
+    if (currentValue === '') {
+      // Empty → SI (Confirmat)
+      newValue = 'SI';
+      newStatus = 'confirmed';
+      statusMessage = 'Assistència confirmada';
+    } else if (currentValue === 'SI') {
+      // SI → NO (No assistiré)
+      newValue = 'NO';
+      newStatus = 'not-attending';
+      statusMessage = 'Has marcat que no assistirás';
+    } else if (currentValue === 'NO') {
+      // NO → empty (No confirmat)
+      newValue = '';
+      newStatus = 'not-confirmed';
+      statusMessage = 'Estat restablert a no confirmat';
+    }
+
+    sheet.getRange(userRow, dateColumn).setValue(newValue);
+
+    // Invalidate cache
+    CACHE.retrieveTrainingsFromDB();
+
+    return {
+      success: true,
+      result: {
+        trainingId: trainingId,
+        status: newStatus,
+        value: newValue,
+        message: statusMessage,
+      },
+    };
+  } catch (error) {
+    console.error('Error toggling training attendance:', error.toString());
+    return {
+      success: false,
+      error: 'Error actualitzant l\'assistència: ' + error.toString(),
     };
   }
 }

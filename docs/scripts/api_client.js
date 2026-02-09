@@ -317,6 +317,10 @@ const API = new (class GAppsApiClient {
     return this._put({ action: "saveTraining", body: { training }, requiresAuth: true });
   }
 
+  toggleTrainingAttendance({ trainingId } = {}) {
+    return this._post({ action: "toggleTrainingAttendance", body: { trainingId }, requiresAuth: true });
+  }
+
   getAudioById({ audioId } = {}) {
     return this._get({ action: "audio", parameters: { audioId }, requiresAuth: true, useCache: true });
   }

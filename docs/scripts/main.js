@@ -850,7 +850,7 @@ function renderPlanningEventsList(events) {
       let meetingPlaceHtml = "";
       if (event.meetingPlace) {
         if (event.placeUrl) {
-          meetingPlaceHtml = `<a href="${escapeHtml(event.placeUrl)}" target="_blank" class="event-card-place">📍 ${escapeHtml(event.meetingPlace)}</a>`;
+          meetingPlaceHtml = `<a href="${escapeHtml(event.placeUrl)}" target="_blank" class="event-card-place">📍 ${escapeHtml(event.meetingPlace)} 🗺️</a>`;
         } else {
           meetingPlaceHtml = `<span class="event-card-place">📍 ${escapeHtml(event.meetingPlace)}</span>`;
         }
@@ -999,6 +999,25 @@ function renderPlanningTrainingsList(trainings) {
         attendanceIndicatorHtml = `<span class="training-attendance not-attending">✕ No has assistit</span>`;
       }
     }
+
+    // For upcoming trainings, show clickable confirmation status based on user attendance
+    let confirmationStatusHtml = "";
+    if (!isPast && AppState.currentUser) {
+      // Get the user's status for this training by checking the spreadsheet value
+      // Since we don't have per-cell data here, we'll store it differently
+      // For now, we check if user is in the assistance list
+      const userAttendanceStatus = training.attendanceStatus || training.userStatus || 'not-confirmed';
+      const statusClass = `training-confirmation ${userAttendanceStatus}`;
+      let statusText = '? No confirmat';
+      
+      if (userAttendanceStatus === 'confirmed') {
+        statusText = '✔ Confirmat';
+      } else if (userAttendanceStatus === 'not-attending') {
+        statusText = '✕ No assistiré';
+      }
+      
+      confirmationStatusHtml = `<span class="${statusClass}" onclick="toggleTrainingAttendance('${escapeHtml(training.id)}', this)" role="button" tabindex="0">${statusText}</span>`;
+    }
     
     const actionHtml = `
       <div class="training-card-action-group">
@@ -1013,6 +1032,7 @@ function renderPlanningTrainingsList(trainings) {
     <span class="training-count">${training.assistance ? training.assistance.length : 0} persones apuntades</span>
     ${meetingPlaceHtml}
     ${attendanceIndicatorHtml}
+    ${confirmationStatusHtml}
 </div>
 <div class="training-card-actions">
     ${actionHtml}
@@ -1713,6 +1733,68 @@ function navigateToTraining(trainingId) {
   if (!trainingId) return;
   AppState.trainingIdToLoad = escapeHtml(trainingId);
   window.location.hash = "training/" + encodeURIComponent(trainingId);
+}
+
+/**
+ * Toggle current user's attendance for a training session
+ * @param {string} trainingId - The training ID (date key)
+ * @param {HTMLElement} element - The clicked badge element
+ */
+function toggleTrainingAttendance(trainingId, element) {
+  if (!trainingId || !element) return;
+
+  // Save original content for restoration on error
+  var originalHtml = element.innerHTML;
+  var originalClass = element.className;
+
+  // Show inline spinner and disable interaction
+  element.style.pointerEvents = "none";
+  element.innerHTML = '<span class="training-confirmation-spinner"></span>';
+
+  API.toggleTrainingAttendance({ trainingId: trainingId })
+    .then(function (result) {
+      // Update the badge based on the new status
+      const statusClass = "training-confirmation " + result.status;
+      let statusText = '? No confirmat';
+      
+      if (result.status === 'confirmed') {
+        statusText = '✔ Confirmat';
+      } else if (result.status === 'not-attending') {
+        statusText = '✕ No assistiré';
+      }
+      
+      element.className = statusClass;
+      element.innerHTML = statusText;
+      showToast(result.message || "Estat actualitzat", "success");
+
+      // Update the attendance count on the same card
+      var card = element.closest(".training-card");
+      if (card) {
+        var countSpan = card.querySelector(".training-count");
+        if (countSpan && result.status === 'confirmed') {
+          var currentText = countSpan.textContent;
+          var match = currentText.match(/(\d+)/);
+          if (match) {
+            var count = parseInt(match[1], 10);
+            // If transitioning to 'confirmed', increment count
+            if (result.value === 'SI') {
+              count = count + 1;
+            }
+            countSpan.textContent = count + " persones apuntades";
+          }
+        }
+      }
+    })
+    .catch(function (error) {
+      console.error("Error toggling attendance:", error);
+      // Restore original state on error
+      element.className = originalClass;
+      element.innerHTML = originalHtml;
+      showToast(error || "Error actualitzant l'assistència", "error");
+    })
+    .finally(function () {
+      element.style.pointerEvents = "";
+    });
 }
 
 /**

@@ -217,7 +217,7 @@ const CACHE = new class GAppsServerCache {
       for (let i = 1; i < data.length; i++) {
         const memberName = data[i][0];
         const attendance = data[i][index + 1]; // +1 because dates are sliced from index 1
-        if (memberName && attendance === 'X') {
+        if (memberName && attendance === 'SI') {
           attendees.push(memberName);
         }
       }

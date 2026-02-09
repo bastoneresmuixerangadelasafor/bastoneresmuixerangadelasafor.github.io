@@ -9707,7 +9707,7 @@ function renderPlanningEventsList(events) {
       let meetingPlaceHtml = "";
       if (event.meetingPlace) {
         if (event.placeUrl) {
-          meetingPlaceHtml = `<a href="${escapeHtml(event.placeUrl)}" target="_blank" class="event-card-place">📍 ${escapeHtml(event.meetingPlace)}</a>`;
+          meetingPlaceHtml = `<a href="${escapeHtml(event.placeUrl)}" target="_blank" class="event-card-place">📍 ${escapeHtml(event.meetingPlace)} 🗺️</a>`;
         } else {
           meetingPlaceHtml = `<span class="event-card-place">📍 ${escapeHtml(event.meetingPlace)}</span>`;
         }

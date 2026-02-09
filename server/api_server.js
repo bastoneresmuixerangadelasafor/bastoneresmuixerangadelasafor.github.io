@@ -95,11 +95,11 @@ const API = class GAppsApiServer {
         break;
       case "trainings":
         const trainingsWorker = this.validateUserToken_({fn: getTrainings_, requiresAuth: true, token: e.parameter?.token});
-        data = trainingsWorker({ forceRefresh: e.parameter?.forceRefresh });
+        data = trainingsWorker({ forceRefresh: e.parameter?.forceRefresh, token: e.parameter?.token });
         break;
       case "training":
         const trainingWorker = this.validateUserToken_({fn: getTrainingById_, requiresAuth: true, token: e.parameter?.token});
-        data = trainingWorker({ trainingId: e.parameter?.trainingId });
+        data = trainingWorker({ trainingId: e.parameter?.trainingId, token: e.parameter?.token });
         break;
       case "nextTraining":
         const nextTrainingWorker = this.validateUserToken_({fn: (args) => CACHE.getNextTraining(args), requiresAuth: true, token: e.parameter?.token});
@@ -142,6 +142,11 @@ const API = class GAppsApiServer {
       case "logout":
         const logoutWorker = this.validateUserToken_({fn: logoutUser_, requiresAuth: true, token: e.parameter?.token});
         data = logoutWorker({ token: e.parameter?.token });
+        break;
+      case "toggleTrainingAttendance":
+        const toggleAttendanceWorker = this.validateUserToken_({fn: toggleTrainingAttendance_, requiresAuth: true, token: e.parameter?.token});
+        const toggleAttendanceReq = JSON.parse(e.postData?.contents);
+        data = toggleAttendanceWorker({ trainingId: toggleAttendanceReq?.trainingId, token: e.parameter?.token });
         break;
       default:
         return { success: false, error: `Unknown GET action: ${action}` };
