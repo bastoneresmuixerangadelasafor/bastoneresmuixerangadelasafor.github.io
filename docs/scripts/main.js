@@ -1557,10 +1557,6 @@ function handleTrainingSave() {
       // If this was a new training, update the current ID
       if (!isEditing && response?.trainingId) {
         AppState.currentTrainingId = response.trainingId;
-      }
-
-      // Refresh training list if on planning view
-      if (AppState.currentView === "planning-training") {
         refreshPlanningTrainings();
       }
     })

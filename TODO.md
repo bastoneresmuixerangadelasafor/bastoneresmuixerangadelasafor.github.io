@@ -17,7 +17,7 @@
 - ~~Canviar nomenclatura de les variables a minúscula~~
 - ~~Move logic to CACHE service~~
 - User temp cache
-- Use triggers
+- ~~Use triggers~~
 - ~~Passi-ho bé~~
 - Ramonet
 - Share event email
@@ -25,7 +25,7 @@
 - ~~Menu lateral per damunt de tot~~
 - Improve event edition
 - ~~Inform of past training attendance~~
-- Refresh list after creating training
+- ~~Refresh list after creating training~~
 - Allow members to confirm/decline assistance to training
 - Check training session assistance
 - Edit members: All members or individually
