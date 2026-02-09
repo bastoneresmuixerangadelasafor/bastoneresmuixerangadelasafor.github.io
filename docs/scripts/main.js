@@ -3753,7 +3753,7 @@ function handleLogin() {
 /**
  * Handle logout action
  */
-function handleLogout() {
+function handleLogout({ message = "Has tancat la sessió", messageType = "success" } = {}) {
   // Show general loading screen
   showLoading(true);
 
@@ -3776,6 +3776,15 @@ function handleLogout() {
     mobileLogoutBtn.setAttribute("aria-busy", "true");
   }
 
+  const cleanupAfterLogout = function () { 
+    clearUserData();
+
+    updateAuthUI();
+    navigateTo("home-guest");
+    showToast(message, messageType);
+    showLoading(false);
+  };
+
   // Clear server-side session
   API.logoutUser()
     .then(function (result) {
@@ -3792,12 +3801,7 @@ function handleLogout() {
       }
 
       // Clear all local state and temporary user data
-      clearUserData();
-
-      updateAuthUI();
-      navigateTo("home-guest");
-      showToast("Has tancat la sessió", "success");
-      showLoading(false);
+      cleanupAfterLogout();
     })
     .catch(function (error) {
       // Restore button states
@@ -3813,12 +3817,7 @@ function handleLogout() {
       }
 
       // Still clear local state even if server call fails
-      clearUserData();
-
-      updateAuthUI();
-      navigateTo("home-guest");
-      showToast("Has tancat la sessió", "success");
-      showLoading(false);
+      cleanupAfterLogout();
     });
 }
 

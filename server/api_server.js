@@ -17,11 +17,11 @@ const API = class GAppsApiServer {
   constructor() {}
 
   static newResult_({ result }) {
-    return { success: true, result };
+    return { success: true, status: 200, result };
   }
 
-  static newError_({ error }) {
-    return { success: false, error };
+  static newError_({ error, status = 500 }) {
+    return { success: false, status, error };
   }
 
   static validateUserToken_({fn, token, requiresAuth = false, requiresAdmin = false}) {
@@ -30,10 +30,10 @@ const API = class GAppsApiServer {
       const user = getUserFromSession_({ token });
       console.log("Validated user:", user);
       if(requiresAuth && !user){
-        return {success: false, error: "L'operació requereix autenticació. Si us plau, inicia sessió."};
+        return API.newError_({ error: "L'operació requereix autenticació. Si us plau, inicia sessió.", status: 401 });
       }
       if(requiresAdmin && user?.roles?.indexOf("ADMIN") === -1){
-        return {success: false, error: "L'operació requereix permisos d'administrador."};
+        return API.newError_({ error: "L'operació requereix permisos d'administrador.", status: 403 });
       }
       return fn(...args);
     };
@@ -46,7 +46,7 @@ const API = class GAppsApiServer {
       }
     } catch (error) {
       console.error("Error handling GET request:", error);
-      return { success: false, error: error.message };
+      return API.newError_({ error: error.message });
     }
   }
 
@@ -65,7 +65,7 @@ const API = class GAppsApiServer {
       }
     } catch (error) {
       console.error("Error handling POST request:", error);
-      return { success: false, error: error.message };
+      return API.newError_({ error: error.message, status: 405 });
     }
   }
 
@@ -110,7 +110,7 @@ const API = class GAppsApiServer {
         data = audioWorker({ audioId: e.parameter?.audioId });
         break;
       default:
-        return { success: false, error: `Unknown GET action: ${action}` };
+        return API.newError_({ error: `Unknown GET action: ${action}`, status:404 });
     }
 
     console.log("Data:", data);
@@ -149,7 +149,7 @@ const API = class GAppsApiServer {
         data = toggleAttendanceWorker({ trainingId: toggleAttendanceReq?.trainingId, token: e.parameter?.token });
         break;
       default:
-        return { success: false, error: `Unknown GET action: ${action}` };
+        return API.newError_({ error: `Unknown POST action: ${action}`, status:404 });
     }
 
     return data;
@@ -180,7 +180,7 @@ const API = class GAppsApiServer {
         data = saveTrainingWorker({ training: trainingRequest?.training });
         break;
       default:
-        return { success: false, error: `Unknown GET action: ${action}` };
+        return API.newError_({ error: `Unknown PUT action: ${action}`, status:404 });
     }
 
     return data;
@@ -199,7 +199,7 @@ const API = class GAppsApiServer {
         });
         break;
       default:
-        return { success: false, error: `Unknown GET action: ${action}` };
+        return API.newError_({ error: `Unknown PATCH action: ${action}`, status:404 });
     }
 
     return data;
@@ -212,7 +212,7 @@ const API = class GAppsApiServer {
     }
 
     if (data == null) {
-      return { success: false, error: `Unknown DELETE action: ${action}` };
+      return API.newError_({ error: `Unknown DELETE action: ${action}`, status:404 });
     }
 
     return data;

@@ -3,23 +3,19 @@ function getMembers_({forceRefresh}) {
 	
 	try {
 		// Reload from database if force refresh is requested	
-		return {
-      success: true,
+		return API.newResult_({
       result: forceRefresh ? CACHE.retrieveMembersFromDB() : CACHE.getMembers(),
-    };
+    });
 	} catch (error) {
 		console.log('Error getting members: ' + error.toString());
-		return {
-      success: false, 
-      error: error.toString(),
-    };
+		return API.newError_({ error: error.toString() });
 	}
 }
 
 function saveMember_({member}) {
 	try {
 		if (!member) {
-			return { success: false, error: 'Dades de membre invàlides' };
+			return API.newError_({ error: 'Dades de membre invàlides' });
 		}
 
 		// Check if this is a new member (no ID or isNew flag)
@@ -36,7 +32,7 @@ function saveMember_({member}) {
 		});
 
 		if (memberIndex === -1) {
-			return { success: false, error: 'Membre no trobat' };
+			return API.newError_({ error: 'Membre no trobat' });
 		}
 
 		// Capture old email before update to invalidate cache if email changes
@@ -74,7 +70,7 @@ function saveMember_({member}) {
 		}
 
 		if (rowIndex === -1) {
-			return { success: false, error: 'Membre no trobat al full de càlcul' };
+			return API.newError_({ error: 'Membre no trobat al full de càlcul' });
 		}
 
 		// Prepare the row data
@@ -106,17 +102,17 @@ function saveMember_({member}) {
 
 		console.log('Member updated and persisted: ' + JSON.stringify(members[memberIndex]));
 
-		return { success: true, result: {member: MEMBERS[memberIndex]} };
+		return API.newResult_({ result: {member: MEMBERS[memberIndex]} });
 	} catch (error) {
 		console.log('Error saving member: ' + error.toString());
-		return { success: false, error: error.toString() };
+		return API.newError_({ error: error.toString() });
 	}
 }
 
 function createNewMember_(memberData) {
 	try {
 		if (!memberData.name || !memberData.name.trim()) {
-			return { success: false, error: 'El nom del membre és obligatori' };
+			return API.newError_({ error: 'El nom del membre és obligatori' });
 		}
 
 		// Generate a new unique ID
@@ -163,17 +159,17 @@ function createNewMember_(memberData) {
 
 		console.log('New member created: ' + JSON.stringify(newMember));
 
-		return { success: true, result: { member: newMember } };
+		return API.newResult_({ result: { member: newMember } });
 	} catch (error) {
 		console.log('Error creating member: ' + error.toString());
-		return { success: false, error: error.toString() };
+		return API.newError_({ error: error.toString() });
 	}
 }
 
 function saveAllMembers_({members}) {
 	try {
 		if (!members || !Array.isArray(members)) {
-			return { success: false, error: 'Dades de membres invàlides' };
+			return API.newError_({ error: 'Dades de membres invàlides' });
 		}
 
 		const results = [];
@@ -189,18 +185,15 @@ function saveAllMembers_({members}) {
 		});
 
 		if (errors.length > 0) {
-			return {
-				success: false,
+			return API.newError_({
 				error: 'Alguns membres no s\'han pogut desar: ' + errors.map(function(e) { return e.error; }).join(', '),
-				savedMembers: results,
-				errors: errors
-			};
+			});
 		}
 
-		return { success: true, result: {members: results} };
+		return API.newResult_({ result: {members: results} });
 	} catch (error) {
 		console.log('Error saving all members: ' + error.toString());
-		return { success: false, error: error.toString() };
+		return API.newError_({ error: error.toString() });
 	}
 }
 

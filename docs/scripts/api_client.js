@@ -115,6 +115,9 @@ const API = new (class GAppsApiClient {
           let errorMessage = "Ha ocorregut un error en la petició. Si el problema persistix, contacta a l'administrador.";
           if (data) {
             errorMessage = data.error || data.message || errorMessage;
+            if(action !== 'logout' && data.status === 401) {
+              return handleLogout({ message: "La teua sessió ha caducat. Per favor, torna a iniciar sessió.", messageType: "error" });
+            }
           }
           reject(errorMessage);
         }
@@ -152,9 +155,12 @@ const API = new (class GAppsApiClient {
 
           if (!response.ok) {
             let errorMessage = `Error del servidor (${response.status}). Si el problema persistix, contacta a l'administrador.`;
-            if (response.status === 401 || response.status === 403) {
+            if (response.status === 401) {
+              return handleLogout({ message: "La teua sessió ha caducat. Per favor, torna a iniciar sessió." });
+            }
+            if (response.status === 403) {
               errorMessage =
-                "No tens permís per a realitzar esta operació. Potser la teua sessió ha caducat.";
+                "No tens permís per a realitzar esta operació.";
             }
             // In case of a redirect to a Google login page, the response might be opaque and we can't read the body.
             // For other errors, we can try to get more info.

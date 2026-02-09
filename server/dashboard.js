@@ -28,15 +28,14 @@ function getDashboardStats_() {
 }
 
 function getDefaultStats_() {
-  return {
-    success: true,
+  return API.newResult_({
     result: {
       projects: 3,
       tasks: 12,
       completed: 8,
       pending: 4,
     },
-  };
+  });
 }
 
 function updateDashboardStats_(stats) {
@@ -56,16 +55,10 @@ function updateDashboardStats_(stats) {
     
     props.setProperty(statsKey, JSON.stringify(updatedStats));
     
-    return {
-      success: true,
-      result: updatedStats
-    };
+    return API.newResult_({ result: updatedStats });
   } catch (error) {
     console.log('Error updating stats: ' + error.toString());
-    return {
-      success: false,
-      error: error.toString()
-    };
+    return API.newError_({ error: error.toString() });
   }
 }
 
@@ -148,16 +141,10 @@ function addActivity_(activity) {
     
     props.setProperty(activityKey, JSON.stringify(activities));
     
-    return {
-      success: true,
-      result: activities[0]
-    };
+    return API.newResult_({ result: activities[0] });
   } catch (error) {
     console.log('Error adding activity: ' + error.toString());
-    return {
-      success: false,
-      error: error.toString()
-    };
+    return API.newError_({ error: error.toString() });
   }
 }
 
@@ -174,15 +161,9 @@ function clearActivity_() {
     const activityKey = 'userActivity_' + email;
     props.deleteProperty(activityKey);
     
-    return {
-      success: true,
-      result: { message: 'Activity cleared' },
-    };
+    return API.newResult_({ result: { message: 'Activity cleared' } });
   } catch (error) {
     console.log('Error clearing activity: ' + error.toString());
-    return {
-      success: false,
-      error: error.toString()
-    };
+    return API.newError_({ error: error.toString() });
   }
 }

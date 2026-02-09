@@ -17,13 +17,13 @@ function loginWithEmailPassword_({ email, password }) {
     // Check if user exists
     const storedUser = users[email.toLowerCase()];
     if (!storedUser) {
-      return API.newError_({ error: "Correu electrònic o contrasenya incorrectes" });
+      return API.newError_({ error: "Correu electrònic o contrasenya incorrectes", status:400 });
     }
 
     // Verify password (using simple hash comparison)
     const hashedPassword = hashPassword_({ password });
     if (storedUser.passwordHash !== hashedPassword) {
-      return API.newError_({ error: "Correu electrònic o contrasenya incorrectes" });
+      return API.newError_({ error: "Correu electrònic o contrasenya incorrectes", status:400 });
     }
 
     // Find matching member from MEMBERS
@@ -398,7 +398,6 @@ function getUserProfile_({ email, forceRefresh } = {}) {
   }
 
   const profile = {
-    success: true,
     email: member.email,
     displayName: member.name || email.split("@")[0],
     alias: member.alias,

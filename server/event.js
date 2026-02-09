@@ -1,9 +1,6 @@
 function saveEvent_({event}) {
   if (!event || !event.name) {
-    return {
-      success: false,
-      error: 'El nom de l\'actuació és obligatori',
-    };
+    return API.newError_({ error: 'El nom de l\'actuació és obligatori' });
   }
   
   const spreadsheet = SpreadsheetApp.openById(EVENTS_SPREADSHEET_ID);
@@ -85,13 +82,12 @@ function saveEvent_({event}) {
   // Update the Llistat sheet with event name, date and meeting place
   updateEventsList_(spreadsheet, event.name, storedDatetime, storedMeetingPlace);
   
-  return {
-    success: true,
+  return API.newResult_({
     result: {
       message: isNewSheet ? 'Actuació creada correctament' : 'Actuació actualitzada correctament',
       sheetName: sheetName,
     },
-  };
+  });
 }
 
 /**
@@ -177,13 +173,10 @@ function getEvents_({forceRefresh}) {
       return dateB - dateA;
     });
 
-    return {success: true, result: sortedEvents};
+    return API.newResult_({ result: sortedEvents });
 	} catch (error) {
 		console.log('Error getting events: ' + error.toString());
-		return {
-      success: false, 
-      error: error.toString(),
-    };
+		return API.newError_({ error: error.toString() });
 	}
 }
 
@@ -209,15 +202,15 @@ function getTrainings_({forceRefresh}) {
       return result;
     });
     
-    return {success: true, result: sortedTrainings};
+    return API.newResult_({ result: sortedTrainings });
   } catch (error) {
     console.log('Error getting training sessions: ' + error.toString());
-    return {success: false, error: error.toString()};
+    return API.newError_({ error: error.toString() });
   }
 }
 
 function getTrainingById_({trainingId, token}) {
-  if (!trainingId) return { success: false, error: 'No s\'ha especificat l\'ID de l\'assaig.' };
+  if (!trainingId) return API.newError_({ error: 'No s\'ha especificat l\'ID de l\'assaig.' });
   
   try {
     const trainings = CACHE.getTrainings();
@@ -225,7 +218,7 @@ function getTrainingById_({trainingId, token}) {
     
     if (training === undefined) {
       console.log('Training session not found: ' + trainingId);
-      return { success: false, error: 'Training session not found: ' + trainingId };
+      return API.newError_({ error: 'Training session not found: ' + trainingId });
     }
     
     const result = {
@@ -236,19 +229,16 @@ function getTrainingById_({trainingId, token}) {
       description: training.description
     };
     
-    return {
-      success: true,
-      result: result,
-    };
+    return API.newResult_({ result: result });
   } catch (error) {
     console.log('Error getting training by ID: ' + error.toString());
-    return { success: false, error: error.toString() };
+    return API.newError_({ error: error.toString() });
   }
 }
 
 
 function getEventById_({eventId}) {
-  if (!eventId) return { success: false, error: 'No s\'ha especificat l\'ID de l\'esdeveniment.' };
+  if (!eventId) return API.newError_({ error: 'No s\'ha especificat l\'ID de l\'esdeveniment.' });
   
   try {
     const spreadsheet = SpreadsheetApp.openById(EVENTS_SPREADSHEET_ID);
@@ -256,11 +246,11 @@ function getEventById_({eventId}) {
     
     if (!sheet) {
       console.log('Event sheet not found: ' + eventId);
-      return { success: false, error: 'Event sheet not found: ' + eventId };
+      return API.newError_({ error: 'Event sheet not found: ' + eventId });
     }
     
     const data = sheet.getDataRange().getValues();
-    if (data.length < 3) return { success: false, error: 'Event data is incomplete' };
+    if (data.length < 3) return API.newError_({ error: 'Event data is incomplete' });
     
     // Parse header info
     const eventName = data[0][1] || '';
@@ -392,8 +382,7 @@ function getEventById_({eventId}) {
       diagrams.push(currentDance);
     }
     
-    return {
-      success: true,
+    return API.newResult_({
       result: {
         id: eventId,
         name: eventName,
@@ -401,10 +390,10 @@ function getEventById_({eventId}) {
         meetingPlace: eventMeetingPlace,
         diagrams: diagrams
       },
-    };
+    });
   } catch (error) {
     console.log('Error getting event by ID: ' + error.toString());
-    return { success: false, error: error.toString() };
+    return API.newError_({ error: error.toString() });
   }
 }
 
@@ -448,10 +437,7 @@ function formatEventSheet_(sheet, event) {
  */
 function saveTraining_({training}) {
   if (!training || !training.date) {
-    return {
-      success: false,
-      error: 'La data de l\'assaig és obligatòria',
-    };
+    return API.newError_({ error: 'La data de l\'assaig és obligatòria' });
   }
 
   try {
@@ -460,7 +446,7 @@ function saveTraining_({training}) {
     const data = sheet.getDataRange().getValues();
 
     if (!data || data.length < 2) {
-      return { success: false, error: 'No hi ha dades de entrenament' };
+      return API.newError_({ error: 'No hi ha dades de entrenament' });
     }
 
     // The training.date is the training ID (either existing or new)
@@ -521,19 +507,15 @@ function saveTraining_({training}) {
     // Invalidate cache so next read gets fresh data
     CACHE.addTraining({ training });
 
-    return {
-      success: true,
+    return API.newResult_({
       result: {
         message: 'Assaig actualitzat correctament',
         trainingId: trainingId,
       },
-    };
+    });
   } catch (error) {
     console.error('Error saving training:', error.toString());
-    return { 
-      success: false, 
-      error: 'Error desant l\'assaig: ' + error.toString() 
-    };
+    return API.newError_({ error: 'Error desant l\'assaig: ' + error.toString() });
   }
 }
 
@@ -547,12 +529,12 @@ function saveTraining_({training}) {
  */
 function toggleTrainingAttendance_({trainingId, token}) {
   if (!trainingId) {
-    return { success: false, error: 'La data de l\'assaig és obligatòria' };
+    return API.newError_({ error: 'La data de l\'assaig és obligatòria' });
   }
 
   const user = getUserFromSession_({ token });
   if (!user || !user.alias) {
-    return { success: false, error: 'No s\'ha pogut identificar l\'usuari.' };
+    return API.newError_({ error: 'No s\'ha pogut identificar l\'usuari.' });
   }
 
   try {
@@ -561,7 +543,7 @@ function toggleTrainingAttendance_({trainingId, token}) {
     const data = sheet.getDataRange().getValues();
 
     if (!data || data.length < 2) {
-      return { success: false, error: 'No hi ha dades d\'entrenament' };
+      return API.newError_({ error: 'No hi ha dades d\'entrenament' });
     }
 
     const headerRow = data[0];
@@ -575,7 +557,7 @@ function toggleTrainingAttendance_({trainingId, token}) {
     }
 
     if (dateColumn === -1) {
-      return { success: false, error: 'No s\'ha trobat l\'assaig: ' + trainingId };
+      return API.newError_({ error: 'No s\'ha trobat l\'assaig: ' + trainingId });
     }
 
     // Find the user's row by alias
@@ -588,7 +570,7 @@ function toggleTrainingAttendance_({trainingId, token}) {
     }
 
     if (userRow === -1) {
-      return { success: false, error: 'No s\'ha trobat el membre: ' + user.alias };
+      return API.newError_({ error: 'No s\'ha trobat el membre: ' + user.alias });
     }
 
     // Cycle through 3 states: empty → 'SI' → 'NO' → empty
@@ -619,20 +601,16 @@ function toggleTrainingAttendance_({trainingId, token}) {
     // Invalidate cache
     CACHE.retrieveTrainingsFromDB();
 
-    return {
-      success: true,
+    return API.newResult_({
       result: {
         trainingId: trainingId,
         status: newStatus,
         value: newValue,
         message: statusMessage,
       },
-    };
+    });
   } catch (error) {
     console.error('Error toggling training attendance:', error.toString());
-    return {
-      success: false,
-      error: 'Error actualitzant l\'assistència: ' + error.toString(),
-    };
+    return API.newError_({ error: 'Error actualitzant l\'assistència: ' + error.toString() });
   }
 }

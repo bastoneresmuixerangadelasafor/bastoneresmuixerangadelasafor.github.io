@@ -7,10 +7,10 @@ function getAudioById_({ audioId }) {
       // const mimeType = blob.getContentType();
       const audioData = 'data:audio/mpeg;base64,' + base64Data;
       
-      return { success: true, result: {audioData: audioData} };
+      return API.newResult_({ result: {audioData: audioData} });
     } catch (error){
       console.error("Error loading audio file:", error);
-      return { success: false, error: "Error al carregar el fitxer d'àudio." };
+      return API.newError_({ error: "Error al carregar el fitxer d'àudio." });
     }
   }
 }

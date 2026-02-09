@@ -120,7 +120,7 @@ const CACHE = new class GAppsServerCache {
       this.cache_.setProperty(NEXT_EVENT, nextEventDate);
     }
 
-    return {success: true, result: {eventData: nextEventDate }};
+    return API.newResult_({ result: {eventData: nextEventDate } });
   }
 
   retrieveEventsFromDB() {
@@ -195,7 +195,7 @@ const CACHE = new class GAppsServerCache {
       this.cache_.setProperty(NEXT_TRAINING, nextTrainingDate);
     }
 
-    return {success: true, result: {trainingData: nextTrainingDate ? dateToString_(new Date(nextTrainingDate)) : null}};
+    return API.newResult_({ result: {trainingData: nextTrainingDate ? dateToString_(new Date(nextTrainingDate)) : null} });
   }
 
   retrieveTrainingsFromDB() {
