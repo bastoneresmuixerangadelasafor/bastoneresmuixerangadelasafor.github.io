@@ -2252,7 +2252,7 @@ table tbody tr:last-child td {
 .login-info a,
 .signup-link,
 .register-link {
-  color: var(--bg-color);
+  color: #7c3aed;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s ease;
@@ -2262,7 +2262,38 @@ table tbody tr:last-child td {
 .login-info a:hover,
 .signup-link:hover,
 .register-link:hover {
+  color: #7c3aed;
+  text-decoration: underline;
+}
+
+/* Dark mode link styles */
+body.dark-mode .forgot-password-link,
+body.dark-mode .login-info a,
+body.dark-mode .signup-link,
+body.dark-mode .register-link {
   color: var(--bg-color);
+}
+
+body.dark-mode .forgot-password-link:hover,
+body.dark-mode .login-info a:hover,
+body.dark-mode .signup-link:hover,
+body.dark-mode .register-link:hover {
+  color: var(--bg-color);
+  text-decoration: underline;
+}
+
+body.dark-mode dialog .forgot-password-link,
+body.dark-mode dialog .login-info a,
+body.dark-mode dialog .signup-link,
+body.dark-mode dialog .register-link {
+  color: var(--text-color);
+}
+
+body.dark-mode dialog .forgot-password-link:hover,
+body.dark-mode dialog .login-info a:hover,
+body.dark-mode dialog .signup-link:hover,
+body.dark-mode dialog .register-link:hover {
+  color: var(--text-color);
   text-decoration: underline;
 }
 

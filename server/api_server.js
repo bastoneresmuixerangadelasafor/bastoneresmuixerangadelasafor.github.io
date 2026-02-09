@@ -83,7 +83,7 @@ const API = class GAppsApiServer {
         break;
       case "events":
         const eventsWorker = this.validateUserToken_({fn: getEvents_, requiresAuth: true, token: e.parameter?.token});
-        data = eventsWorker();
+        data = eventsWorker({ forceRefresh: e.parameter?.forceRefresh });
         break;
       case "event":
         const eventWorker = this.validateUserToken_({fn: getEventById_, requiresAuth: true, token: e.parameter?.token});
@@ -95,7 +95,7 @@ const API = class GAppsApiServer {
         break;
       case "trainings":
         const trainingsWorker = this.validateUserToken_({fn: getTrainings_, requiresAuth: true, token: e.parameter?.token});
-        data = trainingsWorker();
+        data = trainingsWorker({ forceRefresh: e.parameter?.forceRefresh });
         break;
       case "training":
         const trainingWorker = this.validateUserToken_({fn: getTrainingById_, requiresAuth: true, token: e.parameter?.token});

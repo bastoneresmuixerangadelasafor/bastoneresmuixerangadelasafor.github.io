@@ -165,7 +165,7 @@ function padDataRows_(data, maxCols) {
   });
 }
 
-function getEvents_(forceRefresh) {
+function getEvents_({forceRefresh}) {
   forceRefresh = forceRefresh || false;
 	
 	try {
@@ -187,7 +187,7 @@ function getEvents_(forceRefresh) {
 	}
 }
 
-function getTrainings_(forceRefresh) {
+function getTrainings_({forceRefresh}) {
   forceRefresh = forceRefresh || false;
   
   try {

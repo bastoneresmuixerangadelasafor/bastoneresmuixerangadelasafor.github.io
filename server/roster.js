@@ -1,4 +1,4 @@
-function getMembers_(forceRefresh) {
+function getMembers_({forceRefresh}) {
 	forceRefresh = forceRefresh || false;
 	
 	try {

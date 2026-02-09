@@ -16,7 +16,7 @@
 
 1. **Server Layer** (`server/*.js`): GAS functions that read/write Google Sheets
 2. **Cache Layer** (`CACHE` object): Dual-tier caching using CacheService (temp) + PropertiesService (persistent)
-3. **API Layer** (`server/api.js`): REST-like interface with token validation
+3. **API Layer** (`server/api_server.js`): REST-like interface with token validation
 4. **Frontend** (`docs/scripts/main.js`): SPA routing, state management via `AppState` global
 5. **Templates** (`templates/_includes/*.njk`): Nunjucks markup + inline JavaScript for events management
 

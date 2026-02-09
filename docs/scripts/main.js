@@ -1558,6 +1558,11 @@ function handleTrainingSave() {
       if (!isEditing && response?.trainingId) {
         AppState.currentTrainingId = response.trainingId;
       }
+
+      // Refresh training list if on planning view
+      if (AppState.currentView === "planning-training") {
+        refreshPlanningTrainings();
+      }
     })
     .catch(function (error) {
       showLoading(false);

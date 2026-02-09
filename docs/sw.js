@@ -7,7 +7,7 @@ const ALWAYS_FRESH = [
   '/index.html',
   '/manifest.webmanifest',
   '/scripts/main.js',
-  '/scripts/api.js',
+  '/scripts/api_client.js',
   '/scripts/dances.js',
   '/styles/main.css',
   '/styles/navbar.css'
