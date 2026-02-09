@@ -1003,16 +1003,22 @@ function renderPlanningTrainingsList(trainings) {
     // For upcoming trainings, show clickable confirmation status based on user attendance
     let confirmationStatusHtml = "";
     if (!isPast && AppState.currentUser) {
-      // Get the user's status for this training by checking the spreadsheet value
-      // Since we don't have per-cell data here, we'll store it differently
-      // For now, we check if user is in the assistance list
-      const userAttendanceStatus = training.attendanceStatus || training.userStatus || 'not-confirmed';
-      const statusClass = `training-confirmation ${userAttendanceStatus}`;
+      // Calculate user's status from attendance and rejections lists
+      const isConfirmed = (training.assistance || []).some(function(attendee) {
+        return attendee === AppState.currentUser.alias;
+      });
+      const isRejected = (training.rejections || []).some(function(rejector) {
+        return rejector === AppState.currentUser.alias;
+      });
+      
+      let statusClass = 'training-confirmation not-confirmed';
       let statusText = '? No confirmat';
       
-      if (userAttendanceStatus === 'confirmed') {
+      if (isConfirmed) {
+        statusClass = 'training-confirmation confirmed';
         statusText = '✔ Confirmat';
-      } else if (userAttendanceStatus === 'not-attending') {
+      } else if (isRejected) {
+        statusClass = 'training-confirmation not-attending';
         statusText = '✕ No assistiré';
       }
       

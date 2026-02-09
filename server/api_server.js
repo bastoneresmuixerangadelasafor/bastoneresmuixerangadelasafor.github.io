@@ -95,11 +95,11 @@ const API = class GAppsApiServer {
         break;
       case "trainings":
         const trainingsWorker = this.validateUserToken_({fn: getTrainings_, requiresAuth: true, token: e.parameter?.token});
-        data = trainingsWorker({ forceRefresh: e.parameter?.forceRefresh, token: e.parameter?.token });
+        data = trainingsWorker({ forceRefresh: e.parameter?.forceRefresh });
         break;
       case "training":
         const trainingWorker = this.validateUserToken_({fn: getTrainingById_, requiresAuth: true, token: e.parameter?.token});
-        data = trainingWorker({ trainingId: e.parameter?.trainingId, token: e.parameter?.token });
+        data = trainingWorker({ trainingId: e.parameter?.trainingId });
         break;
       case "nextTraining":
         const nextTrainingWorker = this.validateUserToken_({fn: (args) => CACHE.getNextTraining(args), requiresAuth: true, token: e.parameter?.token});

@@ -195,7 +195,7 @@ const CACHE = new class GAppsServerCache {
       this.cache_.setProperty(NEXT_TRAINING, nextTrainingDate);
     }
 
-    return {success: true, result: {trainingData: nextTrainingDate ? dateToString_(nextTrainingDate) : null}};
+    return {success: true, result: {trainingData: nextTrainingDate ? dateToString_(new Date(nextTrainingDate)) : null}};
   }
 
   retrieveTrainingsFromDB() {
@@ -214,15 +214,19 @@ const CACHE = new class GAppsServerCache {
 
     dates.forEach((date, index) => {
       const attendees = [];
+      const rejections = [];
       for (let i = 1; i < data.length; i++) {
         const memberName = data[i][0];
         const attendance = data[i][index + 1]; // +1 because dates are sliced from index 1
         if (memberName && attendance === 'SI') {
           attendees.push(memberName);
+        } else if (memberName && attendance === 'NO') {
+          rejections.push(memberName);
         }
       }
       trainingsByDate[date] = {
         attendees: attendees,
+        rejections: rejections,
         description: headerNotes[index] || ''
       };
     });

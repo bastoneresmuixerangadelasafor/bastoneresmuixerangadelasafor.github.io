@@ -27,5 +27,6 @@
 - ~~Inform of past training attendance~~
 - ~~Refresh list after creating training~~
 - ~~Allow members to confirm/decline assistance to training~~
+- Update local storage after changing assistance
 - Check training session assistance
 - Edit members: All members or individually

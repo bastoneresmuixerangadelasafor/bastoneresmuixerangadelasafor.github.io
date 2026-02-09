@@ -187,13 +187,12 @@ function getEvents_({forceRefresh}) {
 	}
 }
 
-function getTrainings_({forceRefresh, token}) {
+function getTrainings_({forceRefresh}) {
   forceRefresh = forceRefresh || false;
   
   try {
     // Reload from database if force refresh is requested
     const trainings = forceRefresh ? CACHE.retrieveTrainingsFromDB() : CACHE.getTrainings();
-    const user = getUserFromSession_({ token });
     
     const sortedTrainings = Object.keys(trainings)
     .sort(function(a,b) { return a > b })
@@ -203,15 +202,9 @@ function getTrainings_({forceRefresh, token}) {
         id: k,
         date: k,
         assistance: training.attendees,
+        rejections: training.rejections || [],
         description: training.description,
       };
-      
-      // Add per-user status if user is authenticated
-      if (user && user.alias) {
-        // Get user's status for this training from the spreadsheet
-        const userStatus = getTrainingUserStatus_({ trainingId: k, userAlias: user.alias });
-        result.userStatus = userStatus;
-      }
       
       return result;
     });
@@ -239,17 +232,9 @@ function getTrainingById_({trainingId, token}) {
       id: trainingId,
       date: trainingId,
       assistance: training.attendees,
+      rejections: training.rejections || [],
       description: training.description
     };
-    
-    // Add per-user status if user is authenticated
-    if (token) {
-      const user = getUserFromSession_({ token });
-      if (user && user.alias) {
-        const userStatus = getTrainingUserStatus_({ trainingId: trainingId, userAlias: user.alias });
-        result.userStatus = userStatus;
-      }
-    }
     
     return {
       success: true,
@@ -261,49 +246,6 @@ function getTrainingById_({trainingId, token}) {
   }
 }
 
-
-/**
- * Get the current user's status for a specific training.
- * @param {string} trainingId - The training date/ID
- * @param {string} userAlias - The user's alias
- * @returns {string} 'confirmed' (SI), 'not-attending' (NO), or 'not-confirmed' (empty)
- */
-function getTrainingUserStatus_({trainingId, userAlias}) {
-  try {
-    const spreadsheet = SpreadsheetApp.openById(TRAINING_SPREADSHEET_ID);
-    const sheet = spreadsheet.getSheetByName(ASSISTANCE_SHEET_NAME);
-    const data = sheet.getDataRange().getValues();
-
-    if (!data || data.length < 2) return 'not-confirmed';
-
-    const headerRow = data[0];
-    let dateColumn = -1;
-
-    for (let i = 1; i < headerRow.length; i++) {
-      if (String(headerRow[i]) === String(trainingId)) {
-        dateColumn = i;
-        break;
-      }
-    }
-
-    if (dateColumn === -1) return 'not-confirmed';
-
-    // Find the user's row by alias
-    for (let i = 1; i < data.length; i++) {
-      if (String(data[i][0]).trim() === String(userAlias).trim()) {
-        const cellValue = String(data[i][dateColumn]).trim();
-        if (cellValue === 'SI') return 'confirmed';
-        if (cellValue === 'NO') return 'not-attending';
-        return 'not-confirmed';
-      }
-    }
-
-    return 'not-confirmed';
-  } catch (error) {
-    console.error('Error getting training user status:', error.toString());
-    return 'not-confirmed';
-  }
-}
 
 function getEventById_({eventId}) {
   if (!eventId) return { success: false, error: 'No s\'ha especificat l\'ID de l\'esdeveniment.' };
