@@ -101,20 +101,26 @@ const CACHE = new class GAppsServerCache {
     return this.retrieveEventsFromDB();
   }
 
-  getNextEvent(){
-    const events = CACHE.getEvents();
-    const now = new Date();
-    
-    // Filter events that are in the future and sort by date
-    const futureEvents = events
-      .filter(event => {
-      if (!event.date) return false;
-      const eventDate = new Date(event.date);
-      return eventDate > now;
-      })
-      .sort((a, b) => new Date(a.date) - new Date(b.date));
-    
-    return {success: true, result: {eventData: futureEvents.length > 0 ? futureEvents[0].date : null }};
+  getNextEvent({forceRefresh = false} = {}) {
+    let nextEventDate = !forceRefresh && this.cache_.getProperty(NEXT_EVENT);
+    if(!nextEventDate) {
+      const events = CACHE.getEvents();
+      const now = new Date();
+      
+      // Filter events that are in the future and sort by date
+      const futureEvents = events
+        .filter(event => {
+        if (!event.date) return false;
+        const eventDate = new Date(event.date);
+        return eventDate > now;
+        })
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+      
+      nextEventDate = futureEvents.length > 0 ? futureEvents[0].date : null;
+      this.cache_.setProperty(NEXT_EVENT, nextEventDate);
+    }
+
+    return {success: true, result: {eventData: nextEventDate }};
   }
 
   retrieveEventsFromDB() {
@@ -173,18 +179,22 @@ const CACHE = new class GAppsServerCache {
     this.cache_.setProperty(TRAINING_CACHE, JSON.stringify(trainings));
   }
 
-  getNextTraining(){
-    const trainings = CACHE.getTrainings();
-    const now = new Date();
-    let nextTrainingDate = null;  
-    for (const dateStr in trainings) {
-      const trainingDate = new Date(dateStr); 
-      if (trainingDate > now) {
-        if (nextTrainingDate === null || trainingDate < nextTrainingDate) {
-          nextTrainingDate = trainingDate;
+  getNextTraining({forceRefresh = false} = {}) {
+    let nextTrainingDate = !forceRefresh && this.cache_.getProperty(NEXT_TRAINING);
+    if(!nextTrainingDate) {
+      const trainings = CACHE.getTrainings();
+      const now = new Date();
+      for (const dateStr in trainings) {
+        const trainingDate = new Date(dateStr); 
+        if (trainingDate > now) {
+          if (nextTrainingDate === null || trainingDate < nextTrainingDate) {
+            nextTrainingDate = trainingDate;
+          }
         }
       }
+      this.cache_.setProperty(NEXT_TRAINING, nextTrainingDate);
     }
+
     return {success: true, result: {trainingData: nextTrainingDate ? dateToString_(nextTrainingDate) : null}};
   }
 

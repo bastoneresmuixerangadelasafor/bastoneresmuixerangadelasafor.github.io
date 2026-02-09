@@ -90,7 +90,7 @@ const API = class GAppsApiServer {
         data = eventWorker({ eventId: e.parameter?.eventId });
         break;
       case "nextEvent":
-        const nextEventWorker = this.validateUserToken_({fn: CACHE.getNextEvent, requiresAuth: true, token: e.parameter?.token});
+        const nextEventWorker = this.validateUserToken_({fn: (args) => CACHE.getNextEvent(args), requiresAuth: true, token: e.parameter?.token});
         data = nextEventWorker();
         break;
       case "trainings":
@@ -102,7 +102,7 @@ const API = class GAppsApiServer {
         data = trainingWorker({ trainingId: e.parameter?.trainingId });
         break;
       case "nextTraining":
-        const nextTrainingWorker = this.validateUserToken_({fn: CACHE.getNextTraining, requiresAuth: true, token: e.parameter?.token});
+        const nextTrainingWorker = this.validateUserToken_({fn: (args) => CACHE.getNextTraining(args), requiresAuth: true, token: e.parameter?.token});
         data = nextTrainingWorker();
         break;
       case "audio":

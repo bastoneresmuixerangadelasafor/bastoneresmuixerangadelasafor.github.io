@@ -18,6 +18,8 @@ assistance_sheet_name: Assistencia
 member_cache: MEMBERS
 event_cache: EVENTS
 training_cache: TRAININGS
+next_event: NEXT_EVENT
+next_training: NEXT_TRAINING
 user_creds: users_credentials
 user_session: users_session
 session_token: session_token
