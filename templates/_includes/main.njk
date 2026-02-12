@@ -1,4 +1,4 @@
-﻿<!-- Main Content Area -->
+<!-- Main Content Area -->
 <main id="main-content" class="main-content">
 
     <!-- Home View -->
@@ -190,13 +190,16 @@
                         <input type="password" id="login-password" name="password"
                             placeholder="Introdueix la teua contrasenya" autocomplete="current-password" required>
                     </div>
+                    <!--
                     <div class="form-group form-actions-login">
                         <a href="#" id="forgot-password-link" class="forgot-password-link">Has oblidat la
                             contrasenya?</a>
                     </div>
+                    -->
                     <button type="submit" class="btn btn-primary btn-block" id="email-login-btn">Iniciar
                         sessió</button>
 
+                    <!--
                     <div class="divider"><span>o</span></div>
 
                     <button type="button" class="btn btn-mail btn-block" id="mail-login-btn"
@@ -209,6 +212,7 @@
                         </span>
                         <span>Enviar accés al correu</span>
                     </button>
+                    -->
                 </form>
                 <p class="login-info">
                     No tens un compte? <a href="#" id="signup-link" class="signup-link">Registra't</a>
@@ -373,6 +377,21 @@
                     <h3>Balls assajats</h3>
                 </div>
                 <div id="training-detected-dances" class="training-detected-dances-chips">
+                </div>
+            </div>
+            <!-- Member Attendance List (Admin Only) -->
+            <div class="training-member-attendance admin-only" id="training-member-attendance-section" style="display: none;">
+                <div class="training-member-attendance-header">
+                    <button id="training-attendance-toggle" class="attendance-toggle-btn" aria-expanded="false">
+                        <span class="toggle-arrow">▶</span>
+                        <h3>Assistència de membres</h3>
+                    </button>
+                </div>
+                <div id="training-member-attendance-list" class="training-member-attendance-list collapsed">
+                    <div class="training-member-attendance-loading" id="training-members-loader">
+                        <div class="spinner"></div>
+                        <span>Carregant membres...</span>
+                    </div>
                 </div>
             </div>
             <!-- Floating save button (admin only) -->
@@ -796,7 +815,7 @@
                         ctx.strokeRect(x, y, squareWidth, squareHeight);
 
                         // Draw position tag in bottom right corner of each cell (admin only)
-                        const userRoles = (AppState && AppState.currentUser && AppState.currentUser.roles) || [];
+                        const userRoles = (APP && APP.currentUser && APP.currentUser.roles) || [];
                         const isAdmin = userRoles.includes('ADMIN');
                         if (isAdmin) {
                             const cellOrder = row * cols + col + 1;
@@ -887,7 +906,7 @@
             const legendStyle = showLegend ? '' : 'display: none;';
 
             // Check if user is admin
-            const userRoles = (AppState && AppState.currentUser && AppState.currentUser.roles) || [];
+            const userRoles = (APP && APP.currentUser && APP.currentUser.roles) || [];
             const isAdmin = userRoles.includes('ADMIN');
             const adminOnlyStyle = isAdmin ? '' : 'display: none;';
 
@@ -1071,11 +1090,11 @@ ${descriptionHtml}
                             window.selectedGroup = g;
                             window.selectedSquare = idx;
 
-                            if (!membersData || membersData.length === 0) {
+                            if (!MEMBERS.membersData || MEMBERS.membersData.length === 0) {
                                 setDialogLoading(true);
-                                dialog.showModal();
+                                showDialogWithBackdrop(dialog);
                                 const checkInterval = setInterval(function () {
-                                    if (membersData && membersData.length > 0) {
+                                    if (MEMBERS.membersData && MEMBERS.membersData.length > 0) {
                                         clearInterval(checkInterval);
                                         setDialogLoading(false);
                                         populatePersonList(diagramId, g, idx);
@@ -1169,7 +1188,7 @@ ${descriptionHtml}
                 }
 
                 // Filter members: only active for future events, all for past events
-                const personAliases = membersData
+                const personAliases = MEMBERS.membersData
                     .filter(m => isEventInPast || m.active)
                     .map(m => m.alias)
                     .filter(Boolean);
@@ -1194,7 +1213,7 @@ ${descriptionHtml}
 
                 personCombo.value = diagram.groups[g][squareIdx] || '';
                 clearPersonBtn.style.display = diagram.groups[g][squareIdx] ? 'block' : 'none';
-                dialog.showModal();
+                showDialogWithBackdrop(dialog);
                 // Focus and show dropdown
                 setTimeout(function () {
                     personCombo.focus();
@@ -1248,7 +1267,7 @@ ${descriptionHtml}
                             }
                         }
 
-                        dialog.close();
+                        closeDialogWithBackdrop(dialog);
                     }
                 }
             }
@@ -1535,7 +1554,7 @@ ${descriptionHtml}
             // Close dialog when clicking outside or pressing Escape
             dialog.addEventListener('click', function (e) {
                 if (e.target === dialog) {
-                    dialog.close();
+                    closeDialogWithBackdrop(dialog);
                 }
             });
 
@@ -2108,26 +2127,26 @@ ${descriptionHtml}
                 }
 
                 // Check type filter
-                if (typeof membersTypeFilterValue !== 'undefined' && membersTypeFilterValue) {
-                    const typeLabel = membersTypeFilterValue === 'ADULT' ? 'Adults' : 'Xiquets/es';
+                if (typeof MEMBERS !== 'undefined' && MEMBERS.membersTypeFilterValue) {
+                    const typeLabel = MEMBERS.membersTypeFilterValue === 'ADULT' ? 'Adults' : 'Xiquets/es';
                     parts.push(typeLabel);
                 }
 
                 // Check rols filter
-                if (typeof membersRolsFilterValue !== 'undefined' && membersRolsFilterValue) {
-                    const rolLabel = membersRolsFilterValue === 'ADMIN' ? 'amb ADMIN' : 'sense ADMIN';
+                if (typeof MEMBERS !== 'undefined' && MEMBERS.membersRolsFilterValue) {
+                    const rolLabel = MEMBERS.membersRolsFilterValue === 'ADMIN' ? 'amb ADMIN' : 'sense ADMIN';
                     parts.push(rolLabel);
                 }
 
                 // Check access filter
-                if (typeof membersAccessFilterValue !== 'undefined' && membersAccessFilterValue) {
-                    const accessLabel = membersAccessFilterValue === 'HAS_ACCESS' ? 'amb accés a altres' : 'sense accés a altres';
+                if (typeof MEMBERS !== 'undefined' && MEMBERS.membersAccessFilterValue) {
+                    const accessLabel = MEMBERS.membersAccessFilterValue === 'HAS_ACCESS' ? 'amb accés a altres' : 'sense accés a altres';
                     parts.push(accessLabel);
                 }
 
                 // Check active filter
-                if (typeof membersActiveFilterValue !== 'undefined' && membersActiveFilterValue) {
-                    const activeLabel = membersActiveFilterValue === 'true' ? 'actius' : 'inactius';
+                if (typeof MEMBERS !== 'undefined' && MEMBERS.membersActiveFilterValue) {
+                    const activeLabel = MEMBERS.membersActiveFilterValue === 'true' ? 'actius' : 'inactius';
                     parts.push(activeLabel);
                 }
 
@@ -2153,8 +2172,8 @@ ${descriptionHtml}
                 });
 
                 // Clear type filter
-                if (typeof membersTypeFilterValue !== 'undefined') {
-                    membersTypeFilterValue = '';
+                if (typeof MEMBERS !== 'undefined') {
+                    MEMBERS.membersTypeFilterValue = '';
                 }
                 if (typeFilterDropdown) {
                     const options = typeFilterDropdown.querySelectorAll('.type-filter-option');
@@ -2165,8 +2184,8 @@ ${descriptionHtml}
                 if (typeFilterToggle) typeFilterToggle.classList.remove('active');
 
                 // Clear rols filter
-                if (typeof membersRolsFilterValue !== 'undefined') {
-                    membersRolsFilterValue = '';
+                if (typeof MEMBERS !== 'undefined') {
+                    MEMBERS.membersRolsFilterValue = '';
                 }
                 if (rolsFilterDropdown) {
                     const options = rolsFilterDropdown.querySelectorAll('.type-filter-option');
@@ -2177,8 +2196,8 @@ ${descriptionHtml}
                 if (rolsFilterToggle) rolsFilterToggle.classList.remove('active');
 
                 // Clear access filter
-                if (typeof membersAccessFilterValue !== 'undefined') {
-                    membersAccessFilterValue = '';
+                if (typeof MEMBERS !== 'undefined') {
+                    MEMBERS.membersAccessFilterValue = '';
                 }
                 if (accessFilterDropdown) {
                     const options = accessFilterDropdown.querySelectorAll('.type-filter-option');
@@ -2189,8 +2208,8 @@ ${descriptionHtml}
                 if (accessFilterToggle) accessFilterToggle.classList.remove('active');
 
                 // Clear active filter
-                if (typeof membersActiveFilterValue !== 'undefined') {
-                    membersActiveFilterValue = '';
+                if (typeof MEMBERS !== 'undefined') {
+                    MEMBERS.membersActiveFilterValue = '';
                 }
                 if (activeFilterDropdown) {
                     const options = activeFilterDropdown.querySelectorAll('.type-filter-option');
@@ -2201,8 +2220,8 @@ ${descriptionHtml}
                 if (activeFilterToggle) activeFilterToggle.classList.remove('active');
 
                 // Re-render and update summary
-                if (typeof renderMembersTable === 'function') {
-                    renderMembersTable();
+                if (typeof MEMBERS !== 'undefined' && typeof MEMBERS._renderMembersTable === 'function') {
+                    MEMBERS._renderMembersTable();
                 }
                 updateFilterSummary();
             }
@@ -2303,10 +2322,10 @@ ${descriptionHtml}
                         });
                         this.classList.add('selected');
 
-                        // Set global filter value and re-render
-                        if (typeof membersTypeFilterValue !== 'undefined') {
-                            membersTypeFilterValue = selectedValue;
-                            renderMembersTable();
+                        // Set filter value and re-render
+                        if (typeof MEMBERS !== 'undefined') {
+                            MEMBERS.membersTypeFilterValue = selectedValue;
+                            MEMBERS._renderMembersTable();
                         }
 
                         // Update active state for type filter
@@ -2334,10 +2353,10 @@ ${descriptionHtml}
                         });
                         this.classList.add('selected');
 
-                        // Set global filter value and re-render
-                        if (typeof membersRolsFilterValue !== 'undefined') {
-                            membersRolsFilterValue = selectedValue;
-                            renderMembersTable();
+                        // Set filter value and re-render
+                        if (typeof MEMBERS !== 'undefined') {
+                            MEMBERS.membersRolsFilterValue = selectedValue;
+                            MEMBERS._renderMembersTable();
                         }
 
                         // Update active state for rols filter
@@ -2365,10 +2384,10 @@ ${descriptionHtml}
                         });
                         this.classList.add('selected');
 
-                        // Set global filter value and re-render
-                        if (typeof membersAccessFilterValue !== 'undefined') {
-                            membersAccessFilterValue = selectedValue;
-                            renderMembersTable();
+                        // Set filter value and re-render
+                        if (typeof MEMBERS !== 'undefined') {
+                            MEMBERS.membersAccessFilterValue = selectedValue;
+                            MEMBERS._renderMembersTable();
                         }
 
                         // Update active state for access filter
@@ -2396,10 +2415,10 @@ ${descriptionHtml}
                         });
                         this.classList.add('selected');
 
-                        // Set global filter value and re-render
-                        if (typeof membersActiveFilterValue !== 'undefined') {
-                            membersActiveFilterValue = selectedValue;
-                            renderMembersTable();
+                        // Set filter value and re-render
+                        if (typeof MEMBERS !== 'undefined') {
+                            MEMBERS.membersActiveFilterValue = selectedValue;
+                            MEMBERS._renderMembersTable();
                         }
 
                         // Update active state for active filter
@@ -2455,12 +2474,12 @@ ${descriptionHtml}
                 });
             }
 
-            // Global edit button - calls startEditAllMembers from javascript.html
+            // Global edit button - calls startEditAllMembers from MEMBERS
             const editAllBtn = document.getElementById('edit-all-members-btn');
             if (editAllBtn) {
                 editAllBtn.addEventListener('click', function () {
-                    if (typeof startEditAllMembers === 'function') {
-                        startEditAllMembers();
+                    if (typeof MEMBERS !== 'undefined' && typeof MEMBERS.startEditAllMembers === 'function') {
+                        MEMBERS.startEditAllMembers();
                     }
                 });
             }

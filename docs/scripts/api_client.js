@@ -2,9 +2,9 @@
 const API = new (class GAppsApiClient {
   constructor() {}
 
-  _getCacheKey({ action, parameters } = {}) {
+  _getCacheKey({ cache, parameters } = {}) {
     const params = parameters ? Object.fromEntries(Object.entries(parameters).filter(([key]) => key !== "forceRefresh")) : {};
-    const cacheKey = `${action}${params && Object.keys(params).length > 0 ? `_${new URLSearchParams(params).toString()}` : ""}`;
+    const cacheKey = `${cache}${params && Object.keys(params).length > 0 ? `_${new URLSearchParams(params).toString()}` : ""}`;
     return cacheKey;
   }
 
@@ -79,7 +79,7 @@ const API = new (class GAppsApiClient {
     }
   }
 
-  _performRequest({ action, method = "GET", body = null, parameters, requiresAuth = false, useCache = false } = {}) {
+  _performRequest({ action, method = "GET", body = null, parameters, requiresAuth = false, cache = null } = {}) {
     return new Promise(async (resolve, reject) => {
       if(!action) {
         return reject("No s'ha especificat cap acció.");
@@ -91,8 +91,8 @@ const API = new (class GAppsApiClient {
         return reject("L'operació requereix autenticació. Si us plau, inicia sessió.");
       }
 
-      if (useCache) {
-        const cacheKey = this._getCacheKey({ action, parameters });
+      if (cache && method === "GET") {
+        const cacheKey = this._getCacheKey({ cache, parameters });
         const savedData = this._read({ key: cacheKey });
         if (savedData) {
           return resolve(savedData);
@@ -108,7 +108,7 @@ const API = new (class GAppsApiClient {
       const token = this.getToken() || "";
       const returnResult = (data) => {
         if (data?.success) {
-          const cacheKey = this._getCacheKey({ action, parameters });
+          const cacheKey = this._getCacheKey({ cache, parameters });
           this._write({ key: cacheKey, data: data.result });
           resolve(data.result);
         } else {
@@ -116,7 +116,7 @@ const API = new (class GAppsApiClient {
           if (data) {
             errorMessage = data.error || data.message || errorMessage;
             if(action !== 'logout' && data.status === 401) {
-              return handleLogout({ message: "La teua sessió ha caducat. Per favor, torna a iniciar sessió.", messageType: "error" });
+              return AUTH.handleLogout({ message: "La teua sessió ha caducat. Per favor, torna a iniciar sessió.", messageType: "error" });
             }
           }
           reject(errorMessage);
@@ -220,24 +220,24 @@ const API = new (class GAppsApiClient {
     }
   }
 
-  _get({ action, parameters, requiresAuth, useCache = false } = {}) {
-    return this._performRequest({ action, method: "GET", parameters, requiresAuth, useCache });
+  _get({ action, parameters, requiresAuth, cache = null } = {}) {
+    return this._performRequest({ action, method: "GET", parameters, requiresAuth, cache });
   }
 
-  _post({ action, body = null, parameters, requiresAuth, useCache = false} = {}) {
-    return this._performRequest({ action, method: "POST", body, parameters, requiresAuth, useCache });
+  _post({ action, body = null, parameters, requiresAuth, cache = null} = {}) {
+    return this._performRequest({ action, method: "POST", body, parameters, requiresAuth, cache });
   }
 
-  _patch({ action, body = null, parameters, requiresAuth, useCache = false } = {}) {
-    return this._performRequest({ action, method: "PATCH", body, parameters, requiresAuth, useCache });
+  _patch({ action, body = null, parameters, requiresAuth, cache = null } = {}) {
+    return this._performRequest({ action, method: "PATCH", body, parameters, requiresAuth, cache });
   }
 
-  _put({ action, body = null, parameters, requiresAuth, useCache = false } = {}) {
-    return this._performRequest({ action, method: "PUT", body, parameters, requiresAuth, useCache });
+  _put({ action, body = null, parameters, requiresAuth, cache = null } = {}) {
+    return this._performRequest({ action, method: "PUT", body, parameters, requiresAuth, cache });
   }
 
   getCurrentUser() {
-    return this._get({ action: "user", requiresAuth: true, useCache: true });
+    return this._get({ action: "user", requiresAuth: true, cache: 'user' });
   }
 
   getDances() {
@@ -245,7 +245,7 @@ const API = new (class GAppsApiClient {
   }
 
   getEvents({ forceRefresh = false } = {}) {
-    return this._get({ action: "events", parameters: { forceRefresh }, requiresAuth: true, useCache: !forceRefresh });
+    return this._get({ action: "events", parameters: { forceRefresh }, requiresAuth: true, cache: forceRefresh ? null : 'events' });
   }
 
   getEventById({ eventId } = {}) {
@@ -257,7 +257,7 @@ const API = new (class GAppsApiClient {
   }
   
   getTrainings({ forceRefresh = false } = {}) {
-    return this._get({ action: "trainings", parameters: { forceRefresh }, requiresAuth: true, useCache: !forceRefresh });
+    return this._get({ action: "trainings", parameters: { forceRefresh }, requiresAuth: true, cache: forceRefresh ? null : 'trainings' });
   }
 
   getTrainingById({ trainingId } = {}) {
@@ -277,11 +277,11 @@ const API = new (class GAppsApiClient {
   }
 
   getMembers({ forceRefresh = false } = {}) {
-    return this._get({ action: "members", parameters: { forceRefresh }, requiresAuth: true, useCache: !forceRefresh });
+    return this._get({ action: "members", parameters: { forceRefresh }, requiresAuth: true, cache: forceRefresh ? null : 'members' });
   }
 
   loginWithEmailPassword({ email, password } = {}) {
-    return this._post({ action: "login", body: { email, password } });
+    return this._post({ action: "login", body: { email, password }, cache: 'user' });
   }
 
   sendAccessLink({ email } = {}) {
@@ -328,6 +328,6 @@ const API = new (class GAppsApiClient {
   }
 
   getAudioById({ audioId } = {}) {
-    return this._get({ action: "audio", parameters: { audioId }, requiresAuth: true, useCache: true });
+    return this._get({ action: "audio", parameters: { audioId }, requiresAuth: true, cache: 'audio' });
   }
 })();

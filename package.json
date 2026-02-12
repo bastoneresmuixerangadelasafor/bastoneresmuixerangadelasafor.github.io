@@ -8,6 +8,7 @@
     "setup_prod": "node .config/setup.js --target production",
     "build_dev": "npx @11ty/eleventy --input=templates/development.md --output=server/html",
     "build_prod": "npx @11ty/eleventy --input=templates/production.md --output=docs",
+    "serve": "npx @11ty/eleventy --serve --input=templates/production.md --output=docs",
     "clasp_push": "cd .config && clasp push",
     "clasp_push_prod": "cd .config && clasp push && clasp deploy --deploymentId AKfycbz9PxglZL_JO524qWuvkW9O1jeOHtlXdHs4IY9xJILTvOvCQXgJttqBEjr9RHiDwntw",
     "deploy_dev": "npm run setup_dev && npm run build_dev && npm run clasp_push",

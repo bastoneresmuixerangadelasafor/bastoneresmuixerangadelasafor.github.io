@@ -70,10 +70,66 @@
 
         {% if embedded %}
         <script>
-        {% include "../../docs/scripts/main.js" %}
+        {% include "../../docs/scripts/app.js" %}
         </script>
         {% else %}
-        <script src="scripts/main.js" defer></script>
+        <script src="scripts/app.js" defer></script>
+        {% endif %}
+
+        {% if embedded %}
+        <script>
+        {% include "../../docs/scripts/navigation.js" %}
+        </script>
+        {% else %}
+        <script src="scripts/navigation.js" defer></script>
+        {% endif %}
+
+        {% if embedded %}
+        <script>
+        {% include "../../docs/scripts/utils.js" %}
+        </script>
+        {% else %}
+        <script src="scripts/utils.js" defer></script>
+        {% endif %}
+
+        {% if embedded %}
+        <script>
+        {% include "../../docs/scripts/auth.js" %}
+        </script>
+        {% else %}
+        <script src="scripts/auth.js" defer></script>
+        {% endif %}
+
+        {% if embedded %}
+        <script>
+        {% include "../../docs/scripts/members.js" %}
+        </script>
+        {% else %}
+        <script src="scripts/members.js" defer></script>
+        {% endif %}
+
+        {% if embedded %}
+        <script>
+        {% include "../../docs/scripts/events.js" %}
+        </script>
+        {% else %}
+        <script src="scripts/events.js" defer></script>
+        {% endif %}
+
+        {% if embedded %}
+        <script>
+        {% include "../../docs/scripts/trainings.js" %}
+        </script>
+        {% else %}
+        <script src="scripts/trainings.js" defer></script>
+        {% endif %}
+
+        {% if embedded %}
+        <script>
+        {% include "../../docs/scripts/dashboard.js" %}
+        </script>
+        {% else %}
+        <script src="scripts/dashboard.js" defer></script>
         {% endif %}
 
         {% if embedded %}

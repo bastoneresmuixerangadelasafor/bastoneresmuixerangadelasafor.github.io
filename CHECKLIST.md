@@ -2,17 +2,23 @@
 
 - [ ] Initial page => home-guest
 - [ ] Click app name => home-guest
+- [?] Reset password
+- [ ] Register
 - [ ] User login
 - [ ] Initial page => home
 - [ ] Click app name => home
+- [ ] Refresh => keep session
 - [ ] Menu
 - [ ] Perfil
 - [ ] Tauler
 - [ ] Member list
 - [ ] Sort list
 - [ ] Filter list
+- [ ] Edit single member
+- [ ] Edit multiple members
 - [ ] Next event
 - [ ] Next training
+-
 - [ ] Event list
 - [ ] Load event
 - [ ] Edit past event

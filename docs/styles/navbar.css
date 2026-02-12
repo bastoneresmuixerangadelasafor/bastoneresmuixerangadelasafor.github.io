@@ -9,7 +9,7 @@
   box-shadow: var(--shadow);
   position: sticky;
   top: 0;
-  z-index: 9999;
+  z-index: 2;
 }
 
 .navbar-brand a {

@@ -452,6 +452,14 @@ function sendRegistrationRequest_({ name, email }) {
       return API.newError_({ error: "Format de correu electrònic no vàlid" });
     }
 
+    // Check if email is already linked to a member
+    const existingMember = CACHE.getMembers().find(function (m) {
+      return m.email && m.email.toLowerCase() === email.toLowerCase();
+    });
+    if (existingMember) {
+      return API.newError_({ error: "Aquest correu electrònic ja està associat a un membre", status: 409 });
+    }
+
     // Get the owner email (the user who deployed the script)
     const ownerEmail = Session.getEffectiveUser().getEmail();
 

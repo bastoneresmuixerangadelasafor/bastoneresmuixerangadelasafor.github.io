@@ -28,14 +28,15 @@ const API = class GAppsApiServer {
     return function(...args) {
       console.log("Validating token:", token);
       const user = getUserFromSession_({ token });
-      console.log("Validated user:", user);
+      
       if(requiresAuth && !user){
         return API.newError_({ error: "L'operació requereix autenticació. Si us plau, inicia sessió.", status: 401 });
       }
       if(requiresAdmin && user?.roles?.indexOf("ADMIN") === -1){
         return API.newError_({ error: "L'operació requereix permisos d'administrador.", status: 403 });
       }
-      return fn(...args);
+      const params = args.length > 0 ? args[0] : {};
+      return fn({ ...params, user });
     };
   }
 

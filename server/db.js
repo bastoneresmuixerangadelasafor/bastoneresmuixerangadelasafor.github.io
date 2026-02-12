@@ -110,14 +110,19 @@ const CACHE = new class GAppsServerCache {
       // Filter events that are in the future and sort by date
       const futureEvents = events
         .filter(event => {
-        if (!event.date) return false;
-        const eventDate = new Date(event.date);
-        return eventDate > now;
+          if (!event.date) return false;
+          const eventDate = new Date(event.date);
+          return eventDate > now;
         })
         .sort((a, b) => new Date(a.date) - new Date(b.date));
       
       nextEventDate = futureEvents.length > 0 ? futureEvents[0].date : null;
-      this.cache_.setProperty(NEXT_EVENT, nextEventDate);
+      
+      if (nextEventDate) {
+        this.cache_.setProperty(NEXT_EVENT, nextEventDate);
+      } else {
+        this.cache_.deleteProperty(NEXT_EVENT);
+      }
     }
 
     return API.newResult_({ result: {eventData: nextEventDate } });
@@ -181,21 +186,34 @@ const CACHE = new class GAppsServerCache {
 
   getNextTraining({forceRefresh = false} = {}) {
     let nextTrainingDate = !forceRefresh && this.cache_.getProperty(NEXT_TRAINING);
+    
+    if (nextTrainingDate && (nextTrainingDate === "false" || nextTrainingDate === "null" || isNaN(new Date(nextTrainingDate).getTime()))) {
+      nextTrainingDate = null;
+    }
+
     if(!nextTrainingDate) {
       const trainings = CACHE.getTrainings();
       const now = new Date();
+      let foundDate = null;
       for (const dateStr in trainings) {
         const trainingDate = new Date(dateStr); 
         if (trainingDate > now) {
-          if (nextTrainingDate === null || trainingDate < nextTrainingDate) {
-            nextTrainingDate = trainingDate;
+          if (foundDate === null || trainingDate < foundDate) {
+            foundDate = trainingDate;
           }
         }
       }
-      this.cache_.setProperty(NEXT_TRAINING, nextTrainingDate);
+      
+      if (foundDate) {
+        nextTrainingDate = dateToString_(foundDate);
+        this.cache_.setProperty(NEXT_TRAINING, nextTrainingDate);
+      } else {
+        nextTrainingDate = null;
+        this.cache_.deleteProperty(NEXT_TRAINING);
+      }
     }
 
-    return API.newResult_({ result: {trainingData: nextTrainingDate ? dateToString_(new Date(nextTrainingDate)) : null} });
+    return API.newResult_({ result: {trainingData: nextTrainingDate} });
   }
 
   retrieveTrainingsFromDB() {

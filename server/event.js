@@ -161,7 +161,7 @@ function padDataRows_(data, maxCols) {
   });
 }
 
-function getEvents_({forceRefresh}) {
+function getEvents_({forceRefresh} = {}) {
   forceRefresh = forceRefresh || false;
 	
 	try {
@@ -180,7 +180,7 @@ function getEvents_({forceRefresh}) {
 	}
 }
 
-function getTrainings_({forceRefresh}) {
+function getTrainings_({forceRefresh} = {}) {
   forceRefresh = forceRefresh || false;
   
   try {
@@ -527,12 +527,12 @@ function saveTraining_({training}) {
  * @param {string} params.token - The user's auth token
  * @returns {Object} Result with updated attendance status
  */
-function toggleTrainingAttendance_({trainingId, token}) {
+function toggleTrainingAttendance_({trainingId, user }) {
   if (!trainingId) {
     return API.newError_({ error: 'La data de l\'assaig és obligatòria' });
   }
 
-  const user = getUserFromSession_({ token });
+  console.log("Validated user:", user);
   if (!user || !user.alias) {
     return API.newError_({ error: 'No s\'ha pogut identificar l\'usuari.' });
   }

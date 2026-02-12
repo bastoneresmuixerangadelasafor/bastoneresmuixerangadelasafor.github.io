@@ -17,7 +17,7 @@
 1. **Server Layer** (`server/*.js`): GAS functions that read/write Google Sheets
 2. **Cache Layer** (`CACHE` object): Dual-tier caching using CacheService (temp) + PropertiesService (persistent)
 3. **API Layer** (`server/api_server.js`): REST-like interface with token validation
-4. **Frontend** (`docs/scripts/main.js`): SPA routing, state management via `AppState` global
+4. **Frontend** (`docs/scripts/app.js`): SPA routing, state management via `APP` global
 5. **Templates** (`templates/_includes/*.njk`): Nunjucks markup + inline JavaScript for events management
 
 ## Critical Patterns
@@ -49,15 +49,15 @@ trainingsByDate[date] = {
 
 ### Frontend: State Management
 
-- **Global State**: `AppState` object tracks user, auth status, current view, and IDs to load
+- **Global State**: `APP` object tracks user, auth status, current view, and IDs to load
 - **View Loading**: `navigateTo()` handles routing, triggers `loadViewData()` for that view type
-- **Pattern**: Store ID in `AppState.trainingIdToLoad`, then call `loadTrainingData(id)` when view activates
+- **Pattern**: Store ID in `APP.trainingIdToLoad`, then call `loadTrainingData(id)` when view activates
 - **Edit Mode Protection**: `isInEditMode()` checks for unsaved changes before navigation
 
 ### Frontend: Role-Based Access Control
 
 - **User Object**: Contains `roles` array (e.g., `["ADMIN"]`)
-- **Pattern**: Always check with `AppState.currentUser.roles.includes("ADMIN")` before showing edit UI
+- **Pattern**: Always check with `APP.currentUser.roles.includes("ADMIN")` before showing edit UI
 - **Example Training Form**:
   - Admin sees: Input fields + save button
   - Non-admin sees: Read-only labels with text content
@@ -120,14 +120,14 @@ Always run this after modifying TypeScript interface files.
 
 1. Update schema in `server/db.js` retrieval function
 2. Update `server/event.js` if saving logic needed
-3. Update frontend in `docs/scripts/main.js` (`loadTrainingData()`, `applyTrainingEditableState()`)
+3. Update frontend in `docs/scripts/app.js` (`loadTrainingData()`, `applyTrainingEditableState()`)
 4. Update HTML template in `templates/_includes/main.njk` with input + label elements
 5. Add CSS styles for `.training-field` input/label pair
 6. If needed: add event listener in `initializeTrainingFormListeners()`
 
 ### Add New Admin-Only Feature
 
-1. Check user role: `AppState.currentUser.roles.includes("ADMIN")`
+1. Check user role: `APP.currentUser.roles.includes("ADMIN")`
 2. Hide/show UI elements by toggling `display: none` on `.admin-only` or similar class
 3. Add event listeners only for admin users
 4. Verify `applyTrainingEditableState()` or equivalent disables non-admin access
