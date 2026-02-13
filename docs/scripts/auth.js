@@ -22,7 +22,7 @@ const AUTH = new (class AppAuthentication {
 
     const logoutBtn = document.getElementById("logout-btn");
     if (logoutBtn) {
-      logoutBtn.addEventListener("click", this.handleLogout);
+      logoutBtn.addEventListener("click", this.handleLogout.bind(this));
     }
 
     const mobileLogoutBtn = document.getElementById("mobile-logout-btn");
@@ -216,7 +216,7 @@ const AUTH = new (class AppAuthentication {
     }
 
     if (sendBtn && !sendBtn.dataset.initialized) {
-      sendBtn.addEventListener("click", this.sendAccessLink);
+      sendBtn.addEventListener("click", this.sendAccessLink.bind(this));
       sendBtn.dataset.initialized = "true";
     }
 
@@ -399,8 +399,8 @@ const AUTH = new (class AppAuthentication {
       mobileLogoutBtn.setAttribute("aria-busy", "true");
     }
 
-    const cleanupAfterLogout = function () { 
-      clearUserData();
+    const cleanupAfterLogout = () => { 
+      this._clearUserData();
 
       updateAuthUI();
       NAVIGATION.navigateTo("home-guest");
@@ -410,7 +410,7 @@ const AUTH = new (class AppAuthentication {
 
     // Clear server-side session
     API.logoutUser()
-      .then(function (result) {
+      .then((result) => {
         // Restore button states
         if (logoutBtn) {
           logoutBtn.innerHTML = originalText;
@@ -426,7 +426,7 @@ const AUTH = new (class AppAuthentication {
         // Clear all local state and temporary user data
         cleanupAfterLogout();
       })
-      .catch(function (error) {
+      .catch((error) => {
         // Restore button states
         if (logoutBtn) {
           logoutBtn.innerHTML = originalText;
@@ -444,7 +444,7 @@ const AUTH = new (class AppAuthentication {
       });
   }
 
-  clearUserData() {
+  _clearUserData() {
     // Clear app state
     APP.isAuthenticated = false;
     APP.currentUser = null;
@@ -457,16 +457,16 @@ const AUTH = new (class AppAuthentication {
     // Clear members data
     MEMBERS.membersData = [];
     MEMBERS.currentEditingMemberId = null;
-    originalMemberData = null;
-    isAddingNewMember = false;
-    allOriginalMemberData = null;
-    isEditingAllMembers = false;
+    MEMBERS.originalMemberData = null;
+    MEMBERS.isAddingNewMember = false;
+    MEMBERS.allOriginalMemberData = null;
+    MEMBERS.isEditingAllMembers = false;
 
     // Clear members filters
-    membersTypeFilterValue = "";
-    membersActiveFilterValue = "";
-    membersRolsFilterValue = "";
-    membersAccessFilterValue = "";
+    MEMBERS.membersTypeFilterValue = "";
+    MEMBERS.membersActiveFilterValue = "";
+    MEMBERS.membersRolsFilterValue = "";
+    MEMBERS.membersAccessFilterValue = "";
 
     // Clear events/diagrams data if defined
     if (typeof diagrams !== "undefined") {

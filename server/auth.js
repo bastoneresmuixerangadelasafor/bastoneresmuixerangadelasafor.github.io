@@ -88,7 +88,7 @@ function sendAccessLink_({ email }) {
           <p style="font-size: 14px; color: #718096;">IMPORTANT: No comparteixis aquest enllaç amb ningú.</p>
         </div>
         <div style="background-color: #f7fafc; padding: 20px; text-align: center; font-size: 12px; color: #718096; border-top: 1px solid #e2e8f0;">
-          <p style="margin: 0;">&copy; ${new Date().getFullYear()} ${TITLE}. Tots els drets reservats.</p>
+          <p style="margin: 0;">&copy; ${new Date().getFullYear()} ${COMPANY}. Tots els drets reservats.</p>
         </div>
       </div>
     </div>`;

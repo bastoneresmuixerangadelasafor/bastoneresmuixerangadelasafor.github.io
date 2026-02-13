@@ -440,6 +440,25 @@ body.dark-mode .members-card {
   overflow-x: auto;
 }
 
+/* Members table header - vibrant light mode */
+#members-table th {
+  background: var(--primary-color);
+  color: white;
+}
+
+#members-table th.sortable:hover {
+  background: var(--primary-dark);
+}
+
+body.dark-mode #members-table th {
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+
+body.dark-mode #members-table th.sortable:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 table th.sortable {
   cursor: pointer;
   user-select: none;
@@ -3093,12 +3112,14 @@ input::placeholder {
 }
 
 .training-card-date {
-  font-size: 0.9rem;
-  color: #666;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+  word-break: break-word;
 }
 
 .dark-mode .training-card-date {
-  color: #aaa;
+  color: #fff;
 }
 
 .training-card-location {
@@ -3800,25 +3821,39 @@ input::placeholder {
 }
 
 .event-name-display {
-  color: #fff;
+  color: var(--primary-dark);
   margin: 0;
   font-size: 1.5rem;
 }
 
 .event-date-display {
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text-color);
   font-size: 1.1rem;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(99, 102, 241, 0.1);
   padding: 0.3em 0.8em;
   border-radius: 6px;
 }
 
 .event-meeting-place-display {
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text-color);
   font-size: 1.1rem;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(99, 102, 241, 0.1);
   padding: 0.3em 0.8em;
   border-radius: 6px;
+}
+
+body.dark-mode .event-name-display {
+  color: #fff;
+}
+
+body.dark-mode .event-date-display {
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+body.dark-mode .event-meeting-place-display {
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .event-meeting-place-display:empty {
@@ -3928,20 +3963,36 @@ input::placeholder {
 }
 
 .diagram-item {
-  border: 1px solid #ddd;
+  border: 2px solid var(--primary-color);
   border-radius: 12px;
   padding: 20px;
-  background: #fafafa;
+  background: #f0f4ff;
   position: relative;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
   overflow: hidden;
   cursor: grab;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
   transition:
     transform 0.2s,
     box-shadow 0.2s,
     opacity 0.2s;
+}
+
+.diagram-item:hover {
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+  border-color: var(--primary-dark);
+}
+
+.dark-mode .diagram-item {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  box-shadow: none;
+}
+
+.dark-mode .diagram-item:hover {
+  border-color: #4fc3f7;
 }
 
 .diagram-item:active {
@@ -3951,12 +4002,12 @@ input::placeholder {
 .diagram-item.dragging {
   opacity: 0.5;
   transform: scale(0.98);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.25);
 }
 
 .diagram-item.drag-over {
-  border: 2px dashed #1976d2;
-  background: #e3f2fd;
+  border: 2px dashed var(--primary-color);
+  background: rgba(99, 102, 241, 0.1);
 }
 
 .diagram-header {
@@ -3970,16 +4021,25 @@ input::placeholder {
 .diagram-title {
   font-size: 1.25rem;
   font-weight: bold;
-  color: #333;
+  color: var(--primary-dark);
   margin: 0;
+}
+
+.dark-mode .diagram-title {
+  color: #fff;
 }
 
 .diagram-structure {
   font-size: 0.9rem;
-  color: #666;
-  background: #e0e0e0;
+  color: var(--text-color);
+  background: rgba(99, 102, 241, 0.1);
   padding: 4px 10px;
   border-radius: 12px;
+}
+
+.dark-mode .diagram-structure {
+  color: #aaa;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .diagram-title-row {
