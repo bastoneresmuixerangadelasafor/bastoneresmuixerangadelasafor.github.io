@@ -899,7 +899,7 @@ function renderPlanningTrainingsList(trainings) {
     
     const actionHtml = `
       <div class="training-card-action-group">
-        <button type="button" class="btn btn-sm btn-primary" onclick="navigateToTraining('${escapeHtml(training.id)}')">Detalls</button>
+        <button type="button" class="training-card-btn view-btn" onclick="navigateToTraining('${escapeHtml(training.id)}')">Detalls</button>
       </div>
     `;
     return `
