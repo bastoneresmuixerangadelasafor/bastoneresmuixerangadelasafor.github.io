@@ -504,6 +504,17 @@
                     <polyline points="7 3 7 8 15 8"></polyline>
                 </svg>
             </button>
+            <!-- Floating lock button (for past trainings) -->
+            <button id="floating-lock-training-btn" class="floating-lock-btn admin-only" title="Long-press per 3 segons per fer editable" style="display: none;">
+                <svg class="progress-ring-container" width="48" height="48" viewBox="0 0 48 48" style="position: absolute; top: 0; left: 0;">
+                    <circle class="progress-ring" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="138.23" stroke-dashoffset="138.23"></circle>
+                </svg>
+                <svg class="lock-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+            </button>
         </div>
     </div>
 
@@ -629,6 +640,27 @@
         var isEventEditable = true;
         // Track if user manually unlocked the event via long-press
         var isEventManuallyUnlocked = false;
+        // Track if current training is editable
+        var isTrainingEditable = true;
+        // Track if user manually unlocked the training via long-press
+        var isTrainingManuallyUnlocked = false;
+
+        // Check if the training is in the past
+        function checkIfTrainingIsEditable() {
+            // If manually unlocked via long-press, always consider editable
+            if (isTrainingManuallyUnlocked) {
+                return true;
+            }
+
+            const trainingDatetimeInput = document.getElementById('training-datetime-input');
+            if (!trainingDatetimeInput || !trainingDatetimeInput.value) {
+                return true; // Assume editable if no date set (new training)
+            }
+            const trainingDate = new Date(trainingDatetimeInput.value);
+            const now = new Date();
+            isTrainingEditable = trainingDate >= now;
+            return isTrainingEditable;
+        }
 
         // Check if the event is in the past
         function checkIfEventIsEditable() {
@@ -717,9 +749,10 @@
                 floatingSaveBtn.style.display = isEditable ? 'flex' : 'none';
             }
 
-            // Show floating lock button only when not editable
+            // Show floating lock button only when not editable AND user is admin
             if (floatingLockBtn) {
-                floatingLockBtn.style.display = isEditable ? 'none' : 'flex';
+                const isAdmin = APP.currentUser && APP.currentUser.roles && APP.currentUser.roles.includes('ADMIN');
+                floatingLockBtn.style.display = (!isEditable && isAdmin) ? 'flex' : 'none';
             }
 
             // Disable canvas interactions and dance operations
@@ -1884,6 +1917,8 @@ ${descriptionHtml}
 
             floatingLockBtn.addEventListener('mousedown', function () {
                 if (isEventEditable) return; // Only work when event is locked
+                const isAdmin = APP.currentUser && APP.currentUser.roles && APP.currentUser.roles.includes('ADMIN');
+                if (!isAdmin) return; // Only admin can unlock
 
                 lockBtnPressed = true;
                 floatingLockBtn.classList.add('pressing');
@@ -1940,6 +1975,8 @@ ${descriptionHtml}
             // Touch events for mobile devices
             floatingLockBtn.addEventListener('touchstart', function () {
                 if (isEventEditable) return; // Only work when event is locked
+                const isAdmin = APP.currentUser && APP.currentUser.roles && APP.currentUser.roles.includes('ADMIN');
+                if (!isAdmin) return; // Only admin can unlock
 
                 lockBtnPressed = true;
                 floatingLockBtn.classList.add('pressing');
@@ -1990,6 +2027,139 @@ ${descriptionHtml}
                 if (lockBtnPressTimer) {
                     clearInterval(lockBtnPressTimer);
                     resetLockBtnProgress();
+                }
+            });
+
+            // Floating lock button long-press functionality for TRAINING
+            const floatingLockTrainingBtn = document.getElementById('floating-lock-training-btn');
+            let lockTrainingBtnPressTimer = null;
+            let lockTrainingBtnPressed = false;
+
+            function resetLockTrainingBtnProgress() {
+                floatingLockTrainingBtn.classList.remove('pressing');
+                const progressRing = floatingLockTrainingBtn.querySelector('.progress-ring');
+                if (progressRing) {
+                    progressRing.style.strokeDashoffset = '138.23';
+                }
+                lockTrainingBtnPressed = false;
+            }
+
+            floatingLockTrainingBtn.addEventListener('mousedown', function () {
+                if (isTrainingEditable) return; // Only work when training is locked
+                const isAdmin = APP.currentUser && APP.currentUser.roles && APP.currentUser.roles.includes('ADMIN');
+                if (!isAdmin) return; // Only admin can unlock
+
+                lockTrainingBtnPressed = true;
+                floatingLockTrainingBtn.classList.add('pressing');
+                let pressedTime = 0;
+                const pressDuration = 3000; // 3 seconds
+                const maxDashOffset = 138.23;
+                const progressRing = floatingLockTrainingBtn.querySelector('.progress-ring');
+
+                lockTrainingBtnPressTimer = setInterval(function () {
+                    if (!lockTrainingBtnPressed) {
+                        clearInterval(lockTrainingBtnPressTimer);
+                        resetLockTrainingBtnProgress();
+                        return;
+                    }
+
+                    pressedTime += 50;
+                    const progress = Math.min(pressedTime / pressDuration, 1);
+                    const dashOffset = maxDashOffset * (1 - progress);
+                    progressRing.style.strokeDashoffset = dashOffset;
+
+                    if (pressedTime >= pressDuration) {
+                        clearInterval(lockTrainingBtnPressTimer);
+                        floatingLockTrainingBtn.classList.remove('pressing');
+                        
+                        // Make training editable again
+                        isTrainingManuallyUnlocked = true;
+                        isTrainingEditable = true;
+                        if (typeof applyTrainingEditableState === 'function') {
+                            applyTrainingEditableState();
+                        }
+                        
+                        // Show success feedback
+                        floatingLockTrainingBtn.style.background = '#43a047';
+                        setTimeout(function () {
+                            floatingLockTrainingBtn.style.background = '#757575';
+                            resetLockTrainingBtnProgress();
+                        }, 1000);
+                    }
+                }, 50);
+            });
+
+            floatingLockTrainingBtn.addEventListener('mouseup', function () {
+                if (lockTrainingBtnPressTimer) {
+                    clearInterval(lockTrainingBtnPressTimer);
+                    resetLockTrainingBtnProgress();
+                }
+            });
+
+            floatingLockTrainingBtn.addEventListener('mouseleave', function () {
+                if (lockTrainingBtnPressTimer) {
+                    clearInterval(lockTrainingBtnPressTimer);
+                    resetLockTrainingBtnProgress();
+                }
+            });
+
+            // Touch events for mobile devices
+            floatingLockTrainingBtn.addEventListener('touchstart', function () {
+                if (isTrainingEditable) return; // Only work when training is locked
+                const isAdmin = APP.currentUser && APP.currentUser.roles && APP.currentUser.roles.includes('ADMIN');
+                if (!isAdmin) return; // Only admin can unlock
+
+                lockTrainingBtnPressed = true;
+                floatingLockTrainingBtn.classList.add('pressing');
+                let pressedTime = 0;
+                const pressDuration = 3000; // 3 seconds
+                const maxDashOffset = 138.23;
+                const progressRing = floatingLockTrainingBtn.querySelector('.progress-ring');
+
+                lockTrainingBtnPressTimer = setInterval(function () {
+                    if (!lockTrainingBtnPressed) {
+                        clearInterval(lockTrainingBtnPressTimer);
+                        resetLockTrainingBtnProgress();
+                        return;
+                    }
+
+                    pressedTime += 50;
+                    const progress = Math.min(pressedTime / pressDuration, 1);
+                    const dashOffset = maxDashOffset * (1 - progress);
+                    progressRing.style.strokeDashoffset = dashOffset;
+
+                    if (pressedTime >= pressDuration) {
+                        clearInterval(lockTrainingBtnPressTimer);
+                        floatingLockTrainingBtn.classList.remove('pressing');
+                        
+                        // Make training editable again
+                        isTrainingManuallyUnlocked = true;
+                        isTrainingEditable = true;
+                        if (typeof applyTrainingEditableState === 'function') {
+                            applyTrainingEditableState();
+                        }
+                        
+                        // Show success feedback
+                        floatingLockTrainingBtn.style.background = '#43a047';
+                        setTimeout(function () {
+                            floatingLockTrainingBtn.style.background = '#757575';
+                            resetLockTrainingBtnProgress();
+                        }, 1000);
+                    }
+                }, 50);
+            });
+
+            floatingLockTrainingBtn.addEventListener('touchend', function () {
+                if (lockTrainingBtnPressTimer) {
+                    clearInterval(lockTrainingBtnPressTimer);
+                    resetLockTrainingBtnProgress();
+                }
+            });
+
+            floatingLockTrainingBtn.addEventListener('touchcancel', function () {
+                if (lockTrainingBtnPressTimer) {
+                    clearInterval(lockTrainingBtnPressTimer);
+                    resetLockTrainingBtnProgress();
                 }
             });
         });
@@ -2702,6 +2872,10 @@ const USER_SESSION = "users_session"
 const SESSION_TOKEN = "session_token"
 </script>
 
+
+        
+        <script src="scripts/cache.js" defer></script>
+        
 
         
         <script src="scripts/api_client.js" defer></script>

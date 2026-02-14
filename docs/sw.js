@@ -11,6 +11,7 @@ const ALWAYS_FRESH = [
   '/scripts/utils.js',
   '/scripts/auth.js',
   '/scripts/members.js',
+  '/scripts/cache.js',
   '/scripts/api_client.js',
   '/scripts/trainings.js',
   '/scripts/dashboard.js',

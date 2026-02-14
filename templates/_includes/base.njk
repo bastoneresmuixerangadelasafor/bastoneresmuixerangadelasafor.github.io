@@ -62,6 +62,14 @@
 
         {% if embedded %}
         <script>
+        {% include "../../docs/scripts/cache.js" %}
+        </script>
+        {% else %}
+        <script src="scripts/cache.js" defer></script>
+        {% endif %}
+
+        {% if embedded %}
+        <script>
         {% include "../../docs/scripts/api_client.js" %}
         </script>
         {% else %}

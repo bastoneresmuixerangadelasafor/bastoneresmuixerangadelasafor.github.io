@@ -270,10 +270,11 @@ const NAVIGATION = new (class AppNavigator {
       finalView.classList.add("active");
     }
 
-    // Show/hide floating-lock-btn based on current view
+    // Show/hide floating-lock-btn based on current view and admin status
     const floatingLockBtn = document.getElementById("floating-lock-btn");
     if (floatingLockBtn) {
-      floatingLockBtn.style.display = route === "planning-event" ? "flex" : "none";
+      const isAdmin = APP.currentUser && APP.currentUser.roles && APP.currentUser.roles.includes("ADMIN");
+      floatingLockBtn.style.display = (route === "planning-event" && isAdmin) ? "flex" : "none";
     }
 
     // Reset isEventEditable when leaving planning-event view

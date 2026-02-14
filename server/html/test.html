@@ -152,11 +152,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(
-    135deg,
-    var(--primary-color) 0%,
-    var(--secondary-color) 100%
-  );
+  background: var(--primary-color);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -281,11 +277,7 @@ body {
 .hero {
   text-align: center;
   padding: 80px 20px;
-  background: linear-gradient(
-    135deg,
-    var(--primary-color) 0%,
-    var(--secondary-color) 100%
-  );
+  background: var(--primary-color);
   border-radius: var(--radius);
   color: white;
   margin-bottom: 40px;
@@ -411,6 +403,24 @@ body {
   padding-bottom: 10px;
 }
 
+/* Members Card - Vibrant light mode styling */
+.members-card {
+  background: #f0f4ff;
+  border: 2px solid var(--primary-color);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.15);
+}
+
+.members-card h2 {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+body.dark-mode .members-card {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+  box-shadow: var(--shadow);
+}
+
 /* Tables */
 .members-filter {
   display: flex;
@@ -459,6 +469,25 @@ body {
   overflow-x: auto;
 }
 
+/* Members table header - vibrant light mode */
+#members-table th {
+  background: var(--primary-color);
+  color: white;
+}
+
+#members-table th.sortable:hover {
+  background: var(--primary-dark);
+}
+
+body.dark-mode #members-table th {
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+
+body.dark-mode #members-table th.sortable:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 table th.sortable {
   cursor: pointer;
   user-select: none;
@@ -496,8 +525,20 @@ table th {
   letter-spacing: 0.5px;
 }
 
+table tbody tr:nth-child(odd) {
+  background: var(--card-bg);
+}
+
+table tbody tr:nth-child(even) {
+  background: rgba(99, 102, 241, 0.04);
+}
+
+body.dark-mode table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.03);
+}
+
 table tbody tr:hover {
-  background: rgba(102, 126, 234, 0.05);
+  background: rgba(99, 102, 241, 0.1);
 }
 
 table tbody tr:last-child td {
@@ -1167,12 +1208,12 @@ table tbody tr:last-child td {
 }
 
 .btn-primary {
-  background: linear-gradient(
-    135deg,
-    var(--primary-color) 0%,
-    var(--secondary-color) 100%
-  );
+  background: var(--primary-color);
   color: white;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
 }
 
 .btn-outline {
@@ -1267,11 +1308,7 @@ table tbody tr:last-child td {
 }
 
 .login-header {
-  background: linear-gradient(
-    135deg,
-    var(--primary-color) 0%,
-    var(--secondary-color) 100%
-  );
+  background: var(--primary-color);
   color: white;
   padding: 32px 32px;
   text-align: center;
@@ -2004,11 +2041,7 @@ table tbody tr:last-child td {
   padding: 72px 20px;
   border-radius: var(--radius);
   color: white;
-  background: linear-gradient(
-    135deg,
-    var(--primary-color) 0%,
-    var(--secondary-color) 100%
-  );
+  background: var(--primary-color);
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -2920,20 +2953,22 @@ input::placeholder {
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  background: #fff;
-  border: 1px solid #e0e0e0;
+  background: #f0f4ff;
+  border: 2px solid var(--primary-color);
   border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
   transition: all 0.2s;
 }
 
 .event-card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-color: #1976d2;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+  border-color: var(--primary-dark);
 }
 
 .dark-mode .event-card {
   background: #2a2a2a;
-  border-color: #444;
+  border: 1px solid #444;
+  box-shadow: none;
 }
 
 .dark-mode .event-card:hover {
@@ -2951,7 +2986,7 @@ input::placeholder {
 .event-card-name {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #333;
+  color: var(--primary-dark);
   word-break: break-word;
 }
 
@@ -3064,20 +3099,22 @@ input::placeholder {
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  background: #fff;
-  border: 1px solid #e0e0e0;
+  background: #f0f4ff;
+  border: 2px solid var(--primary-color);
   border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
   transition: all 0.2s;
 }
 
 .training-card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-color: #1976d2;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+  border-color: var(--primary-dark);
 }
 
 .dark-mode .training-card {
   background: #2a2a2a;
-  border-color: #444;
+  border: 1px solid #444;
+  box-shadow: none;
 }
 
 .dark-mode .training-card:hover {
@@ -3095,7 +3132,7 @@ input::placeholder {
 .training-card-name {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #333;
+  color: var(--primary-dark);
   word-break: break-word;
 }
 
@@ -3104,12 +3141,14 @@ input::placeholder {
 }
 
 .training-card-date {
-  font-size: 0.9rem;
-  color: #666;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+  word-break: break-word;
 }
 
 .dark-mode .training-card-date {
-  color: #aaa;
+  color: #fff;
 }
 
 .training-card-location {
@@ -3811,25 +3850,39 @@ input::placeholder {
 }
 
 .event-name-display {
-  color: #fff;
+  color: var(--primary-dark);
   margin: 0;
   font-size: 1.5rem;
 }
 
 .event-date-display {
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text-color);
   font-size: 1.1rem;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(99, 102, 241, 0.1);
   padding: 0.3em 0.8em;
   border-radius: 6px;
 }
 
 .event-meeting-place-display {
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text-color);
   font-size: 1.1rem;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(99, 102, 241, 0.1);
   padding: 0.3em 0.8em;
   border-radius: 6px;
+}
+
+body.dark-mode .event-name-display {
+  color: #fff;
+}
+
+body.dark-mode .event-date-display {
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+body.dark-mode .event-meeting-place-display {
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .event-meeting-place-display:empty {
@@ -3939,20 +3992,36 @@ input::placeholder {
 }
 
 .diagram-item {
-  border: 1px solid #ddd;
+  border: 2px solid var(--primary-color);
   border-radius: 12px;
   padding: 20px;
-  background: #fafafa;
+  background: #f0f4ff;
   position: relative;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
   overflow: hidden;
   cursor: grab;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
   transition:
     transform 0.2s,
     box-shadow 0.2s,
     opacity 0.2s;
+}
+
+.diagram-item:hover {
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+  border-color: var(--primary-dark);
+}
+
+.dark-mode .diagram-item {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  box-shadow: none;
+}
+
+.dark-mode .diagram-item:hover {
+  border-color: #4fc3f7;
 }
 
 .diagram-item:active {
@@ -3962,12 +4031,12 @@ input::placeholder {
 .diagram-item.dragging {
   opacity: 0.5;
   transform: scale(0.98);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.25);
 }
 
 .diagram-item.drag-over {
-  border: 2px dashed #1976d2;
-  background: #e3f2fd;
+  border: 2px dashed var(--primary-color);
+  background: rgba(99, 102, 241, 0.1);
 }
 
 .diagram-header {
@@ -3981,16 +4050,25 @@ input::placeholder {
 .diagram-title {
   font-size: 1.25rem;
   font-weight: bold;
-  color: #333;
+  color: var(--primary-dark);
   margin: 0;
+}
+
+.dark-mode .diagram-title {
+  color: #fff;
 }
 
 .diagram-structure {
   font-size: 0.9rem;
-  color: #666;
-  background: #e0e0e0;
+  color: var(--text-color);
+  background: rgba(99, 102, 241, 0.1);
   padding: 4px 10px;
   border-radius: 12px;
+}
+
+.dark-mode .diagram-structure {
+  color: #aaa;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .diagram-title-row {
@@ -5200,7 +5278,7 @@ body.dark-mode .password-dialog-actions {
   box-shadow: var(--shadow);
   position: sticky;
   top: 0;
-  z-index: 9999;
+  z-index: 2;
 }
 
 .navbar-brand a {
@@ -5699,13 +5777,16 @@ body.dark-mode .password-dialog-actions {
                         <input type="password" id="login-password" name="password"
                             placeholder="Introdueix la teua contrasenya" autocomplete="current-password" required>
                     </div>
+                    <!--
                     <div class="form-group form-actions-login">
                         <a href="#" id="forgot-password-link" class="forgot-password-link">Has oblidat la
                             contrasenya?</a>
                     </div>
+                    -->
                     <button type="submit" class="btn btn-primary btn-block" id="email-login-btn">Iniciar
                         sessió</button>
 
+                    <!--
                     <div class="divider"><span>o</span></div>
 
                     <button type="button" class="btn btn-mail btn-block" id="mail-login-btn"
@@ -5718,6 +5799,7 @@ body.dark-mode .password-dialog-actions {
                         </span>
                         <span>Enviar accés al correu</span>
                     </button>
+                    -->
                 </form>
                 <p class="login-info">
                     No tens un compte? <a href="#" id="signup-link" class="signup-link">Registra't</a>
@@ -5996,7 +6078,7 @@ body.dark-mode .password-dialog-actions {
                 </svg>
             </button>
             <!-- Floating lock button (for past events) -->
-            <button id="floating-lock-btn" class="floating-lock-btn" title="Long-press per 3 segons per fer editable">
+            <button id="floating-lock-btn" class="floating-lock-btn admin-only" title="Long-press per 3 segons per fer editable">
                 <svg class="progress-ring-container" width="48" height="48" viewBox="0 0 48 48" style="position: absolute; top: 0; left: 0;">
                     <circle class="progress-ring" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="138.23" stroke-dashoffset="138.23"></circle>
                 </svg>
@@ -6121,9 +6203,10 @@ body.dark-mode .password-dialog-actions {
                 floatingSaveBtn.style.display = isEditable ? 'flex' : 'none';
             }
 
-            // Show floating lock button only when not editable
+            // Show floating lock button only when not editable AND user is admin
             if (floatingLockBtn) {
-                floatingLockBtn.style.display = isEditable ? 'none' : 'flex';
+                const isAdmin = APP.currentUser && APP.currentUser.roles && APP.currentUser.roles.includes('ADMIN');
+                floatingLockBtn.style.display = (!isEditable && isAdmin) ? 'flex' : 'none';
             }
 
             // Disable canvas interactions and dance operations
@@ -6320,7 +6403,7 @@ body.dark-mode .password-dialog-actions {
                         ctx.strokeRect(x, y, squareWidth, squareHeight);
 
                         // Draw position tag in bottom right corner of each cell (admin only)
-                        const userRoles = (AppState && APP.currentUser && APP.currentUser.roles) || [];
+                        const userRoles = (APP && APP.currentUser && APP.currentUser.roles) || [];
                         const isAdmin = userRoles.includes('ADMIN');
                         if (isAdmin) {
                             const cellOrder = row * cols + col + 1;
@@ -6411,7 +6494,7 @@ body.dark-mode .password-dialog-actions {
             const legendStyle = showLegend ? '' : 'display: none;';
 
             // Check if user is admin
-            const userRoles = (AppState && APP.currentUser && APP.currentUser.roles) || [];
+            const userRoles = (APP && APP.currentUser && APP.currentUser.roles) || [];
             const isAdmin = userRoles.includes('ADMIN');
             const adminOnlyStyle = isAdmin ? '' : 'display: none;';
 
@@ -6595,11 +6678,11 @@ ${descriptionHtml}
                             window.selectedGroup = g;
                             window.selectedSquare = idx;
 
-                            if (!membersData || membersData.length === 0) {
+                            if (!MEMBERS.membersData || MEMBERS.membersData.length === 0) {
                                 setDialogLoading(true);
                                 showDialogWithBackdrop(dialog);
                                 const checkInterval = setInterval(function () {
-                                    if (membersData && membersData.length > 0) {
+                                    if (MEMBERS.membersData && MEMBERS.membersData.length > 0) {
                                         clearInterval(checkInterval);
                                         setDialogLoading(false);
                                         populatePersonList(diagramId, g, idx);
@@ -6693,7 +6776,7 @@ ${descriptionHtml}
                 }
 
                 // Filter members: only active for future events, all for past events
-                const personAliases = membersData
+                const personAliases = MEMBERS.membersData
                     .filter(m => isEventInPast || m.active)
                     .map(m => m.alias)
                     .filter(Boolean);
@@ -7288,6 +7371,8 @@ ${descriptionHtml}
 
             floatingLockBtn.addEventListener('mousedown', function () {
                 if (isEventEditable) return; // Only work when event is locked
+                const isAdmin = APP.currentUser && APP.currentUser.roles && APP.currentUser.roles.includes('ADMIN');
+                if (!isAdmin) return; // Only admin can unlock
 
                 lockBtnPressed = true;
                 floatingLockBtn.classList.add('pressing');
@@ -7344,6 +7429,8 @@ ${descriptionHtml}
             // Touch events for mobile devices
             floatingLockBtn.addEventListener('touchstart', function () {
                 if (isEventEditable) return; // Only work when event is locked
+                const isAdmin = APP.currentUser && APP.currentUser.roles && APP.currentUser.roles.includes('ADMIN');
+                if (!isAdmin) return; // Only admin can unlock
 
                 lockBtnPressed = true;
                 floatingLockBtn.classList.add('pressing');
@@ -7632,26 +7719,26 @@ ${descriptionHtml}
                 }
 
                 // Check type filter
-                if (typeof membersTypeFilterValue !== 'undefined' && membersTypeFilterValue) {
-                    const typeLabel = membersTypeFilterValue === 'ADULT' ? 'Adults' : 'Xiquets/es';
+                if (typeof MEMBERS !== 'undefined' && MEMBERS.membersTypeFilterValue) {
+                    const typeLabel = MEMBERS.membersTypeFilterValue === 'ADULT' ? 'Adults' : 'Xiquets/es';
                     parts.push(typeLabel);
                 }
 
                 // Check rols filter
-                if (typeof membersRolsFilterValue !== 'undefined' && membersRolsFilterValue) {
-                    const rolLabel = membersRolsFilterValue === 'ADMIN' ? 'amb ADMIN' : 'sense ADMIN';
+                if (typeof MEMBERS !== 'undefined' && MEMBERS.membersRolsFilterValue) {
+                    const rolLabel = MEMBERS.membersRolsFilterValue === 'ADMIN' ? 'amb ADMIN' : 'sense ADMIN';
                     parts.push(rolLabel);
                 }
 
                 // Check access filter
-                if (typeof membersAccessFilterValue !== 'undefined' && membersAccessFilterValue) {
-                    const accessLabel = membersAccessFilterValue === 'HAS_ACCESS' ? 'amb accés a altres' : 'sense accés a altres';
+                if (typeof MEMBERS !== 'undefined' && MEMBERS.membersAccessFilterValue) {
+                    const accessLabel = MEMBERS.membersAccessFilterValue === 'HAS_ACCESS' ? 'amb accés a altres' : 'sense accés a altres';
                     parts.push(accessLabel);
                 }
 
                 // Check active filter
-                if (typeof membersActiveFilterValue !== 'undefined' && membersActiveFilterValue) {
-                    const activeLabel = membersActiveFilterValue === 'true' ? 'actius' : 'inactius';
+                if (typeof MEMBERS !== 'undefined' && MEMBERS.membersActiveFilterValue) {
+                    const activeLabel = MEMBERS.membersActiveFilterValue === 'true' ? 'actius' : 'inactius';
                     parts.push(activeLabel);
                 }
 
@@ -7677,8 +7764,8 @@ ${descriptionHtml}
                 });
 
                 // Clear type filter
-                if (typeof membersTypeFilterValue !== 'undefined') {
-                    membersTypeFilterValue = '';
+                if (typeof MEMBERS !== 'undefined') {
+                    MEMBERS.membersTypeFilterValue = '';
                 }
                 if (typeFilterDropdown) {
                     const options = typeFilterDropdown.querySelectorAll('.type-filter-option');
@@ -7689,8 +7776,8 @@ ${descriptionHtml}
                 if (typeFilterToggle) typeFilterToggle.classList.remove('active');
 
                 // Clear rols filter
-                if (typeof membersRolsFilterValue !== 'undefined') {
-                    membersRolsFilterValue = '';
+                if (typeof MEMBERS !== 'undefined') {
+                    MEMBERS.membersRolsFilterValue = '';
                 }
                 if (rolsFilterDropdown) {
                     const options = rolsFilterDropdown.querySelectorAll('.type-filter-option');
@@ -7701,8 +7788,8 @@ ${descriptionHtml}
                 if (rolsFilterToggle) rolsFilterToggle.classList.remove('active');
 
                 // Clear access filter
-                if (typeof membersAccessFilterValue !== 'undefined') {
-                    membersAccessFilterValue = '';
+                if (typeof MEMBERS !== 'undefined') {
+                    MEMBERS.membersAccessFilterValue = '';
                 }
                 if (accessFilterDropdown) {
                     const options = accessFilterDropdown.querySelectorAll('.type-filter-option');
@@ -7713,8 +7800,8 @@ ${descriptionHtml}
                 if (accessFilterToggle) accessFilterToggle.classList.remove('active');
 
                 // Clear active filter
-                if (typeof membersActiveFilterValue !== 'undefined') {
-                    membersActiveFilterValue = '';
+                if (typeof MEMBERS !== 'undefined') {
+                    MEMBERS.membersActiveFilterValue = '';
                 }
                 if (activeFilterDropdown) {
                     const options = activeFilterDropdown.querySelectorAll('.type-filter-option');
@@ -7725,8 +7812,8 @@ ${descriptionHtml}
                 if (activeFilterToggle) activeFilterToggle.classList.remove('active');
 
                 // Re-render and update summary
-                if (typeof renderMembersTable === 'function') {
-                    renderMembersTable();
+                if (typeof MEMBERS !== 'undefined' && typeof MEMBERS._renderMembersTable === 'function') {
+                    MEMBERS._renderMembersTable();
                 }
                 updateFilterSummary();
             }
@@ -7827,10 +7914,10 @@ ${descriptionHtml}
                         });
                         this.classList.add('selected');
 
-                        // Set global filter value and re-render
-                        if (typeof membersTypeFilterValue !== 'undefined') {
-                            membersTypeFilterValue = selectedValue;
-                            renderMembersTable();
+                        // Set filter value and re-render
+                        if (typeof MEMBERS !== 'undefined') {
+                            MEMBERS.membersTypeFilterValue = selectedValue;
+                            MEMBERS._renderMembersTable();
                         }
 
                         // Update active state for type filter
@@ -7858,10 +7945,10 @@ ${descriptionHtml}
                         });
                         this.classList.add('selected');
 
-                        // Set global filter value and re-render
-                        if (typeof membersRolsFilterValue !== 'undefined') {
-                            membersRolsFilterValue = selectedValue;
-                            renderMembersTable();
+                        // Set filter value and re-render
+                        if (typeof MEMBERS !== 'undefined') {
+                            MEMBERS.membersRolsFilterValue = selectedValue;
+                            MEMBERS._renderMembersTable();
                         }
 
                         // Update active state for rols filter
@@ -7889,10 +7976,10 @@ ${descriptionHtml}
                         });
                         this.classList.add('selected');
 
-                        // Set global filter value and re-render
-                        if (typeof membersAccessFilterValue !== 'undefined') {
-                            membersAccessFilterValue = selectedValue;
-                            renderMembersTable();
+                        // Set filter value and re-render
+                        if (typeof MEMBERS !== 'undefined') {
+                            MEMBERS.membersAccessFilterValue = selectedValue;
+                            MEMBERS._renderMembersTable();
                         }
 
                         // Update active state for access filter
@@ -7920,10 +8007,10 @@ ${descriptionHtml}
                         });
                         this.classList.add('selected');
 
-                        // Set global filter value and re-render
-                        if (typeof membersActiveFilterValue !== 'undefined') {
-                            membersActiveFilterValue = selectedValue;
-                            renderMembersTable();
+                        // Set filter value and re-render
+                        if (typeof MEMBERS !== 'undefined') {
+                            MEMBERS.membersActiveFilterValue = selectedValue;
+                            MEMBERS._renderMembersTable();
                         }
 
                         // Update active state for active filter
@@ -7979,12 +8066,12 @@ ${descriptionHtml}
                 });
             }
 
-            // Global edit button - calls startEditAllMembers from javascript.html
+            // Global edit button - calls startEditAllMembers from MEMBERS
             const editAllBtn = document.getElementById('edit-all-members-btn');
             if (editAllBtn) {
                 editAllBtn.addEventListener('click', function () {
-                    if (typeof startEditAllMembers === 'function') {
-                        startEditAllMembers();
+                    if (typeof MEMBERS !== 'undefined' && typeof MEMBERS.startEditAllMembers === 'function') {
+                        MEMBERS.startEditAllMembers();
                     }
                 });
             }
@@ -8817,81 +8904,9 @@ const SESSION_TOKEN = "session_token"
 const API = new (class GAppsApiClient {
   constructor() {}
 
-  _getCacheKey({ cache, parameters } = {}) {
-    const params = parameters ? Object.fromEntries(Object.entries(parameters).filter(([key]) => key !== "forceRefresh")) : {};
-    const cacheKey = `${cache}${params && Object.keys(params).length > 0 ? `_${new URLSearchParams(params).toString()}` : ""}`;
-    return cacheKey;
-  }
-
-  getToken() {
-    try {
-      const tokenData = localStorage.getItem(SESSION_TOKEN);
-      if (!tokenData) return null;
-      
-      // Parse stored token data
-      let token, expiryTime;
-      try {
-        const parsed = JSON.parse(tokenData);
-        token = parsed.token;
-        expiryTime = parsed.expiryTime;
-      } catch (e) {
-        // Handle legacy format (plain token string without expiry)
-        token = tokenData;
-        expiryTime = null;
-      }
-      
-      // Check if token has expired
-      if (expiryTime && Date.now() > expiryTime) {
-        localStorage.removeItem(SESSION_TOKEN);
-        return null;
-      }
-      
-      return token;
-    } catch (e) {
-      console.log("Failed to retrieve token from storage:", e.message);
-      return null;
-    }
-  }
-
   isAuthenticated() {
-    const token = this.getToken();
+    const token = CACHE.getToken();
     return token != null && token.length > 0;
-  }
-
-  saveToken({ token } = {}) {
-    try {
-      if(!token) {
-        localStorage.removeItem(SESSION_TOKEN);
-      } else {
-        const maxAge = 60 * 60 * 24 * 90; // 90 days in seconds
-        const expiryTime = Date.now() + (maxAge * 1000); // Convert to milliseconds
-        const tokenData = JSON.stringify({ token, expiryTime });
-        localStorage.setItem(SESSION_TOKEN, tokenData);
-      }
-    } catch (e) {
-      console.log("Failed to save token to storage:", e.message);
-    }
-  }
-
-  clearSession() {
-    this.saveToken();
-    this._write({ key: "user", data: null });
-  }
-
-  _write({ key, data } = {}) {
-    if(key){
-      if(!data){
-        localStorage.removeItem(key);
-      }else{
-        localStorage.setItem(key, JSON.stringify(data));
-      }
-    }
-  }
-
-  _read({ key } = {}) {
-    if(key){
-      return JSON.parse(localStorage.getItem(key));
-    }
   }
 
   _performRequest({ action, method = "GET", body = null, parameters, requiresAuth = false, cache = null } = {}) {
@@ -8907,8 +8922,8 @@ const API = new (class GAppsApiClient {
       }
 
       if (cache && method === "GET") {
-        const cacheKey = this._getCacheKey({ cache, parameters });
-        const savedData = this._read({ key: cacheKey });
+        const cacheKey = CACHE._getCacheKey({ cache, parameters });
+        const savedData = CACHE._read({ key: cacheKey });
         if (savedData) {
           return resolve(savedData);
         }
@@ -8920,11 +8935,11 @@ const API = new (class GAppsApiClient {
         );
       }
 
-      const token = this.getToken() || "";
+      const token = CACHE.getToken() || "";
       const returnResult = (data) => {
         if (data?.success) {
-          const cacheKey = this._getCacheKey({ cache, parameters });
-          this._write({ key: cacheKey, data: data.result });
+          const cacheKey = CACHE._getCacheKey({ cache, parameters });
+          CACHE._write({ key: cacheKey, data: data.result });
           resolve(data.result);
         } else {
           let errorMessage = "Ha ocorregut un error en la petició. Si el problema persistix, contacta a l'administrador.";
@@ -8971,7 +8986,7 @@ const API = new (class GAppsApiClient {
           if (!response.ok) {
             let errorMessage = `Error del servidor (${response.status}). Si el problema persistix, contacta a l'administrador.`;
             if (response.status === 401) {
-              return handleLogout({ message: "La teua sessió ha caducat. Per favor, torna a iniciar sessió." });
+              return AUTH.handleLogout({ message: "La teua sessió ha caducat. Per favor, torna a iniciar sessió." });
             }
             if (response.status === 403) {
               errorMessage =
@@ -9149,6 +9164,87 @@ const API = new (class GAppsApiClient {
 
         </script>
         
+        
+        
+        <script>
+        
+const CACHE = new (class CacheManager {
+  constructor() {} 
+
+  _getCacheKey({ cache, parameters } = {}) {
+    const params = parameters ? Object.fromEntries(Object.entries(parameters).filter(([key]) => key !== "forceRefresh")) : {};
+    const cacheKey = `${cache}${params && Object.keys(params).length > 0 ? `_${new URLSearchParams(params).toString()}` : ""}`;
+    return cacheKey;
+  }
+
+  getToken() {
+    try {
+      const tokenData = localStorage.getItem(SESSION_TOKEN);
+      if (!tokenData) return null;
+      
+      // Parse stored token data
+      let token, expiryTime;
+      try {
+        const parsed = JSON.parse(tokenData);
+        token = parsed.token;
+        expiryTime = parsed.expiryTime;
+      } catch (e) {
+        // Handle legacy format (plain token string without expiry)
+        token = tokenData;
+        expiryTime = null;
+      }
+      
+      // Check if token has expired
+      if (expiryTime && Date.now() > expiryTime) {
+        localStorage.removeItem(SESSION_TOKEN);
+        return null;
+      }
+      
+      return token;
+    } catch (e) {
+      console.log("Failed to retrieve token from storage:", e.message);
+      return null;
+    }
+  }
+
+  saveToken({ token } = {}) {
+    try {
+      if(!token) {
+        localStorage.removeItem(SESSION_TOKEN);
+      } else {
+        const maxAge = 60 * 60 * 24 * 90; // 90 days in seconds
+        const expiryTime = Date.now() + (maxAge * 1000); // Convert to milliseconds
+        const tokenData = JSON.stringify({ token, expiryTime });
+        localStorage.setItem(SESSION_TOKEN, tokenData);
+      }
+    } catch (e) {
+      console.log("Failed to save token to storage:", e.message);
+    }
+  }
+
+  clearSession() {
+    this.saveToken();
+    this._write({ key: "user", data: null });
+  }
+
+  _write({ key, data } = {}) {
+    if(key){
+      if(!data){
+        localStorage.removeItem(key);
+      }else{
+        localStorage.setItem(key, JSON.stringify(data));
+      }
+    }
+  }
+
+  _read({ key } = {}) {
+    if(key){
+      return JSON.parse(localStorage.getItem(key));
+    }
+  }
+})();
+        </script>
+        
 
         
         <script>
@@ -9270,14 +9366,14 @@ const API = new (class GAppsApiClient {
         loadDashboardData();
         break;
       case "profile":
-        AUTHENTICATION.loadProfileData();
+        AUTH.loadProfileData();
         break;
       case "members":
-        loadMembersData();
+        MEMBERS.loadMembersData();
         break;
       case "edit-event":
-        if (!membersData || membersData.length === 0) {
-          loadMembersDataForEvents();
+        if (!MEMBERS.membersData || MEMBERS.membersData.length === 0) {
+          MEMBERS.loadMembersDataForEvents();
         }
         // Load event data if ID is stored
         if (APP.eventIdToLoad) {
@@ -9310,6 +9406,12 @@ const API = new (class GAppsApiClient {
     dialogs.forEach(function (dialog) {
       if (dialog) dialog.close();
     });
+    // Also hide the backdrop
+    const backdrop = document.getElementById("dialog-backdrop");
+    if (backdrop) {
+      backdrop.classList.remove("active");
+      backdrop.dataset.currentDialog = "";
+    }
   }
 })();
 
@@ -9820,10 +9922,11 @@ function updateAuthUI() {
       finalView.classList.add("active");
     }
 
-    // Show/hide floating-lock-btn based on current view
+    // Show/hide floating-lock-btn based on current view and admin status
     const floatingLockBtn = document.getElementById("floating-lock-btn");
     if (floatingLockBtn) {
-      floatingLockBtn.style.display = route === "planning-event" ? "flex" : "none";
+      const isAdmin = APP.currentUser && APP.currentUser.roles && APP.currentUser.roles.includes("ADMIN");
+      floatingLockBtn.style.display = (route === "planning-event" && isAdmin) ? "flex" : "none";
     }
 
     // Reset isEventEditable when leaving planning-event view
@@ -9916,10 +10019,6 @@ function showDialogWithBackdrop(dialogOrId, options = {}) {
   dialog.show();
 }
 
-/**
- * Close a dialog and hide the blurry backdrop
- * @param {string|HTMLDialogElement} dialogOrId - Dialog element or its ID
- */
 function closeDialogWithBackdrop(dialogOrId) {
   const dialog = typeof dialogOrId === "string" 
     ? document.getElementById(dialogOrId) 
@@ -10017,7 +10116,7 @@ window.onerror = function (message, source, lineno, colno, error) {
 
     const logoutBtn = document.getElementById("logout-btn");
     if (logoutBtn) {
-      logoutBtn.addEventListener("click", this.handleLogout);
+      logoutBtn.addEventListener("click", this.handleLogout.bind(this));
     }
 
     const mobileLogoutBtn = document.getElementById("mobile-logout-btn");
@@ -10183,16 +10282,18 @@ window.onerror = function (message, source, lineno, colno, error) {
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
 
+        document.getElementById("register-form").reset();
+        APP.closeAllDialogs();
         showToast(
           "Sol·licitud enviada correctament. Ens posarem en contacte amb tu!",
           "success",
         );
-        document.getElementById("register-form").reset();
-        NAVIGATION.navigateTo("login");
       })
       .catch(function (error) {
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
+        document.getElementById("register-form").reset();
+        APP.closeAllDialogs();
         showToast(error || "Error en enviar la sol·licitud", "error");
         console.error("Registration error:", error);
       });
@@ -10209,7 +10310,7 @@ window.onerror = function (message, source, lineno, colno, error) {
     }
 
     if (sendBtn && !sendBtn.dataset.initialized) {
-      sendBtn.addEventListener("click", this.sendAccessLink);
+      sendBtn.addEventListener("click", this.sendAccessLink.bind(this));
       sendBtn.dataset.initialized = "true";
     }
 
@@ -10347,7 +10448,7 @@ window.onerror = function (message, source, lineno, colno, error) {
     }
 
     API.sendAccessLink({ email })
-      .then(function (result) {
+      .then((result) => {
         if (sendBtn) {
           sendBtn.disabled = false;
           sendBtn.textContent = "Enviar accés";
@@ -10359,7 +10460,7 @@ window.onerror = function (message, source, lineno, colno, error) {
         );
         this._closeAccessLinkDialog();
       })
-      .catch(function (error) {
+      .catch((error) => {
         if (sendBtn) {
           sendBtn.disabled = false;
           sendBtn.textContent = "Enviar accés";
@@ -10392,8 +10493,8 @@ window.onerror = function (message, source, lineno, colno, error) {
       mobileLogoutBtn.setAttribute("aria-busy", "true");
     }
 
-    const cleanupAfterLogout = function () { 
-      clearUserData();
+    const cleanupAfterLogout = () => { 
+      this._clearUserData();
 
       updateAuthUI();
       NAVIGATION.navigateTo("home-guest");
@@ -10403,7 +10504,7 @@ window.onerror = function (message, source, lineno, colno, error) {
 
     // Clear server-side session
     API.logoutUser()
-      .then(function (result) {
+      .then((result) => {
         // Restore button states
         if (logoutBtn) {
           logoutBtn.innerHTML = originalText;
@@ -10419,7 +10520,7 @@ window.onerror = function (message, source, lineno, colno, error) {
         // Clear all local state and temporary user data
         cleanupAfterLogout();
       })
-      .catch(function (error) {
+      .catch((error) => {
         // Restore button states
         if (logoutBtn) {
           logoutBtn.innerHTML = originalText;
@@ -10437,7 +10538,7 @@ window.onerror = function (message, source, lineno, colno, error) {
       });
   }
 
-  clearUserData() {
+  _clearUserData() {
     // Clear app state
     APP.isAuthenticated = false;
     APP.currentUser = null;
@@ -10448,18 +10549,18 @@ window.onerror = function (message, source, lineno, colno, error) {
     localStorage.removeItem("currentRoute");
 
     // Clear members data
-    membersData = [];
+    MEMBERS.membersData = [];
     MEMBERS.currentEditingMemberId = null;
-    originalMemberData = null;
-    isAddingNewMember = false;
-    allOriginalMemberData = null;
-    isEditingAllMembers = false;
+    MEMBERS.originalMemberData = null;
+    MEMBERS.isAddingNewMember = false;
+    MEMBERS.allOriginalMemberData = null;
+    MEMBERS.isEditingAllMembers = false;
 
     // Clear members filters
-    membersTypeFilterValue = "";
-    membersActiveFilterValue = "";
-    membersRolsFilterValue = "";
-    membersAccessFilterValue = "";
+    MEMBERS.membersTypeFilterValue = "";
+    MEMBERS.membersActiveFilterValue = "";
+    MEMBERS.membersRolsFilterValue = "";
+    MEMBERS.membersAccessFilterValue = "";
 
     // Clear events/diagrams data if defined
     if (typeof diagrams !== "undefined") {
@@ -10496,7 +10597,13 @@ window.onerror = function (message, source, lineno, colno, error) {
     this.membersData = [];
     this.membersSortColumn = "active";
     this.membersSortDirection = "desc";
-
+    this.membersTypeFilterValue = "";
+    this.membersActiveFilterValue = ""; // '', 'true', 'false'
+    this.membersRolsFilterValue = ""; // '', 'ADMIN', 'NO_ADMIN'
+    this.membersAccessFilterValue = ""; // '', 'HAS_ACCESS', 'NO_ACCESS'
+    this.allOriginalMemberData = null;
+    this.isEditingAllMembers = false;
+    this.passwordChangeMemberEmail = null;
 
     const addMemberBtn = document.getElementById("add-member-btn");
     if (addMemberBtn) {
@@ -10505,8 +10612,21 @@ window.onerror = function (message, source, lineno, colno, error) {
 
     const refreshMembersBtn = document.getElementById("refresh-members-btn");
     if (refreshMembersBtn) {
-      refreshMembersBtn.addEventListener("click", refreshMembersList);
+      refreshMembersBtn.addEventListener("click", () => this._refreshMembersList());
     }
+
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest(".btn-change-password");
+      if (btn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const email = btn.getAttribute("data-member-email");
+        const name = btn.getAttribute("data-member-name");
+        if (email) {
+          this._openPasswordDialog(email, name);
+        }
+      }
+    });
   }
 
   _startAddNewMember() {
@@ -10585,7 +10705,7 @@ window.onerror = function (message, source, lineno, colno, error) {
     if (editAllBtn) editAllBtn.style.display = "";
 
     // Hide Active column
-    document.querySelectorAll(".active-column").forEach(function (el) {
+    document.querySelectorAll(".active-column").forEach((el) => {
       el.style.display = "none";
     });
 
@@ -10600,11 +10720,11 @@ window.onerror = function (message, source, lineno, colno, error) {
     const searchValue = (
       document.getElementById("members-search")?.value || ""
     ).toLowerCase();
-    const typeFilter = membersTypeFilterValue || "";
-    const rolsFilter = membersRolsFilterValue || "";
+    const typeFilter = this.membersTypeFilterValue || "";
+    const rolsFilter = this.membersRolsFilterValue || "";
 
     // Filter
-    const filtered = this.membersData.filter(function (member) {
+    const filtered = this.membersData.filter((member) => {
       const matchesSearch =
         !searchValue ||
         (member.alias || "").toLowerCase().includes(searchValue) ||
@@ -10615,9 +10735,9 @@ window.onerror = function (message, source, lineno, colno, error) {
           .join(" ").toLowerCase().includes(searchValue);
       const matchesType = !typeFilter || member.type === typeFilter;
       const matchesActive =
-        !membersActiveFilterValue ||
-        (membersActiveFilterValue === "true" && member.active !== false) ||
-        (membersActiveFilterValue === "false" && member.active === false);
+        !this.membersActiveFilterValue ||
+        (this.membersActiveFilterValue === "true" && member.active !== false) ||
+        (this.membersActiveFilterValue === "false" && member.active === false);
 
       // Rols filter
       let matchesRols = true;
@@ -10629,7 +10749,7 @@ window.onerror = function (message, source, lineno, colno, error) {
 
       // Access filter (Relations)
       let matchesAccess = true;
-      const accessFilter = membersAccessFilterValue || "";
+      const accessFilter = this.membersAccessFilterValue || "";
       if (accessFilter === "HAS_ACCESS") {
         matchesAccess = (member.relatedMembers || []).length > 0;
       } else if (accessFilter === "NO_ACCESS") {
@@ -10646,9 +10766,9 @@ window.onerror = function (message, source, lineno, colno, error) {
     });
 
     // Sort
-    filtered.sort(function (a, b) {
+    filtered.sort((a, b) => {
       var valA, valB;
-      switch (membersSortColumn) {
+      switch (this.membersSortColumn) {
         case "active":
           valA = a.active !== false ? 1 : 0;
           valB = b.active !== false ? 1 : 0;
@@ -10669,8 +10789,8 @@ window.onerror = function (message, source, lineno, colno, error) {
           valA = "";
           valB = "";
       }
-      if (valA < valB) return membersSortDirection === "asc" ? -1 : 1;
-      if (valA > valB) return membersSortDirection === "asc" ? 1 : -1;
+      if (valA < valB) return this.membersSortDirection === "asc" ? -1 : 1;
+      if (valA > valB) return this.membersSortDirection === "asc" ? 1 : -1;
       return 0;
     });
 
@@ -10680,16 +10800,16 @@ window.onerror = function (message, source, lineno, colno, error) {
       tbody.innerHTML = '<tr><td colspan="8">No s\'han trobat membres</td></tr>';
       return;
     }
-    filtered.forEach(function (member) {
+    filtered.forEach((member) => {
       const tr = document.createElement("tr");
       tr.classList.add("clickable-row");
       tr.setAttribute("data-member-id", member.id);
       const isEditing =
-        String(currentEditingMemberId) === String(member.id) || isEditingAllMembers;
+        String(this.currentEditingMemberId) === String(member.id) || this.isEditingAllMembers;
 
       if (isEditing) {
         tr.classList.add("editing-row");
-        tr.innerHTML = renderEditableRow(member);
+        tr.innerHTML = this._renderEditableRow(member);
       } else {
         const typeLabel =
           member.type === "ADULT"
@@ -10742,21 +10862,20 @@ window.onerror = function (message, source, lineno, colno, error) {
     const applyBtn = document.getElementById("members-edit-apply");
 
     if (discardBtn && !discardBtn.dataset.initialized) {
-      discardBtn.addEventListener("click", cancelInlineEdit);
+      discardBtn.addEventListener("click", () => this._cancelInlineEdit());
       discardBtn.dataset.initialized = "true";
     }
 
     if (applyBtn && !applyBtn.dataset.initialized) {
-      applyBtn.addEventListener("click", applyInlineEdit);
+      applyBtn.addEventListener("click", () => this._applyInlineEdit());
       applyBtn.dataset.initialized = "true";
     }
   }
 
-
   _initMembersTableLongTap() {
     const rows = document.querySelectorAll("#members-table tbody tr.clickable-row");
 
-    rows.forEach(function (row) {
+    rows.forEach((row) => {
       // Skip if already initialized
       if (row.dataset.longtapInitialized) {
         return;
@@ -10771,7 +10890,7 @@ window.onerror = function (message, source, lineno, colno, error) {
         longPressTimer = setTimeout(function () {
           const memberId = row.getAttribute("data-member-id");
           if (memberId) {
-            startInlineEdit(memberId);
+            this._startInlineEdit(memberId);
           }
         }, longPressDuration);
       }
@@ -10823,857 +10942,807 @@ window.onerror = function (message, source, lineno, colno, error) {
       row.dataset.longtapInitialized = "true";
     });
   }
-})();
 
-/**
- * Refresh members list from database with visual feedback
- */
-function refreshMembersList() {
-  const refreshBtn = document.getElementById("refresh-members-btn");
+  _refreshMembersList() {
+    const refreshBtn = document.getElementById("refresh-members-btn");
 
-  // Add spinning animation
-  if (refreshBtn) {
-    refreshBtn.classList.add("refreshing");
-    refreshBtn.disabled = true;
-  }
+    // Add spinning animation
+    if (refreshBtn) {
+      refreshBtn.classList.add("refreshing");
+      refreshBtn.disabled = true;
+    }
 
-  // Show loading state in the table
-  const tbody = document.querySelector("#members-table tbody");
-  if (tbody)
-    tbody.innerHTML = '<tr><td colspan="6">Actualitzant membres...</td></tr>';
+    // Show loading state in the table
+    const tbody = document.querySelector("#members-table tbody");
+    if (tbody)
+      tbody.innerHTML = '<tr><td colspan="6">Actualitzant membres...</td></tr>';
 
-  API.getMembers({ forceRefresh: true })
-    .then(function (members) {
-      // Remove spinning animation
-      if (refreshBtn) {
-        refreshBtn.classList.remove("refreshing");
-        refreshBtn.disabled = false;
-      }
+    API.getMembers({ forceRefresh: true })
+      .then((members) => {
+        // Remove spinning animation
+        if (refreshBtn) {
+          refreshBtn.classList.remove("refreshing");
+          refreshBtn.disabled = false;
+        }
 
-      if (!Array.isArray(members)) {
+        if (!Array.isArray(members)) {
+          tbody.innerHTML =
+            '<tr><td colspan="6">No s\'ha pogut carregar la llista de membres</td></tr>';
+          return;
+        }
+        MEMBERS.membersData = members;
+        this._renderMembersTable();
+        showToast("Llista actualitzada", "success");
+      })
+      .catch((error) => {
+        // Remove spinning animation
+        if (refreshBtn) {
+          refreshBtn.classList.remove("refreshing");
+          refreshBtn.disabled = false;
+        }
+        console.error("Error refreshing members:", error);
         tbody.innerHTML =
           '<tr><td colspan="6">No s\'ha pogut carregar la llista de membres</td></tr>';
-        return;
-      }
-      membersData = members;
-      renderMembersTable();
-      showToast("Llista actualitzada", "success");
-    })
-    .catch(function (error) {
-      // Remove spinning animation
-      if (refreshBtn) {
-        refreshBtn.classList.remove("refreshing");
-        refreshBtn.disabled = false;
-      }
-      tbody.innerHTML =
-        '<tr><td colspan="6">No s\'ha pogut carregar la llista de membres</td></tr>';
-      showToast("Error actualitzant la llista", "error");
-    });
-}
-
-function loadMembersData() {
-  // Show loading state in the table
-  const tbody = document.querySelector("#members-table tbody");
-  if (tbody)
-    tbody.innerHTML = '<tr><td colspan="5">Carregant membres...</td></tr>';
-
-  API.getMembers()
-    .then(function (members) {
-      if (!Array.isArray(members)) {
-        tbody.innerHTML =
-          '<tr><td colspan="5">No s\'ha pogut carregar la llista de membres</td></tr>';
-        return;
-      }
-      membersData = members;
-      initMembersFilters();
-      renderMembersTable();
-    })
-    .catch(function (error) {
-      tbody.innerHTML =
-        '<tr><td colspan="5">No s\'ha pogut carregar la llista de membres</td></tr>';
-    });
-}
-
-// Load members data silently for events view (without updating members table)
-function loadMembersDataForEvents() {
-  API.getMembers()
-    .then(function (members) {
-      if (Array.isArray(members)) {
-        membersData = members;
-      }
-    })
-    .catch(function (error) {
-      console.error("Error loading members for events:", error);
-    });
-}
-
-var membersTypeFilterValue = "";
-var membersActiveFilterValue = ""; // '', 'true', 'false'
-var membersRolsFilterValue = ""; // '', 'ADMIN', 'NO_ADMIN'
-var membersAccessFilterValue = ""; // '', 'HAS_ACCESS', 'NO_ACCESS'
-
-function initMembersFilters() {
-  const searchInput = document.getElementById("members-search");
-  const sortableHeaders = document.querySelectorAll(
-    "#members-table th.sortable",
-  );
-
-  // Remove existing listeners by cloning and replacing
-  if (searchInput && !searchInput.dataset.initialized) {
-    searchInput.addEventListener("input", renderMembersTable);
-    searchInput.dataset.initialized = "true";
+        showToast("Error actualitzant la llista", "error");
+      });
   }
-  sortableHeaders.forEach(function (th) {
-    if (!th.dataset.initialized) {
-      th.addEventListener("click", function () {
-        const column = th.getAttribute("data-sort");
-        if (membersSortColumn === column) {
-          membersSortDirection =
-            membersSortDirection === "asc" ? "desc" : "asc";
-        } else {
-          membersSortColumn = column;
-          membersSortDirection = "asc";
-        }
-        updateSortIcons();
-        renderMembersTable();
-      });
-      th.dataset.initialized = "true";
+
+  _initMembersFilters() {
+    const searchInput = document.getElementById("members-search");
+    const sortableHeaders = document.querySelectorAll(
+      "#members-table th.sortable",
+    );
+
+    // Remove existing listeners by cloning and replacing
+    if (searchInput && !searchInput.dataset.initialized) {
+      searchInput.addEventListener("input", () => MEMBERS._renderMembersTable());
+      searchInput.dataset.initialized = "true";
     }
-  });
-  updateSortIcons();
-
-  // Long press on Type header to show filter dropdown
-  const typeHeader = document.querySelector(
-    '#members-table th[data-sort="type"]',
-  );
-  if (typeHeader && !typeHeader.dataset.longpressInitialized) {
-    let longPressTimer = null;
-    let longPressTriggered = false;
-    const longPressDuration = 500; // ms
-
-    function showTypeFilterDropdown(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      longPressTriggered = true;
-
-      // Remove any existing dropdown
-      const existingDropdown = document.getElementById("type-filter-dropdown");
-      if (existingDropdown) existingDropdown.remove();
-
-      // Create dropdown
-      const dropdown = document.createElement("div");
-      dropdown.id = "type-filter-dropdown";
-      dropdown.className = "type-filter-dropdown";
-      dropdown.innerHTML = `
-<div class="type-filter-option" data-value="">Tots els tipus</div>
-<div class="type-filter-option" data-value="ADULT">Adult</div>
-<div class="type-filter-option" data-value="KID">Xiquet/a</div>
-`;
-
-      // Position dropdown below the header
-      const rect = typeHeader.getBoundingClientRect();
-      dropdown.style.top = rect.bottom + window.scrollY + "px";
-      dropdown.style.left = rect.left + "px";
-
-      // Mark current selection and add click handlers
-      dropdown.querySelectorAll(".type-filter-option").forEach(function (opt) {
-        if (opt.getAttribute("data-value") === membersTypeFilterValue) {
-          opt.classList.add("selected");
-        }
-        opt.addEventListener("click", function () {
-          membersTypeFilterValue = this.getAttribute("data-value");
-          dropdown.remove();
-          renderMembersTable();
+    sortableHeaders.forEach((th) => {
+      if (!th.dataset.initialized) {
+        th.addEventListener("click", () => {
+          const column = th.getAttribute("data-sort");
+          if (MEMBERS.membersSortColumn === column) {
+            MEMBERS.membersSortDirection =
+              MEMBERS.membersSortDirection === "asc" ? "desc" : "asc";
+          } else {
+            MEMBERS.membersSortColumn = column;
+            MEMBERS.membersSortDirection = "asc";
+          }
+          MEMBERS._updateSortIcons();
+          MEMBERS._renderMembersTable();
         });
-      });
+        th.dataset.initialized = "true";
+      }
+    });
+    MEMBERS._updateSortIcons();
 
-      document.body.appendChild(dropdown);
+    // Long press on Type header to show filter dropdown
+    const typeHeader = document.querySelector(
+      '#members-table th[data-sort="type"]',
+    );
+    if (typeHeader && !typeHeader.dataset.longpressInitialized) {
+      let longPressTimer = null;
+      let longPressTriggered = false;
+      const longPressDuration = 500; // ms
 
-      // Close on click outside
-      function closeDropdown(event) {
-        if (!dropdown.contains(event.target)) {
-          dropdown.remove();
-          document.removeEventListener("click", closeDropdown);
+      function showTypeFilterDropdown(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        longPressTriggered = true;
+
+        // Remove any existing dropdown
+        const existingDropdown = document.getElementById("type-filter-dropdown");
+        if (existingDropdown) existingDropdown.remove();
+
+        // Create dropdown
+        const dropdown = document.createElement("div");
+        dropdown.id = "type-filter-dropdown";
+        dropdown.className = "type-filter-dropdown";
+        dropdown.innerHTML = `
+  <div class="type-filter-option" data-value="">Tots els tipus</div>
+  <div class="type-filter-option" data-value="ADULT">Adult</div>
+  <div class="type-filter-option" data-value="KID">Xiquet/a</div>
+  `;
+
+        // Position dropdown below the header
+        const rect = typeHeader.getBoundingClientRect();
+        dropdown.style.top = rect.bottom + window.scrollY + "px";
+        dropdown.style.left = rect.left + "px";
+
+        // Mark current selection and add click handlers
+        dropdown.querySelectorAll(".type-filter-option").forEach((opt) => {
+          if (opt.getAttribute("data-value") === MEMBERS.membersTypeFilterValue) {
+            opt.classList.add("selected");
+          }
+          opt.addEventListener("click", () => {
+            MEMBERS.membersTypeFilterValue = opt.getAttribute("data-value");
+            dropdown.remove();
+            MEMBERS._renderMembersTable();
+          });
+        });
+
+        document.body.appendChild(dropdown);
+
+        // Close on click outside
+        function closeDropdown(event) {
+          if (!dropdown.contains(event.target)) {
+            dropdown.remove();
+            document.removeEventListener("click", closeDropdown);
+          }
+        }
+        setTimeout(function () {
+          document.addEventListener("click", closeDropdown);
+        }, 0);
+      }
+
+      function startLongPress(e) {
+        longPressTriggered = false;
+        longPressTimer = setTimeout(function () {
+          showTypeFilterDropdown(e);
+        }, longPressDuration);
+      }
+
+      function cancelLongPress() {
+        if (longPressTimer) {
+          clearTimeout(longPressTimer);
+          longPressTimer = null;
         }
       }
-      setTimeout(function () {
-        document.addEventListener("click", closeDropdown);
-      }, 0);
-    }
 
-    function startLongPress(e) {
-      longPressTriggered = false;
-      longPressTimer = setTimeout(function () {
+      // Prevent click from sorting when long press was triggered
+      typeHeader.addEventListener(
+        "click",
+        function (e) {
+          if (longPressTriggered) {
+            e.stopImmediatePropagation();
+            longPressTriggered = false;
+          }
+        },
+        true,
+      );
+
+      // Mouse events
+      typeHeader.addEventListener("mousedown", startLongPress);
+      typeHeader.addEventListener("mouseup", cancelLongPress);
+      typeHeader.addEventListener("mouseleave", cancelLongPress);
+
+      // Touch events for mobile
+      typeHeader.addEventListener("touchstart", startLongPress, {
+        passive: true,
+      });
+      typeHeader.addEventListener("touchend", cancelLongPress);
+      typeHeader.addEventListener("touchcancel", cancelLongPress);
+      typeHeader.addEventListener("touchmove", cancelLongPress);
+
+      // Prevent context menu on long press
+      typeHeader.addEventListener("contextmenu", function (e) {
+        e.preventDefault();
         showTypeFilterDropdown(e);
-      }, longPressDuration);
-    }
-
-    function cancelLongPress() {
-      if (longPressTimer) {
-        clearTimeout(longPressTimer);
-        longPressTimer = null;
-      }
-    }
-
-    // Prevent click from sorting when long press was triggered
-    typeHeader.addEventListener(
-      "click",
-      function (e) {
-        if (longPressTriggered) {
-          e.stopImmediatePropagation();
-          longPressTriggered = false;
-        }
-      },
-      true,
-    );
-
-    // Mouse events
-    typeHeader.addEventListener("mousedown", startLongPress);
-    typeHeader.addEventListener("mouseup", cancelLongPress);
-    typeHeader.addEventListener("mouseleave", cancelLongPress);
-
-    // Touch events for mobile
-    typeHeader.addEventListener("touchstart", startLongPress, {
-      passive: true,
-    });
-    typeHeader.addEventListener("touchend", cancelLongPress);
-    typeHeader.addEventListener("touchcancel", cancelLongPress);
-    typeHeader.addEventListener("touchmove", cancelLongPress);
-
-    // Prevent context menu on long press
-    typeHeader.addEventListener("contextmenu", function (e) {
-      e.preventDefault();
-      showTypeFilterDropdown(e);
-    });
-
-    typeHeader.dataset.longpressInitialized = "true";
-  }
-
-  // Click on last column header to show Active filter dropdown
-  const activeHeader = document.getElementById("active-filter-header");
-  if (activeHeader && !activeHeader.dataset.initialized) {
-    activeHeader.style.cursor = "pointer";
-
-    activeHeader.addEventListener("click", function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      // Remove any existing dropdown
-      const existingDropdown = document.getElementById(
-        "active-filter-dropdown",
-      );
-      if (existingDropdown) {
-        existingDropdown.remove();
-        return; // Toggle off if already open
-      }
-
-      // Create dropdown
-      const dropdown = document.createElement("div");
-      dropdown.id = "active-filter-dropdown";
-      dropdown.className = "type-filter-dropdown";
-      dropdown.innerHTML = `
-<div class="type-filter-option" data-value="">Tots</div>
-<div class="type-filter-option" data-value="true">En actiu</div>
-<div class="type-filter-option" data-value="false">No actiu</div>
-`;
-
-      // Position dropdown below the header
-      const rect = activeHeader.getBoundingClientRect();
-      dropdown.style.top = rect.bottom + window.scrollY + "px";
-      dropdown.style.left = rect.right - 160 + "px"; // Align to right edge
-
-      // Mark current selection and add click handlers
-      dropdown.querySelectorAll(".type-filter-option").forEach(function (opt) {
-        if (opt.getAttribute("data-value") === membersActiveFilterValue) {
-          opt.classList.add("selected");
-        }
-        opt.addEventListener("click", function () {
-          membersActiveFilterValue = this.getAttribute("data-value");
-          dropdown.remove();
-          renderMembersTable();
-        });
       });
 
-      document.body.appendChild(dropdown);
-
-      // Close on click outside
-      function closeDropdown(event) {
-        if (!dropdown.contains(event.target) && event.target !== activeHeader) {
-          dropdown.remove();
-          document.removeEventListener("click", closeDropdown);
-        }
-      }
-      setTimeout(function () {
-        document.addEventListener("click", closeDropdown);
-      }, 0);
-    });
-
-    activeHeader.dataset.initialized = "true";
-  }
-}
-
-function updateSortIcons() {
-  const headers = document.querySelectorAll("#members-table th.sortable");
-  headers.forEach(function (th) {
-    const icon = th.querySelector(".sort-icon");
-    if (th.getAttribute("data-sort") === membersSortColumn) {
-      icon.textContent = membersSortDirection === "asc" ? " ▲" : " ▼";
-    } else {
-      icon.textContent = "";
-    }
-  });
-}
-
-/**
- * Render an editable row for inline editing
- * @param {Object} member - The member data
- * @returns {string} HTML for the editable row
- */
-function renderEditableRow(member) {
-  const typeOptions = `
-        <option value="ADULT" ${member.type === "ADULT" ? "selected" : ""}>Adult</option>
-        <option value="KID" ${member.type === "KID" ? "selected" : ""}>Xiquet/a</option>
-    `;
-
-  const isAdmin = (member.roles || []).includes("ADMIN");
-  const isKid = member.type === "KID";
-
-  // Email field (disabled for KID)
-  const emailHtml = isKid
-    ? '<span class="text-muted">-</span>'
-    : `<input type="email" class="inline-edit-input" name="inline-email" value="${member.email || ""}">`;
-
-  // Roles field (disabled for KID)
-  const rolesHtml = isKid
-    ? '<span class="text-muted">-</span>'
-    : `<label class="checkbox-label inline-checkbox">
-                <input type="checkbox" name="inline-admin" ${isAdmin ? "checked" : ""}> Admin
-            </label>`;
-
-  // Build relations checkboxes (only for ADULT members)
-  let relationsHtml = "";
-  if (isKid) {
-    relationsHtml = '<span class="text-muted">-</span>';
-  } else {
-    relationsHtml =
-      '<div class="inline-relations-dropdown" id="inline-relations-container">';
-    relationsHtml +=
-      '<button type="button" class="btn-dropdown" onclick="toggleRelationsDropdown(this)">Seleccionar ▼</button>';
-    relationsHtml +=
-      '<div class="relations-dropdown-content" style="display:none;">';
-    membersData.forEach(function (m) {
-      if (m.id !== member.id) {
-        const checked = (member.relations || []).includes(m.id)
-          ? "checked"
-          : "";
-        relationsHtml += `<label class="checkbox-label"><input type="checkbox" name="inline-relations" value="${m.id}" data-name="${m.name}" ${checked}> ${m.name}</label>`;
-      }
-    });
-    relationsHtml += "</div></div>";
-  }
-
-  const isActive = member.active !== false;
-  return `
-        <td><input type="text" class="inline-edit-input" name="inline-name" value="${member.alias || ""}" required></td>
-        <td class="email-cell">${emailHtml}</td>
-        <td>
-        <select class="inline-edit-select" name="inline-type" onchange="handleInlineTypeChange(this)">${typeOptions}</select>
-        </td>
-        <td class="roles-cell">${rolesHtml}</td>
-        <td class="relations-cell">${relationsHtml}</td>
-        <td class="active-column">
-        <label class="checkbox-label inline-checkbox">
-            <input type="checkbox" name="inline-active" ${isActive ? "checked" : ""}> Actiu
-        </label>
-        </td>
-        <td></td>
-        <td></td>
-    `;
-}
-
-/**
- * Toggle relations dropdown visibility
- */
-function toggleRelationsDropdown(btn) {
-  const dropdown = btn.nextElementSibling;
-  dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
-}
-
-/**
- * Handle type change during inline edit - KID cannot have email, roles, or relations
- */
-function handleInlineTypeChange(selectEl) {
-  const row = selectEl.closest("tr");
-  const emailCell = row.querySelector(".email-cell");
-  const rolesCell = row.querySelector(".roles-cell");
-  const relationsCell = row.querySelector(".relations-cell");
-  const memberId = row.getAttribute("data-member-id");
-  const member = membersData.find(function (m) {
-    return String(m.id) === String(memberId);
-  });
-
-  if (selectEl.value === "KID") {
-    // Clear and disable email, roles, and relations for KID
-    if (emailCell) emailCell.innerHTML = '<span class="text-muted">-</span>';
-    if (rolesCell) rolesCell.innerHTML = '<span class="text-muted">-</span>';
-    if (relationsCell)
-      relationsCell.innerHTML = '<span class="text-muted">-</span>';
-  } else {
-    // Restore email field for ADULT
-    if (emailCell) {
-      const email = member ? member.email || "" : "";
-      emailCell.innerHTML = `<input type="email" class="inline-edit-input" name="inline-email" value="${email}">`;
+      typeHeader.dataset.longpressInitialized = "true";
     }
 
-    // Restore roles for ADULT
-    if (rolesCell) {
-      const isAdmin = member && (member.roles || []).includes("ADMIN");
-      rolesCell.innerHTML = `<label class="checkbox-label inline-checkbox">
-                <input type="checkbox" name="inline-admin" ${isAdmin ? "checked" : ""}> Admin
-            </label>`;
-    }
+    // Click on last column header to show Active filter dropdown
+    const activeHeader = document.getElementById("active-filter-header");
+    if (activeHeader && !activeHeader.dataset.initialized) {
+      activeHeader.style.cursor = "pointer";
 
-    // Restore relations dropdown for ADULT
-    if (relationsCell) {
-      let relationsHtml =
-        '<div class="inline-relations-dropdown" id="inline-relations-container">';
-      relationsHtml +=
-        '<button type="button" class="btn-dropdown" onclick="toggleRelationsDropdown(this)">Seleccionar ▼</button>';
-      relationsHtml +=
-        '<div class="relations-dropdown-content" style="display:none;">';
-      membersData.forEach(function (m) {
-        if (String(m.id) !== String(memberId)) {
-          const checked =
-            member && (member.relations || []).includes(m.id)
-              ? "checked"
-              : "";
-          relationsHtml += `<label class="checkbox-label"><input type="checkbox" name="inline-relations" value="${m.id}" data-name="${m.name}" ${checked}> ${m.name}</label>`;
-        }
-      });
-      relationsHtml += "</div></div>";
-      relationsCell.innerHTML = relationsHtml;
-    }
-  }
-}
+      activeHeader.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
 
-/**
- * Start inline editing for a member
- * @param {string|number} memberId - ID of the member to edit
- */
-function startInlineEdit(memberId) {
-  // If already editing another member, cancel that edit first
-  if (MEMBERS.currentEditingMemberId && String(MEMBERS.currentEditingMemberId) !== String(memberId)) {
-    cancelInlineEdit();
-  }
-
-  const member = membersData.find(function (m) {
-    return String(m.id) === String(memberId);
-  });
-  if (!member) {
-    console.error("Member not found. memberId:", memberId, "Available IDs:", membersData.map(m => m.id));
-    showToast("Membre no trobat", "error");
-    return;
-  }
-
-  // Store original data for discard
-  MEMBERS.currentEditingMemberId = memberId;
-  originalMemberData = JSON.parse(JSON.stringify(member));
-
-  // Show action bar
-  const actionsBar = document.getElementById("members-edit-actions");
-  if (actionsBar) {
-    actionsBar.style.display = "flex";
-  }
-
-  // Show Active column
-  document.querySelectorAll(".active-column").forEach(function (el) {
-    el.style.display = "";
-  });
-
-  // Re-render table to show editable row
-  renderMembersTable();
-
-  // Initialize action bar listeners
-  initInlineEditListeners();
-}
-
-// Track all original data when editing all members
-var allOriginalMemberData = null;
-var isEditingAllMembers = false;
-
-/**
- * Start editing all members at once
- */
-function startEditAllMembers() {
-  // Cancel any existing single edit
-  if (MEMBERS.currentEditingMemberId) {
-    cancelInlineEdit();
-  }
-
-  // Store original data for all members
-  allOriginalMemberData = JSON.parse(JSON.stringify(membersData));
-  isEditingAllMembers = true;
-  MEMBERS.currentEditingMemberId = "__all__";
-
-  // Show action bar
-  const actionsBar = document.getElementById("members-edit-actions");
-  const editInfo = actionsBar ? actionsBar.querySelector(".edit-info") : null;
-  if (actionsBar) {
-    actionsBar.style.display = "flex";
-    if (editInfo) editInfo.textContent = "Editant tots els membres...";
-  }
-
-  // Hide edit button
-  const editAllBtn = document.getElementById("edit-all-members-btn");
-  if (editAllBtn) editAllBtn.style.display = "none";
-
-  // Show Active column
-  document.querySelectorAll(".active-column").forEach(function (el) {
-    el.style.display = "";
-  });
-
-  // Re-render table with all rows editable
-  renderMembersTable();
-
-  // Initialize action bar listeners
-  initInlineEditListeners();
-}
-
-
-// Password change dialog handling
-var passwordChangeMemberEmail = null;
-
-function initPasswordChangeHandlers() {
-  const dialog = document.getElementById("password-change-dialog");
-  const cancelBtn = document.getElementById("password-cancel-btn");
-  const saveBtn = document.getElementById("password-save-btn");
-
-  if (cancelBtn && !cancelBtn.dataset.initialized) {
-    cancelBtn.addEventListener("click", closePasswordDialog);
-    cancelBtn.dataset.initialized = "true";
-  }
-
-  if (saveBtn && !saveBtn.dataset.initialized) {
-    saveBtn.addEventListener("click", saveNewPassword);
-    saveBtn.dataset.initialized = "true";
-  }
-
-  // Close on backdrop click
-  if (dialog && !dialog.dataset.initialized) {
-    dialog.addEventListener("click", function (e) {
-      if (e.target === dialog) {
-        closePasswordDialog();
-      }
-    });
-    dialog.dataset.initialized = "true";
-  }
-}
-
-function openPasswordDialog(email, name) {
-  APP.closeAllDialogs();
-  const dialog = document.getElementById("password-change-dialog");
-  const memberNameEl = document.getElementById("password-change-member-name");
-  const newPasswordInput = document.getElementById("new-password");
-  const confirmPasswordInput = document.getElementById("confirm-password");
-
-  if (!dialog) return;
-
-  passwordChangeMemberEmail = email;
-  if (memberNameEl) memberNameEl.textContent = name + " (" + email + ")";
-  if (newPasswordInput) newPasswordInput.value = "";
-  if (confirmPasswordInput) confirmPasswordInput.value = "";
-
-  initPasswordChangeHandlers();
-  showDialogWithBackdrop(dialog);
-  if (newPasswordInput) newPasswordInput.focus();
-}
-
-function closePasswordDialog() {
-  closeDialogWithBackdrop("password-change-dialog");
-  passwordChangeMemberEmail = null;
-}
-
-function saveNewPassword() {
-  const newPassword = document.getElementById("new-password")?.value || "";
-  const confirmPassword =
-    document.getElementById("confirm-password")?.value || "";
-  const saveBtn = document.getElementById("password-save-btn");
-
-  // Validation
-  if (!newPassword) {
-    showToast("Cal introduir una contrasenya", "error");
-    return;
-  }
-
-  if (newPassword.length < 8) {
-    showToast("La contrasenya ha de tenir almenys 8 caràcters", "error");
-    return;
-  }
-
-  if (newPassword !== confirmPassword) {
-    showToast("Les contrasenyes no coincideixen", "error");
-    return;
-  }
-
-  if (!passwordChangeMemberEmail) {
-    showToast("Error: no s'ha seleccionat cap membre", "error");
-    return;
-  }
-
-  // Disable button during save
-  if (saveBtn) {
-    saveBtn.disabled = true;
-    saveBtn.textContent = "Desant...";
-  }
-
-  API.changeUserPassword({ email: passwordChangeMemberEmail, newPassword })
-    .then(function (result) {
-      if (saveBtn) {
-        saveBtn.disabled = false;
-        saveBtn.textContent = "Desar";
-      }
-      closePasswordDialog();
-      showToast(
-        result.message || "Contrasenya canviada correctament",
-        "success",
-      );
-    })
-    .catch(function (error) {
-      if (saveBtn) {
-        saveBtn.disabled = false;
-        saveBtn.textContent = "Desar";
-      }
-      showToast(error || "Error en canviar la contrasenya", "error");
-      console.error("Password change error:", error);
-    });
-}
-
-// Event delegation for password change buttons in members table
-document.addEventListener("click", function (e) {
-  const btn = e.target.closest(".btn-change-password");
-  if (btn) {
-    e.preventDefault();
-    e.stopPropagation();
-    const email = btn.getAttribute("data-member-email");
-    const name = btn.getAttribute("data-member-name");
-    if (email) {
-      openPasswordDialog(email, name);
-    }
-  }
-});
-
-/**
- * Cancel inline edit and restore original data
- */
-
-
-/**
- * Apply inline edit changes
- */
-function applyInlineEdit() {
-  if (!MEMBERS.currentEditingMemberId) return;
-
-  // Handle editing all members
-  if (isEditingAllMembers) {
-    applyAllMembersEdit();
-    return;
-  }
-
-  const applyBtn = document.getElementById("members-edit-apply");
-  const btnText = applyBtn.querySelector(".btn-text");
-  const btnLoading = applyBtn.querySelector(".btn-loading");
-
-  // Show loading state
-  btnText.style.display = "none";
-  btnLoading.style.display = "inline";
-  applyBtn.disabled = true;
-
-  // Gather data from inline inputs
-  const row = document.querySelector(
-    `tr[data-member-id="${MEMBERS.currentEditingMemberId}"]`,
-  );
-  if (!row) {
-    showToast("Error: fila no trobada", "error");
-    return;
-  }
-
-  const activeCheckbox = row.querySelector('input[name="inline-active"]');
-  const memberData = {
-    id: MEMBERS.currentEditingMemberId === "__new__" ? null : MEMBERS.currentEditingMemberId,
-    name: row.querySelector('input[name="inline-name"]').value.trim(),
-    email: "",
-    type: row.querySelector('select[name="inline-type"]').value,
-    roles: [],
-    relations: [],
-    active: activeCheckbox ? activeCheckbox.checked : true,
-    isNew: isAddingNewMember,
-  };
-
-  // Only get email, roles, and relations for ADULT members
-  if (memberData.type !== "KID") {
-    // Get email
-    const emailInput = row.querySelector('input[name="inline-email"]');
-    if (emailInput) {
-      memberData.email = emailInput.value.trim();
-    }
-
-    // Get admin role
-    const adminCheckbox = row.querySelector('input[name="inline-admin"]');
-    if (adminCheckbox && adminCheckbox.checked) {
-      memberData.roles.push("ADMIN");
-    }
-
-    // Get selected relations (as IDs)
-    const relationCheckboxes = row.querySelectorAll(
-      'input[name="inline-relations"]:checked',
-    );
-    relationCheckboxes.forEach(function (checkbox) {
-      memberData.relations.push(checkbox.value);
-    });
-  }
-
-  // Call server to save
-  API.saveMember({ member: memberData })
-    .then(function (result) {
-      btnText.style.display = "inline";
-      btnLoading.style.display = "none";
-      applyBtn.disabled = false;
-
-      if (result && result.success) {
-        const successMsg = isAddingNewMember
-          ? "Membre creat correctament"
-          : "Membre desat correctament";
-        showToast(successMsg, "success");
-        MEMBERS.currentEditingMemberId = null;
-        originalMemberData = null;
-        isAddingNewMember = false;
-
-        // Hide action bar and restore text
-        const actionsBar = document.getElementById("members-edit-actions");
-        const editInfo = actionsBar?.querySelector(".edit-info");
-        if (actionsBar) {
-          actionsBar.style.display = "none";
-          if (editInfo) editInfo.textContent = "Editant membre...";
+        // Remove any existing dropdown
+        const existingDropdown = document.getElementById(
+          "active-filter-dropdown",
+        );
+        if (existingDropdown) {
+          existingDropdown.remove();
+          return; // Toggle off if already open
         }
 
-        // Hide Active column
-        document.querySelectorAll(".active-column").forEach(function (el) {
-          el.style.display = "none";
+        // Create dropdown
+        const dropdown = document.createElement("div");
+        dropdown.id = "active-filter-dropdown";
+        dropdown.className = "type-filter-dropdown";
+        dropdown.innerHTML = `
+        <div class="type-filter-option" data-value="">Tots</div>
+        <div class="type-filter-option" data-value="true">En actiu</div>
+        <div class="type-filter-option" data-value="false">No actiu</div>
+        `;
+
+        // Position dropdown below the header
+        const rect = activeHeader.getBoundingClientRect();
+        dropdown.style.top = rect.bottom + window.scrollY + "px";
+        dropdown.style.left = rect.right - 160 + "px"; // Align to right edge
+
+        // Mark current selection and add click handlers
+        dropdown.querySelectorAll(".type-filter-option").forEach((opt) => {
+          if (opt.getAttribute("data-value") === MEMBERS.membersActiveFilterValue) {
+            opt.classList.add("selected");
+          }
+          opt.addEventListener("click", () => {
+            MEMBERS.membersActiveFilterValue = opt.getAttribute("data-value");
+            dropdown.remove();
+            MEMBERS._renderMembersTable();
+          });
         });
 
-        // Reload members data
-        loadMembersData();
-      } else {
-        showToast(result?.error || "Error desant el membre", "error");
+        document.body.appendChild(dropdown);
+
+        // Close on click outside
+        function closeDropdown(event) {
+          if (!dropdown.contains(event.target) && event.target !== activeHeader) {
+            dropdown.remove();
+            document.removeEventListener("click", closeDropdown);
+          }
+        }
+        setTimeout(function () {
+          document.addEventListener("click", closeDropdown);
+        }, 0);
+      });
+
+      activeHeader.dataset.initialized = "true";
+    }
+  }
+
+  _applyAllMembersEdit() {
+    const applyBtn = document.getElementById("members-edit-apply");
+    const btnText = applyBtn.querySelector(".btn-text");
+    const btnLoading = applyBtn.querySelector(".btn-loading");
+
+    // Show loading state
+    btnText.style.display = "none";
+    btnLoading.style.display = "inline";
+    applyBtn.disabled = true;
+
+    // Gather data from all editable rows
+    const rows = document.querySelectorAll("#members-table tbody tr.editing-row");
+    const allMemberData = [];
+
+    rows.forEach((row) => {
+      const memberId = row.getAttribute("data-member-id");
+      if (!memberId || memberId === "__new__") return;
+
+      const activeCheckbox = row.querySelector('input[name="inline-active"]');
+      const typeSelect = row.querySelector('select[name="inline-type"]');
+      const memberData = {
+        id: memberId,
+        name: row.querySelector('input[name="inline-name"]').value.trim(),
+        email: "",
+        type: typeSelect ? typeSelect.value : "ADULT",
+        roles: [],
+        relations: [],
+        active: activeCheckbox ? activeCheckbox.checked : true,
+      };
+
+      // Only get email, roles, and relations for ADULT members
+      if (memberData.type !== "KID") {
+        const emailInput = row.querySelector('input[name="inline-email"]');
+        if (emailInput) {
+          memberData.email = emailInput.value.trim();
+        }
+
+        const adminCheckbox = row.querySelector('input[name="inline-admin"]');
+        if (adminCheckbox && adminCheckbox.checked) {
+          memberData.roles.push("ADMIN");
+        }
+
+        const relationCheckboxes = row.querySelectorAll(
+          'input[name="inline-relations"]:checked',
+        );
+        relationCheckboxes.forEach((checkbox) => {
+          memberData.relations.push(checkbox.value);
+        });
       }
-    })
-    .catch(function (error) {
-      btnText.style.display = "inline";
-      btnLoading.style.display = "none";
-      applyBtn.disabled = false;
-      showToast("Error desant el membre: " + error, "error");
-      console.error("Save member error:", error);
+
+      allMemberData.push(memberData);
     });
-}
 
-/**
- * Apply edits for all members at once
- */
-function applyAllMembersEdit() {
-  const applyBtn = document.getElementById("members-edit-apply");
-  const btnText = applyBtn.querySelector(".btn-text");
-  const btnLoading = applyBtn.querySelector(".btn-loading");
+    // Call server to save all members
+    API.saveAllMembers({ members: allMemberData })
+      .then((result) => {
+        btnText.style.display = "inline";
+        btnLoading.style.display = "none";
+        applyBtn.disabled = false;
 
-  // Show loading state
-  btnText.style.display = "none";
-  btnLoading.style.display = "inline";
-  applyBtn.disabled = true;
+        if (result && result.success) {
+          showToast("Tots els membres desats correctament", "success");
+          MEMBERS.currentEditingMemberId = null;
+          this.allOriginalMemberData = null;
+          this.isEditingAllMembers = false;
 
-  // Gather data from all editable rows
-  const rows = document.querySelectorAll("#members-table tbody tr.editing-row");
-  const allMemberData = [];
+          // Hide action bar
+          const actionsBar = document.getElementById("members-edit-actions");
+          if (actionsBar) {
+            actionsBar.style.display = "none";
+          }
 
-  rows.forEach(function (row) {
-    const memberId = row.getAttribute("data-member-id");
-    if (!memberId || memberId === "__new__") return;
+          // Show edit button again
+          const editAllBtn = document.getElementById("edit-all-members-btn");
+          if (editAllBtn) editAllBtn.style.display = "";
+
+          // Hide Active column
+          document.querySelectorAll(".active-column").forEach((el) => {
+            el.style.display = "none";
+          });
+
+          // Reload members data
+          MEMBERS.loadMembersData();
+        } else {
+          showToast(result?.error || "Error desant els membres", "error");
+        }
+      })
+      .catch((error) => {
+        btnText.style.display = "inline";
+        btnLoading.style.display = "none";
+        applyBtn.disabled = false;
+        showToast("Error desant els membres: " + error, "error");
+        console.error("Save all members error:", error);
+      });
+  }
+
+  _applyInlineEdit() {
+    if (!MEMBERS.currentEditingMemberId) return;
+
+    // Handle editing all members
+    if (this.isEditingAllMembers) {
+      this._applyAllMembersEdit();
+      return;
+    }
+
+    const applyBtn = document.getElementById("members-edit-apply");
+    const btnText = applyBtn.querySelector(".btn-text");
+    const btnLoading = applyBtn.querySelector(".btn-loading");
+
+    // Show loading state
+    btnText.style.display = "none";
+    btnLoading.style.display = "inline";
+    applyBtn.disabled = true;
+
+    // Gather data from inline inputs
+    const row = document.querySelector(
+      `tr[data-member-id="${MEMBERS.currentEditingMemberId}"]`,
+    );
+    if (!row) {
+      showToast("Error: fila no trobada", "error");
+      return;
+    }
 
     const activeCheckbox = row.querySelector('input[name="inline-active"]');
-    const typeSelect = row.querySelector('select[name="inline-type"]');
     const memberData = {
-      id: memberId,
+      id: MEMBERS.currentEditingMemberId === "__new__" ? null : MEMBERS.currentEditingMemberId,
       name: row.querySelector('input[name="inline-name"]').value.trim(),
       email: "",
-      type: typeSelect ? typeSelect.value : "ADULT",
+      type: row.querySelector('select[name="inline-type"]').value,
       roles: [],
       relations: [],
       active: activeCheckbox ? activeCheckbox.checked : true,
+      isNew: this.isAddingNewMember,
     };
 
     // Only get email, roles, and relations for ADULT members
     if (memberData.type !== "KID") {
+      // Get email
       const emailInput = row.querySelector('input[name="inline-email"]');
       if (emailInput) {
         memberData.email = emailInput.value.trim();
       }
 
+      // Get admin role
       const adminCheckbox = row.querySelector('input[name="inline-admin"]');
       if (adminCheckbox && adminCheckbox.checked) {
         memberData.roles.push("ADMIN");
       }
 
+      // Get selected relations (as IDs)
       const relationCheckboxes = row.querySelectorAll(
         'input[name="inline-relations"]:checked',
       );
-      relationCheckboxes.forEach(function (checkbox) {
+      relationCheckboxes.forEach((checkbox) => {
         memberData.relations.push(checkbox.value);
       });
     }
 
-    allMemberData.push(memberData);
-  });
+    // Call server to save
+    API.saveMember({ member: memberData })
+      .then((result) => {
+        btnText.style.display = "inline";
+        btnLoading.style.display = "none";
+        applyBtn.disabled = false;
 
-  // Call server to save all members
-  API.saveAllMembers({ members: allMemberData })
-    .then(function (result) {
-      btnText.style.display = "inline";
-      btnLoading.style.display = "none";
-      applyBtn.disabled = false;
+        if (result && result.success) {
+          const successMsg = this.isAddingNewMember
+            ? "Membre creat correctament"
+            : "Membre desat correctament";
+          showToast(successMsg, "success");
+          MEMBERS.currentEditingMemberId = null;
+          this.originalMemberData = null;
+          this.isAddingNewMember = false;
 
-      if (result && result.success) {
-        showToast("Tots els membres desats correctament", "success");
-        MEMBERS.currentEditingMemberId = null;
-        allOriginalMemberData = null;
-        isEditingAllMembers = false;
+          // Hide action bar and restore text
+          const actionsBar = document.getElementById("members-edit-actions");
+          const editInfo = actionsBar?.querySelector(".edit-info");
+          if (actionsBar) {
+            actionsBar.style.display = "none";
+            if (editInfo) editInfo.textContent = "Editant membre...";
+          }
 
-        // Hide action bar
-        const actionsBar = document.getElementById("members-edit-actions");
-        if (actionsBar) {
-          actionsBar.style.display = "none";
+          // Hide Active column
+          document.querySelectorAll(".active-column").forEach((el) => {
+            el.style.display = "none";
+          });
+
+          // Reload members data
+          MEMBERS.loadMembersData();
+        } else {
+          showToast(result?.error || "Error desant el membre", "error");
         }
+      })
+      .catch((error) => {
+        btnText.style.display = "inline";
+        btnLoading.style.display = "none";
+        applyBtn.disabled = false;
+        showToast("Error desant el membre: " + error, "error");
+        console.error("Save member error:", error);
+      });
+  }
 
-        // Show edit button again
-        const editAllBtn = document.getElementById("edit-all-members-btn");
-        if (editAllBtn) editAllBtn.style.display = "";
-
-        // Hide Active column
-        document.querySelectorAll(".active-column").forEach(function (el) {
-          el.style.display = "none";
-        });
-
-        // Reload members data
-        loadMembersData();
+  _updateSortIcons() {
+    const headers = document.querySelectorAll("#members-table th.sortable");
+    headers.forEach((th) => {
+      const icon = th.querySelector(".sort-icon");
+      if (th.getAttribute("data-sort") === MEMBERS.membersSortColumn) {
+        icon.textContent = MEMBERS.membersSortDirection === "asc" ? " ▲" : " ▼";
       } else {
-        showToast(result?.error || "Error desant els membres", "error");
+        icon.textContent = "";
       }
-    })
-    .catch(function (error) {
-      btnText.style.display = "inline";
-      btnLoading.style.display = "none";
-      applyBtn.disabled = false;
-      showToast("Error desant els membres: " + error, "error");
-      console.error("Save all members error:", error);
     });
-}
+  }
+
+  _renderEditableRow(member) {
+    const typeOptions = `
+          <option value="ADULT" ${member.type === "ADULT" ? "selected" : ""}>Adult</option>
+          <option value="KID" ${member.type === "KID" ? "selected" : ""}>Xiquet/a</option>
+      `;
+
+    const isAdmin = (member.roles || []).includes("ADMIN");
+    const isKid = member.type === "KID";
+
+    // Email field (disabled for KID)
+    const emailHtml = isKid
+      ? '<span class="text-muted">-</span>'
+      : `<input type="email" class="inline-edit-input" name="inline-email" value="${member.email || ""}">`;
+
+    // Roles field (disabled for KID)
+    const rolesHtml = isKid
+      ? '<span class="text-muted">-</span>'
+      : `<label class="checkbox-label inline-checkbox">
+                  <input type="checkbox" name="inline-admin" ${isAdmin ? "checked" : ""}> Admin
+              </label>`;
+
+    // Build relations checkboxes (only for ADULT members)
+    let relationsHtml = "";
+    if (isKid) {
+      relationsHtml = '<span class="text-muted">-</span>';
+    } else {
+      relationsHtml =
+        '<div class="inline-relations-dropdown" id="inline-relations-container">';
+      relationsHtml +=
+        '<button type="button" class="btn-dropdown" onclick="toggleRelationsDropdown(this)">Seleccionar ▼</button>';
+      relationsHtml +=
+        '<div class="relations-dropdown-content" style="display:none;">';
+      MEMBERS.membersData.forEach((m) => {
+        if (m.id !== member.id) {
+          const checked = (member.relations || []).includes(m.id)
+            ? "checked"
+            : "";
+          relationsHtml += `<label class="checkbox-label"><input type="checkbox" name="inline-relations" value="${m.id}" data-name="${m.name}" ${checked}> ${m.name}</label>`;
+        }
+      });
+      relationsHtml += "</div></div>";
+    }
+
+    const isActive = member.active !== false;
+    return `
+          <td><input type="text" class="inline-edit-input" name="inline-name" value="${member.alias || ""}" required></td>
+          <td class="email-cell">${emailHtml}</td>
+          <td>
+          <select class="inline-edit-select" name="inline-type" onchange="handleInlineTypeChange(this)">${typeOptions}</select>
+          </td>
+          <td class="roles-cell">${rolesHtml}</td>
+          <td class="relations-cell">${relationsHtml}</td>
+          <td class="active-column">
+          <label class="checkbox-label inline-checkbox">
+              <input type="checkbox" name="inline-active" ${isActive ? "checked" : ""}> Actiu
+          </label>
+          </td>
+          <td></td>
+          <td></td>
+      `;
+  }
+
+  toggleRelationsDropdown(btn) {
+    const dropdown = btn.nextElementSibling;
+    dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+  }
+
+  handleInlineTypeChange(selectEl) {
+    const row = selectEl.closest("tr");
+    const emailCell = row.querySelector(".email-cell");
+    const rolesCell = row.querySelector(".roles-cell");
+    const relationsCell = row.querySelector(".relations-cell");
+    const memberId = row.getAttribute("data-member-id");
+    const member = MEMBERS.membersData.find(function (m) {
+      return String(m.id) === String(memberId);
+    });
+
+    if (selectEl.value === "KID") {
+      // Clear and disable email, roles, and relations for KID
+      if (emailCell) emailCell.innerHTML = '<span class="text-muted">-</span>';
+      if (rolesCell) rolesCell.innerHTML = '<span class="text-muted">-</span>';
+      if (relationsCell)
+        relationsCell.innerHTML = '<span class="text-muted">-</span>';
+    } else {
+      // Restore email field for ADULT
+      if (emailCell) {
+        const email = member ? member.email || "" : "";
+        emailCell.innerHTML = `<input type="email" class="inline-edit-input" name="inline-email" value="${email}">`;
+      }
+
+      // Restore roles for ADULT
+      if (rolesCell) {
+        const isAdmin = member && (member.roles || []).includes("ADMIN");
+        rolesCell.innerHTML = `<label class="checkbox-label inline-checkbox">
+                  <input type="checkbox" name="inline-admin" ${isAdmin ? "checked" : ""}> Admin
+              </label>`;
+      }
+
+      // Restore relations dropdown for ADULT
+      if (relationsCell) {
+        let relationsHtml =
+          '<div class="inline-relations-dropdown" id="inline-relations-container">';
+        relationsHtml +=
+          '<button type="button" class="btn-dropdown" onclick="toggleRelationsDropdown(this)">Seleccionar ▼</button>';
+        relationsHtml +=
+          '<div class="relations-dropdown-content" style="display:none;">';
+        MEMBERS.membersData.forEach((m) => {
+          if (String(m.id) !== String(memberId)) {
+            const checked =
+              member && (member.relations || []).includes(m.id)
+                ? "checked"
+                : "";
+            relationsHtml += `<label class="checkbox-label"><input type="checkbox" name="inline-relations" value="${m.id}" data-name="${m.name}" ${checked}> ${m.name}</label>`;
+          }
+        });
+        relationsHtml += "</div></div>";
+        relationsCell.innerHTML = relationsHtml;
+      }
+    }
+  }
+
+  _startInlineEdit(memberId) {
+    // If already editing another member, cancel that edit first
+    if (MEMBERS.currentEditingMemberId && String(MEMBERS.currentEditingMemberId) !== String(memberId)) {
+      this._cancelInlineEdit();
+    }
+
+    const member = MEMBERS.membersData.find(function (m) {
+      return String(m.id) === String(memberId);
+    });
+    if (!member) {
+      console.error("Member not found. memberId:", memberId, "Available IDs:", MEMBERS.membersData.map(m => m.id));
+      showToast("Membre no trobat", "error");
+      return;
+    }
+
+    // Store original data for discard
+    MEMBERS.currentEditingMemberId = memberId;
+    this.originalMemberData = JSON.parse(JSON.stringify(member));
+
+    // Show action bar
+    const actionsBar = document.getElementById("members-edit-actions");
+    if (actionsBar) {
+      actionsBar.style.display = "flex";
+    }
+
+    // Show Active column
+    document.querySelectorAll(".active-column").forEach((el) => {
+      el.style.display = "";
+    });
+
+    // Re-render table to show editable row
+    MEMBERS._renderMembersTable();
+
+    // Initialize action bar listeners
+    this._initInlineEditListeners();
+  }
+
+  _openPasswordDialog(email, name) {
+    APP.closeAllDialogs();
+    const dialog = document.getElementById("password-change-dialog");
+    const memberNameEl = document.getElementById("password-change-member-name");
+    const newPasswordInput = document.getElementById("new-password");
+    const confirmPasswordInput = document.getElementById("confirm-password");
+
+    if (!dialog) return;
+
+    this.passwordChangeMemberEmail = email;
+    if (memberNameEl) memberNameEl.textContent = name + " (" + email + ")";
+    if (newPasswordInput) newPasswordInput.value = "";
+    if (confirmPasswordInput) confirmPasswordInput.value = "";
+
+    this._initPasswordChangeHandlers();
+    showDialogWithBackdrop(dialog);
+    if (newPasswordInput) newPasswordInput.focus();
+  }
+
+  _closePasswordDialog() {
+    closeDialogWithBackdrop("password-change-dialog");
+    this.passwordChangeMemberEmail = null;
+  }
+
+  _saveNewPassword() {
+    const newPassword = document.getElementById("new-password")?.value || "";
+    const confirmPassword =
+      document.getElementById("confirm-password")?.value || "";
+    const saveBtn = document.getElementById("password-save-btn");
+
+    // Validation
+    if (!newPassword) {
+      showToast("Cal introduir una contrasenya", "error");
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      showToast("La contrasenya ha de tenir almenys 8 caràcters", "error");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      showToast("Les contrasenyes no coincideixen", "error");
+      return;
+    }
+
+    if (!this.passwordChangeMemberEmail) {
+      showToast("Error: no s'ha seleccionat cap membre", "error");
+      return;
+    }
+
+    // Disable button during save
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Desant...";
+    }
+
+    API.changeUserPassword({ email: this.passwordChangeMemberEmail, newPassword })
+      .then((result) => {
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = "Desar";
+        }
+        this._closePasswordDialog();
+        showToast(
+          result.message || "Contrasenya canviada correctament",
+          "success",
+        );
+      })
+      .catch((error) => {
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = "Desar";
+        }
+        showToast(error || "Error en canviar la contrasenya", "error");
+        console.error("Password change error:", error);
+      });
+  }
+
+  loadMembersData() {
+    const tbody = document.querySelector("#members-table tbody");
+    if (tbody)
+      tbody.innerHTML = '<tr><td colspan="5">Carregant membres...</td></tr>';
+
+    API.getMembers()
+      .then((members) => {
+        if (!Array.isArray(members)) {
+          tbody.innerHTML =
+            '<tr><td colspan="5">No s\'ha pogut carregar la llista de membres</td></tr>';
+          return;
+        }
+        MEMBERS.membersData = members;
+        this._initMembersFilters();
+        this._renderMembersTable();
+      })
+      .catch((error) => {
+        console.error("Error loading members data:", error);
+        tbody.innerHTML =
+          '<tr><td colspan="5">No s\'ha pogut carregar la llista de membres</td></tr>';
+      });
+  }
+
+  loadMembersDataForEvents() {
+    API.getMembers()
+      .then((members) => {
+        if (Array.isArray(members)) {
+          MEMBERS.membersData = members;
+        }
+      })
+      .catch((error) => {
+        console.error("Error loading members for events:", error);
+      });
+  }
+
+  startEditAllMembers() {
+    // Cancel any existing single edit
+    if (MEMBERS.currentEditingMemberId) {
+      this._cancelInlineEdit();
+    }
+
+    // Store original data for all members
+    this.allOriginalMemberData = JSON.parse(JSON.stringify(MEMBERS.membersData));
+    this.isEditingAllMembers = true;
+    MEMBERS.currentEditingMemberId = "__all__";
+
+    // Show action bar
+    const actionsBar = document.getElementById("members-edit-actions");
+    const editInfo = actionsBar ? actionsBar.querySelector(".edit-info") : null;
+    if (actionsBar) {
+      actionsBar.style.display = "flex";
+      if (editInfo) editInfo.textContent = "Editant tots els membres...";
+    }
+
+    // Hide edit button
+    const editAllBtn = document.getElementById("edit-all-members-btn");
+    if (editAllBtn) editAllBtn.style.display = "none";
+
+    // Show Active column
+    document.querySelectorAll(".active-column").forEach((el) => {
+      el.style.display = "";
+    });
+
+    // Re-render table with all rows editable
+    MEMBERS._renderMembersTable();
+
+    // Initialize action bar listeners
+    this._initInlineEditListeners();
+  }
+
+  _initPasswordChangeHandlers() {
+    const dialog = document.getElementById("password-change-dialog");
+    const cancelBtn = document.getElementById("password-cancel-btn");
+    const saveBtn = document.getElementById("password-save-btn");
+
+    if (cancelBtn && !cancelBtn.dataset.initialized) {
+      cancelBtn.addEventListener("click", this._closePasswordDialog.bind(this));
+      cancelBtn.dataset.initialized = "true";
+    }
+
+    if (saveBtn && !saveBtn.dataset.initialized) {
+      saveBtn.addEventListener("click", this._saveNewPassword.bind(this));
+      saveBtn.dataset.initialized = "true";
+    }
+
+    // Close on backdrop click
+    if (dialog && !dialog.dataset.initialized) {
+      dialog.addEventListener("click", (e) => {
+        if (e.target === dialog) {
+          this._closePasswordDialog();
+        }
+      });
+      dialog.dataset.initialized = "true";
+    }
+  }
+
+})();
+
+
+
+
+// Load members data silently for events view (without updating members table)
+
+
+
 
         </script>
         
@@ -12294,7 +12363,7 @@ function populatePersonListForDiagram(diagram, g, squareIdx) {
   }
 
   // Filter members: only active for future events, all for past events
-  const personAliases = membersData
+  const personAliases = MEMBERS.membersData
     .filter(function (m) {
       return isEventInPast || m.active;
     })
@@ -12703,8 +12772,7 @@ function loadTrainingMembersAttendance(trainingData) {
   API.getMembers()
     .then(function (members) {
       if (Array.isArray(members)) {
-        // membersData is updated by API.getMembers or we can update it here
-        membersData = members; 
+        MEMBERS.membersData = members; 
         displayMemberAttendanceList(trainingData);
       }
     })
@@ -12739,7 +12807,7 @@ function displayMemberAttendanceList(trainingData) {
   attendanceSection.style.display = "";
   
   // Get members list
-  const members = (membersData || []).filter(m => m.active);
+  const members = (MEMBERS.membersData || []).filter(m => m.active);
   
   if (!members || members.length === 0) {
     attendanceList.innerHTML = '<div class="training-member-attendance-loading">Sense membres disponibles</div>';
@@ -13014,18 +13082,29 @@ function toggleTrainingAttendance(trainingId, element) {
       element.innerHTML = statusText;
       showToast(result.message || "Estat actualitzat", "success");
 
+      // Update local training data
+      var userAlias = APP.currentUser ? APP.currentUser.alias : null;
+      if (userAlias) {
+        
+      }
+
       // Update the attendance count on the same card
       var card = element.closest(".training-card");
       if (card) {
         var countSpan = card.querySelector(".training-count");
-        if (countSpan && result.status === 'confirmed') {
+        if (countSpan) {
           var currentText = countSpan.textContent;
           var match = currentText.match(/(\d+)/);
           if (match) {
             var count = parseInt(match[1], 10);
-            // If transitioning to 'confirmed', increment count
-            if (result.value === 'SI') {
+            // Adjust count based on previous and new status
+            var wasConfirmed = result.previousStatus === 'confirmed';
+            var isNowConfirmed = result.status === 'confirmed';
+            
+            if (!wasConfirmed && isNowConfirmed) {
               count = count + 1;
+            } else if (wasConfirmed && !isNowConfirmed) {
+              count = Math.max(0, count - 1);
             }
             countSpan.textContent = count + " persones apuntades";
           }

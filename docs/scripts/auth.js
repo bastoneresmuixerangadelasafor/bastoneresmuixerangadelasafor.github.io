@@ -117,7 +117,7 @@ const AUTH = new (class AppAuthentication {
     API.loginWithEmailPassword({ email, password })
       .then(function (result) {
         
-        API.saveToken({ token: result.token });
+        CACHE.saveToken({ token: result.token });
         if (submitBtn) {
           submitBtn.innerHTML = originalHtml;
           submitBtn.disabled = false;
@@ -446,10 +446,9 @@ const AUTH = new (class AppAuthentication {
 
   _clearUserData() {
     // Clear app state
-    APP.isAuthenticated = false;
     APP.currentUser = null;
     NAVIGATION.currentView = "home-guest";
-    API.clearSession();
+    CACHE.clearSession();
 
     // Clear localStorage
     localStorage.removeItem("currentRoute");

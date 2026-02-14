@@ -2,81 +2,9 @@
 const API = new (class GAppsApiClient {
   constructor() {}
 
-  _getCacheKey({ cache, parameters } = {}) {
-    const params = parameters ? Object.fromEntries(Object.entries(parameters).filter(([key]) => key !== "forceRefresh")) : {};
-    const cacheKey = `${cache}${params && Object.keys(params).length > 0 ? `_${new URLSearchParams(params).toString()}` : ""}`;
-    return cacheKey;
-  }
-
-  getToken() {
-    try {
-      const tokenData = localStorage.getItem(SESSION_TOKEN);
-      if (!tokenData) return null;
-      
-      // Parse stored token data
-      let token, expiryTime;
-      try {
-        const parsed = JSON.parse(tokenData);
-        token = parsed.token;
-        expiryTime = parsed.expiryTime;
-      } catch (e) {
-        // Handle legacy format (plain token string without expiry)
-        token = tokenData;
-        expiryTime = null;
-      }
-      
-      // Check if token has expired
-      if (expiryTime && Date.now() > expiryTime) {
-        localStorage.removeItem(SESSION_TOKEN);
-        return null;
-      }
-      
-      return token;
-    } catch (e) {
-      console.log("Failed to retrieve token from storage:", e.message);
-      return null;
-    }
-  }
-
   isAuthenticated() {
-    const token = this.getToken();
+    const token = CACHE.getToken();
     return token != null && token.length > 0;
-  }
-
-  saveToken({ token } = {}) {
-    try {
-      if(!token) {
-        localStorage.removeItem(SESSION_TOKEN);
-      } else {
-        const maxAge = 60 * 60 * 24 * 90; // 90 days in seconds
-        const expiryTime = Date.now() + (maxAge * 1000); // Convert to milliseconds
-        const tokenData = JSON.stringify({ token, expiryTime });
-        localStorage.setItem(SESSION_TOKEN, tokenData);
-      }
-    } catch (e) {
-      console.log("Failed to save token to storage:", e.message);
-    }
-  }
-
-  clearSession() {
-    this.saveToken();
-    this._write({ key: "user", data: null });
-  }
-
-  _write({ key, data } = {}) {
-    if(key){
-      if(!data){
-        localStorage.removeItem(key);
-      }else{
-        localStorage.setItem(key, JSON.stringify(data));
-      }
-    }
-  }
-
-  _read({ key } = {}) {
-    if(key){
-      return JSON.parse(localStorage.getItem(key));
-    }
   }
 
   _performRequest({ action, method = "GET", body = null, parameters, requiresAuth = false, cache = null } = {}) {
@@ -92,8 +20,8 @@ const API = new (class GAppsApiClient {
       }
 
       if (cache && method === "GET") {
-        const cacheKey = this._getCacheKey({ cache, parameters });
-        const savedData = this._read({ key: cacheKey });
+        const cacheKey = CACHE._getCacheKey({ cache, parameters });
+        const savedData = CACHE._read({ key: cacheKey });
         if (savedData) {
           return resolve(savedData);
         }
@@ -105,11 +33,11 @@ const API = new (class GAppsApiClient {
         );
       }
 
-      const token = this.getToken() || "";
+      const token = CACHE.getToken() || "";
       const returnResult = (data) => {
         if (data?.success) {
-          const cacheKey = this._getCacheKey({ cache, parameters });
-          this._write({ key: cacheKey, data: data.result });
+          const cacheKey = CACHE._getCacheKey({ cache, parameters });
+          CACHE._write({ key: cacheKey, data: data.result });
           resolve(data.result);
         } else {
           let errorMessage = "Ha ocorregut un error en la petició. Si el problema persistix, contacta a l'administrador.";
@@ -156,7 +84,7 @@ const API = new (class GAppsApiClient {
           if (!response.ok) {
             let errorMessage = `Error del servidor (${response.status}). Si el problema persistix, contacta a l'administrador.`;
             if (response.status === 401) {
-              return handleLogout({ message: "La teua sessió ha caducat. Per favor, torna a iniciar sessió." });
+              return AUTH.handleLogout({ message: "La teua sessió ha caducat. Per favor, torna a iniciar sessió." });
             }
             if (response.status === 403) {
               errorMessage =
@@ -323,8 +251,16 @@ const API = new (class GAppsApiClient {
     return this._put({ action: "saveTraining", body: { training }, requiresAuth: true });
   }
 
-  toggleTrainingAttendance({ trainingId } = {}) {
-    return this._post({ action: "toggleTrainingAttendance", body: { trainingId }, requiresAuth: true });
+  confirmTrainingAttendance({ trainingId } = {}) {
+    return this._post({ action: "confirmTrainingAttendance", body: { trainingId }, requiresAuth: true });
+  }
+
+  cancelTrainingAttendance({ trainingId } = {}) {
+    return this._post({ action: "cancelTrainingAttendance", body: { trainingId }, requiresAuth: true });
+  }
+
+  resetTrainingAttendance({ trainingId } = {}) {
+    return this._post({ action: "resetTrainingAttendance", body: { trainingId }, requiresAuth: true });
   }
 
   getAudioById({ audioId } = {}) {

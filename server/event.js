@@ -520,97 +520,144 @@ function saveTraining_({training}) {
 }
 
 /**
- * Toggle attendance for the current user on a training session (cycles through 3 states).
- * Empty → 'SI' (Confirmat) → 'NO' (No assistiré) → Empty (No confirmat)
- * @param {Object} params
- * @param {string} params.trainingId - The training date/ID
- * @param {string} params.token - The user's auth token
- * @returns {Object} Result with updated attendance status
+ * Helper function to get training attendance context (sheet, column, row)
+ * @param {string} trainingId - The training ID
+ * @param {Object} user - The user object with alias
+ * @returns {Object} Context object with sheet, dateColumn, userRow, or error
  */
-function toggleTrainingAttendance_({trainingId, user }) {
+function getTrainingAttendanceContext_({trainingId, user}) {
   if (!trainingId) {
-    return API.newError_({ error: 'La data de l\'assaig és obligatòria' });
+    return { error: API.newError_({ error: 'La data de l\'assaig és obligatòria' }) };
   }
 
-  console.log("Validated user:", user);
   if (!user || !user.alias) {
-    return API.newError_({ error: 'No s\'ha pogut identificar l\'usuari.' });
+    return { error: API.newError_({ error: 'No s\'ha pogut identificar l\'usuari.' }) };
   }
 
+  const spreadsheet = SpreadsheetApp.openById(TRAINING_SPREADSHEET_ID);
+  const sheet = spreadsheet.getSheetByName(ASSISTANCE_SHEET_NAME);
+  const data = sheet.getDataRange().getValues();
+
+  if (!data || data.length < 2) {
+    return { error: API.newError_({ error: 'No hi ha dades d\'entrenament' }) };
+  }
+
+  const headerRow = data[0];
+  let dateColumn = -1;
+
+  for (let i = 1; i < headerRow.length; i++) {
+    if (String(headerRow[i]) === String(trainingId)) {
+      dateColumn = i + 1; // Sheets columns are 1-indexed
+      break;
+    }
+  }
+
+  if (dateColumn === -1) {
+    return { error: API.newError_({ error: 'No s\'ha trobat l\'assaig: ' + trainingId }) };
+  }
+
+  // Find the user's row by alias
+  let userRow = -1;
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][0]).trim() === String(user.alias).trim()) {
+      userRow = i + 1; // Sheets rows are 1-indexed
+      break;
+    }
+  }
+
+  if (userRow === -1) {
+    return { error: API.newError_({ error: 'No s\'ha trobat el membre: ' + user.alias }) };
+  }
+
+  return { sheet, dateColumn, userRow, trainingId };
+}
+
+/**
+ * Reset training attendance to not-confirmed state
+ * @param {string} trainingId - The training ID
+ * @param {Object} user - The user object with alias
+ * @returns {Object} Result object with status
+ */
+function resetTrainingAttendance_({trainingId, user}) {
   try {
-    const spreadsheet = SpreadsheetApp.openById(TRAINING_SPREADSHEET_ID);
-    const sheet = spreadsheet.getSheetByName(ASSISTANCE_SHEET_NAME);
-    const data = sheet.getDataRange().getValues();
+    const context = getTrainingAttendanceContext_({trainingId, user});
+    if (context.error) return context.error;
 
-    if (!data || data.length < 2) {
-      return API.newError_({ error: 'No hi ha dades d\'entrenament' });
-    }
-
-    const headerRow = data[0];
-    let dateColumn = -1;
-
-    for (let i = 1; i < headerRow.length; i++) {
-      if (String(headerRow[i]) === String(trainingId)) {
-        dateColumn = i + 1; // Sheets columns are 1-indexed
-        break;
-      }
-    }
-
-    if (dateColumn === -1) {
-      return API.newError_({ error: 'No s\'ha trobat l\'assaig: ' + trainingId });
-    }
-
-    // Find the user's row by alias
-    let userRow = -1;
-    for (let i = 1; i < data.length; i++) {
-      if (String(data[i][0]).trim() === String(user.alias).trim()) {
-        userRow = i + 1; // Sheets rows are 1-indexed
-        break;
-      }
-    }
-
-    if (userRow === -1) {
-      return API.newError_({ error: 'No s\'ha trobat el membre: ' + user.alias });
-    }
-
-    // Cycle through 3 states: empty → 'SI' → 'NO' → empty
-    const currentValue = String(data[userRow - 1][dateColumn - 1]).trim();
-    let newValue = '';
-    let newStatus = 'not-confirmed';
-    let statusMessage = 'El teu estat s\'ha actualitzat';
-
-    if (currentValue === '') {
-      // Empty → SI (Confirmat)
-      newValue = 'SI';
-      newStatus = 'confirmed';
-      statusMessage = 'Assistència confirmada';
-    } else if (currentValue === 'SI') {
-      // SI → NO (No assistiré)
-      newValue = 'NO';
-      newStatus = 'not-attending';
-      statusMessage = 'Has marcat que no assistirás';
-    } else if (currentValue === 'NO') {
-      // NO → empty (No confirmat)
-      newValue = '';
-      newStatus = 'not-confirmed';
-      statusMessage = 'Estat restablert a no confirmat';
-    }
-
-    sheet.getRange(userRow, dateColumn).setValue(newValue);
+    context.sheet.getRange(context.userRow, context.dateColumn).setValue('');
 
     // Invalidate cache
     CACHE.retrieveTrainingsFromDB();
 
     return API.newResult_({
       result: {
-        trainingId: trainingId,
-        status: newStatus,
-        value: newValue,
-        message: statusMessage,
+        trainingId: context.trainingId,
+        status: 'not-confirmed',
+        value: '',
+        message: 'Estat restablert a no confirmat',
       },
     });
   } catch (error) {
-    console.error('Error toggling training attendance:', error.toString());
+    console.error('Error resetting training attendance:', error.toString());
+    return API.newError_({ error: 'Error actualitzant l\'assistència: ' + error.toString() });
+  }
+}
+
+/**
+ * Confirm training attendance
+ * @param {string} trainingId - The training ID
+ * @param {Object} user - The user object with alias
+ * @returns {Object} Result object with status
+ */
+function confirmTrainingAttendance_({trainingId, user}) {
+  try {
+    const context = getTrainingAttendanceContext_({trainingId, user});
+    if (context.error) return context.error;
+
+    context.sheet.getRange(context.userRow, context.dateColumn).setValue('SI');
+
+    // Invalidate cache
+    CACHE.retrieveTrainingsFromDB();
+
+    return API.newResult_({
+      result: {
+        trainingId: context.trainingId,
+        status: 'confirmed',
+        value: 'SI',
+        message: 'Assistència confirmada',
+      },
+    });
+  } catch (error) {
+    console.error('Error confirming training attendance:', error.toString());
+    return API.newError_({ error: 'Error actualitzant l\'assistència: ' + error.toString() });
+  }
+}
+
+/**
+ * Cancel training attendance (mark as not attending)
+ * @param {string} trainingId - The training ID
+ * @param {Object} user - The user object with alias
+ * @returns {Object} Result object with status
+ */
+function cancelTrainingAttendance_({trainingId, user}) {
+  try {
+    const context = getTrainingAttendanceContext_({trainingId, user});
+    if (context.error) return context.error;
+
+    context.sheet.getRange(context.userRow, context.dateColumn).setValue('NO');
+
+    // Invalidate cache
+    CACHE.retrieveTrainingsFromDB();
+
+    return API.newResult_({
+      result: {
+        trainingId: context.trainingId,
+        status: 'not-attending',
+        value: 'NO',
+        message: 'Has marcat que no assistiràs',
+      },
+    });
+  } catch (error) {
+    console.error('Error canceling training attendance:', error.toString());
     return API.newError_({ error: 'Error actualitzant l\'assistència: ' + error.toString() });
   }
 }

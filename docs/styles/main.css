@@ -3204,7 +3204,6 @@ input::placeholder {
   padding: 4px 8px;
   border-radius: 4px;
   white-space: nowrap;
-  cursor: pointer;
   transition: opacity 0.2s;
 }
 
@@ -3255,6 +3254,117 @@ input::placeholder {
 .dark-mode .training-confirmation.not-attending {
   color: #ef5350;
   background-color: rgba(244, 67, 54, 0.2);
+}
+
+/* Training confirmation section (status + buttons) */
+.training-confirmation-section {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.training-status-indicator {
+  display: inline-block;
+  width: fit-content;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.training-status-indicator.confirmed {
+  color: #4caf50;
+  background-color: rgba(76, 175, 80, 0.1);
+}
+
+.dark-mode .training-status-indicator.confirmed {
+  background-color: rgba(76, 175, 80, 0.2);
+}
+
+.training-status-indicator.not-confirmed {
+  color: #f9a825;
+  background-color: rgba(249, 168, 37, 0.1);
+}
+
+.dark-mode .training-status-indicator.not-confirmed {
+  color: #fdd835;
+  background-color: rgba(253, 216, 53, 0.2);
+}
+
+.training-status-indicator.not-attending {
+  color: #f44336;
+  background-color: rgba(244, 67, 54, 0.1);
+}
+
+.dark-mode .training-status-indicator.not-attending {
+  color: #ef5350;
+  background-color: rgba(244, 67, 54, 0.2);
+}
+
+.training-confirmation-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.training-confirmation-buttons .btn-xs {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.training-confirmation-buttons .btn-outline-success {
+  color: #4caf50;
+  border: 1px solid #4caf50;
+  background-color: transparent;
+}
+
+.training-confirmation-buttons .btn-outline-success:hover {
+  background-color: rgba(76, 175, 80, 0.1);
+}
+
+.training-confirmation-buttons .btn-outline-danger {
+  color: #f44336;
+  border: 1px solid #f44336;
+  background-color: transparent;
+}
+
+.training-confirmation-buttons .btn-outline-danger:hover {
+  background-color: rgba(244, 67, 54, 0.1);
+}
+
+.training-confirmation-buttons .btn-outline-secondary {
+  color: #757575;
+  border: 1px solid #bdbdbd;
+  background-color: transparent;
+}
+
+.training-confirmation-buttons .btn-outline-secondary:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark-mode .training-confirmation-buttons .btn-outline-success {
+  color: #81c784;
+  border-color: #81c784;
+}
+
+.dark-mode .training-confirmation-buttons .btn-outline-danger {
+  color: #ef5350;
+  border-color: #ef5350;
+}
+
+.dark-mode .training-confirmation-buttons .btn-outline-secondary {
+  color: #9e9e9e;
+  border-color: #616161;
+}
+
+.dark-mode .training-confirmation-buttons .btn-outline-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 /* Training attendance indicator (for past trainings) */
@@ -4630,7 +4740,7 @@ body.dark-mode .person-dropdown li.selected {
 .floating-save-btn {
   position: fixed;
   bottom: 24px;
-  right: 144px;
+  right: 24px;
   z-index: 999;
   width: 48px;
   height: 48px;

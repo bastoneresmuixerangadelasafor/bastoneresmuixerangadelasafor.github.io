@@ -144,10 +144,20 @@ const API = class GAppsApiServer {
         const logoutWorker = this.validateUserToken_({fn: logoutUser_, requiresAuth: true, token: e.parameter?.token});
         data = logoutWorker({ token: e.parameter?.token });
         break;
-      case "toggleTrainingAttendance":
-        const toggleAttendanceWorker = this.validateUserToken_({fn: toggleTrainingAttendance_, requiresAuth: true, token: e.parameter?.token});
-        const toggleAttendanceReq = JSON.parse(e.postData?.contents);
-        data = toggleAttendanceWorker({ trainingId: toggleAttendanceReq?.trainingId, token: e.parameter?.token });
+      case "confirmTrainingAttendance":
+        const confirmAttendanceWorker = this.validateUserToken_({fn: confirmTrainingAttendance_, requiresAuth: true, token: e.parameter?.token});
+        const confirmAttendanceReq = JSON.parse(e.postData?.contents);
+        data = confirmAttendanceWorker({ trainingId: confirmAttendanceReq?.trainingId, token: e.parameter?.token });
+        break;
+      case "cancelTrainingAttendance":
+        const cancelAttendanceWorker = this.validateUserToken_({fn: cancelTrainingAttendance_, requiresAuth: true, token: e.parameter?.token});
+        const cancelAttendanceReq = JSON.parse(e.postData?.contents);
+        data = cancelAttendanceWorker({ trainingId: cancelAttendanceReq?.trainingId, token: e.parameter?.token });
+        break;
+      case "resetTrainingAttendance":
+        const resetAttendanceWorker = this.validateUserToken_({fn: resetTrainingAttendance_, requiresAuth: true, token: e.parameter?.token});
+        const resetAttendanceReq = JSON.parse(e.postData?.contents);
+        data = resetAttendanceWorker({ trainingId: resetAttendanceReq?.trainingId, token: e.parameter?.token });
         break;
       default:
         return API.newError_({ error: `Unknown POST action: ${action}`, status:404 });
