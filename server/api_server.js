@@ -159,6 +159,11 @@ const API = class GAppsApiServer {
         const resetAttendanceReq = JSON.parse(e.postData?.contents);
         data = resetAttendanceWorker({ trainingId: resetAttendanceReq?.trainingId, token: e.parameter?.token });
         break;
+      case "adminSetMemberAttendance":
+        const adminSetAttendanceWorker = this.validateUserToken_({fn: adminSetMemberAttendance_, requiresAuth: true, requiresAdmin: true, token: e.parameter?.token});
+        const adminSetAttendanceReq = JSON.parse(e.postData?.contents);
+        data = adminSetAttendanceWorker({ trainingId: adminSetAttendanceReq?.trainingId, memberAlias: adminSetAttendanceReq?.memberAlias, attending: adminSetAttendanceReq?.attending });
+        break;
       default:
         return API.newError_({ error: `Unknown POST action: ${action}`, status:404 });
     }

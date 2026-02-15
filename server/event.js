@@ -661,3 +661,38 @@ function cancelTrainingAttendance_({trainingId, user}) {
     return API.newError_({ error: 'Error actualitzant l\'assistència: ' + error.toString() });
   }
 }
+
+/**
+ * Admin function to set member attendance for a training session
+ * @param {string} trainingId - The training ID
+ * @param {string} memberAlias - The member alias to set attendance for
+ * @param {boolean} attending - True to confirm attendance, false to clear
+ * @param {Object} user - The admin user object
+ * @returns {Object} Result object with status
+ */
+function adminSetMemberAttendance_({trainingId, memberAlias, attending, user}) {
+  try {
+    // Create a fake user object with the member alias to reuse getTrainingAttendanceContext_
+    const memberUser = { alias: memberAlias };
+    const context = getTrainingAttendanceContext_({trainingId, user: memberUser});
+    if (context.error) return context.error;
+
+    const newValue = attending ? 'SI' : '';
+    context.sheet.getRange(context.userRow, context.dateColumn).setValue(newValue);
+
+    // Invalidate cache
+    CACHE.retrieveTrainingsFromDB();
+
+    return API.newResult_({
+      result: {
+        trainingId: context.trainingId,
+        memberAlias: memberAlias,
+        attending: attending,
+        message: attending ? 'Assistència confirmada' : 'Assistència esborrada',
+      },
+    });
+  } catch (error) {
+    console.error('Error setting member attendance:', error.toString());
+    return API.newError_({ error: 'Error actualitzant l\'assistència: ' + error.toString() });
+  }
+}

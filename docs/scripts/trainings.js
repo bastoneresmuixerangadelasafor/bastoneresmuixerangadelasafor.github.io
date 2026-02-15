@@ -426,26 +426,91 @@ function displayMemberAttendanceList(trainingData) {
     const memberAlias = member.alias;
     
     let statusClass = "empty";
-    let statusSymbol = "☐"; // empty checkbox
+    let isChecked = false;
     
     // Use alias for comparison as that's what's used in the database
     if (rejectionList_aliases.includes(memberAlias)) {
       statusClass = "rejected";
-      statusSymbol = "✕"; // red X
+      isChecked = false;
     } else if (attendanceList_aliases.includes(memberAlias)) {
       statusClass = "attending";
-      statusSymbol = "✓"; // green tick
+      isChecked = true;
     }
     
     return `
       <div class="training-member-item">
-        <div class="training-member-status ${statusClass}">${statusSymbol}</div>
-        <div class="training-member-name">${displayName}</div>
+        <label class="training-member-checkbox-label">
+          <input type="checkbox" class="training-member-checkbox" data-alias="${memberAlias}" ${isChecked ? 'checked' : ''} />
+          <span class="training-member-checkbox-custom ${statusClass}"></span>
+          <span class="training-member-name">${displayName}</span>
+        </label>
       </div>
     `;
   }).join("");
   
   attendanceList.innerHTML = membersHTML;
+  
+  // Add event listeners to checkboxes
+  attendanceList.querySelectorAll('.training-member-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', handleMemberAttendanceChange);
+  });
+  
+  // Scroll attendance list to top
+  attendanceList.scrollTop = 0;
+}
+
+/**
+ * Handle checkbox change for member attendance
+ * @param {Event} event - The change event
+ */
+function handleMemberAttendanceChange(event) {
+  const checkbox = event.target;
+  const memberAlias = checkbox.dataset.alias;
+  const attending = checkbox.checked;
+  const trainingId = APP.currentTrainingId;
+  
+  if (!trainingId || !memberAlias) {
+    console.error('Missing trainingId or memberAlias');
+    return;
+  }
+  
+  // Disable checkbox while processing
+  checkbox.disabled = true;
+  const customCheckbox = checkbox.nextElementSibling;
+  customCheckbox.classList.add('loading');
+  
+  API.adminSetMemberAttendance({ trainingId, memberAlias, attending })
+    .then(function(response) {
+      // Update visual state
+      customCheckbox.classList.remove('loading', 'empty', 'attending', 'rejected');
+      customCheckbox.classList.add(attending ? 'attending' : 'empty');
+      
+      // Update local training data
+      if (APP.currentTrainingData) {
+        const assistanceList = APP.currentTrainingData.assistance || [];
+        if (attending) {
+          if (!assistanceList.includes(memberAlias)) {
+            assistanceList.push(memberAlias);
+          }
+        } else {
+          const index = assistanceList.indexOf(memberAlias);
+          if (index > -1) {
+            assistanceList.splice(index, 1);
+          }
+        }
+        APP.currentTrainingData.assistance = assistanceList;
+      }
+    })
+    .catch(function(error) {
+      console.error('Error updating attendance:', error);
+      showToast(error || 'Error actualitzant assistència', 'error');
+      // Revert checkbox state
+      checkbox.checked = !attending;
+    })
+    .finally(function() {
+      checkbox.disabled = false;
+      customCheckbox.classList.remove('loading');
+    });
 }
 
 /**
