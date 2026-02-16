@@ -386,6 +386,7 @@ function getUserProfile_({ email, forceRefresh } = {}) {
         resolvedRelations.push(relatedMember.name);
         relatedMembers.push({
           id: relatedMember.id,
+          alias: relatedMember.alias || "",
           name: relatedMember.name,
           type: relatedMember.type || "",
           avatar: generateAvatarUrl_(

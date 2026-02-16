@@ -3367,6 +3367,29 @@ input::placeholder {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
+/* Training confirmation member name label */
+.training-confirmation-member-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #333;
+  min-width: 80px;
+}
+
+.dark-mode .training-confirmation-member-name {
+  color: #e0e0e0;
+}
+
+/* Related member confirmation section */
+.training-confirmation-section.related-member {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding-top: 8px;
+  margin-top: 4px;
+}
+
+.dark-mode .training-confirmation-section.related-member {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
 /* Training attendance indicator (for past trainings) */
 .training-attendance {
   display: inline-block;

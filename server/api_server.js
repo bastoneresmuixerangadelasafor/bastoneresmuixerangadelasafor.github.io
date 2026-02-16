@@ -159,6 +159,21 @@ const API = class GAppsApiServer {
         const resetAttendanceReq = JSON.parse(e.postData?.contents);
         data = resetAttendanceWorker({ trainingId: resetAttendanceReq?.trainingId, token: e.parameter?.token });
         break;
+      case "confirmRelatedMemberAttendance":
+        const confirmRelatedWorker = this.validateUserToken_({fn: confirmRelatedMemberAttendance_, requiresAuth: true, token: e.parameter?.token});
+        const confirmRelatedReq = JSON.parse(e.postData?.contents);
+        data = confirmRelatedWorker({ trainingId: confirmRelatedReq?.trainingId, memberId: confirmRelatedReq?.memberId, memberAlias: confirmRelatedReq?.memberAlias, token: e.parameter?.token });
+        break;
+      case "cancelRelatedMemberAttendance":
+        const cancelRelatedWorker = this.validateUserToken_({fn: cancelRelatedMemberAttendance_, requiresAuth: true, token: e.parameter?.token});
+        const cancelRelatedReq = JSON.parse(e.postData?.contents);
+        data = cancelRelatedWorker({ trainingId: cancelRelatedReq?.trainingId, memberId: cancelRelatedReq?.memberId, memberAlias: cancelRelatedReq?.memberAlias, token: e.parameter?.token });
+        break;
+      case "resetRelatedMemberAttendance":
+        const resetRelatedWorker = this.validateUserToken_({fn: resetRelatedMemberAttendance_, requiresAuth: true, token: e.parameter?.token});
+        const resetRelatedReq = JSON.parse(e.postData?.contents);
+        data = resetRelatedWorker({ trainingId: resetRelatedReq?.trainingId, memberId: resetRelatedReq?.memberId, memberAlias: resetRelatedReq?.memberAlias, token: e.parameter?.token });
+        break;
       case "adminSetMemberAttendance":
         const adminSetAttendanceWorker = this.validateUserToken_({fn: adminSetMemberAttendance_, requiresAuth: true, requiresAdmin: true, token: e.parameter?.token});
         const adminSetAttendanceReq = JSON.parse(e.postData?.contents);

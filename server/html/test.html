@@ -3233,7 +3233,6 @@ input::placeholder {
   padding: 4px 8px;
   border-radius: 4px;
   white-space: nowrap;
-  cursor: pointer;
   transition: opacity 0.2s;
 }
 
@@ -3284,6 +3283,140 @@ input::placeholder {
 .dark-mode .training-confirmation.not-attending {
   color: #ef5350;
   background-color: rgba(244, 67, 54, 0.2);
+}
+
+/* Training confirmation section (status + buttons) */
+.training-confirmation-section {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.training-status-indicator {
+  display: inline-block;
+  width: fit-content;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.training-status-indicator.confirmed {
+  color: #4caf50;
+  background-color: rgba(76, 175, 80, 0.1);
+}
+
+.dark-mode .training-status-indicator.confirmed {
+  background-color: rgba(76, 175, 80, 0.2);
+}
+
+.training-status-indicator.not-confirmed {
+  color: #f9a825;
+  background-color: rgba(249, 168, 37, 0.1);
+}
+
+.dark-mode .training-status-indicator.not-confirmed {
+  color: #fdd835;
+  background-color: rgba(253, 216, 53, 0.2);
+}
+
+.training-status-indicator.not-attending {
+  color: #f44336;
+  background-color: rgba(244, 67, 54, 0.1);
+}
+
+.dark-mode .training-status-indicator.not-attending {
+  color: #ef5350;
+  background-color: rgba(244, 67, 54, 0.2);
+}
+
+.training-confirmation-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.training-confirmation-buttons .btn-xs {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.training-confirmation-buttons .btn-outline-success {
+  color: #4caf50;
+  border: 1px solid #4caf50;
+  background-color: transparent;
+}
+
+.training-confirmation-buttons .btn-outline-success:hover {
+  background-color: rgba(76, 175, 80, 0.1);
+}
+
+.training-confirmation-buttons .btn-outline-danger {
+  color: #f44336;
+  border: 1px solid #f44336;
+  background-color: transparent;
+}
+
+.training-confirmation-buttons .btn-outline-danger:hover {
+  background-color: rgba(244, 67, 54, 0.1);
+}
+
+.training-confirmation-buttons .btn-outline-secondary {
+  color: #757575;
+  border: 1px solid #bdbdbd;
+  background-color: transparent;
+}
+
+.training-confirmation-buttons .btn-outline-secondary:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark-mode .training-confirmation-buttons .btn-outline-success {
+  color: #81c784;
+  border-color: #81c784;
+}
+
+.dark-mode .training-confirmation-buttons .btn-outline-danger {
+  color: #ef5350;
+  border-color: #ef5350;
+}
+
+.dark-mode .training-confirmation-buttons .btn-outline-secondary {
+  color: #9e9e9e;
+  border-color: #616161;
+}
+
+.dark-mode .training-confirmation-buttons .btn-outline-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Training confirmation member name label */
+.training-confirmation-member-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #333;
+  min-width: 80px;
+}
+
+.dark-mode .training-confirmation-member-name {
+  color: #e0e0e0;
+}
+
+/* Related member confirmation section */
+.training-confirmation-section.related-member {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding-top: 8px;
+  margin-top: 4px;
+}
+
+.dark-mode .training-confirmation-section.related-member {
+  border-top-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Training attendance indicator (for past trainings) */
@@ -3604,6 +3737,9 @@ input::placeholder {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   transition: all 0.2s;
+  min-height: 40px;
+  max-height: 40px;
+  box-sizing: border-box;
 }
 
 .training-member-item:hover {
@@ -3646,11 +3782,163 @@ input::placeholder {
   color: #fff;
 }
 
+/* Checkbox-based member attendance */
+.training-member-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  width: 100%;
+  user-select: none;
+  height: 24px;
+}
+
+.training-member-checkbox {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.training-member-checkbox-custom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  max-width: 24px;
+  max-height: 24px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  border: 2px solid #ddd;
+  background: transparent;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.training-member-checkbox-custom::after {
+  content: "";
+  display: none;
+}
+
+.training-member-checkbox:checked + .training-member-checkbox-custom {
+  background: #4caf50;
+  border-color: #4caf50;
+}
+
+.training-member-checkbox:checked + .training-member-checkbox-custom::after {
+  content: "✓";
+  display: block;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.training-member-checkbox-custom.empty {
+  border-color: #ddd;
+  background: transparent;
+}
+
+.dark-mode .training-member-checkbox-custom.empty {
+  border-color: #666;
+}
+
+.training-member-checkbox-custom.attending {
+  background: #4caf50;
+  border-color: #4caf50;
+}
+
+.training-member-checkbox-custom.attending::after {
+  content: "✓";
+  display: block;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.training-member-checkbox-custom.rejected {
+  background: #f44336;
+  border-color: #f44336;
+}
+
+.training-member-checkbox-custom.rejected::after {
+  content: "✕";
+  display: block;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.training-member-checkbox-custom.loading {
+  opacity: 1;
+  pointer-events: none;
+  border-color: #1976d2;
+  background: transparent !important;
+}
+
+.training-member-checkbox-custom.loading::after {
+  content: "" !important;
+  display: block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(25, 118, 210, 0.3);
+  border-top-color: #1976d2;
+  border-radius: 50%;
+  animation: checkbox-spinner 0.6s linear infinite;
+  font-weight: normal;
+  font-size: 0;
+}
+
+/* Override checked state when loading */
+.training-member-checkbox:checked + .training-member-checkbox-custom.loading {
+  background: transparent !important;
+  border-color: #1976d2;
+}
+
+.training-member-checkbox:checked
+  + .training-member-checkbox-custom.loading::after {
+  content: "" !important;
+  display: block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(25, 118, 210, 0.3);
+  border-top-color: #1976d2;
+  border-radius: 50%;
+  animation: checkbox-spinner 0.6s linear infinite;
+  font-weight: normal;
+  font-size: 0;
+  color: transparent;
+}
+
+@keyframes checkbox-spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.training-member-checkbox:disabled + .training-member-checkbox-custom {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.training-member-checkbox-label:hover
+  .training-member-checkbox-custom:not(.loading) {
+  border-color: #1976d2;
+}
+
 .training-member-name {
   flex: 1;
   font-size: 0.95rem;
   color: var(--text-color);
-  word-break: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Dance Audio Dialog Styles */
@@ -4659,7 +4947,7 @@ body.dark-mode .person-dropdown li.selected {
 .floating-save-btn {
   position: fixed;
   bottom: 24px;
-  right: 144px;
+  right: 24px;
   z-index: 999;
   width: 48px;
   height: 48px;
@@ -5990,6 +6278,17 @@ body.dark-mode .password-dialog-actions {
                     <polyline points="7 3 7 8 15 8"></polyline>
                 </svg>
             </button>
+            <!-- Floating lock button (for past trainings) -->
+            <button id="floating-lock-training-btn" class="floating-lock-btn admin-only" title="Long-press per 3 segons per fer editable" style="display: none;">
+                <svg class="progress-ring-container" width="48" height="48" viewBox="0 0 48 48" style="position: absolute; top: 0; left: 0;">
+                    <circle class="progress-ring" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="138.23" stroke-dashoffset="138.23"></circle>
+                </svg>
+                <svg class="lock-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+            </button>
         </div>
     </div>
 
@@ -6115,6 +6414,27 @@ body.dark-mode .password-dialog-actions {
         var isEventEditable = true;
         // Track if user manually unlocked the event via long-press
         var isEventManuallyUnlocked = false;
+        // Track if current training is editable
+        var isTrainingEditable = true;
+        // Track if user manually unlocked the training via long-press
+        var isTrainingManuallyUnlocked = false;
+
+        // Check if the training is in the past
+        function checkIfTrainingIsEditable() {
+            // If manually unlocked via long-press, always consider editable
+            if (isTrainingManuallyUnlocked) {
+                return true;
+            }
+
+            const trainingDatetimeInput = document.getElementById('training-datetime-input');
+            if (!trainingDatetimeInput || !trainingDatetimeInput.value) {
+                return true; // Assume editable if no date set (new training)
+            }
+            const trainingDate = new Date(trainingDatetimeInput.value);
+            const now = new Date();
+            isTrainingEditable = trainingDate >= now;
+            return isTrainingEditable;
+        }
 
         // Check if the event is in the past
         function checkIfEventIsEditable() {
@@ -7481,6 +7801,139 @@ ${descriptionHtml}
                 if (lockBtnPressTimer) {
                     clearInterval(lockBtnPressTimer);
                     resetLockBtnProgress();
+                }
+            });
+
+            // Floating lock button long-press functionality for TRAINING
+            const floatingLockTrainingBtn = document.getElementById('floating-lock-training-btn');
+            let lockTrainingBtnPressTimer = null;
+            let lockTrainingBtnPressed = false;
+
+            function resetLockTrainingBtnProgress() {
+                floatingLockTrainingBtn.classList.remove('pressing');
+                const progressRing = floatingLockTrainingBtn.querySelector('.progress-ring');
+                if (progressRing) {
+                    progressRing.style.strokeDashoffset = '138.23';
+                }
+                lockTrainingBtnPressed = false;
+            }
+
+            floatingLockTrainingBtn.addEventListener('mousedown', function () {
+                if (isTrainingEditable) return; // Only work when training is locked
+                const isAdmin = APP.currentUser && APP.currentUser.roles && APP.currentUser.roles.includes('ADMIN');
+                if (!isAdmin) return; // Only admin can unlock
+
+                lockTrainingBtnPressed = true;
+                floatingLockTrainingBtn.classList.add('pressing');
+                let pressedTime = 0;
+                const pressDuration = 3000; // 3 seconds
+                const maxDashOffset = 138.23;
+                const progressRing = floatingLockTrainingBtn.querySelector('.progress-ring');
+
+                lockTrainingBtnPressTimer = setInterval(function () {
+                    if (!lockTrainingBtnPressed) {
+                        clearInterval(lockTrainingBtnPressTimer);
+                        resetLockTrainingBtnProgress();
+                        return;
+                    }
+
+                    pressedTime += 50;
+                    const progress = Math.min(pressedTime / pressDuration, 1);
+                    const dashOffset = maxDashOffset * (1 - progress);
+                    progressRing.style.strokeDashoffset = dashOffset;
+
+                    if (pressedTime >= pressDuration) {
+                        clearInterval(lockTrainingBtnPressTimer);
+                        floatingLockTrainingBtn.classList.remove('pressing');
+                        
+                        // Make training editable again
+                        isTrainingManuallyUnlocked = true;
+                        isTrainingEditable = true;
+                        if (typeof applyTrainingEditableState === 'function') {
+                            applyTrainingEditableState();
+                        }
+                        
+                        // Show success feedback
+                        floatingLockTrainingBtn.style.background = '#43a047';
+                        setTimeout(function () {
+                            floatingLockTrainingBtn.style.background = '#757575';
+                            resetLockTrainingBtnProgress();
+                        }, 1000);
+                    }
+                }, 50);
+            });
+
+            floatingLockTrainingBtn.addEventListener('mouseup', function () {
+                if (lockTrainingBtnPressTimer) {
+                    clearInterval(lockTrainingBtnPressTimer);
+                    resetLockTrainingBtnProgress();
+                }
+            });
+
+            floatingLockTrainingBtn.addEventListener('mouseleave', function () {
+                if (lockTrainingBtnPressTimer) {
+                    clearInterval(lockTrainingBtnPressTimer);
+                    resetLockTrainingBtnProgress();
+                }
+            });
+
+            // Touch events for mobile devices
+            floatingLockTrainingBtn.addEventListener('touchstart', function () {
+                if (isTrainingEditable) return; // Only work when training is locked
+                const isAdmin = APP.currentUser && APP.currentUser.roles && APP.currentUser.roles.includes('ADMIN');
+                if (!isAdmin) return; // Only admin can unlock
+
+                lockTrainingBtnPressed = true;
+                floatingLockTrainingBtn.classList.add('pressing');
+                let pressedTime = 0;
+                const pressDuration = 3000; // 3 seconds
+                const maxDashOffset = 138.23;
+                const progressRing = floatingLockTrainingBtn.querySelector('.progress-ring');
+
+                lockTrainingBtnPressTimer = setInterval(function () {
+                    if (!lockTrainingBtnPressed) {
+                        clearInterval(lockTrainingBtnPressTimer);
+                        resetLockTrainingBtnProgress();
+                        return;
+                    }
+
+                    pressedTime += 50;
+                    const progress = Math.min(pressedTime / pressDuration, 1);
+                    const dashOffset = maxDashOffset * (1 - progress);
+                    progressRing.style.strokeDashoffset = dashOffset;
+
+                    if (pressedTime >= pressDuration) {
+                        clearInterval(lockTrainingBtnPressTimer);
+                        floatingLockTrainingBtn.classList.remove('pressing');
+                        
+                        // Make training editable again
+                        isTrainingManuallyUnlocked = true;
+                        isTrainingEditable = true;
+                        if (typeof applyTrainingEditableState === 'function') {
+                            applyTrainingEditableState();
+                        }
+                        
+                        // Show success feedback
+                        floatingLockTrainingBtn.style.background = '#43a047';
+                        setTimeout(function () {
+                            floatingLockTrainingBtn.style.background = '#757575';
+                            resetLockTrainingBtnProgress();
+                        }, 1000);
+                    }
+                }, 50);
+            });
+
+            floatingLockTrainingBtn.addEventListener('touchend', function () {
+                if (lockTrainingBtnPressTimer) {
+                    clearInterval(lockTrainingBtnPressTimer);
+                    resetLockTrainingBtnProgress();
+                }
+            });
+
+            floatingLockTrainingBtn.addEventListener('touchcancel', function () {
+                if (lockTrainingBtnPressTimer) {
+                    clearInterval(lockTrainingBtnPressTimer);
+                    resetLockTrainingBtnProgress();
                 }
             });
         });
@@ -8900,6 +9353,95 @@ const SESSION_TOKEN = "session_token"
 
         
         <script>
+        
+const CACHE = new (class CacheManager {
+  constructor() {} 
+
+  _getCacheKey({ cache, parameters } = {}) {
+    const params = parameters ? Object.fromEntries(Object.entries(parameters).filter(([key]) => key !== "forceRefresh")) : {};
+    const cacheKey = `${cache}${params && Object.keys(params).length > 0 ? `_${new URLSearchParams(params).toString()}` : ""}`;
+    return cacheKey;
+  }
+
+  getToken() {
+    try {
+      const tokenData = localStorage.getItem(SESSION_TOKEN);
+      if (!tokenData) return null;
+      
+      // Parse stored token data
+      let token, expiryTime;
+      try {
+        const parsed = JSON.parse(tokenData);
+        token = parsed.token;
+        expiryTime = parsed.expiryTime;
+      } catch (e) {
+        // Handle legacy format (plain token string without expiry)
+        token = tokenData;
+        expiryTime = null;
+      }
+      
+      // Check if token has expired
+      if (expiryTime && Date.now() > expiryTime) {
+        localStorage.removeItem(SESSION_TOKEN);
+        return null;
+      }
+      
+      return token;
+    } catch (e) {
+      console.log("Failed to retrieve token from storage:", e.message);
+      return null;
+    }
+  }
+
+  saveToken({ token } = {}) {
+    try {
+      if(!token) {
+        localStorage.removeItem(SESSION_TOKEN);
+      } else {
+        const maxAge = 60 * 60 * 24 * 90; // 90 days in seconds
+        const expiryTime = Date.now() + (maxAge * 1000); // Convert to milliseconds
+        const tokenData = JSON.stringify({ token, expiryTime });
+        localStorage.setItem(SESSION_TOKEN, tokenData);
+      }
+    } catch (e) {
+      console.log("Failed to save token to storage:", e.message);
+    }
+  }
+
+  clearSession() {
+    this.saveToken();
+    this._write({ key: "user", data: null });
+  }
+
+  _write({ key, data } = {}) {
+    if(key){
+      if(!data){
+        localStorage.removeItem(key);
+      }else{
+        localStorage.setItem(key, JSON.stringify(data));
+      }
+    }
+  }
+
+  _read({ key } = {}) {
+    if(key){
+      return JSON.parse(localStorage.getItem(key));
+    }
+  }
+
+  getTrainings() {
+    return this._read({ key: "trainings" });
+  }
+
+  saveTrainings({ trainings } = {}) {
+    this._write({ key: "trainings", data: trainings });
+  }
+})();
+        </script>
+        
+
+        
+        <script>
         ////// BACKEND
 const API = new (class GAppsApiClient {
   constructor() {}
@@ -9153,8 +9695,32 @@ const API = new (class GAppsApiClient {
     return this._put({ action: "saveTraining", body: { training }, requiresAuth: true });
   }
 
-  toggleTrainingAttendance({ trainingId } = {}) {
-    return this._post({ action: "toggleTrainingAttendance", body: { trainingId }, requiresAuth: true });
+  confirmTrainingAttendance({ trainingId } = {}) {
+    return this._post({ action: "confirmTrainingAttendance", body: { trainingId }, requiresAuth: true });
+  }
+
+  cancelTrainingAttendance({ trainingId } = {}) {
+    return this._post({ action: "cancelTrainingAttendance", body: { trainingId }, requiresAuth: true });
+  }
+
+  resetTrainingAttendance({ trainingId } = {}) {
+    return this._post({ action: "resetTrainingAttendance", body: { trainingId }, requiresAuth: true });
+  }
+
+  confirmRelatedMemberAttendance({ trainingId, memberId, memberAlias } = {}) {
+    return this._post({ action: "confirmRelatedMemberAttendance", body: { trainingId, memberId, memberAlias }, requiresAuth: true });
+  }
+
+  cancelRelatedMemberAttendance({ trainingId, memberId, memberAlias } = {}) {
+    return this._post({ action: "cancelRelatedMemberAttendance", body: { trainingId, memberId, memberAlias }, requiresAuth: true });
+  }
+
+  resetRelatedMemberAttendance({ trainingId, memberId, memberAlias } = {}) {
+    return this._post({ action: "resetRelatedMemberAttendance", body: { trainingId, memberId, memberAlias }, requiresAuth: true });
+  }
+
+  adminSetMemberAttendance({ trainingId, memberAlias, attending } = {}) {
+    return this._post({ action: "adminSetMemberAttendance", body: { trainingId, memberAlias, attending }, requiresAuth: true });
   }
 
   getAudioById({ audioId } = {}) {
@@ -9162,87 +9728,6 @@ const API = new (class GAppsApiClient {
   }
 })();
 
-        </script>
-        
-        
-        
-        <script>
-        
-const CACHE = new (class CacheManager {
-  constructor() {} 
-
-  _getCacheKey({ cache, parameters } = {}) {
-    const params = parameters ? Object.fromEntries(Object.entries(parameters).filter(([key]) => key !== "forceRefresh")) : {};
-    const cacheKey = `${cache}${params && Object.keys(params).length > 0 ? `_${new URLSearchParams(params).toString()}` : ""}`;
-    return cacheKey;
-  }
-
-  getToken() {
-    try {
-      const tokenData = localStorage.getItem(SESSION_TOKEN);
-      if (!tokenData) return null;
-      
-      // Parse stored token data
-      let token, expiryTime;
-      try {
-        const parsed = JSON.parse(tokenData);
-        token = parsed.token;
-        expiryTime = parsed.expiryTime;
-      } catch (e) {
-        // Handle legacy format (plain token string without expiry)
-        token = tokenData;
-        expiryTime = null;
-      }
-      
-      // Check if token has expired
-      if (expiryTime && Date.now() > expiryTime) {
-        localStorage.removeItem(SESSION_TOKEN);
-        return null;
-      }
-      
-      return token;
-    } catch (e) {
-      console.log("Failed to retrieve token from storage:", e.message);
-      return null;
-    }
-  }
-
-  saveToken({ token } = {}) {
-    try {
-      if(!token) {
-        localStorage.removeItem(SESSION_TOKEN);
-      } else {
-        const maxAge = 60 * 60 * 24 * 90; // 90 days in seconds
-        const expiryTime = Date.now() + (maxAge * 1000); // Convert to milliseconds
-        const tokenData = JSON.stringify({ token, expiryTime });
-        localStorage.setItem(SESSION_TOKEN, tokenData);
-      }
-    } catch (e) {
-      console.log("Failed to save token to storage:", e.message);
-    }
-  }
-
-  clearSession() {
-    this.saveToken();
-    this._write({ key: "user", data: null });
-  }
-
-  _write({ key, data } = {}) {
-    if(key){
-      if(!data){
-        localStorage.removeItem(key);
-      }else{
-        localStorage.setItem(key, JSON.stringify(data));
-      }
-    }
-  }
-
-  _read({ key } = {}) {
-    if(key){
-      return JSON.parse(localStorage.getItem(key));
-    }
-  }
-})();
         </script>
         
 
@@ -10211,7 +10696,7 @@ window.onerror = function (message, source, lineno, colno, error) {
     API.loginWithEmailPassword({ email, password })
       .then(function (result) {
         
-        API.saveToken({ token: result.token });
+        CACHE.saveToken({ token: result.token });
         if (submitBtn) {
           submitBtn.innerHTML = originalHtml;
           submitBtn.disabled = false;
@@ -10540,10 +11025,9 @@ window.onerror = function (message, source, lineno, colno, error) {
 
   _clearUserData() {
     // Clear app state
-    APP.isAuthenticated = false;
     APP.currentUser = null;
     NAVIGATION.currentView = "home-guest";
-    API.clearSession();
+    CACHE.clearSession();
 
     // Clear localStorage
     localStorage.removeItem("currentRoute");
@@ -12454,6 +12938,11 @@ function loadTrainingData(trainingId) {
   }
   
   APP.currentTrainingId = trainingId;
+  
+  // Reset manual unlock state when loading a new training
+  if (typeof isTrainingManuallyUnlocked !== "undefined") {
+    isTrainingManuallyUnlocked = false;
+  }
 
   APP.showLoading(true);
 
@@ -12534,37 +13023,74 @@ function loadTrainingData(trainingId) {
 }
 
 /**
- * Apply editable state to training fields based on user role
- * Only admins can edit training details
+ * Apply editable state to training fields based on user role and training date
+ * Only admins can edit training details, and past trainings are locked by default
  */
 function applyTrainingEditableState() {
   const isAdmin = APP.currentUser && (APP.currentUser.roles || []).includes("ADMIN");
+  
+  // Check if training is editable (future date or manually unlocked)
+  const isEditable = typeof checkIfTrainingIsEditable === "function" ? checkIfTrainingIsEditable() : true;
   
   const trainingDatetimeInput = document.getElementById("training-datetime-input");
   const trainingDescriptionInput = document.getElementById("training-description-input");
   const trainingDatetimeLabel = document.getElementById("training-datetime-label");
   const trainingDescriptionLabel = document.getElementById("training-description-label");
   const saveBtnTraining = document.getElementById("floating-save-training-btn");
+  const lockBtnTraining = document.getElementById("floating-lock-training-btn");
 
-  if (isAdmin) {
-    // Show inputs, hide labels
+  if (isAdmin && isEditable) {
+    // Admin with editable training: Show inputs, hide labels, show save, hide lock
     if (trainingDatetimeInput) trainingDatetimeInput.style.display = "";
     if (trainingDescriptionInput) trainingDescriptionInput.style.display = "";
     if (trainingDatetimeLabel) trainingDatetimeLabel.style.display = "none";
     if (trainingDescriptionLabel) trainingDescriptionLabel.style.display = "none";
     if (saveBtnTraining) saveBtnTraining.style.display = "";
+    if (lockBtnTraining) lockBtnTraining.style.display = "none";
     
     // Enable fields
     if (trainingDatetimeInput) trainingDatetimeInput.disabled = false;
     if (trainingDescriptionInput) trainingDescriptionInput.disabled = false;
     if (saveBtnTraining) saveBtnTraining.disabled = false;
-  } else {
-    // Show labels, hide inputs
+  } else if (isAdmin && !isEditable) {
+    // Admin with past/locked training: Show labels, hide inputs, hide save, show lock
     if (trainingDatetimeInput) trainingDatetimeInput.style.display = "none";
     if (trainingDescriptionInput) trainingDescriptionInput.style.display = "none";
     if (trainingDatetimeLabel) trainingDatetimeLabel.style.display = "";
     if (trainingDescriptionLabel) trainingDescriptionLabel.style.display = "";
     if (saveBtnTraining) saveBtnTraining.style.display = "none";
+    if (lockBtnTraining) lockBtnTraining.style.display = "flex";
+    
+    // Disable fields
+    if (trainingDatetimeInput) trainingDatetimeInput.disabled = true;
+    if (trainingDescriptionInput) trainingDescriptionInput.disabled = true;
+    if (saveBtnTraining) saveBtnTraining.disabled = true;
+    
+    // Populate labels with current values
+    if (trainingDatetimeLabel && trainingDatetimeInput && trainingDatetimeInput.value) {
+      const dateObj = new Date(trainingDatetimeInput.value + ":00");
+      const options = {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      };
+      trainingDatetimeLabel.textContent = dateObj.toLocaleDateString("ca-ES", options);
+    }
+    
+    if (trainingDescriptionLabel && trainingDescriptionInput && trainingDescriptionInput.value) {
+      trainingDescriptionLabel.textContent = trainingDescriptionInput.value;
+    }
+  } else {
+    // Non-admin: Show labels, hide inputs, hide both save and lock
+    if (trainingDatetimeInput) trainingDatetimeInput.style.display = "none";
+    if (trainingDescriptionInput) trainingDescriptionInput.style.display = "none";
+    if (trainingDatetimeLabel) trainingDatetimeLabel.style.display = "";
+    if (trainingDescriptionLabel) trainingDescriptionLabel.style.display = "";
+    if (saveBtnTraining) saveBtnTraining.style.display = "none";
+    if (lockBtnTraining) lockBtnTraining.style.display = "none";
     
     // Disable fields
     if (trainingDatetimeInput) trainingDatetimeInput.disabled = true;
@@ -12824,26 +13350,91 @@ function displayMemberAttendanceList(trainingData) {
     const memberAlias = member.alias;
     
     let statusClass = "empty";
-    let statusSymbol = "☐"; // empty checkbox
+    let isChecked = false;
     
     // Use alias for comparison as that's what's used in the database
     if (rejectionList_aliases.includes(memberAlias)) {
       statusClass = "rejected";
-      statusSymbol = "✕"; // red X
+      isChecked = false;
     } else if (attendanceList_aliases.includes(memberAlias)) {
       statusClass = "attending";
-      statusSymbol = "✓"; // green tick
+      isChecked = true;
     }
     
     return `
       <div class="training-member-item">
-        <div class="training-member-status ${statusClass}">${statusSymbol}</div>
-        <div class="training-member-name">${displayName}</div>
+        <label class="training-member-checkbox-label">
+          <input type="checkbox" class="training-member-checkbox" data-alias="${memberAlias}" ${isChecked ? 'checked' : ''} />
+          <span class="training-member-checkbox-custom ${statusClass}"></span>
+          <span class="training-member-name">${displayName}</span>
+        </label>
       </div>
     `;
   }).join("");
   
   attendanceList.innerHTML = membersHTML;
+  
+  // Add event listeners to checkboxes
+  attendanceList.querySelectorAll('.training-member-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', handleMemberAttendanceChange);
+  });
+  
+  // Scroll attendance list to top
+  attendanceList.scrollTop = 0;
+}
+
+/**
+ * Handle checkbox change for member attendance
+ * @param {Event} event - The change event
+ */
+function handleMemberAttendanceChange(event) {
+  const checkbox = event.target;
+  const memberAlias = checkbox.dataset.alias;
+  const attending = checkbox.checked;
+  const trainingId = APP.currentTrainingId;
+  
+  if (!trainingId || !memberAlias) {
+    console.error('Missing trainingId or memberAlias');
+    return;
+  }
+  
+  // Disable checkbox while processing
+  checkbox.disabled = true;
+  const customCheckbox = checkbox.nextElementSibling;
+  customCheckbox.classList.add('loading');
+  
+  API.adminSetMemberAttendance({ trainingId, memberAlias, attending })
+    .then(function(response) {
+      // Update visual state
+      customCheckbox.classList.remove('loading', 'empty', 'attending', 'rejected');
+      customCheckbox.classList.add(attending ? 'attending' : 'empty');
+      
+      // Update local training data
+      if (APP.currentTrainingData) {
+        const assistanceList = APP.currentTrainingData.assistance || [];
+        if (attending) {
+          if (!assistanceList.includes(memberAlias)) {
+            assistanceList.push(memberAlias);
+          }
+        } else {
+          const index = assistanceList.indexOf(memberAlias);
+          if (index > -1) {
+            assistanceList.splice(index, 1);
+          }
+        }
+        APP.currentTrainingData.assistance = assistanceList;
+      }
+    })
+    .catch(function(error) {
+      console.error('Error updating attendance:', error);
+      showToast(error || 'Error actualitzant assistència', 'error');
+      // Revert checkbox state
+      checkbox.checked = !attending;
+    })
+    .finally(function() {
+      checkbox.disabled = false;
+      customCheckbox.classList.remove('loading');
+    });
 }
 
 /**
@@ -13051,75 +13642,295 @@ function navigateToTraining(trainingId) {
 }
 
 /**
- * Toggle current user's attendance for a training session
+ * Confirm training attendance for current user
  * @param {string} trainingId - The training ID (date key)
- * @param {HTMLElement} element - The clicked badge element
  */
-function toggleTrainingAttendance(trainingId, element) {
-  if (!trainingId || !element) return;
+function confirmAttendance(trainingId) {
+  handleAttendanceAction(trainingId, 'confirm');
+}
 
+/**
+ * Cancel training attendance for current user (mark as not attending)
+ * @param {string} trainingId - The training ID (date key)
+ */
+function cancelAttendance(trainingId) {
+  handleAttendanceAction(trainingId, 'cancel');
+}
+
+/**
+ * Reset training attendance for current user (back to not confirmed)
+ * @param {string} trainingId - The training ID (date key)
+ */
+function resetAttendance(trainingId) {
+  handleAttendanceAction(trainingId, 'reset');
+}
+
+/**
+ * Confirm training attendance for a related member
+ * @param {string} trainingId - The training ID (date key)
+ * @param {string} memberId - The ID of the related member
+ * @param {string} memberAlias - The alias of the related member
+ */
+function confirmRelatedMemberAttendance(trainingId, memberId, memberAlias) {
+  handleRelatedMemberAttendanceAction(trainingId, memberId, memberAlias, 'confirm');
+}
+
+/**
+ * Cancel training attendance for a related member (mark as not attending)
+ * @param {string} trainingId - The training ID (date key)
+ * @param {string} memberId - The ID of the related member
+ * @param {string} memberAlias - The alias of the related member
+ */
+function cancelRelatedMemberAttendance(trainingId, memberId, memberAlias) {
+  handleRelatedMemberAttendanceAction(trainingId, memberId, memberAlias, 'cancel');
+}
+
+/**
+ * Reset training attendance for a related member (back to not confirmed)
+ * @param {string} trainingId - The training ID (date key)
+ * @param {string} memberId - The ID of the related member
+ * @param {string} memberAlias - The alias of the related member
+ */
+function resetRelatedMemberAttendance(trainingId, memberId, memberAlias) {
+  handleRelatedMemberAttendanceAction(trainingId, memberId, memberAlias, 'reset');
+}
+
+/**
+ * Handle attendance action for a related member (confirm, cancel, or reset)
+ * @param {string} trainingId - The training ID (date key)
+ * @param {string} memberId - The ID of the related member
+ * @param {string} memberAlias - The alias of the related member
+ * @param {string} action - The action to perform: 'confirm', 'cancel', or 'reset'
+ */
+function handleRelatedMemberAttendanceAction(trainingId, memberId, memberAlias, action) {
+  if (!trainingId || !memberId || !memberAlias) return;
+
+  // Find the confirmation section for this training and member
+  const section = document.querySelector(`.training-confirmation-section[data-training-id="${trainingId}"][data-member-id="${memberId}"]`);
+  if (!section) return;
+
+  const statusIndicator = section.querySelector('.training-status-indicator');
+  const buttonsContainer = section.querySelector('.training-confirmation-buttons');
+  
   // Save original content for restoration on error
-  var originalHtml = element.innerHTML;
-  var originalClass = element.className;
+  const originalStatusHtml = statusIndicator ? statusIndicator.outerHTML : '';
+  const originalButtonsHtml = buttonsContainer ? buttonsContainer.innerHTML : '';
 
-  // Show inline spinner and disable interaction
-  element.style.pointerEvents = "none";
-  element.innerHTML = '<span class="training-confirmation-spinner"></span>';
+  // Show loading state
+  if (buttonsContainer) {
+    buttonsContainer.innerHTML = '<span class="training-confirmation-spinner"></span>';
+  }
 
-  API.toggleTrainingAttendance({ trainingId: trainingId })
+  // Call the appropriate API
+  let apiCall;
+  if (action === 'confirm') {
+    apiCall = API.confirmRelatedMemberAttendance({ trainingId: trainingId, memberId: memberId, memberAlias: memberAlias });
+  } else if (action === 'cancel') {
+    apiCall = API.cancelRelatedMemberAttendance({ trainingId: trainingId, memberId: memberId, memberAlias: memberAlias });
+  } else {
+    apiCall = API.resetRelatedMemberAttendance({ trainingId: trainingId, memberId: memberId, memberAlias: memberAlias });
+  }
+
+  apiCall
     .then(function (result) {
-      // Update the badge based on the new status
-      const statusClass = "training-confirmation " + result.status;
-      let statusText = '? No confirmat';
-      
-      if (result.status === 'confirmed') {
-        statusText = '✔ Confirmat';
-      } else if (result.status === 'not-attending') {
-        statusText = '✕ No assistiré';
+      // Update the status indicator
+      if (statusIndicator) {
+        statusIndicator.className = 'training-status-indicator ' + result.status;
+        if (result.status === 'confirmed') {
+          statusIndicator.textContent = '✔ Confirmat';
+        } else if (result.status === 'not-attending') {
+          statusIndicator.textContent = '✕ No assistiré';
+        } else {
+          statusIndicator.textContent = '? No confirmat';
+        }
       }
       
-      element.className = statusClass;
-      element.innerHTML = statusText;
+      // Update the buttons based on new status
+      if (buttonsContainer) {
+        const escapedTrainingId = escapeHtml(trainingId);
+        const escapedMemberId = escapeHtml(memberId);
+        const escapedMemberAlias = escapeHtml(memberAlias);
+        let button1Html = '';
+        let button2Html = '';
+        
+        if (result.status === 'confirmed') {
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="resetRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="Restablir a no confirmat">↩ Restablir</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="No assistiré">✕ No assistiré</button>`;
+        } else if (result.status === 'not-attending') {
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="confirmRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="Confirmar assistència">✔ Confirmar</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="resetRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="Restablir a no confirmat">↩ Restablir</button>`;
+        } else {
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="confirmRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="Confirmar assistència">✔ Confirmar</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="No assistiré">✕ No assistiré</button>`;
+        }
+        
+        buttonsContainer.innerHTML = button1Html + button2Html;
+      }
+      
       showToast(result.message || "Estat actualitzat", "success");
 
       // Update local training data
-      var userAlias = APP.currentUser ? APP.currentUser.alias : null;
-      if (userAlias) {
-        
-      }
-
-      // Update the attendance count on the same card
-      var card = element.closest(".training-card");
-      if (card) {
-        var countSpan = card.querySelector(".training-count");
-        if (countSpan) {
-          var currentText = countSpan.textContent;
-          var match = currentText.match(/(\d+)/);
-          if (match) {
-            var count = parseInt(match[1], 10);
-            // Adjust count based on previous and new status
-            var wasConfirmed = result.previousStatus === 'confirmed';
-            var isNowConfirmed = result.status === 'confirmed';
-            
-            if (!wasConfirmed && isNowConfirmed) {
-              count = count + 1;
-            } else if (wasConfirmed && !isNowConfirmed) {
-              count = Math.max(0, count - 1);
+      if (memberAlias) {
+        const trainings = CACHE.getTrainings() || [];
+        const trainingIndex = trainings.findIndex(t => t.id === trainingId);
+        if (trainingIndex !== -1) {
+          const training = trainings[trainingIndex];
+          if (!training.assistance) training.assistance = [];
+          if (!training.rejections) training.rejections = [];
+          
+          // Remove member from both lists
+          training.assistance = training.assistance.filter(a => a !== memberAlias);
+          training.rejections = training.rejections.filter(r => r !== memberAlias);
+          
+          // Add member to the appropriate list based on new status
+          if (result.status === 'confirmed') {
+            training.assistance.push(memberAlias);
+          } else if (result.status === 'not-attending') {
+            training.rejections.push(memberAlias);
+          }
+          
+          CACHE.saveTrainings({ trainings });
+          
+          // Update the count display
+          const card = document.querySelector(`.training-card[data-training-id="${trainingId}"]`);
+          if (card) {
+            const countSpan = card.querySelector('.training-count');
+            if (countSpan) {
+              countSpan.textContent = training.assistance.length + ' persones apuntades';
             }
-            countSpan.textContent = count + " persones apuntades";
           }
         }
       }
     })
     .catch(function (error) {
-      console.error("Error toggling attendance:", error);
+      console.error("Error updating related member attendance:", error);
       // Restore original state on error
-      element.className = originalClass;
-      element.innerHTML = originalHtml;
-      showToast(error || "Error actualitzant l'assistència", "error");
+      if (statusIndicator && originalStatusHtml) {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = originalStatusHtml;
+        statusIndicator.className = tempDiv.firstChild.className;
+        statusIndicator.textContent = tempDiv.firstChild.textContent;
+      }
+      if (buttonsContainer) {
+        buttonsContainer.innerHTML = originalButtonsHtml;
+      }
+      showToast(error.message || "Error actualitzant l'assistència", "error");
+    });
+}
+
+/**
+ * Handle attendance action (confirm, cancel, or reset)
+ * @param {string} trainingId - The training ID (date key)
+ * @param {string} action - The action to perform: 'confirm', 'cancel', or 'reset'
+ */
+function handleAttendanceAction(trainingId, action) {
+  if (!trainingId) return;
+
+  // Find the confirmation section for this training (current user, without member-alias attribute)
+  const section = document.querySelector(`.training-confirmation-section[data-training-id="${trainingId}"]:not([data-member-alias])`);
+  if (!section) return;
+
+  const statusIndicator = section.querySelector('.training-status-indicator');
+  const buttonsContainer = section.querySelector('.training-confirmation-buttons');
+  
+  // Save original content for restoration on error
+  const originalStatusHtml = statusIndicator ? statusIndicator.outerHTML : '';
+  const originalButtonsHtml = buttonsContainer ? buttonsContainer.innerHTML : '';
+
+  // Show loading state
+  if (buttonsContainer) {
+    buttonsContainer.innerHTML = '<span class="training-confirmation-spinner"></span>';
+  }
+
+  // Call the appropriate API
+  let apiCall;
+  if (action === 'confirm') {
+    apiCall = API.confirmTrainingAttendance({ trainingId: trainingId });
+  } else if (action === 'cancel') {
+    apiCall = API.cancelTrainingAttendance({ trainingId: trainingId });
+  } else {
+    apiCall = API.resetTrainingAttendance({ trainingId: trainingId });
+  }
+
+  apiCall
+    .then(function (result) {
+      // Update the status indicator
+      if (statusIndicator) {
+        statusIndicator.className = 'training-status-indicator ' + result.status;
+        if (result.status === 'confirmed') {
+          statusIndicator.textContent = '✔ Confirmat';
+        } else if (result.status === 'not-attending') {
+          statusIndicator.textContent = '✕ No assistiré';
+        } else {
+          statusIndicator.textContent = '? No confirmat';
+        }
+      }
+      
+      // Update the buttons based on new status
+      if (buttonsContainer) {
+        let button1Html = '';
+        let button2Html = '';
+        
+        if (result.status === 'confirmed') {
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="resetAttendance('${escapeHtml(trainingId)}')" title="Restablir a no confirmat">↩ Restablir</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelAttendance('${escapeHtml(trainingId)}')" title="No assistiré">✕ No assistiré</button>`;
+        } else if (result.status === 'not-attending') {
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="confirmAttendance('${escapeHtml(trainingId)}')" title="Confirmar assistència">✔ Confirmar</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="resetAttendance('${escapeHtml(trainingId)}')" title="Restablir a no confirmat">↩ Restablir</button>`;
+        } else {
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="confirmAttendance('${escapeHtml(trainingId)}')" title="Confirmar assistència">✔ Confirmar</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelAttendance('${escapeHtml(trainingId)}')" title="No assistiré">✕ No assistiré</button>`;
+        }
+        
+        buttonsContainer.innerHTML = button1Html + button2Html;
+      }
+      
+      showToast(result.message || "Estat actualitzat", "success");
+
+      // Update local training data
+      var userAlias = APP.currentUser ? APP.currentUser.alias : null;
+      if (userAlias) {
+        const trainings = CACHE.getTrainings() || [];
+        const trainingIndex = trainings.findIndex(t => t.id === trainingId);
+        if (trainingIndex !== -1) {
+          const training = trainings[trainingIndex];
+          if (!training.assistance) training.assistance = [];
+          if (!training.rejections) training.rejections = [];
+          
+          // Remove user from both lists
+          training.assistance = training.assistance.filter(a => a !== userAlias);
+          training.rejections = training.rejections.filter(r => r !== userAlias);
+          
+          // Add user to the appropriate list based on new status
+          if (result.status === 'confirmed') {
+            training.assistance.push(userAlias);
+          } else if (result.status === 'not-attending') {
+            training.rejections.push(userAlias);
+          }
+          
+          CACHE.saveTrainings({ trainings });
+          
+          // Update the count display
+          const card = document.querySelector(`.training-card[data-training-id="${trainingId}"]`);
+          if (card) {
+            const countSpan = card.querySelector('.training-count');
+            if (countSpan) {
+              countSpan.textContent = training.assistance.length + ' persones apuntades';
+            }
+          }
+        }
+      }
     })
-    .finally(function () {
-      element.style.pointerEvents = "";
+    .catch(function (error) {
+      console.error("Error updating attendance:", error);
+      // Restore original state on error
+      if (statusIndicator && originalStatusHtml) {
+        statusIndicator.outerHTML = originalStatusHtml;
+      }
+      if (buttonsContainer) {
+        buttonsContainer.innerHTML = originalButtonsHtml;
+      }
+      showToast(error || "Error actualitzant l'assistència", "error");
     });
 }
 
@@ -13184,34 +13995,82 @@ function renderPlanningTrainingsList(trainings) {
       }
     }
 
-    // For upcoming trainings, show clickable confirmation status based on user attendance
+    // For upcoming trainings, show current status with action buttons
     let confirmationStatusHtml = "";
     if (!isPast && APP.currentUser) {
-      // Calculate user's status from attendance and rejections lists
-      const isConfirmed = (training.assistance || []).some(function(attendee) {
-        return attendee === APP.currentUser.alias;
-      });
-      const isRejected = (training.rejections || []).some(function(rejector) {
-        return rejector === APP.currentUser.alias;
-      });
-      
-      let statusClass = 'training-confirmation not-confirmed';
-      let statusText = '? No confirmat';
-      
-      if (isConfirmed) {
-        statusClass = 'training-confirmation confirmed';
-        statusText = '✔ Confirmat';
-      } else if (isRejected) {
-        statusClass = 'training-confirmation not-attending';
-        statusText = '✕ No assistiré';
+      // Helper function to generate confirmation section HTML for a member
+      function generateConfirmationSection(memberId, memberAlias, memberName, isRelatedMember) {
+        const isConfirmed = (training.assistance || []).some(function(attendee) {
+          return attendee === memberAlias;
+        });
+        const isRejected = (training.rejections || []).some(function(rejector) {
+          return rejector === memberAlias;
+        });
+        
+        let statusClass = 'training-status-indicator not-confirmed';
+        let statusText = '? No confirmat';
+        let button1Html = '';
+        let button2Html = '';
+        
+        // Use different onclick handlers for related members
+        const confirmFn = isRelatedMember ? 
+          `confirmRelatedMemberAttendance('${escapeHtml(training.id)}', '${escapeHtml(memberId)}', '${escapeHtml(memberAlias)}')` : 
+          `confirmAttendance('${escapeHtml(training.id)}')`;
+        const cancelFn = isRelatedMember ? 
+          `cancelRelatedMemberAttendance('${escapeHtml(training.id)}', '${escapeHtml(memberId)}', '${escapeHtml(memberAlias)}')` : 
+          `cancelAttendance('${escapeHtml(training.id)}')`;
+        const resetFn = isRelatedMember ? 
+          `resetRelatedMemberAttendance('${escapeHtml(training.id)}', '${escapeHtml(memberId)}', '${escapeHtml(memberAlias)}')` : 
+          `resetAttendance('${escapeHtml(training.id)}')`;
+        
+        if (isConfirmed) {
+          statusClass = 'training-status-indicator confirmed';
+          statusText = '✔ Confirmat';
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${cancelFn}" title="No assistiré">✕ No assistiré</button>`;
+        } else if (isRejected) {
+          statusClass = 'training-status-indicator not-attending';
+          statusText = '✕ No assistiré';
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
+        } else {
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${cancelFn}" title="No assistiré">✕ No assistiré</button>`;
+        }
+        
+        const sectionClass = isRelatedMember ? 'training-confirmation-section related-member' : 'training-confirmation-section';
+        const dataAttr = isRelatedMember ? 
+          `data-training-id="${escapeHtml(training.id)}" data-member-id="${escapeHtml(memberId)}"` : 
+          `data-training-id="${escapeHtml(training.id)}"`;
+        
+        return `
+          <div class="${sectionClass}" ${dataAttr}>
+            <span class="training-confirmation-member-name">${escapeHtml(memberName)}</span>
+            <span class="${statusClass}">${statusText}</span>
+            <div class="training-confirmation-buttons">
+              ${button1Html}
+              ${button2Html}
+            </div>
+          </div>`;
       }
       
-      confirmationStatusHtml = `<span class="${statusClass}" onclick="toggleTrainingAttendance('${escapeHtml(training.id)}', this)" role="button" tabindex="0">${statusText}</span>`;
+      // Generate confirmation section for the current user
+      const currentUserName = APP.currentUser.displayName || APP.currentUser.alias || 'Tu';
+      confirmationStatusHtml = generateConfirmationSection(APP.currentUser.memberId, APP.currentUser.alias, currentUserName, false);
+      
+      // Generate confirmation sections for related members
+      const relatedMembers = APP.currentUser.relatedMembers || [];
+      relatedMembers.forEach(function(rm) {
+        if (rm.alias && rm.id) {
+          const rmName = rm.name || rm.alias;
+          confirmationStatusHtml += generateConfirmationSection(rm.id, rm.alias, rmName, true);
+        }
+      });
     }
     
     const actionHtml = `
       <div class="training-card-action-group">
-        <button type="button" class="btn btn-sm btn-primary" onclick="navigateToTraining('${escapeHtml(training.id)}')">Detalls</button>
+        <button type="button" class="training-card-btn view-btn" onclick="navigateToTraining('${escapeHtml(training.id)}')">Detalls</button>
       </div>
     `;
     return `
@@ -13339,6 +14198,11 @@ function resetTrainingForm() {
   // Clear the current training ID (we're creating a new one)
   APP.currentTrainingId = null;
   APP.currentTrainingData = null;
+  
+  // Reset manual unlock state for new trainings
+  if (typeof isTrainingManuallyUnlocked !== "undefined") {
+    isTrainingManuallyUnlocked = false;
+  }
 
   // Clear training inputs
   const trainingDatetimeInput = document.getElementById("training-datetime-input");

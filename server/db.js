@@ -75,6 +75,7 @@ const CACHE = new class GAppsServerCache {
           if (relatedMember) {
             relatedMembers.push({
               id: relatedMember.id,
+              alias: relatedMember.alias || "",
               name: relatedMember.name,
               type: relatedMember.type || "",
               avatar: generateAvatarUrl_(

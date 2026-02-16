@@ -663,6 +663,144 @@ function cancelTrainingAttendance_({trainingId, user}) {
 }
 
 /**
+ * Verify that a member ID is in the user's relatedMembers list
+ * @param {string} memberId - The member ID to verify
+ * @param {Object} user - The user object with relatedMembers
+ * @returns {boolean} True if the memberId is a related member
+ */
+function isRelatedMember_(memberId, user) {
+  if (!user || !user.relations || !Array.isArray(user.relations)) {
+    return false;
+  }
+  return user.relations.some(function(rmId) {
+    return rmId === memberId;
+  });
+}
+
+/**
+ * Confirm training attendance for a related member
+ * @param {string} trainingId - The training ID
+ * @param {string} memberId - The ID of the related member
+ * @param {string} memberAlias - The alias of the related member
+ * @param {Object} user - The user object with alias and relatedMembers
+ * @returns {Object} Result object with status
+ */
+function confirmRelatedMemberAttendance_({trainingId, memberId, memberAlias, user}) {
+  try {
+    // Verify the memberId is in the user's relatedMembers
+    if (!isRelatedMember_(memberId, user)) {
+      return API.newError_({ error: 'No tens permís per gestionar l\'assistència d\'aquest membre.', status: 403 });
+    }
+
+    // Create a user object with the related member's alias
+    const relatedUser = { alias: memberAlias };
+    const context = getTrainingAttendanceContext_({trainingId, user: relatedUser});
+    if (context.error) return context.error;
+
+    context.sheet.getRange(context.userRow, context.dateColumn).setValue('SI');
+
+    // Invalidate cache
+    CACHE.retrieveTrainingsFromDB();
+
+    return API.newResult_({
+      result: {
+        trainingId: context.trainingId,
+        memberId: memberId,
+        memberAlias: memberAlias,
+        status: 'confirmed',
+        value: 'SI',
+        message: 'Assistència confirmada',
+      },
+    });
+  } catch (error) {
+    console.error('Error confirming related member attendance:', error.toString());
+    return API.newError_({ error: 'Error actualitzant l\'assistència: ' + error.toString() });
+  }
+}
+
+/**
+ * Cancel training attendance for a related member
+ * @param {string} trainingId - The training ID
+ * @param {string} memberId - The ID of the related member
+ * @param {string} memberAlias - The alias of the related member
+ * @param {Object} user - The user object with alias and relatedMembers
+ * @returns {Object} Result object with status
+ */
+function cancelRelatedMemberAttendance_({trainingId, memberId, memberAlias, user}) {
+  try {
+    // Verify the memberId is in the user's relatedMembers
+    if (!isRelatedMember_(memberId, user)) {
+      return API.newError_({ error: 'No tens permís per gestionar l\'assistència d\'aquest membre.', status: 403 });
+    }
+
+    // Create a user object with the related member's alias
+    const relatedUser = { alias: memberAlias };
+    const context = getTrainingAttendanceContext_({trainingId, user: relatedUser});
+    if (context.error) return context.error;
+
+    context.sheet.getRange(context.userRow, context.dateColumn).setValue('NO');
+
+    // Invalidate cache
+    CACHE.retrieveTrainingsFromDB();
+
+    return API.newResult_({
+      result: {
+        trainingId: context.trainingId,
+        memberId: memberId,
+        memberAlias: memberAlias,
+        status: 'not-attending',
+        value: 'NO',
+        message: 'Marcat que no assistirà',
+      },
+    });
+  } catch (error) {
+    console.error('Error canceling related member attendance:', error.toString());
+    return API.newError_({ error: 'Error actualitzant l\'assistència: ' + error.toString() });
+  }
+}
+
+/**
+ * Reset training attendance for a related member to not-confirmed state
+ * @param {string} trainingId - The training ID
+ * @param {string} memberId - The ID of the related member
+ * @param {string} memberAlias - The alias of the related member
+ * @param {Object} user - The user object with alias and relatedMembers
+ * @returns {Object} Result object with status
+ */
+function resetRelatedMemberAttendance_({trainingId, memberId, memberAlias, user}) {
+  try {
+    // Verify the memberId is in the user's relatedMembers
+    if (!isRelatedMember_(memberId, user)) {
+      return API.newError_({ error: 'No tens permís per gestionar l\'assistència d\'aquest membre.', status: 403 });
+    }
+
+    // Create a user object with the related member's alias
+    const relatedUser = { alias: memberAlias };
+    const context = getTrainingAttendanceContext_({trainingId, user: relatedUser});
+    if (context.error) return context.error;
+
+    context.sheet.getRange(context.userRow, context.dateColumn).setValue('');
+
+    // Invalidate cache
+    CACHE.retrieveTrainingsFromDB();
+
+    return API.newResult_({
+      result: {
+        trainingId: context.trainingId,
+        memberId: memberId,
+        memberAlias: memberAlias,
+        status: 'not-confirmed',
+        value: '',
+        message: 'Estat restablert a no confirmat',
+      },
+    });
+  } catch (error) {
+    console.error('Error resetting related member attendance:', error.toString());
+    return API.newError_({ error: 'Error actualitzant l\'assistència: ' + error.toString() });
+  }
+}
+
+/**
  * Admin function to set member attendance for a training session
  * @param {string} trainingId - The training ID
  * @param {string} memberAlias - The member alias to set attendance for

@@ -164,3 +164,13 @@ All HTML files (`docs/index.html`, `server/html/test.html`) are generated from N
 - `npm run build_prod` for production
 
 This ensures consistency between dev and prod versions and prevents your changes from being overwritten during the next build.
+
+**🚫 NEVER write documentation or comments in code!**
+
+Do not add inline comments, JSDoc, or any form of code documentation. The codebase follows a self-documenting approach:
+
+- Use descriptive variable names that explain their purpose
+- Use descriptive function names that explain what they do
+- Code structure and naming ARE the documentation
+
+Avoid: `// Get the user's name`, `/** @param {string} name */`, `// TODO: refactor this`
