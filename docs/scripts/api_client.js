@@ -36,8 +36,10 @@ const API = new (class GAppsApiClient {
       const token = CACHE.getToken() || "";
       const returnResult = (data) => {
         if (data?.success) {
-          const cacheKey = CACHE._getCacheKey({ cache, parameters });
-          CACHE._write({ key: cacheKey, data: data.result });
+          if(cache){
+            const cacheKey = CACHE._getCacheKey({ cache, parameters });
+            CACHE._write({ key: cacheKey, data: data.result });
+          }
           resolve(data.result);
         } else {
           let errorMessage = "Ha ocorregut un error en la petició. Si el problema persistix, contacta a l'administrador.";
