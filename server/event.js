@@ -227,6 +227,7 @@ function getTrainingById_({trainingId, token}) {
       date: trainingId,
       assistance: training.attendees,
       rejections: training.rejections || [],
+      notes: training.notes || {},
       description: training.description
     };
     

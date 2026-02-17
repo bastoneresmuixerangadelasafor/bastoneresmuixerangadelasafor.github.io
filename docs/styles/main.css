@@ -3765,8 +3765,28 @@ input::placeholder {
   border: 1px solid var(--border-color);
   transition: all 0.2s;
   min-height: 40px;
-  max-height: 40px;
   box-sizing: border-box;
+  flex-wrap: wrap;
+}
+
+.training-member-item.has-note {
+  min-height: auto;
+  padding-bottom: 6px;
+}
+
+.training-member-note {
+  font-size: 0.75rem;
+  color: #4caf50;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-left: 36px;
+  flex-basis: 100%;
+}
+
+.dark-mode .training-member-note {
+  color: #81c784;
 }
 
 .training-member-item:hover {
@@ -3776,6 +3796,20 @@ input::placeholder {
 
 .dark-mode .training-member-item:hover {
   background: rgba(79, 195, 247, 0.05);
+}
+
+.training-member-item.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.training-member-item.disabled:hover {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+.training-member-item.disabled .training-member-checkbox-label {
+  cursor: not-allowed;
 }
 
 .training-member-status {

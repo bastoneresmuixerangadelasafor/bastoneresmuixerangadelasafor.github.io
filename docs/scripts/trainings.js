@@ -408,6 +408,9 @@ function displayMemberAttendanceList(trainingData) {
   // Show the section
   attendanceSection.style.display = "";
   
+  // Check if training is past
+  const isPastTraining = trainingData.date && new Date(trainingData.date) < new Date();
+  
   // Get members list
   const members = (MEMBERS.membersData || []).filter(m => m.active);
   
@@ -419,6 +422,7 @@ function displayMemberAttendanceList(trainingData) {
   // Get attendance and rejection lists from training data
   const attendanceList_aliases = trainingData.assistance || [];
   const rejectionList_aliases = trainingData.rejections || [];
+  const memberNotes = trainingData.notes || {};
   
   // Build HTML for member list
   const membersHTML = members.map(member => {
@@ -437,23 +441,31 @@ function displayMemberAttendanceList(trainingData) {
       isChecked = true;
     }
     
+    const memberNote = memberNotes[memberAlias] || '';
+    const noteHtml = memberNote ? `<span class="training-member-note" title="${escapeHtml(memberNote)}">ℹ️ «${escapeHtml(memberNote)}»</span>` : '';
+    const disabledAttr = isPastTraining ? 'disabled' : '';
+    const disabledClass = isPastTraining ? ' disabled' : '';
+    
     return `
-      <div class="training-member-item">
+      <div class="training-member-item${memberNote ? ' has-note' : ''}${disabledClass}">
         <label class="training-member-checkbox-label">
-          <input type="checkbox" class="training-member-checkbox" data-alias="${memberAlias}" ${isChecked ? 'checked' : ''} />
+          <input type="checkbox" class="training-member-checkbox" data-alias="${memberAlias}" ${isChecked ? 'checked' : ''} ${disabledAttr} />
           <span class="training-member-checkbox-custom ${statusClass}"></span>
           <span class="training-member-name">${displayName}</span>
         </label>
+        ${noteHtml}
       </div>
     `;
   }).join("");
   
   attendanceList.innerHTML = membersHTML;
   
-  // Add event listeners to checkboxes
-  attendanceList.querySelectorAll('.training-member-checkbox').forEach(checkbox => {
-    checkbox.addEventListener('change', handleMemberAttendanceChange);
-  });
+  // Add event listeners to checkboxes (only if not past training)
+  if (!isPastTraining) {
+    attendanceList.querySelectorAll('.training-member-checkbox').forEach(checkbox => {
+      checkbox.addEventListener('change', handleMemberAttendanceChange);
+    });
+  }
   
   // Scroll attendance list to top
   attendanceList.scrollTop = 0;
