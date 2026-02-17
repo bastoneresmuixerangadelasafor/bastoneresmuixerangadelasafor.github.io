@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Load training data into edit-training view
  * @param {string} trainingId - Training ID to load
  */
@@ -815,7 +815,7 @@ function handleRelatedMemberAttendanceAction(trainingId, memberId, memberAlias, 
         if (result.status === 'confirmed') {
           statusIndicator.textContent = '✔ Confirmat';
         } else if (result.status === 'not-attending') {
-          statusIndicator.textContent = '✕ No assistiré';
+          statusIndicator.textContent = '✕ No assistirà';
         } else {
           statusIndicator.textContent = '? No confirmat';
         }
@@ -831,13 +831,13 @@ function handleRelatedMemberAttendanceAction(trainingId, memberId, memberAlias, 
         
         if (result.status === 'confirmed') {
           button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="resetRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="Restablir a no confirmat">↩ Restablir</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="No assistiré">✕ No assistiré</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="No assistirà">✕ No assistirà</button>`;
         } else if (result.status === 'not-attending') {
           button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="confirmRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="Confirmar assistència">✔ Confirmar</button>`;
           button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="resetRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="Restablir a no confirmat">↩ Restablir</button>`;
         } else {
           button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="confirmRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="Confirmar assistència">✔ Confirmar</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="No assistiré">✕ No assistiré</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="No assistirà">✕ No assistirà</button>`;
         }
         
         buttonsContainer.innerHTML = button1Html + button2Html;
@@ -1060,22 +1060,57 @@ function renderPlanningTrainingsList(trainings) {
     // For past trainings, show attendance indicator
     let attendanceIndicatorHtml = "";
     if (isPast && APP.currentUser) {
-      const isAttending = (training.assistance || []).some(function(attendee) {
-        return attendee === APP.currentUser.alias;
-      });
+      const relatedMembers = APP.currentUser.relatedMembers || [];
+      const hasRelatedMembers = relatedMembers.length > 0;
       
-      if (isAttending) {
-        attendanceIndicatorHtml = `<span class="training-attendance attending">✓ Has assistit</span>`;
-      } else {
-        attendanceIndicatorHtml = `<span class="training-attendance not-attending">✕ No has assistit</span>`;
+      function generateAttendanceSection(memberAlias, memberName, isRelatedMember, showName) {
+        const isAttending = (training.assistance || []).some(function(attendee) {
+          return attendee === memberAlias;
+        });
+        const memberNote = (training.notes || {})[memberAlias];
+        const noteHtml = memberNote ? `<span class="training-attendance-note" title="${escapeHtml(memberNote)}">📝 "${escapeHtml(memberNote)}"</span>` : '';
+        
+        const sectionClass = isRelatedMember ? 'training-confirmation-section related-member past' : 'training-confirmation-section past';
+        let statusClass = '';
+        let statusText = '';
+        
+        if (isAttending) {
+          statusClass = 'training-status-indicator confirmed';
+          statusText = `✓ ${isRelatedMember ? 'Ha assistit' : 'Has assistit'}`;
+        } else {
+          statusClass = 'training-status-indicator not-attending';
+          statusText = `✕ ${isRelatedMember ? 'No ha assistit' : 'No has assistit'}`;
+        }
+        
+        const nameHtml = showName ? `<span class="training-confirmation-member-name">${escapeHtml(memberName)}</span>` : '';
+        
+        return `
+          <div class="${sectionClass}">
+            ${nameHtml}
+            <span class="${statusClass}">${statusText}</span>
+            ${noteHtml}
+          </div>`;
       }
+      
+      const currentUserName = APP.currentUser.displayName || APP.currentUser.alias || 'Tu';
+      attendanceIndicatorHtml = generateAttendanceSection(APP.currentUser.alias, currentUserName, false, hasRelatedMembers);
+      
+      relatedMembers.forEach(function(rm) {
+        if (rm.alias) {
+          const rmName = rm.name || rm.alias;
+          attendanceIndicatorHtml += generateAttendanceSection(rm.alias, rmName, true, true);
+        }
+      });
     }
 
     // For upcoming trainings, show current status with action buttons
     let confirmationStatusHtml = "";
     if (!isPast && APP.currentUser) {
+      const relatedMembersFuture = APP.currentUser.relatedMembers || [];
+      const hasRelatedMembersFuture = relatedMembersFuture.length > 0;
+      
       // Helper function to generate confirmation section HTML for a member
-      function generateConfirmationSection(memberId, memberAlias, memberName, isRelatedMember) {
+      function generateConfirmationSection(memberId, memberAlias, memberName, isRelatedMember, showName) {
         const isConfirmed = (training.assistance || []).some(function(attendee) {
           return attendee === memberAlias;
         });
@@ -1099,19 +1134,22 @@ function renderPlanningTrainingsList(trainings) {
           `resetRelatedMemberAttendance('${escapeHtml(training.id)}', '${escapeHtml(memberId)}', '${escapeHtml(memberAlias)}')` : 
           `resetAttendance('${escapeHtml(training.id)}')`;
         
+        const notAttendingText = isRelatedMember ? 'No assistirà' : 'No assistiré';
+        const notAttendingTitle = isRelatedMember ? 'No assistirà' : 'No assistiré';
+        
         if (isConfirmed) {
           statusClass = 'training-status-indicator confirmed';
           statusText = '✔ Confirmat';
           button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${cancelFn}" title="No assistiré">✕ No assistiré</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${cancelFn}" title="${notAttendingTitle}">✕ ${notAttendingText}</button>`;
         } else if (isRejected) {
           statusClass = 'training-status-indicator not-attending';
-          statusText = '✕ No assistiré';
+          statusText = `✕ ${notAttendingText}`;
           button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
           button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
         } else {
           button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${cancelFn}" title="No assistiré">✕ No assistiré</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${cancelFn}" title="${notAttendingTitle}">✕ ${notAttendingText}</button>`;
         }
         
         const sectionClass = isRelatedMember ? 'training-confirmation-section related-member' : 'training-confirmation-section';
@@ -1119,9 +1157,11 @@ function renderPlanningTrainingsList(trainings) {
           `data-training-id="${escapeHtml(training.id)}" data-member-id="${escapeHtml(memberId)}"` : 
           `data-training-id="${escapeHtml(training.id)}"`;
         
+        const nameHtml = showName ? `<span class="training-confirmation-member-name">${escapeHtml(memberName)}</span>` : '';
+        
         return `
           <div class="${sectionClass}" ${dataAttr}>
-            <span class="training-confirmation-member-name">${escapeHtml(memberName)}</span>
+            ${nameHtml}
             <span class="${statusClass}">${statusText}</span>
             <div class="training-confirmation-buttons">
               ${button1Html}
@@ -1132,14 +1172,13 @@ function renderPlanningTrainingsList(trainings) {
       
       // Generate confirmation section for the current user
       const currentUserName = APP.currentUser.displayName || APP.currentUser.alias || 'Tu';
-      confirmationStatusHtml = generateConfirmationSection(APP.currentUser.memberId, APP.currentUser.alias, currentUserName, false);
+      confirmationStatusHtml = generateConfirmationSection(APP.currentUser.memberId, APP.currentUser.alias, currentUserName, false, hasRelatedMembersFuture);
       
       // Generate confirmation sections for related members
-      const relatedMembers = APP.currentUser.relatedMembers || [];
-      relatedMembers.forEach(function(rm) {
+      relatedMembersFuture.forEach(function(rm) {
         if (rm.alias && rm.id) {
           const rmName = rm.name || rm.alias;
-          confirmationStatusHtml += generateConfirmationSection(rm.id, rm.alias, rmName, true);
+          confirmationStatusHtml += generateConfirmationSection(rm.id, rm.alias, rmName, true, true);
         }
       });
     }

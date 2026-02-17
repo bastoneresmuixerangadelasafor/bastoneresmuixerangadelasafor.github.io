@@ -194,8 +194,9 @@ function getTrainings_({forceRefresh} = {}) {
       const result = {
         id: k,
         date: k,
-        assistance: training.attendees,
+        assistance: training.attendees || [],
         rejections: training.rejections || [],
+        notes: training.notes || {},
         description: training.description,
       };
       

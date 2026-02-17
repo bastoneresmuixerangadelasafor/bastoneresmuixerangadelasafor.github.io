@@ -3390,6 +3390,21 @@ input::placeholder {
   border-top-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Past training confirmation section (no buttons) */
+.training-confirmation-section.past {
+  gap: 8px;
+}
+
+.training-confirmation-section.past .training-attendance-note {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: #666;
+}
+
+.dark-mode .training-confirmation-section.past .training-attendance-note {
+  color: #aaa;
+}
+
 /* Training attendance indicator (for past trainings) */
 .training-attendance {
   display: inline-block;
@@ -3417,6 +3432,48 @@ input::placeholder {
 
 .dark-mode .training-attendance.not-attending {
   background-color: rgba(244, 67, 54, 0.2);
+}
+
+.training-attendance-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.training-attendance-note {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: #666;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dark-mode .training-attendance-note {
+  color: #aaa;
+}
+
+.training-attendance-member-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.dark-mode .training-attendance-member-name {
+  color: #bbb;
+}
+
+.training-attendance-row.related-member {
+  padding-left: 8px;
+  border-left: 2px solid #ddd;
+  margin-left: 4px;
+}
+
+.dark-mode .training-attendance-row.related-member {
+  border-left-color: #444;
 }
 
 @media (max-width: 600px) {
