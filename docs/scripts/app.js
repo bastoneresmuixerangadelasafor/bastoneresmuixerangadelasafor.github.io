@@ -45,7 +45,7 @@ const APP = new (class AppState{
         if (!isLocalFile) {
           window.addEventListener("load", () => {
             navigator.serviceWorker
-              .register("./sw.js")
+              .register('/sw.js?v=' + Date.now())
               .then((registration) => {
                 console.log(
                   "ServiceWorker registration successful with scope: ",
