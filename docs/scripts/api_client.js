@@ -19,7 +19,8 @@ const API = new (class GAppsApiClient {
         return reject("L'operació requereix autenticació. Si us plau, inicia sessió.");
       }
 
-      if (cache && method === "GET") {
+      const forceRefresh = parameters?.forceRefresh === true;
+      if (cache && method === "GET" && !forceRefresh) {
         const cacheKey = CACHE._getCacheKey({ cache, parameters });
         const savedData = CACHE._read({ key: cacheKey });
         if (savedData) {
@@ -175,7 +176,7 @@ const API = new (class GAppsApiClient {
   }
 
   getEvents({ forceRefresh = false } = {}) {
-    return this._get({ action: "events", parameters: { forceRefresh }, requiresAuth: true, cache: forceRefresh ? null : 'events' });
+    return this._get({ action: "events", parameters: { forceRefresh }, requiresAuth: true, cache: 'events' });
   }
 
   getEventById({ eventId } = {}) {
@@ -187,7 +188,7 @@ const API = new (class GAppsApiClient {
   }
   
   getTrainings({ forceRefresh = false } = {}) {
-    return this._get({ action: "trainings", parameters: { forceRefresh }, requiresAuth: true, cache: forceRefresh ? null : 'trainings' });
+    return this._get({ action: "trainings", parameters: { forceRefresh }, requiresAuth: true, cache: 'trainings' });
   }
 
   getTrainingById({ trainingId } = {}) {
@@ -207,7 +208,7 @@ const API = new (class GAppsApiClient {
   }
 
   getMembers({ forceRefresh = false } = {}) {
-    return this._get({ action: "members", parameters: { forceRefresh }, requiresAuth: true, cache: forceRefresh ? null : 'members' });
+    return this._get({ action: "members", parameters: { forceRefresh }, requiresAuth: true, cache: 'members' });
   }
 
   loginWithEmailPassword({ email, password } = {}) {
