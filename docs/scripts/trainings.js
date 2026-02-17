@@ -426,7 +426,6 @@ function displayMemberAttendanceList(trainingData) {
   
   // Build HTML for member list
   const membersHTML = members.map(member => {
-    const displayName = member.name || member.alias;
     const memberAlias = member.alias;
     
     let statusClass = "empty";
@@ -451,7 +450,7 @@ function displayMemberAttendanceList(trainingData) {
         <label class="training-member-checkbox-label">
           <input type="checkbox" class="training-member-checkbox" data-alias="${memberAlias}" ${isChecked ? 'checked' : ''} ${disabledAttr} />
           <span class="training-member-checkbox-custom ${statusClass}"></span>
-          <span class="training-member-name">${displayName}</span>
+          <span class="training-member-name">${memberAlias}</span>
         </label>
         ${noteHtml}
       </div>
