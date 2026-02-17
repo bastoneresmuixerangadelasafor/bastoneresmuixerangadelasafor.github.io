@@ -1403,7 +1403,8 @@ table tbody tr:last-child td {
   box-shadow:
     0 10px 40px rgba(0, 0, 0, 0.3),
     0 0 0 1px rgba(0, 0, 0, 0.1);
-  min-width: 280px;
+  min-width: 350px;
+  max-width: 90vw;
   pointer-events: auto;
   animation: slideUpToast 0.3s ease forwards;
   border: 2px solid rgba(0, 0, 0, 0.08);
