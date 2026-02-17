@@ -295,17 +295,17 @@ const MEMBERS = new (class AppMembers {
       let hasMovedDuringPress = false;
       const longPressDuration = 500; // milliseconds
 
-      function startLongPress() {
+      const startLongPress = () => {
         hasMovedDuringPress = false;
-        longPressTimer = setTimeout(function () {
+        longPressTimer = setTimeout(() => {
           const memberId = row.getAttribute("data-member-id");
           if (memberId) {
             this._startInlineEdit(memberId);
           }
         }, longPressDuration);
-      }
+      };
 
-      function cancelLongPress() {
+      const cancelLongPress = () => {
         if (longPressTimer) {
           clearTimeout(longPressTimer);
           longPressTimer = null;
@@ -313,37 +313,37 @@ const MEMBERS = new (class AppMembers {
       }
 
       // Touch events for mobile
-      row.addEventListener("touchstart", function () {
+      row.addEventListener("touchstart", () => {
         startLongPress();
       }, { passive: true });
 
-      row.addEventListener("touchmove", function () {
+      row.addEventListener("touchmove", () => {
         hasMovedDuringPress = true;
         cancelLongPress();
       }, { passive: true });
 
-      row.addEventListener("touchend", function () {
+      row.addEventListener("touchend", () => {
         cancelLongPress();
       });
 
-      row.addEventListener("touchcancel", function () {
+      row.addEventListener("touchcancel", () => {
         cancelLongPress();
       });
 
       // Mouse events for desktop
-      row.addEventListener("mousedown", function () {
+      row.addEventListener("mousedown", () => {
         startLongPress();
       });
 
-      row.addEventListener("mouseup", function () {
+      row.addEventListener("mouseup", () => {
         cancelLongPress();
       });
 
-      row.addEventListener("mouseleave", function () {
+      row.addEventListener("mouseleave", () => {
         cancelLongPress();
       });
 
-      row.addEventListener("mousemove", function () {
+      row.addEventListener("mousemove", () => {
         if (longPressTimer) {
           cancelLongPress();
         }

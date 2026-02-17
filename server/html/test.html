@@ -3419,6 +3419,20 @@ input::placeholder {
   border-top-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Past training confirmation section (no buttons) */
+.training-confirmation-section.past {
+  gap: 8px;
+}
+
+.training-confirmation-section.past .training-attendance-note {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.dark-mode .training-confirmation-section.past .training-attendance-note {
+  color: #aaa;
+}
+
 /* Training attendance indicator (for past trainings) */
 .training-attendance {
   display: inline-block;
@@ -3446,6 +3460,47 @@ input::placeholder {
 
 .dark-mode .training-attendance.not-attending {
   background-color: rgba(244, 67, 54, 0.2);
+}
+
+.training-attendance-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.training-attendance-note {
+  font-size: 0.8rem;
+  color: #666;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dark-mode .training-attendance-note {
+  color: #aaa;
+}
+
+.training-attendance-member-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.dark-mode .training-attendance-member-name {
+  color: #bbb;
+}
+
+.training-attendance-row.related-member {
+  padding-left: 8px;
+  border-left: 2px solid #ddd;
+  margin-left: 4px;
+}
+
+.dark-mode .training-attendance-row.related-member {
+  border-left-color: #444;
 }
 
 @media (max-width: 600px) {
@@ -4093,6 +4148,146 @@ input::placeholder {
   color: rgba(255, 255, 255, 0.5);
   padding: 40px 20px;
   font-size: 0.95rem;
+}
+
+/* Training Note Link Styles */
+.training-note-link {
+  font-size: 0.75rem;
+  color: #1976d2;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.training-note-link:hover {
+  background: rgba(25, 118, 210, 0.1);
+  text-decoration: underline;
+}
+
+.training-note-link.has-note {
+  color: #4caf50;
+}
+
+.training-note-link.has-note:hover {
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.dark-mode .training-note-link {
+  color: #64b5f6;
+}
+
+.dark-mode .training-note-link.has-note {
+  color: #81c784;
+}
+
+/* Training Note Dialog Styles */
+#training-note-dialog {
+  padding: 0;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  max-width: 400px;
+  width: 90vw;
+  background: var(--card-bg);
+  color: var(--text-color);
+  overflow: visible;
+}
+
+#training-note-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+#training-note-dialog[open] {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+
+.training-note-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+.training-note-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+}
+
+.training-note-header {
+  padding: 20px 20px 0 20px;
+}
+
+.training-note-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.training-note-member-name {
+  display: block;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 4px;
+}
+
+.training-note-body {
+  padding: 16px 20px;
+}
+
+.training-note-input {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  color: #fff;
+  font-size: 0.95rem;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.training-note-input:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+}
+
+.training-note-char-count {
+  text-align: right;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 4px;
+}
+
+.training-note-footer {
+  padding: 16px 20px 20px 20px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
 }
 
 @media (max-width: 600px) {
@@ -6307,6 +6502,30 @@ body.dark-mode .password-dialog-actions {
             <div class="dance-audio-body">
                 <div id="dance-audio-list" class="dance-audio-list">
                 </div>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Training Note Dialog -->
+    <dialog id="training-note-dialog" class="training-note-dialog">
+        <div class="training-note-card">
+            <button type="button" class="training-note-close-btn" id="training-note-close-btn" aria-label="Tancar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="training-note-header">
+                <h2>Nota</h2>
+                <span id="training-note-member-name" class="training-note-member-name"></span>
+            </div>
+            <div class="training-note-body">
+                <textarea id="training-note-input" class="training-note-input" placeholder="Escriu una nota (opcional)..." maxlength="200"></textarea>
+                <div class="training-note-char-count"><span id="training-note-char-current">0</span>/200</div>
+            </div>
+            <div class="training-note-footer">
+                <button type="button" class="btn btn-secondary" id="training-note-cancel-btn">Cancel·lar</button>
+                <button type="button" class="btn btn-primary" id="training-note-save-btn">Desar</button>
             </div>
         </div>
     </dialog>
@@ -9723,6 +9942,14 @@ const API = new (class GAppsApiClient {
     return this._post({ action: "adminSetMemberAttendance", body: { trainingId, memberAlias, attending }, requiresAuth: true });
   }
 
+  saveTrainingNote({ trainingId, note } = {}) {
+    return this._post({ action: "saveTrainingNote", body: { trainingId, note }, requiresAuth: true });
+  }
+
+  saveRelatedMemberTrainingNote({ trainingId, memberId, memberAlias, note } = {}) {
+    return this._post({ action: "saveRelatedMemberTrainingNote", body: { trainingId, memberId, memberAlias, note }, requiresAuth: true });
+  }
+
   getAudioById({ audioId } = {}) {
     return this._get({ action: "audio", parameters: { audioId }, requiresAuth: true, cache: 'audio' });
   }
@@ -11369,17 +11596,17 @@ window.onerror = function (message, source, lineno, colno, error) {
       let hasMovedDuringPress = false;
       const longPressDuration = 500; // milliseconds
 
-      function startLongPress() {
+      const startLongPress = () => {
         hasMovedDuringPress = false;
-        longPressTimer = setTimeout(function () {
+        longPressTimer = setTimeout(() => {
           const memberId = row.getAttribute("data-member-id");
           if (memberId) {
             this._startInlineEdit(memberId);
           }
         }, longPressDuration);
-      }
+      };
 
-      function cancelLongPress() {
+      const cancelLongPress = () => {
         if (longPressTimer) {
           clearTimeout(longPressTimer);
           longPressTimer = null;
@@ -11387,37 +11614,37 @@ window.onerror = function (message, source, lineno, colno, error) {
       }
 
       // Touch events for mobile
-      row.addEventListener("touchstart", function () {
+      row.addEventListener("touchstart", () => {
         startLongPress();
       }, { passive: true });
 
-      row.addEventListener("touchmove", function () {
+      row.addEventListener("touchmove", () => {
         hasMovedDuringPress = true;
         cancelLongPress();
       }, { passive: true });
 
-      row.addEventListener("touchend", function () {
+      row.addEventListener("touchend", () => {
         cancelLongPress();
       });
 
-      row.addEventListener("touchcancel", function () {
+      row.addEventListener("touchcancel", () => {
         cancelLongPress();
       });
 
       // Mouse events for desktop
-      row.addEventListener("mousedown", function () {
+      row.addEventListener("mousedown", () => {
         startLongPress();
       });
 
-      row.addEventListener("mouseup", function () {
+      row.addEventListener("mouseup", () => {
         cancelLongPress();
       });
 
-      row.addEventListener("mouseleave", function () {
+      row.addEventListener("mouseleave", () => {
         cancelLongPress();
       });
 
-      row.addEventListener("mousemove", function () {
+      row.addEventListener("mousemove", () => {
         if (longPressTimer) {
           cancelLongPress();
         }
@@ -12922,7 +13149,7 @@ function refreshPlanningEvents() {
 
         
         <script>
-        /**
+        ﻿/**
  * Load training data into edit-training view
  * @param {string} trainingId - Training ID to load
  */
@@ -13739,7 +13966,7 @@ function handleRelatedMemberAttendanceAction(trainingId, memberId, memberAlias, 
         if (result.status === 'confirmed') {
           statusIndicator.textContent = '✔ Confirmat';
         } else if (result.status === 'not-attending') {
-          statusIndicator.textContent = '✕ No assistiré';
+          statusIndicator.textContent = '✕ No assistirà';
         } else {
           statusIndicator.textContent = '? No confirmat';
         }
@@ -13755,16 +13982,37 @@ function handleRelatedMemberAttendanceAction(trainingId, memberId, memberAlias, 
         
         if (result.status === 'confirmed') {
           button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="resetRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="Restablir a no confirmat">↩ Restablir</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="No assistiré">✕ No assistiré</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="No assistirà">✕ No assistirà</button>`;
         } else if (result.status === 'not-attending') {
           button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="confirmRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="Confirmar assistència">✔ Confirmar</button>`;
           button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="resetRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="Restablir a no confirmat">↩ Restablir</button>`;
         } else {
           button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="confirmRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="Confirmar assistència">✔ Confirmar</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="No assistiré">✕ No assistiré</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="No assistirà">✕ No assistirà</button>`;
         }
         
         buttonsContainer.innerHTML = button1Html + button2Html;
+      }
+      
+      // Update note link visibility
+      const memberNameSpan = section.querySelector('.training-confirmation-member-name');
+      const memberName = memberNameSpan ? memberNameSpan.textContent : memberAlias;
+      let existingNoteLink = section.querySelector('.training-note-link');
+      if (result.status === 'confirmed' || result.status === 'not-attending') {
+        if (!existingNoteLink) {
+          const escapedMemberName = escapeHtml(memberName);
+          const noteLinkHtml = `<a href="javascript:void(0)" class="training-note-link" onclick="openTrainingNoteDialog('${escapeHtml(trainingId)}', '${escapeHtml(memberId)}', '${escapeHtml(memberAlias)}', '${escapedMemberName}')">+ Afegir nota</a>`;
+          const newLink = document.createElement('span');
+          newLink.innerHTML = noteLinkHtml;
+          const buttonsDiv = section.querySelector('.training-confirmation-buttons');
+          if (buttonsDiv) {
+            section.insertBefore(newLink.firstChild, buttonsDiv);
+          }
+        }
+      } else {
+        if (existingNoteLink) {
+          existingNoteLink.remove();
+        }
       }
       
       showToast(result.message || "Estat actualitzat", "success");
@@ -13885,6 +14133,24 @@ function handleAttendanceAction(trainingId, action) {
         buttonsContainer.innerHTML = button1Html + button2Html;
       }
       
+      // Update note link visibility
+      let existingNoteLink = section.querySelector('.training-note-link');
+      if (result.status === 'confirmed' || result.status === 'not-attending') {
+        if (!existingNoteLink) {
+          const noteLinkHtml = `<a href="javascript:void(0)" class="training-note-link" onclick="openTrainingNoteDialog('${escapeHtml(trainingId)}', '', '', '')">+ Afegir nota</a>`;
+          const newLink = document.createElement('span');
+          newLink.innerHTML = noteLinkHtml;
+          const buttonsDiv = section.querySelector('.training-confirmation-buttons');
+          if (buttonsDiv) {
+            section.insertBefore(newLink.firstChild, buttonsDiv);
+          }
+        }
+      } else {
+        if (existingNoteLink) {
+          existingNoteLink.remove();
+        }
+      }
+      
       showToast(result.message || "Estat actualitzat", "success");
 
       // Update local training data
@@ -13984,33 +14250,70 @@ function renderPlanningTrainingsList(trainings) {
     // For past trainings, show attendance indicator
     let attendanceIndicatorHtml = "";
     if (isPast && APP.currentUser) {
-      const isAttending = (training.assistance || []).some(function(attendee) {
-        return attendee === APP.currentUser.alias;
-      });
+      const relatedMembers = APP.currentUser.relatedMembers || [];
+      const hasRelatedMembers = relatedMembers.length > 0;
       
-      if (isAttending) {
-        attendanceIndicatorHtml = `<span class="training-attendance attending">✓ Has assistit</span>`;
-      } else {
-        attendanceIndicatorHtml = `<span class="training-attendance not-attending">✕ No has assistit</span>`;
+      function generateAttendanceSection(memberAlias, memberName, isRelatedMember, showName) {
+        const isAttending = (training.assistance || []).some(function(attendee) {
+          return attendee === memberAlias;
+        });
+        const memberNote = (training.notes || {})[memberAlias];
+        const noteHtml = memberNote ? `<span class="training-attendance-note" title="${escapeHtml(memberNote)}">ℹ️ "${escapeHtml(memberNote)}"</span>` : '';
+        
+        const sectionClass = isRelatedMember ? 'training-confirmation-section related-member past' : 'training-confirmation-section past';
+        let statusClass = '';
+        let statusText = '';
+        
+        if (isAttending) {
+          statusClass = 'training-status-indicator confirmed';
+          statusText = `✓ ${isRelatedMember ? 'Ha assistit' : 'Has assistit'}`;
+        } else {
+          statusClass = 'training-status-indicator not-attending';
+          statusText = `✕ ${isRelatedMember ? 'No ha assistit' : 'No has assistit'}`;
+        }
+        
+        const nameHtml = showName ? `<span class="training-confirmation-member-name">${escapeHtml(memberName)}</span>` : '';
+        
+        return `
+          <div class="${sectionClass}">
+            ${nameHtml}
+            <span class="${statusClass}">${statusText}</span>
+            ${noteHtml}
+          </div>`;
       }
+      
+      const currentUserName = APP.currentUser.displayName || APP.currentUser.alias || 'Tu';
+      attendanceIndicatorHtml = generateAttendanceSection(APP.currentUser.alias, currentUserName, false, hasRelatedMembers);
+      
+      relatedMembers.forEach(function(rm) {
+        if (rm.alias) {
+          const rmName = rm.name || rm.alias;
+          attendanceIndicatorHtml += generateAttendanceSection(rm.alias, rmName, true, true);
+        }
+      });
     }
 
     // For upcoming trainings, show current status with action buttons
     let confirmationStatusHtml = "";
     if (!isPast && APP.currentUser) {
+      const relatedMembersFuture = APP.currentUser.relatedMembers || [];
+      const hasRelatedMembersFuture = relatedMembersFuture.length > 0;
+      
       // Helper function to generate confirmation section HTML for a member
-      function generateConfirmationSection(memberId, memberAlias, memberName, isRelatedMember) {
+      function generateConfirmationSection(memberId, memberAlias, memberName, isRelatedMember, showName) {
         const isConfirmed = (training.assistance || []).some(function(attendee) {
           return attendee === memberAlias;
         });
         const isRejected = (training.rejections || []).some(function(rejector) {
           return rejector === memberAlias;
         });
+        const memberNote = (training.notes || {})[memberAlias] || '';
         
         let statusClass = 'training-status-indicator not-confirmed';
         let statusText = '? No confirmat';
         let button1Html = '';
         let button2Html = '';
+        let noteLinkHtml = '';
         
         // Use different onclick handlers for related members
         const confirmFn = isRelatedMember ? 
@@ -14022,20 +14325,32 @@ function renderPlanningTrainingsList(trainings) {
         const resetFn = isRelatedMember ? 
           `resetRelatedMemberAttendance('${escapeHtml(training.id)}', '${escapeHtml(memberId)}', '${escapeHtml(memberAlias)}')` : 
           `resetAttendance('${escapeHtml(training.id)}')`;
+        const openNoteFn = isRelatedMember ?
+          `openTrainingNoteDialog('${escapeHtml(training.id)}', '${escapeHtml(memberId)}', '${escapeHtml(memberAlias)}', '${escapeHtml(memberName)}')` :
+          `openTrainingNoteDialog('${escapeHtml(training.id)}', '', '', '')`;
+        
+        const notAttendingText = isRelatedMember ? 'No assistirà' : 'No assistiré';
+        const notAttendingTitle = isRelatedMember ? 'No assistirà' : 'No assistiré';
         
         if (isConfirmed) {
           statusClass = 'training-status-indicator confirmed';
           statusText = '✔ Confirmat';
           button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${cancelFn}" title="No assistiré">✕ No assistiré</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${cancelFn}" title="${notAttendingTitle}">✕ ${notAttendingText}</button>`;
+          noteLinkHtml = memberNote ? 
+            `<a href="javascript:void(0)" class="training-note-link has-note" onclick="${openNoteFn}" title="${escapeHtml(memberNote)}">✏️ Nota</a>` :
+            `<a href="javascript:void(0)" class="training-note-link" onclick="${openNoteFn}">+ Afegir nota</a>`;
         } else if (isRejected) {
           statusClass = 'training-status-indicator not-attending';
-          statusText = '✕ No assistiré';
+          statusText = `✕ ${notAttendingText}`;
           button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
           button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
+          noteLinkHtml = memberNote ? 
+            `<a href="javascript:void(0)" class="training-note-link has-note" onclick="${openNoteFn}" title="${escapeHtml(memberNote)}">✏️ Nota</a>` :
+            `<a href="javascript:void(0)" class="training-note-link" onclick="${openNoteFn}">+ Afegir nota</a>`;
         } else {
           button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${cancelFn}" title="No assistiré">✕ No assistiré</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${cancelFn}" title="${notAttendingTitle}">✕ ${notAttendingText}</button>`;
         }
         
         const sectionClass = isRelatedMember ? 'training-confirmation-section related-member' : 'training-confirmation-section';
@@ -14043,10 +14358,13 @@ function renderPlanningTrainingsList(trainings) {
           `data-training-id="${escapeHtml(training.id)}" data-member-id="${escapeHtml(memberId)}"` : 
           `data-training-id="${escapeHtml(training.id)}"`;
         
+        const nameHtml = showName ? `<span class="training-confirmation-member-name">${escapeHtml(memberName)}</span>` : '';
+        
         return `
           <div class="${sectionClass}" ${dataAttr}>
-            <span class="training-confirmation-member-name">${escapeHtml(memberName)}</span>
+            ${nameHtml}
             <span class="${statusClass}">${statusText}</span>
+            ${noteLinkHtml}
             <div class="training-confirmation-buttons">
               ${button1Html}
               ${button2Html}
@@ -14056,14 +14374,13 @@ function renderPlanningTrainingsList(trainings) {
       
       // Generate confirmation section for the current user
       const currentUserName = APP.currentUser.displayName || APP.currentUser.alias || 'Tu';
-      confirmationStatusHtml = generateConfirmationSection(APP.currentUser.memberId, APP.currentUser.alias, currentUserName, false);
+      confirmationStatusHtml = generateConfirmationSection(APP.currentUser.memberId, APP.currentUser.alias, currentUserName, false, hasRelatedMembersFuture);
       
       // Generate confirmation sections for related members
-      const relatedMembers = APP.currentUser.relatedMembers || [];
-      relatedMembers.forEach(function(rm) {
+      relatedMembersFuture.forEach(function(rm) {
         if (rm.alias && rm.id) {
           const rmName = rm.name || rm.alias;
-          confirmationStatusHtml += generateConfirmationSection(rm.id, rm.alias, rmName, true);
+          confirmationStatusHtml += generateConfirmationSection(rm.id, rm.alias, rmName, true, true);
         }
       });
     }
@@ -14262,6 +14579,150 @@ function loadPlanningTrainingData() {
             `;
     });
 }
+
+var trainingNoteDialogState = {
+  trainingId: null,
+  memberId: null,
+  memberAlias: null,
+  memberName: null
+};
+
+function openTrainingNoteDialog(trainingId, memberId, memberAlias, memberName) {
+  const dialog = document.getElementById('training-note-dialog');
+  const noteInput = document.getElementById('training-note-input');
+  const memberNameSpan = document.getElementById('training-note-member-name');
+  const charCount = document.getElementById('training-note-char-current');
+  
+  if (!dialog || !noteInput) return;
+  
+  trainingNoteDialogState = { trainingId, memberId, memberAlias, memberName };
+  
+  if (memberNameSpan) {
+    memberNameSpan.textContent = memberName || '';
+    memberNameSpan.style.display = memberName ? '' : 'none';
+  }
+  
+  const trainings = CACHE.getTrainings() || [];
+  const training = trainings.find(function(t) { return t.id === trainingId; });
+  const alias = memberAlias || (APP.currentUser ? APP.currentUser.alias : '');
+  const existingNote = training && training.notes ? (training.notes[alias] || '') : '';
+  
+  noteInput.value = existingNote;
+  if (charCount) charCount.textContent = existingNote.length;
+  
+  noteInput.oninput = function() {
+    if (charCount) charCount.textContent = noteInput.value.length;
+  };
+  
+  showDialogWithBackdrop(dialog);
+  noteInput.focus();
+}
+
+function closeTrainingNoteDialog() {
+  const dialog = document.getElementById('training-note-dialog');
+  if (dialog && dialog.open) {
+    closeDialogWithBackdrop(dialog);
+  }
+  trainingNoteDialogState = { trainingId: null, memberId: null, memberAlias: null, memberName: null };
+}
+
+function saveTrainingNote() {
+  const noteInput = document.getElementById('training-note-input');
+  const saveBtn = document.getElementById('training-note-save-btn');
+  
+  if (!noteInput) return;
+  
+  const note = noteInput.value.trim();
+  const { trainingId, memberId, memberAlias } = trainingNoteDialogState;
+  
+  if (!trainingId) {
+    showToast('Error: no s\'ha pogut identificar l\'assaig', 'error');
+    return;
+  }
+  
+  if (saveBtn) saveBtn.disabled = true;
+  
+  let apiCall;
+  if (memberId && memberAlias) {
+    apiCall = API.saveRelatedMemberTrainingNote({ trainingId, memberId, memberAlias, note });
+  } else {
+    apiCall = API.saveTrainingNote({ trainingId, note });
+  }
+  
+  apiCall
+    .then(function(result) {
+      if (saveBtn) saveBtn.disabled = false;
+      showToast(result.message || 'Nota desada', 'success');
+      
+      const alias = memberAlias || (APP.currentUser ? APP.currentUser.alias : '');
+      const trainings = CACHE.getTrainings() || [];
+      const trainingIndex = trainings.findIndex(function(t) { return t.id === trainingId; });
+      if (trainingIndex !== -1) {
+        if (!trainings[trainingIndex].notes) trainings[trainingIndex].notes = {};
+        if (note) {
+          trainings[trainingIndex].notes[alias] = note;
+        } else {
+          delete trainings[trainingIndex].notes[alias];
+        }
+        CACHE.saveTrainings({ trainings });
+      }
+      
+      updateNoteLinkInUI(trainingId, memberId, memberAlias, note);
+      closeTrainingNoteDialog();
+    })
+    .catch(function(error) {
+      if (saveBtn) saveBtn.disabled = false;
+      showToast(error || 'Error desant la nota', 'error');
+    });
+}
+
+function updateNoteLinkInUI(trainingId, memberId, memberAlias, note) {
+  let section;
+  if (memberId) {
+    section = document.querySelector(`.training-confirmation-section[data-training-id="${trainingId}"][data-member-id="${memberId}"]`);
+  } else {
+    section = document.querySelector(`.training-confirmation-section[data-training-id="${trainingId}"]:not([data-member-id])`);
+  }
+  
+  if (!section) return;
+  
+  const existingLink = section.querySelector('.training-note-link');
+  if (existingLink) {
+    if (note) {
+      existingLink.className = 'training-note-link has-note';
+      existingLink.textContent = '✏️ Nota';
+      existingLink.title = note;
+    } else {
+      existingLink.className = 'training-note-link';
+      existingLink.textContent = '+ Afegir nota';
+      existingLink.title = '';
+    }
+  }
+}
+
+function initializeTrainingNoteDialogListeners() {
+  const closeBtn = document.getElementById('training-note-close-btn');
+  const cancelBtn = document.getElementById('training-note-cancel-btn');
+  const saveBtn = document.getElementById('training-note-save-btn');
+  
+  if (closeBtn && !closeBtn.dataset.initialized) {
+    closeBtn.addEventListener('click', closeTrainingNoteDialog);
+    closeBtn.dataset.initialized = 'true';
+  }
+  
+  if (cancelBtn && !cancelBtn.dataset.initialized) {
+    cancelBtn.addEventListener('click', closeTrainingNoteDialog);
+    cancelBtn.dataset.initialized = 'true';
+  }
+  
+  if (saveBtn && !saveBtn.dataset.initialized) {
+    saveBtn.addEventListener('click', saveTrainingNote);
+    saveBtn.dataset.initialized = 'true';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', initializeTrainingNoteDialogListeners);
+
         </script>
         
 

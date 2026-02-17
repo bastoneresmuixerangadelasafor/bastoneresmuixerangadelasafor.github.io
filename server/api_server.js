@@ -179,6 +179,16 @@ const API = class GAppsApiServer {
         const adminSetAttendanceReq = JSON.parse(e.postData?.contents);
         data = adminSetAttendanceWorker({ trainingId: adminSetAttendanceReq?.trainingId, memberAlias: adminSetAttendanceReq?.memberAlias, attending: adminSetAttendanceReq?.attending });
         break;
+      case "saveTrainingNote":
+        const saveNoteWorker = this.validateUserToken_({fn: saveTrainingNote_, requiresAuth: true, token: e.parameter?.token});
+        const saveNoteReq = JSON.parse(e.postData?.contents);
+        data = saveNoteWorker({ trainingId: saveNoteReq?.trainingId, note: saveNoteReq?.note, token: e.parameter?.token });
+        break;
+      case "saveRelatedMemberTrainingNote":
+        const saveRelatedNoteWorker = this.validateUserToken_({fn: saveRelatedMemberTrainingNote_, requiresAuth: true, token: e.parameter?.token});
+        const saveRelatedNoteReq = JSON.parse(e.postData?.contents);
+        data = saveRelatedNoteWorker({ trainingId: saveRelatedNoteReq?.trainingId, memberId: saveRelatedNoteReq?.memberId, memberAlias: saveRelatedNoteReq?.memberAlias, note: saveRelatedNoteReq?.note, token: e.parameter?.token });
+        break;
       default:
         return API.newError_({ error: `Unknown POST action: ${action}`, status:404 });
     }

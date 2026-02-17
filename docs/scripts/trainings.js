@@ -843,6 +843,24 @@ function handleRelatedMemberAttendanceAction(trainingId, memberId, memberAlias, 
         buttonsContainer.innerHTML = button1Html + button2Html;
       }
       
+      // Update note link visibility
+      const memberNameSpan = section.querySelector('.training-confirmation-member-name');
+      const memberName = memberNameSpan ? memberNameSpan.textContent : memberAlias;
+      let existingNoteLink = section.querySelector('.training-note-link');
+      if (result.status === 'confirmed' || result.status === 'not-attending') {
+        if (!existingNoteLink) {
+          const escapedMemberName = escapeHtml(memberName);
+          const noteLinkHtml = `<a href="javascript:void(0)" class="training-note-link" onclick="openTrainingNoteDialog('${escapeHtml(trainingId)}', '${escapeHtml(memberId)}', '${escapeHtml(memberAlias)}', '${escapedMemberName}')">+ Afegir nota</a>`;
+          const newLink = document.createElement('span');
+          newLink.innerHTML = noteLinkHtml;
+          section.appendChild(newLink.firstChild);
+        }
+      } else {
+        if (existingNoteLink) {
+          existingNoteLink.remove();
+        }
+      }
+      
       showToast(result.message || "Estat actualitzat", "success");
 
       // Update local training data
@@ -961,6 +979,21 @@ function handleAttendanceAction(trainingId, action) {
         buttonsContainer.innerHTML = button1Html + button2Html;
       }
       
+      // Update note link visibility
+      let existingNoteLink = section.querySelector('.training-note-link');
+      if (result.status === 'confirmed' || result.status === 'not-attending') {
+        if (!existingNoteLink) {
+          const noteLinkHtml = `<a href="javascript:void(0)" class="training-note-link" onclick="openTrainingNoteDialog('${escapeHtml(trainingId)}', '', '', '')">+ Afegir nota</a>`;
+          const newLink = document.createElement('span');
+          newLink.innerHTML = noteLinkHtml;
+          section.appendChild(newLink.firstChild);
+        }
+      } else {
+        if (existingNoteLink) {
+          existingNoteLink.remove();
+        }
+      }
+      
       showToast(result.message || "Estat actualitzat", "success");
 
       // Update local training data
@@ -1068,7 +1101,7 @@ function renderPlanningTrainingsList(trainings) {
           return attendee === memberAlias;
         });
         const memberNote = (training.notes || {})[memberAlias];
-        const noteHtml = memberNote ? `<span class="training-attendance-note" title="${escapeHtml(memberNote)}">📝 "${escapeHtml(memberNote)}"</span>` : '';
+        const noteHtml = memberNote ? `<span class="training-attendance-note" title="${escapeHtml(memberNote)}">ℹ️ «${escapeHtml(memberNote)}»</span>` : '';
         
         const sectionClass = isRelatedMember ? 'training-confirmation-section related-member past' : 'training-confirmation-section past';
         let statusClass = '';
@@ -1117,11 +1150,13 @@ function renderPlanningTrainingsList(trainings) {
         const isRejected = (training.rejections || []).some(function(rejector) {
           return rejector === memberAlias;
         });
+        const memberNote = (training.notes || {})[memberAlias] || '';
         
         let statusClass = 'training-status-indicator not-confirmed';
         let statusText = '? No confirmat';
         let button1Html = '';
         let button2Html = '';
+        let noteLinkHtml = '';
         
         // Use different onclick handlers for related members
         const confirmFn = isRelatedMember ? 
@@ -1133,6 +1168,9 @@ function renderPlanningTrainingsList(trainings) {
         const resetFn = isRelatedMember ? 
           `resetRelatedMemberAttendance('${escapeHtml(training.id)}', '${escapeHtml(memberId)}', '${escapeHtml(memberAlias)}')` : 
           `resetAttendance('${escapeHtml(training.id)}')`;
+        const openNoteFn = isRelatedMember ?
+          `openTrainingNoteDialog('${escapeHtml(training.id)}', '${escapeHtml(memberId)}', '${escapeHtml(memberAlias)}', '${escapeHtml(memberName)}')` :
+          `openTrainingNoteDialog('${escapeHtml(training.id)}', '', '', '')`;
         
         const notAttendingText = isRelatedMember ? 'No assistirà' : 'No assistiré';
         const notAttendingTitle = isRelatedMember ? 'No assistirà' : 'No assistiré';
@@ -1142,11 +1180,17 @@ function renderPlanningTrainingsList(trainings) {
           statusText = '✔ Confirmat';
           button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
           button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${cancelFn}" title="${notAttendingTitle}">✕ ${notAttendingText}</button>`;
+          noteLinkHtml = memberNote ? 
+            `<a href="javascript:void(0)" class="training-note-link has-note" onclick="${openNoteFn}" title="Editar nota">ℹ️ «${escapeHtml(memberNote)}»</a>` :
+            `<a href="javascript:void(0)" class="training-note-link" onclick="${openNoteFn}">+ Afegir nota</a>`;
         } else if (isRejected) {
           statusClass = 'training-status-indicator not-attending';
           statusText = `✕ ${notAttendingText}`;
           button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
           button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
+          noteLinkHtml = memberNote ? 
+            `<a href="javascript:void(0)" class="training-note-link has-note" onclick="${openNoteFn}" title="Editar nota">ℹ️ «${escapeHtml(memberNote)}»</a>` :
+            `<a href="javascript:void(0)" class="training-note-link" onclick="${openNoteFn}">+ Afegir nota</a>`;
         } else {
           button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
           button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${cancelFn}" title="${notAttendingTitle}">✕ ${notAttendingText}</button>`;
@@ -1167,6 +1211,7 @@ function renderPlanningTrainingsList(trainings) {
               ${button1Html}
               ${button2Html}
             </div>
+            ${noteLinkHtml}
           </div>`;
       }
       
@@ -1377,3 +1422,154 @@ function loadPlanningTrainingData() {
             `;
     });
 }
+
+var trainingNoteDialogState = {
+  trainingId: null,
+  memberId: null,
+  memberAlias: null,
+  memberName: null
+};
+
+function openTrainingNoteDialog(trainingId, memberId, memberAlias, memberName) {
+  const dialog = document.getElementById('training-note-dialog');
+  const noteInput = document.getElementById('training-note-input');
+  const memberNameSpan = document.getElementById('training-note-member-name');
+  const charCount = document.getElementById('training-note-char-current');
+  
+  if (!dialog || !noteInput) return;
+  
+  trainingNoteDialogState = { trainingId, memberId, memberAlias, memberName };
+  
+  if (memberNameSpan) {
+    memberNameSpan.textContent = memberName || '';
+    memberNameSpan.style.display = memberName ? '' : 'none';
+  }
+  
+  const trainings = CACHE.getTrainings() || [];
+  const training = trainings.find(function(t) { return t.id === trainingId; });
+  const alias = memberAlias || (APP.currentUser ? APP.currentUser.alias : '');
+  const existingNote = training && training.notes ? (training.notes[alias] || '') : '';
+  
+  noteInput.value = existingNote;
+  if (charCount) charCount.textContent = existingNote.length;
+  
+  noteInput.oninput = function() {
+    if (charCount) charCount.textContent = noteInput.value.length;
+  };
+  
+  showDialogWithBackdrop(dialog);
+  noteInput.focus();
+}
+
+function closeTrainingNoteDialog() {
+  const dialog = document.getElementById('training-note-dialog');
+  if (dialog && dialog.open) {
+    closeDialogWithBackdrop(dialog);
+  }
+  trainingNoteDialogState = { trainingId: null, memberId: null, memberAlias: null, memberName: null };
+}
+
+function saveTrainingNote() {
+  const noteInput = document.getElementById('training-note-input');
+  const saveBtn = document.getElementById('training-note-save-btn');
+  const btnText = saveBtn ? saveBtn.querySelector('.btn-text') : null;
+  const btnLoading = saveBtn ? saveBtn.querySelector('.btn-loading') : null;
+  
+  if (!noteInput) return;
+  
+  const note = noteInput.value.trim();
+  const { trainingId, memberId, memberAlias } = trainingNoteDialogState;
+  
+  if (!trainingId) {
+    showToast('Error: no s\'ha pogut identificar l\'assaig', 'error');
+    return;
+  }
+  
+  if (saveBtn) saveBtn.disabled = true;
+  if (btnText) btnText.style.display = 'none';
+  if (btnLoading) btnLoading.style.display = 'inline';
+  
+  let apiCall;
+  if (memberId && memberAlias) {
+    apiCall = API.saveRelatedMemberTrainingNote({ trainingId, memberId, memberAlias, note });
+  } else {
+    apiCall = API.saveTrainingNote({ trainingId, note });
+  }
+  
+  apiCall
+    .then(function(result) {
+      if (saveBtn) saveBtn.disabled = false;
+      if (btnText) btnText.style.display = 'inline';
+      if (btnLoading) btnLoading.style.display = 'none';
+      showToast(result.message || 'Nota desada', 'success');
+      
+      const alias = memberAlias || (APP.currentUser ? APP.currentUser.alias : '');
+      const trainings = CACHE.getTrainings() || [];
+      const trainingIndex = trainings.findIndex(function(t) { return t.id === trainingId; });
+      if (trainingIndex !== -1) {
+        if (!trainings[trainingIndex].notes) trainings[trainingIndex].notes = {};
+        if (note) {
+          trainings[trainingIndex].notes[alias] = note;
+        } else {
+          delete trainings[trainingIndex].notes[alias];
+        }
+        CACHE.saveTrainings({ trainings });
+      }
+      
+      updateNoteLinkInUI(trainingId, memberId, memberAlias, note);
+      closeTrainingNoteDialog();
+    })
+    .catch(function(error) {
+      if (saveBtn) saveBtn.disabled = false;
+      if (btnText) btnText.style.display = 'inline';
+      if (btnLoading) btnLoading.style.display = 'none';
+      showToast(error || 'Error desant la nota', 'error');
+    });
+}
+
+function updateNoteLinkInUI(trainingId, memberId, memberAlias, note) {
+  let section;
+  if (memberId) {
+    section = document.querySelector(`.training-confirmation-section[data-training-id="${trainingId}"][data-member-id="${memberId}"]`);
+  } else {
+    section = document.querySelector(`.training-confirmation-section[data-training-id="${trainingId}"]:not([data-member-id])`);
+  }
+  
+  if (!section) return;
+  
+  const existingLink = section.querySelector('.training-note-link');
+  if (existingLink) {
+    if (note) {
+      existingLink.className = 'training-note-link has-note';
+      existingLink.textContent = 'ℹ️ «' + note + '»';
+      existingLink.title = 'Editar nota';
+    } else {
+      existingLink.className = 'training-note-link';
+      existingLink.textContent = '+ Afegir nota';
+      existingLink.title = '';
+    }
+  }
+}
+
+function initializeTrainingNoteDialogListeners() {
+  const closeBtn = document.getElementById('training-note-close-btn');
+  const cancelBtn = document.getElementById('training-note-cancel-btn');
+  const saveBtn = document.getElementById('training-note-save-btn');
+  
+  if (closeBtn && !closeBtn.dataset.initialized) {
+    closeBtn.addEventListener('click', closeTrainingNoteDialog);
+    closeBtn.dataset.initialized = 'true';
+  }
+  
+  if (cancelBtn && !cancelBtn.dataset.initialized) {
+    cancelBtn.addEventListener('click', closeTrainingNoteDialog);
+    cancelBtn.dataset.initialized = 'true';
+  }
+  
+  if (saveBtn && !saveBtn.dataset.initialized) {
+    saveBtn.addEventListener('click', saveTrainingNote);
+    saveBtn.dataset.initialized = 'true';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', initializeTrainingNoteDialogListeners);

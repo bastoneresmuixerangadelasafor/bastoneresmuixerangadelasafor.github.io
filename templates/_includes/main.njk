@@ -435,6 +435,35 @@
             </div>
         </div>
     </dialog>
+
+    <!-- Training Note Dialog -->
+    <dialog id="training-note-dialog" class="training-note-dialog">
+        <div class="training-note-card">
+            <button type="button" class="training-note-close-btn" id="training-note-close-btn" aria-label="Tancar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="training-note-header">
+                <h2>Nota</h2>
+                <span id="training-note-member-name" class="training-note-member-name"></span>
+            </div>
+            <div class="training-note-body">
+                <textarea id="training-note-input" class="training-note-input" placeholder="Escriu una nota (opcional)..." maxlength="200"></textarea>
+                <div class="training-note-char-count"><span id="training-note-char-current">0</span>/200</div>
+            </div>
+            <div class="training-note-footer">
+                <button type="button" class="btn btn-secondary" id="training-note-cancel-btn">Cancel·lar</button>
+                <button type="button" class="btn btn-primary" id="training-note-save-btn">
+                    <span class="btn-text">Desar</span>
+                    <span class="btn-loading" style="display: none;">
+                        <span class="spinner-small"></span> Desant...
+                    </span>
+                </button>
+            </div>
+        </div>
+    </dialog>
 <div id="view-events" class="view" data-view="edit-event" style="display: none;">
         <div class="container">
             <div class="page-header">

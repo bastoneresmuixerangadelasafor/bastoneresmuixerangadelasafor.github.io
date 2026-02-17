@@ -835,3 +835,55 @@ function adminSetMemberAttendance_({trainingId, memberAlias, attending, user}) {
     return API.newError_({ error: 'Error actualitzant l\'assistència: ' + error.toString() });
   }
 }
+
+function saveTrainingNote_({trainingId, note, user}) {
+  try {
+    const context = getTrainingAttendanceContext_({trainingId, user});
+    if (context.error) return context.error;
+
+    const cell = context.sheet.getRange(context.userRow, context.dateColumn);
+    cell.setNote(note || '');
+
+    CACHE.retrieveTrainingsFromDB();
+
+    return API.newResult_({
+      result: {
+        trainingId: context.trainingId,
+        note: note || '',
+        message: note ? 'Nota desada' : 'Nota esborrada',
+      },
+    });
+  } catch (error) {
+    console.error('Error saving training note:', error.toString());
+    return API.newError_({ error: 'Error desant la nota: ' + error.toString() });
+  }
+}
+
+function saveRelatedMemberTrainingNote_({trainingId, memberId, memberAlias, note, user}) {
+  try {
+    if (!isRelatedMember_(memberId, user)) {
+      return API.newError_({ error: 'No tens permís per gestionar les notes d\'aquest membre.', status: 403 });
+    }
+
+    const relatedUser = { alias: memberAlias };
+    const context = getTrainingAttendanceContext_({trainingId, user: relatedUser});
+    if (context.error) return context.error;
+
+    const cell = context.sheet.getRange(context.userRow, context.dateColumn);
+    cell.setNote(note || '');
+
+    CACHE.retrieveTrainingsFromDB();
+
+    return API.newResult_({
+      result: {
+        trainingId: context.trainingId,
+        memberAlias: memberAlias,
+        note: note || '',
+        message: note ? 'Nota desada' : 'Nota esborrada',
+      },
+    });
+  } catch (error) {
+    console.error('Error saving related member training note:', error.toString());
+    return API.newError_({ error: 'Error desant la nota: ' + error.toString() });
+  }
+}

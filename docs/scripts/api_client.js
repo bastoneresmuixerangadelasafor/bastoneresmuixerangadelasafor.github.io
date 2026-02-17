@@ -279,6 +279,14 @@ const API = new (class GAppsApiClient {
     return this._post({ action: "adminSetMemberAttendance", body: { trainingId, memberAlias, attending }, requiresAuth: true });
   }
 
+  saveTrainingNote({ trainingId, note } = {}) {
+    return this._post({ action: "saveTrainingNote", body: { trainingId, note }, requiresAuth: true });
+  }
+
+  saveRelatedMemberTrainingNote({ trainingId, memberId, memberAlias, note } = {}) {
+    return this._post({ action: "saveRelatedMemberTrainingNote", body: { trainingId, memberId, memberAlias, note }, requiresAuth: true });
+  }
+
   getAudioById({ audioId } = {}) {
     return this._get({ action: "audio", parameters: { audioId }, requiresAuth: true, cache: 'audio' });
   }

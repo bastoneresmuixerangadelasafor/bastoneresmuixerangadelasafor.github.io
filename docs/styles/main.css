@@ -1364,6 +1364,7 @@ table tbody tr:last-child td {
   left: 50%;
   transform: translateX(-50%);
   border: none;
+  outline: none;
   background: transparent;
   padding: 0;
   margin: 0;
@@ -3396,13 +3397,12 @@ input::placeholder {
 }
 
 .training-confirmation-section.past .training-attendance-note {
-  font-size: 0.8rem;
-  font-style: italic;
-  color: #666;
+  font-size: 0.75rem;
+  color: #4caf50;
 }
 
 .dark-mode .training-confirmation-section.past .training-attendance-note {
-  color: #aaa;
+  color: #81c784;
 }
 
 /* Training attendance indicator (for past trainings) */
@@ -3443,9 +3443,8 @@ input::placeholder {
 }
 
 .training-attendance-note {
-  font-size: 0.8rem;
-  font-style: italic;
-  color: #666;
+  font-size: 0.75rem;
+  color: #4caf50;
   max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -3453,7 +3452,7 @@ input::placeholder {
 }
 
 .dark-mode .training-attendance-note {
-  color: #aaa;
+  color: #81c784;
 }
 
 .training-attendance-member-name {
@@ -4121,6 +4120,155 @@ input::placeholder {
   color: rgba(255, 255, 255, 0.5);
   padding: 40px 20px;
   font-size: 0.95rem;
+}
+
+/* Training Note Link Styles */
+.training-note-link {
+  font-size: 0.75rem;
+  color: #1976d2;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+}
+
+.training-note-link:hover {
+  background: rgba(25, 118, 210, 0.1);
+  text-decoration: underline;
+}
+
+.training-note-link.has-note {
+  color: #4caf50;
+}
+
+.training-note-link.has-note:hover {
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.dark-mode .training-note-link {
+  color: #64b5f6;
+}
+
+.dark-mode .training-note-link.has-note {
+  color: #81c784;
+}
+
+/* Training Note Dialog Styles */
+#training-note-dialog {
+  padding: 0;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  max-width: 400px;
+  width: 90vw;
+  background: var(--card-bg);
+  color: var(--text-color);
+  overflow: visible;
+}
+
+#training-note-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+#training-note-dialog[open] {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+
+.training-note-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+.training-note-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+}
+
+.training-note-header {
+  padding: 20px 20px 0 20px;
+}
+
+.training-note-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.training-note-member-name {
+  display: block;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 4px;
+}
+
+.training-note-body {
+  padding: 16px 20px;
+}
+
+.training-note-input {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  color: #fff;
+  font-size: 0.95rem;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.training-note-input:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+}
+
+.training-note-char-count {
+  text-align: right;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 4px;
+}
+
+.training-note-footer {
+  padding: 16px 20px 20px 20px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.training-note-footer .btn {
+  position: relative;
+  overflow: hidden;
 }
 
 @media (max-width: 600px) {
