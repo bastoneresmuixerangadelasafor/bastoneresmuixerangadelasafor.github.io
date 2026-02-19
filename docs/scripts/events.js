@@ -390,12 +390,12 @@ function viewEvent(eventId) {
  * Render diagrams once dances data is available
  * Used by loadEventDiagrams after dances are loaded
  */
-function renderDiagrams() {
-  if (typeof dancesData === "undefined" || !Array.isArray(dancesData) || dancesData.length === 0) {
+function renderDiagrams(eventData) {
+  if (typeof DANCES === "undefined" || !Array.isArray(DANCES) || DANCES.length === 0) {
     return false;
   }
 
-  if (!pendingEventData || !pendingEventData.diagrams) {
+  if (!eventData || !eventData.diagrams) {
     return false;
   }
 
@@ -404,9 +404,9 @@ function renderDiagrams() {
     return false;
   }
 
-  pendingEventData.diagrams.forEach(function (diagramData) {
+  eventData.diagrams.forEach(function (diagramData) {
     // Find the dance info to get colors and other metadata
-    const danceInfo = dancesData.find(function (d) {
+    const danceInfo = DANCES.find(function (d) {
       return d.name === diagramData.danceName;
     });
 
@@ -457,9 +457,6 @@ function renderDiagrams() {
   return true;
 }
 
-// Store event data for renderDiagrams to access
-let pendingEventData = null;
-
 /**
  * Load diagrams from event data into the events view
  * @param {Object} eventData - The event data with diagrams
@@ -470,15 +467,6 @@ function loadEventDiagrams(eventData) {
   const diagramsList = document.getElementById("diagrams-list");
   if (!diagramsList) return;
 
-  // Store event data for renderDiagrams to access
-  pendingEventData = eventData;
-
-  // Clear any existing pending diagram load interval
-  if (pendingDiagramLoadInterval !== null) {
-    clearInterval(pendingDiagramLoadInterval);
-    pendingDiagramLoadInterval = null;
-  }
-
   // Clear existing diagrams
   diagramsList.innerHTML = "";
 
@@ -488,26 +476,7 @@ function loadEventDiagrams(eventData) {
     diagramIdCounter = 0;
   }
 
-  // Try to render immediately if dances are already loaded
-  if (renderDiagrams()) {
-    return;
-  }
-
-  // Wait for dances data to be available
-  let attempts = 0;
-  const maxAttempts = 50; // 5 seconds with 100ms intervals
-  pendingDiagramLoadInterval = setInterval(function () {
-    attempts++;
-    
-    if (renderDiagrams()) {
-      clearInterval(pendingDiagramLoadInterval);
-      pendingDiagramLoadInterval = null;
-    } else if (attempts >= maxAttempts) {
-      clearInterval(pendingDiagramLoadInterval);
-      pendingDiagramLoadInterval = null;
-      console.warn("Failed to load dances data within timeout");
-    }
-  }, 100);
+  renderDiagrams(eventData);
 }
 
 /**

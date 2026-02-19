@@ -5154,12 +5154,21 @@ body.dark-mode .person-dropdown li.selected {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-/* Floating save button */
-.floating-save-btn {
+/* Floating buttons container */
+.floating-buttons-container {
   position: fixed;
   bottom: 24px;
-  right: 24px;
+  right: 8px;
   z-index: 999;
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Floating save button */
+.floating-save-btn {
+  position: relative;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -5230,11 +5239,9 @@ body.dark-mode .person-dropdown li.selected {
 }
 
 /* Floating lock button */
+/* Floating lock button */
 .floating-lock-btn {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 999;
+  position: relative;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -5299,11 +5306,9 @@ body.dark-mode .person-dropdown li.selected {
 }
 
 /* Floating share button */
+/* Floating share button */
 .floating-share-btn {
-  position: fixed;
-  bottom: 24px;
-  right: 84px;
-  z-index: 999;
+  position: relative;
   width: 48px;
   height: 48px;
   border-radius: 50%;

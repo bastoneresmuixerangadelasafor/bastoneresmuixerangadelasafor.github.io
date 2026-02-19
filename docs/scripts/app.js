@@ -165,9 +165,6 @@ const APP = new (class AppState{
   }
 })();
 
-// Track pending diagram load intervals to prevent stale closures
-let pendingDiagramLoadInterval = null;
-
 /**
  * Cancel current edit mode (for navigation confirmation)
  */

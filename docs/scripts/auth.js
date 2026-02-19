@@ -477,9 +477,6 @@ const AUTH = new (class AppAuthentication {
     if (typeof diagramsIsDirty !== "undefined") {
       diagramsIsDirty = false;
     }
-    if (typeof dancesData !== "undefined") {
-      dancesData = [];
-    }
   }
 
   handleLogin() {

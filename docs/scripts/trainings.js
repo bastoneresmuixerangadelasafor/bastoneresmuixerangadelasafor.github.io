@@ -253,7 +253,7 @@ function detectAndDisplayDancesFromDescription() {
  * @returns {Array<string>} Array of detected dance names
  */
 function detectDancesFromText(text) {
-  if (!text || typeof dancesData === "undefined" || !Array.isArray(dancesData)) {
+  if (!text || typeof DANCES === "undefined" || !Array.isArray(DANCES)) {
     return [];
   }
 
@@ -261,7 +261,7 @@ function detectDancesFromText(text) {
   const seenNames = new Set();
 
   // Search for each dance name in the text
-  dancesData.forEach(function (dance) {
+  DANCES.forEach(function (dance) {
     if (dance.name && !seenNames.has(dance.name)) {
       const danceName = dance.name.toLowerCase();
       // Case-insensitive search for the dance name
@@ -588,12 +588,12 @@ function handleTrainingSave() {
  * @param {string} danceName - The name of the dance to display audios for
  */
 function openDanceAudioDialog(danceName) {
-  if (!danceName || typeof dancesData === "undefined") {
+  if (!danceName || typeof DANCES === "undefined") {
     return;
   }
 
   // Find the dance data
-  const dance = dancesData.find(function (d) {
+  const dance = DANCES.find(function (d) {
     return d.name === danceName;
   });
 

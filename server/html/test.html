@@ -1393,6 +1393,7 @@ table tbody tr:last-child td {
   left: 50%;
   transform: translateX(-50%);
   border: none;
+  outline: none;
   background: transparent;
   padding: 0;
   margin: 0;
@@ -1431,7 +1432,8 @@ table tbody tr:last-child td {
   box-shadow:
     0 10px 40px rgba(0, 0, 0, 0.3),
     0 0 0 1px rgba(0, 0, 0, 0.1);
-  min-width: 280px;
+  min-width: 350px;
+  max-width: 90vw;
   pointer-events: auto;
   animation: slideUpToast 0.3s ease forwards;
   border: 2px solid rgba(0, 0, 0, 0.08);
@@ -3425,12 +3427,12 @@ input::placeholder {
 }
 
 .training-confirmation-section.past .training-attendance-note {
-  font-size: 0.8rem;
-  color: #666;
+  font-size: 0.75rem;
+  color: #4caf50;
 }
 
 .dark-mode .training-confirmation-section.past .training-attendance-note {
-  color: #aaa;
+  color: #81c784;
 }
 
 /* Training attendance indicator (for past trainings) */
@@ -3471,8 +3473,8 @@ input::placeholder {
 }
 
 .training-attendance-note {
-  font-size: 0.8rem;
-  color: #666;
+  font-size: 0.75rem;
+  color: #4caf50;
   max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -3480,7 +3482,7 @@ input::placeholder {
 }
 
 .dark-mode .training-attendance-note {
-  color: #aaa;
+  color: #81c784;
 }
 
 .training-attendance-member-name {
@@ -3793,8 +3795,28 @@ input::placeholder {
   border: 1px solid var(--border-color);
   transition: all 0.2s;
   min-height: 40px;
-  max-height: 40px;
   box-sizing: border-box;
+  flex-wrap: wrap;
+}
+
+.training-member-item.has-note {
+  min-height: auto;
+  padding-bottom: 6px;
+}
+
+.training-member-note {
+  font-size: 0.75rem;
+  color: #4caf50;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-left: 36px;
+  flex-basis: 100%;
+}
+
+.dark-mode .training-member-note {
+  color: #81c784;
 }
 
 .training-member-item:hover {
@@ -3804,6 +3826,20 @@ input::placeholder {
 
 .dark-mode .training-member-item:hover {
   background: rgba(79, 195, 247, 0.05);
+}
+
+.training-member-item.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.training-member-item.disabled:hover {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+.training-member-item.disabled .training-member-checkbox-label {
+  cursor: not-allowed;
 }
 
 .training-member-status {
@@ -4160,6 +4196,10 @@ input::placeholder {
   border-radius: 4px;
   transition: all 0.2s;
   white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
 }
 
 .training-note-link:hover {
@@ -4288,6 +4328,11 @@ input::placeholder {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
+}
+
+.training-note-footer .btn {
+  position: relative;
+  overflow: hidden;
 }
 
 @media (max-width: 600px) {
@@ -5138,12 +5183,21 @@ body.dark-mode .person-dropdown li.selected {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-/* Floating save button */
-.floating-save-btn {
+/* Floating buttons container */
+.floating-buttons-container {
   position: fixed;
   bottom: 24px;
-  right: 24px;
+  right: 8px;
   z-index: 999;
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Floating save button */
+.floating-save-btn {
+  position: relative;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -5214,11 +5268,9 @@ body.dark-mode .person-dropdown li.selected {
 }
 
 /* Floating lock button */
+/* Floating lock button */
 .floating-lock-btn {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 999;
+  position: relative;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -5283,11 +5335,9 @@ body.dark-mode .person-dropdown li.selected {
 }
 
 /* Floating share button */
+/* Floating share button */
 .floating-share-btn {
-  position: fixed;
-  bottom: 24px;
-  right: 84px;
-  z-index: 999;
+  position: relative;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -6464,26 +6514,29 @@ body.dark-mode .password-dialog-actions {
                     </div>
                 </div>
             </div>
-            <!-- Floating save button (admin only) -->
-            <button id="floating-save-training-btn" class="floating-save-btn" title="Desar assaig" disabled style="display: none;">
-                <svg class="save-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                    <polyline points="7 3 7 8 15 8"></polyline>
-                </svg>
-            </button>
-            <!-- Floating lock button (for past trainings) -->
-            <button id="floating-lock-training-btn" class="floating-lock-btn admin-only" title="Long-press per 3 segons per fer editable" style="display: none;">
-                <svg class="progress-ring-container" width="48" height="48" viewBox="0 0 48 48" style="position: absolute; top: 0; left: 0;">
-                    <circle class="progress-ring" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="138.23" stroke-dashoffset="138.23"></circle>
-                </svg>
-                <svg class="lock-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
-            </button>
+            <!-- Floating buttons container -->
+            <div class="floating-buttons-container">
+                <!-- Floating save button (admin only) -->
+                <button id="floating-save-training-btn" class="floating-save-btn" title="Desar assaig" disabled style="display: none;">
+                    <svg class="save-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                </button>
+                <!-- Floating lock button (for past trainings) -->
+                <button id="floating-lock-training-btn" class="floating-lock-btn admin-only" title="Long-press per 3 segons per fer editable" style="display: none;">
+                    <svg class="progress-ring-container" width="48" height="48" viewBox="0 0 48 48" style="position: absolute; top: 0; left: 0;">
+                        <circle class="progress-ring" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="138.23" stroke-dashoffset="138.23"></circle>
+                    </svg>
+                    <svg class="lock-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -6525,7 +6578,12 @@ body.dark-mode .password-dialog-actions {
             </div>
             <div class="training-note-footer">
                 <button type="button" class="btn btn-secondary" id="training-note-cancel-btn">Cancel·lar</button>
-                <button type="button" class="btn btn-primary" id="training-note-save-btn">Desar</button>
+                <button type="button" class="btn btn-primary" id="training-note-save-btn">
+                    <span class="btn-text">Desar</span>
+                    <span class="btn-loading" style="display: none;">
+                        <span class="spinner-small"></span> Desant...
+                    </span>
+                </button>
             </div>
         </div>
     </dialog>
@@ -6586,49 +6644,50 @@ body.dark-mode .password-dialog-actions {
                         Esborrar selecció</button>
                 </form>
             </dialog>
-            <!-- Floating save button -->
-            <button id="floating-save-btn" class="floating-save-btn" title="Desar actuació" disabled>
-                <svg class="save-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                    <polyline points="7 3 7 8 15 8"></polyline>
-                </svg>
-            </button>
-            <!-- Floating lock button (for past events) -->
-            <button id="floating-lock-btn" class="floating-lock-btn admin-only" title="Long-press per 3 segons per fer editable">
-                <svg class="progress-ring-container" width="48" height="48" viewBox="0 0 48 48" style="position: absolute; top: 0; left: 0;">
-                    <circle class="progress-ring" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="138.23" stroke-dashoffset="138.23"></circle>
-                </svg>
-                <svg class="lock-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
-            </button>
-            <!-- Floating share button -->
-            <button id="floating-share-btn" class="floating-share-btn" title="Compartir com a imatge">
-                <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="18" cy="5" r="3"></circle>
-                    <circle cx="6" cy="12" r="3"></circle>
-                    <circle cx="18" cy="19" r="3"></circle>
-                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                </svg>
-            </button>
+            <!-- Floating buttons container -->
+            <div class="floating-buttons-container">
+                <!-- Floating save button -->
+                <button id="floating-save-btn" class="floating-save-btn" title="Desar actuació" disabled>
+                    <svg class="save-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                </button>
+                <!-- Floating lock button (for past events) -->
+                <button id="floating-lock-btn" class="floating-lock-btn admin-only" title="Long-press per 3 segons per fer editable">
+                    <svg class="progress-ring-container" width="48" height="48" viewBox="0 0 48 48" style="position: absolute; top: 0; left: 0;">
+                        <circle class="progress-ring" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="138.23" stroke-dashoffset="138.23"></circle>
+                    </svg>
+                    <svg class="lock-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </button>
+                <!-- Floating share button -->
+                <button id="floating-share-btn" class="floating-share-btn" title="Compartir com a imatge">
+                    <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
 
 
 <script>
         // State for all diagrams: array of { id, danceName, groups }
-        let diagrams = [];
-        let diagramIdCounter = 0;
+        var diagrams = [];
+        var diagramIdCounter = 0;
         // Track if diagram has unsaved changes
         var diagramsIsDirty = false;
-        // Dances data loaded from server
-        var dancesData = [];
         // Track if current event is editable
         var isEventEditable = true;
         // Track if user manually unlocked the event via long-press
@@ -6941,10 +7000,22 @@ body.dark-mode .password-dialog-actions {
                         ctx.lineWidth = Math.max(2, 4 * scale);
                         ctx.strokeRect(x, y, squareWidth, squareHeight);
 
+                        // Draw border around current member's position and related members (non-admin only)
+                        const currentUserAlias = (APP && APP.currentUser && APP.currentUser.alias) || null;
+                        const currentUserRoles = (APP && APP.currentUser && APP.currentUser.roles) || [];
+                        const isCurrentUserAdmin = currentUserRoles.includes('ADMIN');
+                        const relatedMembers = (APP && APP.currentUser && APP.currentUser.relatedMembers) || [];
+                        const relatedAliases = relatedMembers.map(function(rm) { return rm.alias; }).filter(Boolean);
+                        const allAliases = currentUserAlias ? [currentUserAlias].concat(relatedAliases) : relatedAliases;
+                        if (!isCurrentUserAdmin && group[i] && allAliases.includes(group[i])) {
+                            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+                            ctx.strokeStyle = primaryColor || '#6366f1';
+                            ctx.lineWidth = Math.max(4, 8 * scale);
+                            ctx.strokeRect(x, y, squareWidth, squareHeight);
+                        }
+
                         // Draw position tag in bottom right corner of each cell (admin only)
-                        const userRoles = (APP && APP.currentUser && APP.currentUser.roles) || [];
-                        const isAdmin = userRoles.includes('ADMIN');
-                        if (isAdmin) {
+                        if (isCurrentUserAdmin) {
                             const cellOrder = row * cols + col + 1;
                             const cellPos = positions.find(function (p) { return p.order === cellOrder; });
                             const cellTag = cellPos && cellPos.tag ? cellPos.tag : '';
@@ -7110,7 +7181,6 @@ ${descriptionHtml}
                 API.getDances()
                     .then(function (dances) {
                         if (Array.isArray(dances) && dances.length > 0) {
-                            dancesData = dances;
                             danceChips.innerHTML = '';
                             dances.forEach(function (dance) {
                                 const chip = document.createElement('button');
@@ -7135,7 +7205,7 @@ ${descriptionHtml}
             function addDanceFromChip(danceName) {
                 if (!danceName) return;
 
-                const danceInfo = dancesData.find(d => d.name === danceName);
+                const danceInfo = DANCES.find(d => d.name === danceName);
                 const structure = danceInfo && danceInfo.structure ? danceInfo.structure : { rows: 2, columns: 2 };
                 const rows = structure ? structure.rows : 2;
                 const cols = structure ? structure.columns : 2;
@@ -9682,7 +9752,8 @@ const API = new (class GAppsApiClient {
         return reject("L'operació requereix autenticació. Si us plau, inicia sessió.");
       }
 
-      if (cache && method === "GET") {
+      const forceRefresh = parameters?.forceRefresh === true;
+      if (cache && method === "GET" && !forceRefresh) {
         const cacheKey = CACHE._getCacheKey({ cache, parameters });
         const savedData = CACHE._read({ key: cacheKey });
         if (savedData) {
@@ -9699,8 +9770,10 @@ const API = new (class GAppsApiClient {
       const token = CACHE.getToken() || "";
       const returnResult = (data) => {
         if (data?.success) {
-          const cacheKey = CACHE._getCacheKey({ cache, parameters });
-          CACHE._write({ key: cacheKey, data: data.result });
+          if(cache){
+            const cacheKey = CACHE._getCacheKey({ cache, parameters });
+            CACHE._write({ key: cacheKey, data: data.result });
+          }
           resolve(data.result);
         } else {
           let errorMessage = "Ha ocorregut un error en la petició. Si el problema persistix, contacta a l'administrador.";
@@ -9836,7 +9909,7 @@ const API = new (class GAppsApiClient {
   }
 
   getEvents({ forceRefresh = false } = {}) {
-    return this._get({ action: "events", parameters: { forceRefresh }, requiresAuth: true, cache: forceRefresh ? null : 'events' });
+    return this._get({ action: "events", parameters: { forceRefresh }, requiresAuth: true, cache: 'events' });
   }
 
   getEventById({ eventId } = {}) {
@@ -9848,7 +9921,7 @@ const API = new (class GAppsApiClient {
   }
   
   getTrainings({ forceRefresh = false } = {}) {
-    return this._get({ action: "trainings", parameters: { forceRefresh }, requiresAuth: true, cache: forceRefresh ? null : 'trainings' });
+    return this._get({ action: "trainings", parameters: { forceRefresh }, requiresAuth: true, cache: 'trainings' });
   }
 
   getTrainingById({ trainingId } = {}) {
@@ -9868,7 +9941,7 @@ const API = new (class GAppsApiClient {
   }
 
   getMembers({ forceRefresh = false } = {}) {
-    return this._get({ action: "members", parameters: { forceRefresh }, requiresAuth: true, cache: forceRefresh ? null : 'members' });
+    return this._get({ action: "members", parameters: { forceRefresh }, requiresAuth: true, cache: 'members' });
   }
 
   loginWithEmailPassword({ email, password } = {}) {
@@ -10007,7 +10080,7 @@ const API = new (class GAppsApiClient {
         if (!isLocalFile) {
           window.addEventListener("load", () => {
             navigator.serviceWorker
-              .register("./sw.js")
+              .register('/sw.js?v=' + Date.now())
               .then((registration) => {
                 console.log(
                   "ServiceWorker registration successful with scope: ",
@@ -10126,9 +10199,6 @@ const API = new (class GAppsApiClient {
     }
   }
 })();
-
-// Track pending diagram load intervals to prevent stale closures
-let pendingDiagramLoadInterval = null;
 
 /**
  * Cancel current edit mode (for navigation confirmation)
@@ -11282,9 +11352,6 @@ window.onerror = function (message, source, lineno, colno, error) {
     }
     if (typeof diagramsIsDirty !== "undefined") {
       diagramsIsDirty = false;
-    }
-    if (typeof dancesData !== "undefined") {
-      dancesData = [];
     }
   }
 
@@ -12852,12 +12919,12 @@ function viewEvent(eventId) {
  * Render diagrams once dances data is available
  * Used by loadEventDiagrams after dances are loaded
  */
-function renderDiagrams() {
-  if (typeof dancesData === "undefined" || !Array.isArray(dancesData) || dancesData.length === 0) {
+function renderDiagrams(eventData) {
+  if (typeof DANCES === "undefined" || !Array.isArray(DANCES) || DANCES.length === 0) {
     return false;
   }
 
-  if (!pendingEventData || !pendingEventData.diagrams) {
+  if (!eventData || !eventData.diagrams) {
     return false;
   }
 
@@ -12866,9 +12933,9 @@ function renderDiagrams() {
     return false;
   }
 
-  pendingEventData.diagrams.forEach(function (diagramData) {
+  eventData.diagrams.forEach(function (diagramData) {
     // Find the dance info to get colors and other metadata
-    const danceInfo = dancesData.find(function (d) {
+    const danceInfo = DANCES.find(function (d) {
       return d.name === diagramData.danceName;
     });
 
@@ -12919,9 +12986,6 @@ function renderDiagrams() {
   return true;
 }
 
-// Store event data for renderDiagrams to access
-let pendingEventData = null;
-
 /**
  * Load diagrams from event data into the events view
  * @param {Object} eventData - The event data with diagrams
@@ -12932,15 +12996,6 @@ function loadEventDiagrams(eventData) {
   const diagramsList = document.getElementById("diagrams-list");
   if (!diagramsList) return;
 
-  // Store event data for renderDiagrams to access
-  pendingEventData = eventData;
-
-  // Clear any existing pending diagram load interval
-  if (pendingDiagramLoadInterval !== null) {
-    clearInterval(pendingDiagramLoadInterval);
-    pendingDiagramLoadInterval = null;
-  }
-
   // Clear existing diagrams
   diagramsList.innerHTML = "";
 
@@ -12950,26 +13005,7 @@ function loadEventDiagrams(eventData) {
     diagramIdCounter = 0;
   }
 
-  // Try to render immediately if dances are already loaded
-  if (renderDiagrams()) {
-    return;
-  }
-
-  // Wait for dances data to be available
-  let attempts = 0;
-  const maxAttempts = 50; // 5 seconds with 100ms intervals
-  pendingDiagramLoadInterval = setInterval(function () {
-    attempts++;
-    
-    if (renderDiagrams()) {
-      clearInterval(pendingDiagramLoadInterval);
-      pendingDiagramLoadInterval = null;
-    } else if (attempts >= maxAttempts) {
-      clearInterval(pendingDiagramLoadInterval);
-      pendingDiagramLoadInterval = null;
-      console.warn("Failed to load dances data within timeout");
-    }
-  }, 100);
+  renderDiagrams(eventData);
 }
 
 /**
@@ -13404,7 +13440,7 @@ function detectAndDisplayDancesFromDescription() {
  * @returns {Array<string>} Array of detected dance names
  */
 function detectDancesFromText(text) {
-  if (!text || typeof dancesData === "undefined" || !Array.isArray(dancesData)) {
+  if (!text || typeof DANCES === "undefined" || !Array.isArray(DANCES)) {
     return [];
   }
 
@@ -13412,7 +13448,7 @@ function detectDancesFromText(text) {
   const seenNames = new Set();
 
   // Search for each dance name in the text
-  dancesData.forEach(function (dance) {
+  DANCES.forEach(function (dance) {
     if (dance.name && !seenNames.has(dance.name)) {
       const danceName = dance.name.toLowerCase();
       // Case-insensitive search for the dance name
@@ -13559,6 +13595,9 @@ function displayMemberAttendanceList(trainingData) {
   // Show the section
   attendanceSection.style.display = "";
   
+  // Check if training is past
+  const isPastTraining = trainingData.date && new Date(trainingData.date) < new Date();
+  
   // Get members list
   const members = (MEMBERS.membersData || []).filter(m => m.active);
   
@@ -13570,10 +13609,10 @@ function displayMemberAttendanceList(trainingData) {
   // Get attendance and rejection lists from training data
   const attendanceList_aliases = trainingData.assistance || [];
   const rejectionList_aliases = trainingData.rejections || [];
+  const memberNotes = trainingData.notes || {};
   
   // Build HTML for member list
   const membersHTML = members.map(member => {
-    const displayName = member.name || member.alias;
     const memberAlias = member.alias;
     
     let statusClass = "empty";
@@ -13588,23 +13627,31 @@ function displayMemberAttendanceList(trainingData) {
       isChecked = true;
     }
     
+    const memberNote = memberNotes[memberAlias] || '';
+    const noteHtml = memberNote ? `<span class="training-member-note" title="${escapeHtml(memberNote)}">ℹ️ «${escapeHtml(memberNote)}»</span>` : '';
+    const disabledAttr = isPastTraining ? 'disabled' : '';
+    const disabledClass = isPastTraining ? ' disabled' : '';
+    
     return `
-      <div class="training-member-item">
+      <div class="training-member-item${memberNote ? ' has-note' : ''}${disabledClass}">
         <label class="training-member-checkbox-label">
-          <input type="checkbox" class="training-member-checkbox" data-alias="${memberAlias}" ${isChecked ? 'checked' : ''} />
+          <input type="checkbox" class="training-member-checkbox" data-alias="${memberAlias}" ${isChecked ? 'checked' : ''} ${disabledAttr} />
           <span class="training-member-checkbox-custom ${statusClass}"></span>
-          <span class="training-member-name">${displayName}</span>
+          <span class="training-member-name">${memberAlias}</span>
         </label>
+        ${noteHtml}
       </div>
     `;
   }).join("");
   
   attendanceList.innerHTML = membersHTML;
   
-  // Add event listeners to checkboxes
-  attendanceList.querySelectorAll('.training-member-checkbox').forEach(checkbox => {
-    checkbox.addEventListener('change', handleMemberAttendanceChange);
-  });
+  // Add event listeners to checkboxes (only if not past training)
+  if (!isPastTraining) {
+    attendanceList.querySelectorAll('.training-member-checkbox').forEach(checkbox => {
+      checkbox.addEventListener('change', handleMemberAttendanceChange);
+    });
+  }
   
   // Scroll attendance list to top
   attendanceList.scrollTop = 0;
@@ -13728,12 +13775,12 @@ function handleTrainingSave() {
  * @param {string} danceName - The name of the dance to display audios for
  */
 function openDanceAudioDialog(danceName) {
-  if (!danceName || typeof dancesData === "undefined") {
+  if (!danceName || typeof DANCES === "undefined") {
     return;
   }
 
   // Find the dance data
-  const dance = dancesData.find(function (d) {
+  const dance = DANCES.find(function (d) {
     return d.name === danceName;
   });
 
@@ -14004,10 +14051,7 @@ function handleRelatedMemberAttendanceAction(trainingId, memberId, memberAlias, 
           const noteLinkHtml = `<a href="javascript:void(0)" class="training-note-link" onclick="openTrainingNoteDialog('${escapeHtml(trainingId)}', '${escapeHtml(memberId)}', '${escapeHtml(memberAlias)}', '${escapedMemberName}')">+ Afegir nota</a>`;
           const newLink = document.createElement('span');
           newLink.innerHTML = noteLinkHtml;
-          const buttonsDiv = section.querySelector('.training-confirmation-buttons');
-          if (buttonsDiv) {
-            section.insertBefore(newLink.firstChild, buttonsDiv);
-          }
+          section.appendChild(newLink.firstChild);
         }
       } else {
         if (existingNoteLink) {
@@ -14140,10 +14184,7 @@ function handleAttendanceAction(trainingId, action) {
           const noteLinkHtml = `<a href="javascript:void(0)" class="training-note-link" onclick="openTrainingNoteDialog('${escapeHtml(trainingId)}', '', '', '')">+ Afegir nota</a>`;
           const newLink = document.createElement('span');
           newLink.innerHTML = noteLinkHtml;
-          const buttonsDiv = section.querySelector('.training-confirmation-buttons');
-          if (buttonsDiv) {
-            section.insertBefore(newLink.firstChild, buttonsDiv);
-          }
+          section.appendChild(newLink.firstChild);
         }
       } else {
         if (existingNoteLink) {
@@ -14258,7 +14299,7 @@ function renderPlanningTrainingsList(trainings) {
           return attendee === memberAlias;
         });
         const memberNote = (training.notes || {})[memberAlias];
-        const noteHtml = memberNote ? `<span class="training-attendance-note" title="${escapeHtml(memberNote)}">ℹ️ "${escapeHtml(memberNote)}"</span>` : '';
+        const noteHtml = memberNote ? `<span class="training-attendance-note" title="${escapeHtml(memberNote)}">ℹ️ «${escapeHtml(memberNote)}»</span>` : '';
         
         const sectionClass = isRelatedMember ? 'training-confirmation-section related-member past' : 'training-confirmation-section past';
         let statusClass = '';
@@ -14338,7 +14379,7 @@ function renderPlanningTrainingsList(trainings) {
           button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
           button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${cancelFn}" title="${notAttendingTitle}">✕ ${notAttendingText}</button>`;
           noteLinkHtml = memberNote ? 
-            `<a href="javascript:void(0)" class="training-note-link has-note" onclick="${openNoteFn}" title="${escapeHtml(memberNote)}">✏️ Nota</a>` :
+            `<a href="javascript:void(0)" class="training-note-link has-note" onclick="${openNoteFn}" title="Editar nota">ℹ️ «${escapeHtml(memberNote)}»</a>` :
             `<a href="javascript:void(0)" class="training-note-link" onclick="${openNoteFn}">+ Afegir nota</a>`;
         } else if (isRejected) {
           statusClass = 'training-status-indicator not-attending';
@@ -14346,7 +14387,7 @@ function renderPlanningTrainingsList(trainings) {
           button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
           button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
           noteLinkHtml = memberNote ? 
-            `<a href="javascript:void(0)" class="training-note-link has-note" onclick="${openNoteFn}" title="${escapeHtml(memberNote)}">✏️ Nota</a>` :
+            `<a href="javascript:void(0)" class="training-note-link has-note" onclick="${openNoteFn}" title="Editar nota">ℹ️ «${escapeHtml(memberNote)}»</a>` :
             `<a href="javascript:void(0)" class="training-note-link" onclick="${openNoteFn}">+ Afegir nota</a>`;
         } else {
           button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
@@ -14364,11 +14405,11 @@ function renderPlanningTrainingsList(trainings) {
           <div class="${sectionClass}" ${dataAttr}>
             ${nameHtml}
             <span class="${statusClass}">${statusText}</span>
-            ${noteLinkHtml}
             <div class="training-confirmation-buttons">
               ${button1Html}
               ${button2Html}
             </div>
+            ${noteLinkHtml}
           </div>`;
       }
       
@@ -14629,6 +14670,8 @@ function closeTrainingNoteDialog() {
 function saveTrainingNote() {
   const noteInput = document.getElementById('training-note-input');
   const saveBtn = document.getElementById('training-note-save-btn');
+  const btnText = saveBtn ? saveBtn.querySelector('.btn-text') : null;
+  const btnLoading = saveBtn ? saveBtn.querySelector('.btn-loading') : null;
   
   if (!noteInput) return;
   
@@ -14641,6 +14684,8 @@ function saveTrainingNote() {
   }
   
   if (saveBtn) saveBtn.disabled = true;
+  if (btnText) btnText.style.display = 'none';
+  if (btnLoading) btnLoading.style.display = 'inline';
   
   let apiCall;
   if (memberId && memberAlias) {
@@ -14652,6 +14697,8 @@ function saveTrainingNote() {
   apiCall
     .then(function(result) {
       if (saveBtn) saveBtn.disabled = false;
+      if (btnText) btnText.style.display = 'inline';
+      if (btnLoading) btnLoading.style.display = 'none';
       showToast(result.message || 'Nota desada', 'success');
       
       const alias = memberAlias || (APP.currentUser ? APP.currentUser.alias : '');
@@ -14672,6 +14719,8 @@ function saveTrainingNote() {
     })
     .catch(function(error) {
       if (saveBtn) saveBtn.disabled = false;
+      if (btnText) btnText.style.display = 'inline';
+      if (btnLoading) btnLoading.style.display = 'none';
       showToast(error || 'Error desant la nota', 'error');
     });
 }
@@ -14690,8 +14739,8 @@ function updateNoteLinkInUI(trainingId, memberId, memberAlias, note) {
   if (existingLink) {
     if (note) {
       existingLink.className = 'training-note-link has-note';
-      existingLink.textContent = '✏️ Nota';
-      existingLink.title = note;
+      existingLink.textContent = 'ℹ️ «' + note + '»';
+      existingLink.title = 'Editar nota';
     } else {
       existingLink.className = 'training-note-link';
       existingLink.textContent = '+ Afegir nota';
