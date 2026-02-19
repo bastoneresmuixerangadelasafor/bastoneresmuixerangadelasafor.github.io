@@ -4731,7 +4731,6 @@ body.dark-mode .event-meeting-place-display {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 300px;
   padding: 10px 0;
 }
 
@@ -4755,9 +4754,9 @@ body.dark-mode .event-meeting-place-display {
 
 @media (max-width: 768px) {
   .diagrams-canvas-container {
-    min-height: 250px;
+    min-height: 150px;
     margin: 0 -15px;
-    padding: 10px 15px;
+    padding: 5px 0;
   }
 
   .diagrams-canvas-wrapper {
@@ -4782,7 +4781,7 @@ body.dark-mode .event-meeting-place-display {
 
 @media (max-width: 480px) {
   .diagrams-canvas-container {
-    min-height: 200px;
+    min-height: 120px;
   }
 
   #diagrams-canvas {
