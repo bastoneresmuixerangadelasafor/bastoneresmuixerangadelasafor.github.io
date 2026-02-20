@@ -459,6 +459,14 @@ function displayMemberAttendanceList(trainingData) {
   
   attendanceList.innerHTML = membersHTML;
   
+  // Update attendance count
+  const countSpan = document.getElementById("training-attendance-count");
+  if (countSpan) {
+    const attendCount = attendanceList_aliases.length;
+    const rejectCount = rejectionList_aliases.length;
+    countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
+  }
+  
   // Add event listeners to checkboxes (only if not past training)
   if (!isPastTraining) {
     attendanceList.querySelectorAll('.training-member-checkbox').forEach(checkbox => {
@@ -510,6 +518,14 @@ function handleMemberAttendanceChange(event) {
           }
         }
         APP.currentTrainingData.assistance = assistanceList;
+        
+        // Update the attendance count
+        const countSpan = document.getElementById("training-attendance-count");
+        if (countSpan) {
+          const attendCount = assistanceList.length;
+          const rejectCount = (APP.currentTrainingData.rejections || []).length;
+          countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
+        }
       }
     })
     .catch(function(error) {

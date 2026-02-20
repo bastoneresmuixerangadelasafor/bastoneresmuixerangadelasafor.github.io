@@ -179,6 +179,11 @@ const API = class GAppsApiServer {
         const adminSetAttendanceReq = JSON.parse(e.postData?.contents);
         data = adminSetAttendanceWorker({ trainingId: adminSetAttendanceReq?.trainingId, memberAlias: adminSetAttendanceReq?.memberAlias, attending: adminSetAttendanceReq?.attending });
         break;
+      case "adminSetEventMemberAttendance":
+        const adminSetEventAttendanceWorker = this.validateUserToken_({fn: adminSetEventMemberAttendance_, requiresAuth: true, requiresAdmin: true, token: e.parameter?.token});
+        const adminSetEventAttendanceReq = JSON.parse(e.postData?.contents);
+        data = adminSetEventAttendanceWorker({ eventId: adminSetEventAttendanceReq?.eventId, memberAlias: adminSetEventAttendanceReq?.memberAlias, attending: adminSetEventAttendanceReq?.attending });
+        break;
       case "saveTrainingNote":
         const saveNoteWorker = this.validateUserToken_({fn: saveTrainingNote_, requiresAuth: true, token: e.parameter?.token});
         const saveNoteReq = JSON.parse(e.postData?.contents);

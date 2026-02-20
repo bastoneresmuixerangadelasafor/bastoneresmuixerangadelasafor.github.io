@@ -134,6 +134,8 @@ const CACHE = new class GAppsServerCache {
     const sheet = spreadsheet.getSheetByName(EVENTS_SHEET_NAME);
     const data = sheet.getDataRange().getValues();
 
+    const assistance = this.retrieveEventMemberAssistanceFromDB();
+
     // Skip header row and map data to event objects
     const events = [];
     for (let i = 1; i < data.length; i++) {
@@ -154,14 +156,19 @@ const CACHE = new class GAppsServerCache {
         }
       }
 
+      const eventAssistance = assistance[name] || { attendees: [], rejections: [], notes: {} };
+
       const event = {
-        id: name.replace(/[:\\/\?\*\[\]]/g, '-').trim().substring(0, 31),
+        id: name.replace(/[:\\/\?\*\[\]]/g, '-').trim(),
         name: name,
         date: date,
         meetingPlace: row[2] || '',
         placeUrl: row[3] || '',
         confirmed: row[4] === '' || row[4] === undefined ? false : Boolean(row[4]),
         visible: row[5] === '' || row[5] === undefined ? false : Boolean(row[5]),
+        attendees: eventAssistance.attendees || [],
+        rejections: eventAssistance.rejections || [],
+        notes: eventAssistance.notes || {},
       };
 
       events.push(event);
@@ -169,7 +176,6 @@ const CACHE = new class GAppsServerCache {
 
     return events;
   }
-
   getTrainings() {
     const cachedTrainings = this.cache_.getProperty(TRAINING_CACHE);
     if (cachedTrainings) {
@@ -257,5 +263,54 @@ const CACHE = new class GAppsServerCache {
     });
 
     return trainingsByDate;
+  }
+
+  getEventMemberAssistance(memberName) {
+    const allAssistance = this.retrieveEventMemberAssistanceFromDB();
+    return allAssistance[memberName] || null;
+  }
+
+  retrieveEventMemberAssistanceFromDB() {
+    const spreadsheet = SpreadsheetApp.openById(EVENTS_SPREADSHEET_ID);
+    const sheet = spreadsheet.getSheetByName(ASSISTANCE_SHEET_NAME);
+    const data = sheet.getDataRange().getValues();
+    const notes = sheet.getDataRange().getNotes();
+
+    if (!data || data.length < 2) {
+      return {};
+    }
+
+    const dates = data[0].slice(1);
+    const eventAssistance = {};
+
+    dates.forEach((eventName, dateIndex) => {
+      const attendees = [];
+      const rejections = [];
+      const cellNotes = {};
+
+      for (let i = 1; i < data.length; i++) {
+        const memberName = data[i][0];
+        const attendance = data[i][dateIndex + 1];
+        const cellNote = notes[i][dateIndex + 1];
+
+        if (memberName && attendance === 'SI') {
+          attendees.push(memberName);
+        } else if (memberName && attendance === 'NO') {
+          rejections.push(memberName);
+        }
+
+        if (memberName && cellNote) {
+          cellNotes[memberName] = cellNote;
+        }
+      }
+
+      eventAssistance[eventName] = {
+        attendees: attendees,
+        rejections: rejections,
+        notes: cellNotes
+      };
+    });
+
+    return eventAssistance;
   }
 }

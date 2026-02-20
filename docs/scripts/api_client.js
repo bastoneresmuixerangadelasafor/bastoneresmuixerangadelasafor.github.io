@@ -282,6 +282,10 @@ const API = new (class GAppsApiClient {
     return this._post({ action: "adminSetMemberAttendance", body: { trainingId, memberAlias, attending }, requiresAuth: true });
   }
 
+  adminSetEventMemberAttendance({ eventId, memberAlias, attending } = {}) {
+    return this._post({ action: "adminSetEventMemberAttendance", body: { eventId, memberAlias, attending }, requiresAuth: true });
+  }
+
   saveTrainingNote({ trainingId, note } = {}) {
     return this._post({ action: "saveTrainingNote", body: { trainingId, note }, requiresAuth: true });
   }

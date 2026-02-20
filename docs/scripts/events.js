@@ -279,7 +279,8 @@ function loadEventData(eventId) {
         showToast("No s'ha trobat l'esdeveniment", "error");
         return;
       }
-
+      // Store event data globally
+      APP.currentEventData = eventData;
       // Navigate to events view with event ID in hash
       // Use eventData.id (returned from server) as the canonical ID
       const canonicalEventId = eventData.id || eventId;
@@ -361,6 +362,10 @@ function loadEventData(eventId) {
       // Trigger input events to show dance selector
       eventNameInput.dispatchEvent(new Event("input"));
       eventDatetimeInput.dispatchEvent(new Event("input"));
+
+      // Prepare event attendance section for admin
+      prepareEventAttendanceSection();
+      initializeEventAttendanceToggle();
 
       // Load diagrams after a short delay to ensure dances data is loaded
       setTimeout(function () {
@@ -648,5 +653,225 @@ function refreshPlanningEvents() {
         refreshBtn.disabled = false;
       }
       showToast("Error actualitzant la llista", "error");
+    });
+}
+/**
+ * Prepare the event attendance section (show/hide based on admin role)
+ */
+function prepareEventAttendanceSection() {
+  const isAdmin = APP.currentUser && (APP.currentUser.roles || []).includes("ADMIN");
+  const attendanceSection = document.getElementById("event-member-attendance-section");
+  const attendanceList = document.getElementById("event-member-attendance-list");
+  const attendanceToggle = document.getElementById("event-attendance-toggle");
+  
+  if (!attendanceSection || !attendanceList) {
+    return;
+  }
+  
+  if (isAdmin) {
+    attendanceSection.style.display = "";
+    attendanceList.classList.add("collapsed");
+    if (attendanceToggle) {
+      const toggleArrow = attendanceToggle.querySelector(".toggle-arrow");
+      if (toggleArrow) toggleArrow.textContent = "▶";
+      attendanceToggle.setAttribute("aria-expanded", "false");
+    }
+    attendanceList.innerHTML = "";
+  } else {
+    attendanceSection.style.display = "none";
+  }
+}
+
+/**
+ * Initialize event attendance section toggle
+ */
+function initializeEventAttendanceToggle() {
+  const attendanceToggle = document.getElementById("event-attendance-toggle");
+  
+  if (attendanceToggle && !attendanceToggle.dataset.initialized) {
+    attendanceToggle.addEventListener("click", function () {
+      const attendanceList = document.getElementById("event-member-attendance-list");
+      const toggleArrow = attendanceToggle.querySelector(".toggle-arrow");
+      
+      if (attendanceList) {
+        const isCollapsed = attendanceList.classList.contains("collapsed");
+        
+        if (isCollapsed) {
+          loadEventMembersAttendance(APP.currentEventData);
+        }
+        
+        attendanceList.classList.toggle("collapsed");
+        toggleArrow.textContent = attendanceList.classList.contains("collapsed") ? "▶" : "▼";
+        attendanceToggle.setAttribute("aria-expanded", !attendanceList.classList.contains("collapsed"));
+      }
+    });
+    attendanceToggle.dataset.initialized = "true";
+  }
+}
+
+/**
+ * Load members and display attendance list for event (admin only)
+ * @param {Object} eventData - Event data object with attendance and rejections
+ */
+function loadEventMembersAttendance(eventData) {
+  if (!eventData) {
+    eventData = APP.currentEventData;
+  }
+  
+  const attendanceList = document.getElementById("event-member-attendance-list");
+  if (!attendanceList) return;
+  
+  attendanceList.innerHTML = '<div class="event-member-attendance-loading" id="event-members-loader"><div class="spinner"></div><span>Carregant membres...</span></div>';
+  
+  API.getMembers()
+    .then(function (members) {
+      if (Array.isArray(members)) {
+        MEMBERS.membersData = members;
+        displayEventMemberAttendanceList(eventData);
+      }
+    })
+    .catch(function (error) {
+      console.error("Error loading members for event:", error);
+      attendanceList.innerHTML = '<div class="event-member-attendance-loading">Error al carregar membres</div>';
+    });
+}
+
+/**
+ * Display member attendance list for event (admin only)
+ * @param {Object} eventData - Event data object with attendance and rejections
+ */
+function displayEventMemberAttendanceList(eventData) {
+  const isAdmin = APP.currentUser && (APP.currentUser.roles || []).includes("ADMIN");
+  const attendanceSection = document.getElementById("event-member-attendance-section");
+  const attendanceList = document.getElementById("event-member-attendance-list");
+  
+  if (!attendanceSection || !attendanceList) {
+    return;
+  }
+  
+  if (!isAdmin) {
+    attendanceSection.style.display = "none";
+    return;
+  }
+  
+  attendanceSection.style.display = "";
+  
+  const isPastEvent = eventData.date && new Date(eventData.date) < new Date();
+  const members = (MEMBERS.membersData || []).filter(m => m.active);
+  
+  if (!members || members.length === 0) {
+    attendanceList.innerHTML = '<div class="event-member-attendance-loading">Sense membres disponibles</div>';
+    return;
+  }
+  
+  const attendeesList = eventData.attendees || [];
+  const rejectionsList = eventData.rejections || [];
+  const memberNotes = eventData.notes || {};
+  
+  const membersHTML = members.map(member => {
+    const memberAlias = member.alias;
+    
+    let statusClass = "empty";
+    let isChecked = false;
+    
+    if (rejectionsList.includes(memberAlias)) {
+      statusClass = "rejected";
+      isChecked = false;
+    } else if (attendeesList.includes(memberAlias)) {
+      statusClass = "attending";
+      isChecked = true;
+    }
+    
+    const memberNote = memberNotes[memberAlias] || '';
+    const noteHtml = memberNote ? `<span class="event-member-note" title="${escapeHtml(memberNote)}">ℹ️ «${escapeHtml(memberNote)}»</span>` : '';
+    const disabledAttr = isPastEvent ? 'disabled' : '';
+    const disabledClass = isPastEvent ? ' disabled' : '';
+    
+    return `
+      <div class="event-member-item${memberNote ? ' has-note' : ''}${disabledClass}">
+        <label class="event-member-checkbox-label">
+          <input type="checkbox" class="event-member-checkbox" data-alias="${memberAlias}" ${isChecked ? 'checked' : ''} ${disabledAttr} />
+          <span class="event-member-checkbox-custom ${statusClass}"></span>
+          <span class="event-member-name">${memberAlias}</span>
+        </label>
+        ${noteHtml}
+      </div>
+    `;
+  }).join("");
+  
+  attendanceList.innerHTML = membersHTML;
+  
+  // Update attendance count
+  const countSpan = document.getElementById("event-attendance-count");
+  if (countSpan) {
+    const attendCount = attendeesList.length;
+    const rejectCount = rejectionsList.length;
+    countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
+  }
+  
+  if (!isPastEvent) {
+    attendanceList.querySelectorAll('.event-member-checkbox').forEach(checkbox => {
+      checkbox.addEventListener('change', handleMemberEventAttendanceChange);
+    });
+  }
+  
+  attendanceList.scrollTop = 0;
+}
+
+/**
+ * Handle checkbox change for member event attendance
+ * @param {Event} event - The change event
+ */
+function handleMemberEventAttendanceChange(event) {
+  const checkbox = event.target;
+  const memberAlias = checkbox.dataset.alias;
+  const attending = checkbox.checked;
+  const eventId = APP.currentEventId;
+  
+  if (!eventId || !memberAlias) {
+    console.error('Missing eventId or memberAlias');
+    return;
+  }
+  
+  checkbox.disabled = true;
+  const customCheckbox = checkbox.nextElementSibling;
+  customCheckbox.classList.add('loading');
+  
+  API.adminSetEventMemberAttendance({ eventId, memberAlias, attending })
+    .then(function(response) {
+      customCheckbox.classList.remove('loading', 'empty', 'attending', 'rejected');
+      customCheckbox.classList.add(attending ? 'attending' : 'empty');
+      
+      if (APP.currentEventData) {
+        const attendeesList = APP.currentEventData.attendees || [];
+        if (attending) {
+          if (!attendeesList.includes(memberAlias)) {
+            attendeesList.push(memberAlias);
+          }
+        } else {
+          const index = attendeesList.indexOf(memberAlias);
+          if (index > -1) {
+            attendeesList.splice(index, 1);
+          }
+        }
+        APP.currentEventData.attendees = attendeesList;
+        
+        // Update the attendance count
+        const countSpan = document.getElementById("event-attendance-count");
+        if (countSpan) {
+          const attendCount = attendeesList.length;
+          const rejectCount = (APP.currentEventData.rejections || []).length;
+          countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
+        }
+      }
+    })
+    .catch(function(error) {
+      console.error('Error updating attendance:', error);
+      showToast(error || 'Error actualitzant assistència', 'error');
+      checkbox.checked = !attending;
+    })
+    .finally(function() {
+      checkbox.disabled = false;
+      customCheckbox.classList.remove('loading');
     });
 }

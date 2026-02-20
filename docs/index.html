@@ -486,6 +486,7 @@
                     <button id="training-attendance-toggle" class="attendance-toggle-btn" aria-expanded="false">
                         <span class="toggle-arrow">▶</span>
                         <h3>Assistència de membres</h3>
+                        <span id="training-attendance-count" class="attendance-count"></span>
                     </button>
                 </div>
                 <div id="training-member-attendance-list" class="training-member-attendance-list collapsed">
@@ -605,6 +606,22 @@
             </div>
             <div id="diagrams-list" class="diagrams-list">
                 <!-- Diagrams will be added here dynamically -->
+            </div>
+            <!-- Member Attendance List (Admin Only) -->
+            <div class="event-member-attendance admin-only" id="event-member-attendance-section" style="display: none;">
+                <div class="event-member-attendance-header">
+                    <button id="event-attendance-toggle" class="attendance-toggle-btn" aria-expanded="false">
+                        <span class="toggle-arrow">▶</span>
+                        <h3>Assistència de membres</h3>
+                        <span id="event-attendance-count" class="attendance-count"></span>
+                    </button>
+                </div>
+                <div id="event-member-attendance-list" class="event-member-attendance-list collapsed">
+                    <div class="event-member-attendance-loading" id="event-members-loader">
+                        <div class="spinner"></div>
+                        <span>Carregant membres...</span>
+                    </div>
+                </div>
             </div>
             <!-- Dialog for person selection -->
             <dialog id="person-dialog" class="admin-only">

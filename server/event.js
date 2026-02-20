@@ -136,11 +136,6 @@ function sanitizeSheetName_(name) {
     .replace(/['"]/g, '')
     .trim();
   
-  // Truncate to 31 characters (Google Sheets limit)
-  if (sanitized.length > 31) {
-    sanitized = sanitized.substring(0, 31);
-  }
-  
   return sanitized;
 }
 
@@ -383,14 +378,21 @@ function getEventById_({eventId}) {
     if (currentDance) {
       diagrams.push(currentDance);
     }
-    
+
+    // Fetch member attendance data for this event
+    const allEventAssistance = CACHE.retrieveEventMemberAssistanceFromDB();
+    const eventAssistance = allEventAssistance[eventName] || { attendees: [], rejections: [], notes: {} };
+
     return API.newResult_({
       result: {
         id: eventId,
         name: eventName,
         datetime: eventDate,
         meetingPlace: eventMeetingPlace,
-        diagrams: diagrams
+        diagrams: diagrams,
+        attendees: eventAssistance.attendees || [],
+        rejections: eventAssistance.rejections || [],
+        notes: eventAssistance.notes || {}
       },
     });
   } catch (error) {
@@ -886,5 +888,60 @@ function saveRelatedMemberTrainingNote_({trainingId, memberId, memberAlias, note
   } catch (error) {
     console.error('Error saving related member training note:', error.toString());
     return API.newError_({ error: 'Error desant la nota: ' + error.toString() });
+  }
+}
+
+function adminSetEventMemberAttendance_({eventId, memberAlias, attending}) {
+  try {
+    const spreadsheet = SpreadsheetApp.openById(TRAINING_SPREADSHEET_ID);
+    const sheet = spreadsheet.getSheetByName(ASSISTANCE_SHEET_NAME);
+    const data = sheet.getDataRange().getValues();
+    const notes = sheet.getDataRange().getNotes();
+
+    // Find the column for this event (look in header row for matching event name)
+    let eventColumnIndex = -1;
+    const headerRow = data[0];
+    for (let i = 1; i < headerRow.length; i++) {
+      if (headerRow[i] === eventId) {
+        eventColumnIndex = i;
+        break;
+      }
+    }
+
+    if (eventColumnIndex === -1) {
+      return API.newError_({ error: 'No s\'ha trobat la columna per a l\'desenvolupament' });
+    }
+
+    // Find the row for this member
+    let memberRowIndex = -1;
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] === memberAlias) {
+        memberRowIndex = i;
+        break;
+      }
+    }
+
+    if (memberRowIndex === -1) {
+      return API.newError_({ error: 'No s\'ha trobat el membre' });
+    }
+
+    // Update the attendance value
+    const newValue = attending ? 'SI' : '';
+    sheet.getRange(memberRowIndex + 1, eventColumnIndex + 1).setValue(newValue);
+
+    // Invalidate cache
+    CACHE.retrieveEventMemberAssistanceFromDB();
+
+    return API.newResult_({
+      result: {
+        eventId: eventId,
+        memberAlias: memberAlias,
+        attending: attending,
+        message: attending ? 'Assistència confirmada' : 'Assistència esborrada',
+      },
+    });
+  } catch (error) {
+    console.error('Error setting event member attendance:', error.toString());
+    return API.newError_({ error: 'Error actualitzant l\'assistència: ' + error.toString() });
   }
 }
