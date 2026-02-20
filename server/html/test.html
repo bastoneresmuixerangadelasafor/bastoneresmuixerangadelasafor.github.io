@@ -3464,6 +3464,184 @@ input::placeholder {
   background-color: rgba(244, 67, 54, 0.2);
 }
 
+/* EVENT CONFIRMATION SECTION STYLES */
+
+.event-confirmation-section {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.event-status-indicator {
+  display: inline-block;
+  width: fit-content;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.event-status-indicator.confirmed {
+  color: #4caf50;
+  background-color: rgba(76, 175, 80, 0.1);
+}
+
+.dark-mode .event-status-indicator.confirmed {
+  background-color: rgba(76, 175, 80, 0.2);
+}
+
+.event-status-indicator.not-confirmed {
+  color: #f9a825;
+  background-color: rgba(249, 168, 37, 0.1);
+}
+
+.dark-mode .event-status-indicator.not-confirmed {
+  color: #fdd835;
+  background-color: rgba(253, 216, 53, 0.2);
+}
+
+.event-status-indicator.not-attending {
+  color: #f44336;
+  background-color: rgba(244, 67, 54, 0.1);
+}
+
+.dark-mode .event-status-indicator.not-attending {
+  color: #ef5350;
+  background-color: rgba(244, 67, 54, 0.2);
+}
+
+.event-confirmation-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.event-confirmation-buttons .btn-xs {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.event-confirmation-buttons .btn-outline-success {
+  color: #4caf50;
+  border: 1px solid #4caf50;
+  background-color: transparent;
+}
+
+.event-confirmation-buttons .btn-outline-success:hover {
+  background-color: rgba(76, 175, 80, 0.1);
+}
+
+.event-confirmation-buttons .btn-outline-danger {
+  color: #f44336;
+  border: 1px solid #f44336;
+  background-color: transparent;
+}
+
+.event-confirmation-buttons .btn-outline-danger:hover {
+  background-color: rgba(244, 67, 54, 0.1);
+}
+
+.event-confirmation-buttons .btn-outline-secondary {
+  color: #757575;
+  border: 1px solid #bdbdbd;
+  background-color: transparent;
+}
+
+.event-confirmation-buttons .btn-outline-secondary:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark-mode .event-confirmation-buttons .btn-outline-success {
+  color: #81c784;
+  border-color: #81c784;
+}
+
+.dark-mode .event-confirmation-buttons .btn-outline-danger {
+  color: #ef5350;
+  border-color: #ef5350;
+}
+
+.dark-mode .event-confirmation-buttons .btn-outline-secondary {
+  color: #9e9e9e;
+  border-color: #616161;
+}
+
+.dark-mode .event-confirmation-buttons .btn-outline-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Event confirmation member name label */
+.event-confirmation-member-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #333;
+  min-width: 80px;
+}
+
+.dark-mode .event-confirmation-member-name {
+  color: #e0e0e0;
+}
+
+/* Related member confirmation section */
+.event-confirmation-section.related-member {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding-top: 8px;
+  margin-top: 4px;
+}
+
+.dark-mode .event-confirmation-section.related-member {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Past event confirmation section (no buttons) */
+.event-confirmation-section.past {
+  gap: 8px;
+}
+
+.event-confirmation-section.past .event-attendance-note {
+  font-size: 0.75rem;
+  color: #4caf50;
+}
+
+.dark-mode .event-confirmation-section.past .event-attendance-note {
+  color: #81c784;
+}
+
+/* Event attendance indicator (for past events) */
+.event-attendance {
+  display: inline-block;
+  width: fit-content;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.event-attendance.attending {
+  color: #4caf50;
+  background-color: rgba(76, 175, 80, 0.1);
+}
+
+.dark-mode .event-attendance.attending {
+  background-color: rgba(76, 175, 80, 0.2);
+}
+
+.event-attendance.not-attending {
+  color: #f44336;
+  background-color: rgba(244, 67, 54, 0.1);
+}
+
+.dark-mode .event-attendance.not-attending {
+  background-color: rgba(244, 67, 54, 0.2);
+}
+
 .training-attendance-row {
   display: flex;
   flex-direction: row;
@@ -3742,6 +3920,14 @@ input::placeholder {
   font-size: 1rem;
   color: var(--text-color);
   font-weight: 600;
+}
+
+.attendance-count {
+  margin-left: auto;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .toggle-arrow {
@@ -4024,6 +4210,267 @@ input::placeholder {
 }
 
 .training-member-name {
+  flex: 1;
+  font-size: 0.95rem;
+  color: var(--text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Event Member Attendance Section */
+.event-member-attendance {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px 0;
+  padding: 15px;
+  background: rgba(76, 175, 80, 0.05);
+  border-left: 4px solid #4caf50;
+  border-radius: 8px;
+}
+
+.dark-mode .event-member-attendance {
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.event-member-attendance-header {
+  display: flex;
+  align-items: center;
+}
+
+.event-member-attendance-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+  transition: all 0.3s ease;
+}
+
+.event-member-attendance-list.collapsed {
+  display: none;
+}
+
+.event-member-attendance-loading {
+  padding: 12px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.event-member-attendance-loading .spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+.event-member-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  transition: all 0.2s;
+  min-height: 40px;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+}
+
+.event-member-item.has-note {
+  min-height: auto;
+  padding-bottom: 6px;
+}
+
+.event-member-note {
+  font-size: 0.75rem;
+  color: #4caf50;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-left: 36px;
+  flex-basis: 100%;
+}
+
+.dark-mode .event-member-note {
+  color: #81c784;
+}
+
+.event-member-item:hover {
+  background: var(--bg-color);
+  border-color: #1976d2;
+}
+
+.dark-mode .event-member-item:hover {
+  background: rgba(79, 195, 247, 0.05);
+}
+
+.event-member-item.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.event-member-item.disabled:hover {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+.event-member-item.disabled .event-member-checkbox-label {
+  cursor: not-allowed;
+}
+
+/* Checkbox-based member attendance for events */
+.event-member-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  width: 100%;
+  user-select: none;
+  height: 24px;
+}
+
+.event-member-checkbox {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.event-member-checkbox-custom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  max-width: 24px;
+  max-height: 24px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  border: 2px solid #ddd;
+  background: transparent;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.event-member-checkbox-custom::after {
+  content: "";
+  display: none;
+}
+
+.event-member-checkbox:checked + .event-member-checkbox-custom {
+  background: #4caf50;
+  border-color: #4caf50;
+}
+
+.event-member-checkbox:checked + .event-member-checkbox-custom::after {
+  content: "✓";
+  display: block;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.event-member-checkbox-custom.empty {
+  border-color: #ddd;
+  background: transparent;
+}
+
+.dark-mode .event-member-checkbox-custom.empty {
+  border-color: #666;
+}
+
+.event-member-checkbox-custom.attending {
+  background: #4caf50;
+  border-color: #4caf50;
+}
+
+.event-member-checkbox-custom.attending::after {
+  content: "✓";
+  display: block;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.event-member-checkbox-custom.rejected {
+  background: #f44336;
+  border-color: #f44336;
+}
+
+.event-member-checkbox-custom.rejected::after {
+  content: "✕";
+  display: block;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.event-member-checkbox-custom.loading {
+  opacity: 1;
+  pointer-events: none;
+  border-color: #1976d2;
+  background: transparent !important;
+}
+
+.event-member-checkbox-custom.loading::after {
+  content: "" !important;
+  display: block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(25, 118, 210, 0.3);
+  border-top-color: #1976d2;
+  border-radius: 50%;
+  animation: checkbox-spinner 0.6s linear infinite;
+  font-weight: normal;
+  font-size: 0;
+}
+
+.event-member-checkbox:checked + .event-member-checkbox-custom.loading {
+  background: transparent !important;
+  border-color: #1976d2;
+}
+
+.event-member-checkbox:checked + .event-member-checkbox-custom.loading::after {
+  content: "" !important;
+  display: block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(25, 118, 210, 0.3);
+  border-top-color: #1976d2;
+  border-radius: 50%;
+  animation: checkbox-spinner 0.6s linear infinite;
+  font-weight: normal;
+  font-size: 0;
+  color: transparent;
+}
+
+.event-member-checkbox:disabled + .event-member-checkbox-custom {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.event-member-checkbox-label:hover .event-member-checkbox-custom:not(.loading) {
+  border-color: #1976d2;
+}
+
+.event-member-name {
   flex: 1;
   font-size: 0.95rem;
   color: var(--text-color);
@@ -4760,7 +5207,6 @@ body.dark-mode .event-meeting-place-display {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 300px;
   padding: 10px 0;
 }
 
@@ -4784,9 +5230,9 @@ body.dark-mode .event-meeting-place-display {
 
 @media (max-width: 768px) {
   .diagrams-canvas-container {
-    min-height: 250px;
+    min-height: 150px;
     margin: 0 -15px;
-    padding: 10px 15px;
+    padding: 5px 0;
   }
 
   .diagrams-canvas-wrapper {
@@ -4811,7 +5257,7 @@ body.dark-mode .event-meeting-place-display {
 
 @media (max-width: 480px) {
   .diagrams-canvas-container {
-    min-height: 200px;
+    min-height: 120px;
   }
 
   #diagrams-canvas {
@@ -6505,6 +6951,7 @@ body.dark-mode .password-dialog-actions {
                     <button id="training-attendance-toggle" class="attendance-toggle-btn" aria-expanded="false">
                         <span class="toggle-arrow">▶</span>
                         <h3>Assistència de membres</h3>
+                        <span id="training-attendance-count" class="attendance-count"></span>
                     </button>
                 </div>
                 <div id="training-member-attendance-list" class="training-member-attendance-list collapsed">
@@ -6624,6 +7071,22 @@ body.dark-mode .password-dialog-actions {
             </div>
             <div id="diagrams-list" class="diagrams-list">
                 <!-- Diagrams will be added here dynamically -->
+            </div>
+            <!-- Member Attendance List (Admin Only) -->
+            <div class="event-member-attendance admin-only" id="event-member-attendance-section" style="display: none;">
+                <div class="event-member-attendance-header">
+                    <button id="event-attendance-toggle" class="attendance-toggle-btn" aria-expanded="false">
+                        <span class="toggle-arrow">▶</span>
+                        <h3>Assistència de membres</h3>
+                        <span id="event-attendance-count" class="attendance-count"></span>
+                    </button>
+                </div>
+                <div id="event-member-attendance-list" class="event-member-attendance-list collapsed">
+                    <div class="event-member-attendance-loading" id="event-members-loader">
+                        <div class="spinner"></div>
+                        <span>Carregant membres...</span>
+                    </div>
+                </div>
             </div>
             <!-- Dialog for person selection -->
             <dialog id="person-dialog" class="admin-only">
@@ -10015,6 +10478,10 @@ const API = new (class GAppsApiClient {
     return this._post({ action: "adminSetMemberAttendance", body: { trainingId, memberAlias, attending }, requiresAuth: true });
   }
 
+  adminSetEventMemberAttendance({ eventId, memberAlias, attending } = {}) {
+    return this._post({ action: "adminSetEventMemberAttendance", body: { eventId, memberAlias, attending }, requiresAuth: true });
+  }
+
   saveTrainingNote({ trainingId, note } = {}) {
     return this._post({ action: "saveTrainingNote", body: { trainingId, note }, requiresAuth: true });
   }
@@ -12671,12 +13138,97 @@ function renderPlanningEventsList(events) {
       const actionHtml = event.confirmed || isAdmin
         ? `<button type="button" class="event-card-btn view-btn" onclick="viewEvent('${escapeHtml(event.id)}')">Detalls</button>`
         : `<span class="event-tbc" style="font-style: italic; color: var(--text-secondary, #666);">TBC</span>`;
+
+      // Generate confirmation status for current user
+      let confirmationStatusHtml = "";
+      if (APP.currentUser) {
+        const now = new Date();
+        const eventDate = new Date(event.date);
+        const isPastEvent = eventDate < now;
+        const relatedMembers = APP.currentUser.relatedMembers || [];
+        const hasRelatedMembers = relatedMembers.length > 0;
+
+        function generateEventConfirmationSection(memberAlias, memberName, isRelatedMember, showName) {
+          const isConfirmed = (event.assistance || []).some(function(attendee) {
+            return attendee === memberAlias;
+          });
+          const isRejected = (event.rejections || []).some(function(rejector) {
+            return rejector === memberAlias;
+          });
+
+          let statusClass = 'event-status-indicator not-confirmed';
+          let statusText = '? No confirmat';
+          let button1Html = '';
+          let button2Html = '';
+
+          if (isPastEvent) {
+            if (isConfirmed) {
+              statusClass = 'event-status-indicator confirmed';
+              statusText = `✓ ${isRelatedMember ? 'Ha assistit' : 'Has assistit'}`;
+            } else {
+              statusClass = 'event-status-indicator not-attending';
+              statusText = `✕ ${isRelatedMember ? 'No ha assistit' : 'No has assistit'}`;
+            }
+          } else {
+            const confirmFn = isRelatedMember ?
+              `confirmEventRelatedMemberAttendance('${escapeHtml(event.id)}', '${escapeHtml(memberAlias)}')` :
+              `confirmEventAttendance('${escapeHtml(event.id)}')`;
+            const rejectFn = isRelatedMember ?
+              `rejectEventRelatedMemberAttendance('${escapeHtml(event.id)}', '${escapeHtml(memberAlias)}')` :
+              `rejectEventAttendance('${escapeHtml(event.id)}')`;
+            const resetFn = isRelatedMember ?
+              `resetEventRelatedMemberAttendance('${escapeHtml(event.id)}', '${escapeHtml(memberAlias)}')` :
+              `resetEventAttendance('${escapeHtml(event.id)}')`;
+
+            const noAttendingText = isRelatedMember ? 'No assistirà' : 'No assistiré';
+            const noAttendingTitle = isRelatedMember ? 'No assistirà' : 'No assistiré';
+
+            if (isConfirmed) {
+              statusClass = 'event-status-indicator confirmed';
+              statusText = '✔ Confirmat';
+              button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
+              button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕ ${noAttendingText}</button>`;
+            } else if (isRejected) {
+              statusClass = 'event-status-indicator not-attending';
+              statusText = `✕ ${noAttendingText}`;
+              button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
+              button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
+            } else {
+              button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
+              button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕ ${noAttendingText}</button>`;
+            }
+          }
+
+          const sectionClass = isRelatedMember ? 'event-confirmation-section related-member' : 'event-confirmation-section';
+          const nameHtml = showName ? `<span class="event-confirmation-member-name">${escapeHtml(memberName)}</span>` : '';
+          const buttonsHtml = isPastEvent ? '' : `<div class="event-confirmation-buttons">${button1Html}${button2Html}</div>`;
+
+          return `
+            <div class="${sectionClass}" data-event-id="${escapeHtml(event.id)}" data-member-alias="${escapeHtml(memberAlias)}">
+              ${nameHtml}
+              <span class="${statusClass}">${statusText}</span>
+              ${buttonsHtml}
+            </div>`;
+        }
+
+        const currentUserName = APP.currentUser.displayName || APP.currentUser.alias || 'Tu';
+        confirmationStatusHtml = generateEventConfirmationSection(APP.currentUser.alias, currentUserName, false, hasRelatedMembers);
+
+        relatedMembers.forEach(function(rm) {
+          if (rm.alias) {
+            const rmName = rm.name || rm.alias;
+            confirmationStatusHtml += generateEventConfirmationSection(rm.alias, rmName, true, true);
+          }
+        });
+      }
+
       return `
       <div class="event-card" data-event-id="${event.id}">
       <div class="event-card-info">
       <span class="event-card-name">${event.name}</span>
       <span class="event-card-date">${formattedDate}</span>
       ${meetingPlaceHtml}
+      ${confirmationStatusHtml}
       </div>
       <div class="event-card-actions">
       ${actionHtml}
@@ -12808,7 +13360,8 @@ function loadEventData(eventId) {
         showToast("No s'ha trobat l'esdeveniment", "error");
         return;
       }
-
+      // Store event data globally
+      APP.currentEventData = eventData;
       // Navigate to events view with event ID in hash
       // Use eventData.id (returned from server) as the canonical ID
       const canonicalEventId = eventData.id || eventId;
@@ -12890,6 +13443,10 @@ function loadEventData(eventId) {
       // Trigger input events to show dance selector
       eventNameInput.dispatchEvent(new Event("input"));
       eventDatetimeInput.dispatchEvent(new Event("input"));
+
+      // Prepare event attendance section for admin
+      prepareEventAttendanceSection();
+      initializeEventAttendanceToggle();
 
       // Load diagrams after a short delay to ensure dances data is loaded
       setTimeout(function () {
@@ -13179,7 +13736,304 @@ function refreshPlanningEvents() {
       showToast("Error actualitzant la llista", "error");
     });
 }
+/**
+ * Prepare the event attendance section (show/hide based on admin role)
+ */
+function prepareEventAttendanceSection() {
+  const isAdmin = APP.currentUser && (APP.currentUser.roles || []).includes("ADMIN");
+  const attendanceSection = document.getElementById("event-member-attendance-section");
+  const attendanceList = document.getElementById("event-member-attendance-list");
+  const attendanceToggle = document.getElementById("event-attendance-toggle");
+  
+  if (!attendanceSection || !attendanceList) {
+    return;
+  }
+  
+  if (isAdmin) {
+    attendanceSection.style.display = "";
+    attendanceList.classList.add("collapsed");
+    if (attendanceToggle) {
+      const toggleArrow = attendanceToggle.querySelector(".toggle-arrow");
+      if (toggleArrow) toggleArrow.textContent = "▶";
+      attendanceToggle.setAttribute("aria-expanded", "false");
+    }
+    attendanceList.innerHTML = "";
+  } else {
+    attendanceSection.style.display = "none";
+  }
+}
 
+/**
+ * Initialize event attendance section toggle
+ */
+function initializeEventAttendanceToggle() {
+  const attendanceToggle = document.getElementById("event-attendance-toggle");
+  
+  if (attendanceToggle && !attendanceToggle.dataset.initialized) {
+    attendanceToggle.addEventListener("click", function () {
+      const attendanceList = document.getElementById("event-member-attendance-list");
+      const toggleArrow = attendanceToggle.querySelector(".toggle-arrow");
+      
+      if (attendanceList) {
+        const isCollapsed = attendanceList.classList.contains("collapsed");
+        
+        if (isCollapsed) {
+          loadEventMembersAttendance(APP.currentEventData);
+        }
+        
+        attendanceList.classList.toggle("collapsed");
+        toggleArrow.textContent = attendanceList.classList.contains("collapsed") ? "▶" : "▼";
+        attendanceToggle.setAttribute("aria-expanded", !attendanceList.classList.contains("collapsed"));
+      }
+    });
+    attendanceToggle.dataset.initialized = "true";
+  }
+}
+
+/**
+ * Load members and display attendance list for event (admin only)
+ * @param {Object} eventData - Event data object with attendance and rejections
+ */
+function loadEventMembersAttendance(eventData) {
+  if (!eventData) {
+    eventData = APP.currentEventData;
+  }
+  
+  const attendanceList = document.getElementById("event-member-attendance-list");
+  if (!attendanceList) return;
+  
+  attendanceList.innerHTML = '<div class="event-member-attendance-loading" id="event-members-loader"><div class="spinner"></div><span>Carregant membres...</span></div>';
+  
+  API.getMembers()
+    .then(function (members) {
+      if (Array.isArray(members)) {
+        MEMBERS.membersData = members;
+        displayEventMemberAttendanceList(eventData);
+      }
+    })
+    .catch(function (error) {
+      console.error("Error loading members for event:", error);
+      attendanceList.innerHTML = '<div class="event-member-attendance-loading">Error al carregar membres</div>';
+    });
+}
+
+/**
+ * Display member attendance list for event (admin only)
+ * @param {Object} eventData - Event data object with attendance and rejections
+ */
+function displayEventMemberAttendanceList(eventData) {
+  const isAdmin = APP.currentUser && (APP.currentUser.roles || []).includes("ADMIN");
+  const attendanceSection = document.getElementById("event-member-attendance-section");
+  const attendanceList = document.getElementById("event-member-attendance-list");
+  
+  if (!attendanceSection || !attendanceList) {
+    return;
+  }
+  
+  if (!isAdmin) {
+    attendanceSection.style.display = "none";
+    return;
+  }
+  
+  attendanceSection.style.display = "";
+  
+  const isPastEvent = eventData.date && new Date(eventData.date) < new Date();
+  const members = (MEMBERS.membersData || []).filter(m => m.active);
+  
+  if (!members || members.length === 0) {
+    attendanceList.innerHTML = '<div class="event-member-attendance-loading">Sense membres disponibles</div>';
+    return;
+  }
+  
+  const attendeesList = eventData.attendees || [];
+  const rejectionsList = eventData.rejections || [];
+  const memberNotes = eventData.notes || {};
+  
+  const membersHTML = members.map(member => {
+    const memberAlias = member.alias;
+    
+    let statusClass = "empty";
+    let isChecked = false;
+    
+    if (rejectionsList.includes(memberAlias)) {
+      statusClass = "rejected";
+      isChecked = false;
+    } else if (attendeesList.includes(memberAlias)) {
+      statusClass = "attending";
+      isChecked = true;
+    }
+    
+    const memberNote = memberNotes[memberAlias] || '';
+    const noteHtml = memberNote ? `<span class="event-member-note" title="${escapeHtml(memberNote)}">ℹ️ «${escapeHtml(memberNote)}»</span>` : '';
+    const disabledAttr = isPastEvent ? 'disabled' : '';
+    const disabledClass = isPastEvent ? ' disabled' : '';
+    
+    return `
+      <div class="event-member-item${memberNote ? ' has-note' : ''}${disabledClass}">
+        <label class="event-member-checkbox-label">
+          <input type="checkbox" class="event-member-checkbox" data-alias="${memberAlias}" ${isChecked ? 'checked' : ''} ${disabledAttr} />
+          <span class="event-member-checkbox-custom ${statusClass}"></span>
+          <span class="event-member-name">${memberAlias}</span>
+        </label>
+        ${noteHtml}
+      </div>
+    `;
+  }).join("");
+  
+  attendanceList.innerHTML = membersHTML;
+  
+  // Update attendance count
+  const countSpan = document.getElementById("event-attendance-count");
+  if (countSpan) {
+    const attendCount = attendeesList.length;
+    const rejectCount = rejectionsList.length;
+    countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
+  }
+  
+  if (!isPastEvent) {
+    attendanceList.querySelectorAll('.event-member-checkbox').forEach(checkbox => {
+      checkbox.addEventListener('change', handleMemberEventAttendanceChange);
+    });
+  }
+  
+  attendanceList.scrollTop = 0;
+}
+
+/**
+ * Handle checkbox change for member event attendance
+ * @param {Event} event - The change event
+ */
+function handleMemberEventAttendanceChange(event) {
+  const checkbox = event.target;
+  const memberAlias = checkbox.dataset.alias;
+  const attending = checkbox.checked;
+  const eventId = APP.currentEventId;
+  
+  if (!eventId || !memberAlias) {
+    console.error('Missing eventId or memberAlias');
+    return;
+  }
+  
+  checkbox.disabled = true;
+  const customCheckbox = checkbox.nextElementSibling;
+  customCheckbox.classList.add('loading');
+  
+  API.adminSetEventMemberAttendance({ eventId, memberAlias, attending })
+    .then(function(response) {
+      customCheckbox.classList.remove('loading', 'empty', 'attending', 'rejected');
+      customCheckbox.classList.add(attending ? 'attending' : 'empty');
+      
+      if (APP.currentEventData) {
+        const attendeesList = APP.currentEventData.attendees || [];
+        if (attending) {
+          if (!attendeesList.includes(memberAlias)) {
+            attendeesList.push(memberAlias);
+          }
+        } else {
+          const index = attendeesList.indexOf(memberAlias);
+          if (index > -1) {
+            attendeesList.splice(index, 1);
+          }
+        }
+        APP.currentEventData.attendees = attendeesList;
+        
+        // Update the attendance count
+        const countSpan = document.getElementById("event-attendance-count");
+        if (countSpan) {
+          const attendCount = attendeesList.length;
+          const rejectCount = (APP.currentEventData.rejections || []).length;
+          countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
+        }
+      }
+    })
+    .catch(function(error) {
+      console.error('Error updating attendance:', error);
+      showToast(error || 'Error actualitzant assistència', 'error');
+      checkbox.checked = !attending;
+    })
+    .finally(function() {
+      checkbox.disabled = false;
+      customCheckbox.classList.remove('loading');
+    });
+}
+
+
+/**
+ * Confirm event attendance for current user
+ */
+function confirmEventAttendance(eventId) {
+  if (!APP.currentUser) {
+    showToast('Si us plau, inicia sessió', 'warning');
+    return;
+  }
+
+  updateEventAttendance(eventId, APP.currentUser.alias, true);
+}
+
+/**
+ * Reject event attendance for current user
+ */
+function rejectEventAttendance(eventId) {
+  if (!APP.currentUser) {
+    showToast('Si us plau, inicia sessió', 'warning');
+    return;
+  }
+
+  updateEventAttendance(eventId, APP.currentUser.alias, false);
+}
+
+/**
+ * Reset event attendance for current user to not-confirmed
+ */
+function resetEventAttendance(eventId) {
+  if (!APP.currentUser) {
+    showToast('Si us plau, inicia sessió', 'warning');
+    return;
+  }
+
+  updateEventAttendance(eventId, APP.currentUser.alias, null);
+}
+
+/**
+ * Confirm event attendance for related member
+ */
+function confirmEventRelatedMemberAttendance(eventId, memberAlias) {
+  updateEventAttendance(eventId, memberAlias, true);
+}
+
+/**
+ * Reject event attendance for related member
+ */
+function rejectEventRelatedMemberAttendance(eventId, memberAlias) {
+  updateEventAttendance(eventId, memberAlias, false);
+}
+
+/**
+ * Reset event attendance for related member to not-confirmed
+ */
+function resetEventRelatedMemberAttendance(eventId, memberAlias) {
+  updateEventAttendance(eventId, memberAlias, null);
+}
+
+/**
+ * Update event attendance status via API
+ */
+function updateEventAttendance(eventId, memberAlias, attending) {
+  APP.showLoading(true);
+
+  API.adminSetEventMemberAttendance({ eventId, memberAlias, attending })
+    .then(function() {
+      APP.showLoading(false);
+      showToast('Confirmació actualitzada', 'success');
+      // Reload events list to reflect updated confirmation status
+      loadEvents();
+    })
+    .catch(function(error) {
+      APP.showLoading(false);
+      console.error('Error updating event attendance:', error);
+      showToast(error || 'Error actualitzant confirmació', 'error');
+    });
+}
         </script>
         
 
@@ -13646,6 +14500,14 @@ function displayMemberAttendanceList(trainingData) {
   
   attendanceList.innerHTML = membersHTML;
   
+  // Update attendance count
+  const countSpan = document.getElementById("training-attendance-count");
+  if (countSpan) {
+    const attendCount = attendanceList_aliases.length;
+    const rejectCount = rejectionList_aliases.length;
+    countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
+  }
+  
   // Add event listeners to checkboxes (only if not past training)
   if (!isPastTraining) {
     attendanceList.querySelectorAll('.training-member-checkbox').forEach(checkbox => {
@@ -13697,6 +14559,14 @@ function handleMemberAttendanceChange(event) {
           }
         }
         APP.currentTrainingData.assistance = assistanceList;
+        
+        // Update the attendance count
+        const countSpan = document.getElementById("training-attendance-count");
+        if (countSpan) {
+          const attendCount = assistanceList.length;
+          const rejectCount = (APP.currentTrainingData.rejections || []).length;
+          countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
+        }
       }
     })
     .catch(function(error) {

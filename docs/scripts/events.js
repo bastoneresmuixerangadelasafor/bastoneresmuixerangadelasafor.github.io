@@ -142,12 +142,97 @@ function renderPlanningEventsList(events) {
       const actionHtml = event.confirmed || isAdmin
         ? `<button type="button" class="event-card-btn view-btn" onclick="viewEvent('${escapeHtml(event.id)}')">Detalls</button>`
         : `<span class="event-tbc" style="font-style: italic; color: var(--text-secondary, #666);">TBC</span>`;
+
+      // Generate confirmation status for current user
+      let confirmationStatusHtml = "";
+      if (APP.currentUser) {
+        const now = new Date();
+        const eventDate = new Date(event.date);
+        const isPastEvent = eventDate < now;
+        const relatedMembers = APP.currentUser.relatedMembers || [];
+        const hasRelatedMembers = relatedMembers.length > 0;
+
+        function generateEventConfirmationSection(memberAlias, memberName, isRelatedMember, showName) {
+          const isConfirmed = (event.assistance || []).some(function(attendee) {
+            return attendee === memberAlias;
+          });
+          const isRejected = (event.rejections || []).some(function(rejector) {
+            return rejector === memberAlias;
+          });
+
+          let statusClass = 'event-status-indicator not-confirmed';
+          let statusText = '? No confirmat';
+          let button1Html = '';
+          let button2Html = '';
+
+          if (isPastEvent) {
+            if (isConfirmed) {
+              statusClass = 'event-status-indicator confirmed';
+              statusText = `✓ ${isRelatedMember ? 'Ha assistit' : 'Has assistit'}`;
+            } else {
+              statusClass = 'event-status-indicator not-attending';
+              statusText = `✕ ${isRelatedMember ? 'No ha assistit' : 'No has assistit'}`;
+            }
+          } else {
+            const confirmFn = isRelatedMember ?
+              `confirmEventRelatedMemberAttendance('${escapeHtml(event.id)}', '${escapeHtml(memberAlias)}')` :
+              `confirmEventAttendance('${escapeHtml(event.id)}')`;
+            const rejectFn = isRelatedMember ?
+              `rejectEventRelatedMemberAttendance('${escapeHtml(event.id)}', '${escapeHtml(memberAlias)}')` :
+              `rejectEventAttendance('${escapeHtml(event.id)}')`;
+            const resetFn = isRelatedMember ?
+              `resetEventRelatedMemberAttendance('${escapeHtml(event.id)}', '${escapeHtml(memberAlias)}')` :
+              `resetEventAttendance('${escapeHtml(event.id)}')`;
+
+            const noAttendingText = isRelatedMember ? 'No assistirà' : 'No assistiré';
+            const noAttendingTitle = isRelatedMember ? 'No assistirà' : 'No assistiré';
+
+            if (isConfirmed) {
+              statusClass = 'event-status-indicator confirmed';
+              statusText = '✔ Confirmat';
+              button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
+              button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕ ${noAttendingText}</button>`;
+            } else if (isRejected) {
+              statusClass = 'event-status-indicator not-attending';
+              statusText = `✕ ${noAttendingText}`;
+              button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
+              button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
+            } else {
+              button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
+              button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕ ${noAttendingText}</button>`;
+            }
+          }
+
+          const sectionClass = isRelatedMember ? 'event-confirmation-section related-member' : 'event-confirmation-section';
+          const nameHtml = showName ? `<span class="event-confirmation-member-name">${escapeHtml(memberName)}</span>` : '';
+          const buttonsHtml = isPastEvent ? '' : `<div class="event-confirmation-buttons">${button1Html}${button2Html}</div>`;
+
+          return `
+            <div class="${sectionClass}" data-event-id="${escapeHtml(event.id)}" data-member-alias="${escapeHtml(memberAlias)}">
+              ${nameHtml}
+              <span class="${statusClass}">${statusText}</span>
+              ${buttonsHtml}
+            </div>`;
+        }
+
+        const currentUserName = APP.currentUser.displayName || APP.currentUser.alias || 'Tu';
+        confirmationStatusHtml = generateEventConfirmationSection(APP.currentUser.alias, currentUserName, false, hasRelatedMembers);
+
+        relatedMembers.forEach(function(rm) {
+          if (rm.alias) {
+            const rmName = rm.name || rm.alias;
+            confirmationStatusHtml += generateEventConfirmationSection(rm.alias, rmName, true, true);
+          }
+        });
+      }
+
       return `
       <div class="event-card" data-event-id="${event.id}">
       <div class="event-card-info">
       <span class="event-card-name">${event.name}</span>
       <span class="event-card-date">${formattedDate}</span>
       ${meetingPlaceHtml}
+      ${confirmationStatusHtml}
       </div>
       <div class="event-card-actions">
       ${actionHtml}
@@ -873,5 +958,83 @@ function handleMemberEventAttendanceChange(event) {
     .finally(function() {
       checkbox.disabled = false;
       customCheckbox.classList.remove('loading');
+    });
+}
+
+
+/**
+ * Confirm event attendance for current user
+ */
+function confirmEventAttendance(eventId) {
+  if (!APP.currentUser) {
+    showToast('Si us plau, inicia sessió', 'warning');
+    return;
+  }
+
+  updateEventAttendance(eventId, APP.currentUser.alias, true);
+}
+
+/**
+ * Reject event attendance for current user
+ */
+function rejectEventAttendance(eventId) {
+  if (!APP.currentUser) {
+    showToast('Si us plau, inicia sessió', 'warning');
+    return;
+  }
+
+  updateEventAttendance(eventId, APP.currentUser.alias, false);
+}
+
+/**
+ * Reset event attendance for current user to not-confirmed
+ */
+function resetEventAttendance(eventId) {
+  if (!APP.currentUser) {
+    showToast('Si us plau, inicia sessió', 'warning');
+    return;
+  }
+
+  updateEventAttendance(eventId, APP.currentUser.alias, null);
+}
+
+/**
+ * Confirm event attendance for related member
+ */
+function confirmEventRelatedMemberAttendance(eventId, memberAlias) {
+  updateEventAttendance(eventId, memberAlias, true);
+}
+
+/**
+ * Reject event attendance for related member
+ */
+function rejectEventRelatedMemberAttendance(eventId, memberAlias) {
+  updateEventAttendance(eventId, memberAlias, false);
+}
+
+/**
+ * Reset event attendance for related member to not-confirmed
+ */
+function resetEventRelatedMemberAttendance(eventId, memberAlias) {
+  updateEventAttendance(eventId, memberAlias, null);
+}
+
+/**
+ * Update event attendance status via API
+ */
+function updateEventAttendance(eventId, memberAlias, attending) {
+  APP.showLoading(true);
+
+  API.adminSetEventMemberAttendance({ eventId, memberAlias, attending })
+    .then(function() {
+      APP.showLoading(false);
+      showToast('Confirmació actualitzada', 'success');
+      // Reload events list to reflect updated confirmation status
+      loadEvents();
+    })
+    .catch(function(error) {
+      APP.showLoading(false);
+      console.error('Error updating event attendance:', error);
+      showToast(error || 'Error actualitzant confirmació', 'error');
     });
 }
