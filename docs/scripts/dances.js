@@ -132,7 +132,13 @@ const DANCES = [
       }
     ],
     "minGroups": 3,
-    "audios": []
+    "audios": [
+      {
+        "fileId": "1miptCmAVlHV14bdmPYGdg37o5YaTQZoV",
+        "title": "Ara i sempre - Per assajar",
+        "artist": "Reina, Josep i Quim"
+      }
+    ]
   },
   {
     "name": "La boja de 8",

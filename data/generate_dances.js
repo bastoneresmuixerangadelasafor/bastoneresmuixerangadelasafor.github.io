@@ -36,7 +36,10 @@ const DANCES = [
     positions: [
       new DancePosition({ order: 1, tag: "1", positionType: new PositionType({ label: "ANTIHORARI" }), specifications: "Antihorari" }),
       new DancePosition({ order: 2, tag: "2", positionType: new PositionType({ label: "HORARI" }), specifications: "Horari" }),
-    ]
+    ],
+    audios: [
+      new DanceMusic({ fileId: "1miptCmAVlHV14bdmPYGdg37o5YaTQZoV", title: "Ara i sempre - Per assajar", artist: "Reina, Josep i Quim" }),
+    ],
   }),
   new Dance({
     name: "La boja de 8",
