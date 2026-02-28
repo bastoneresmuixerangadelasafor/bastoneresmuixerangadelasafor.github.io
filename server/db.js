@@ -313,4 +313,59 @@ const CACHE = new class GAppsServerCache {
 
     return eventAssistance;
   }
+
+  removeExpiredSessionTokens() {
+    try {
+      const sessionsData = this.cache_.getProperty(USER_SESSION);
+      if (!sessionsData) {
+        return;
+      }
+
+      const sessions = JSON.parse(sessionsData);
+      if (!Array.isArray(sessions)) {
+        this.cache_.deleteProperty(USER_SESSION);
+        return;
+      }
+
+      const now = Math.floor(Date.now() / 1000);
+      const validSessions = sessions.filter(token => {
+        if (typeof token !== 'string') {
+          return false;
+        }
+
+        const parts = token.split('.');
+        if (parts.length !== 3) {
+          return false;
+        }
+
+        try {
+          const payload = JSON.parse(
+            Utilities.newBlob(
+              Utilities.base64DecodeWebSafe(parts[1]),
+            ).getDataAsString(),
+          );
+
+          if (!payload || typeof payload.exp !== 'number') {
+            return true;
+          }
+
+          return payload.exp > now;
+        } catch (error) {
+          return false;
+        }
+      });
+
+      if (validSessions.length === sessions.length) {
+        return;
+      }
+
+      if (validSessions.length > 0) {
+        this.cache_.setProperty(USER_SESSION, JSON.stringify(validSessions));
+      } else {
+        this.cache_.deleteProperty(USER_SESSION);
+      }
+    } catch (error) {
+      console.log('Error in removeExpiredSessionTokens: ' + error.toString());
+    }
+  }
 }

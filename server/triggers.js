@@ -5,3 +5,7 @@ function calculateNextEvent() {
 function calculateNextTraining() {
   CACHE.getNextTraining({forceRefresh: true});
 }
+
+function removeExpiredSessionTokens() {
+  CACHE.removeExpiredSessionTokens();
+}

@@ -405,20 +405,24 @@ body {
 
 /* Members Card - Vibrant light mode styling */
 .members-card {
-  background: #f0f4ff;
-  border: 2px solid var(--primary-color);
-  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.15);
+  background: linear-gradient(180deg, var(--card-bg) 0%, var(--bg-color) 100%);
+  border: 1px solid var(--border-color);
+  border-top: 4px solid var(--primary-color);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
 }
 
 .members-card h2 {
   color: var(--primary-color);
-  border-bottom-color: var(--primary-color);
+  border-bottom-color: var(--border-color);
 }
 
 body.dark-mode .members-card {
   background: var(--card-bg);
   border-color: var(--border-color);
-  box-shadow: var(--shadow);
+  border-top-color: var(--primary-color);
+  box-shadow: var(--shadow-lg);
 }
 
 /* Tables */
@@ -2015,8 +2019,8 @@ table tbody tr:last-child td {
   }
 
   #view-home .hero {
-    margin: 0 0 25px 0;
-    border-radius: 0;
+    margin: 0 12px 25px;
+    border-radius: var(--radius);
   }
 
   #view-home .features-grid {
@@ -3327,30 +3331,42 @@ input::placeholder {
 .training-status-indicator.confirmed {
   color: #4caf50;
   background-color: rgba(76, 175, 80, 0.1);
+  border: 2px solid rgba(76, 175, 80, 0.4);
+  box-shadow: 0 2px 6px rgba(76, 175, 80, 0.15);
 }
 
 .dark-mode .training-status-indicator.confirmed {
   background-color: rgba(76, 175, 80, 0.2);
+  border-color: rgba(76, 175, 80, 0.5);
+  box-shadow: 0 2px 6px rgba(76, 175, 80, 0.25);
 }
 
 .training-status-indicator.not-confirmed {
   color: #f9a825;
   background-color: rgba(249, 168, 37, 0.1);
+  border: 2px solid rgba(249, 168, 37, 0.4);
+  box-shadow: 0 2px 6px rgba(249, 168, 37, 0.15);
 }
 
 .dark-mode .training-status-indicator.not-confirmed {
   color: #fdd835;
   background-color: rgba(253, 216, 53, 0.2);
+  border-color: rgba(253, 216, 53, 0.4);
+  box-shadow: 0 2px 6px rgba(253, 216, 53, 0.25);
 }
 
 .training-status-indicator.not-attending {
   color: #f44336;
   background-color: rgba(244, 67, 54, 0.1);
+  border: 2px solid rgba(244, 67, 54, 0.4);
+  box-shadow: 0 2px 6px rgba(244, 67, 54, 0.15);
 }
 
 .dark-mode .training-status-indicator.not-attending {
   color: #ef5350;
   background-color: rgba(244, 67, 54, 0.2);
+  border-color: rgba(244, 67, 54, 0.5);
+  box-shadow: 0 2px 6px rgba(244, 67, 54, 0.25);
 }
 
 .training-confirmation-buttons {
@@ -3435,15 +3451,20 @@ input::placeholder {
 
 /* Training confirmation member name label */
 .training-confirmation-member-name {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #333;
-  min-width: 80px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1976d2;
+  width: fit-content;
+  flex: 0 0 auto;
   text-align: left;
+  padding: 4px 8px;
+  background-color: rgba(25, 118, 210, 0.08);
+  border-radius: 4px;
 }
 
 .dark-mode .training-confirmation-member-name {
-  color: #e0e0e0;
+  color: #64b5f6;
+  background-color: rgba(100, 181, 246, 0.12);
 }
 
 /* Related member confirmation section */
@@ -3508,66 +3529,94 @@ input::placeholder {
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 .event-status-indicator {
   display: inline-block;
   width: fit-content;
-  font-size: 0.85rem;
-  font-weight: 600;
-  padding: 4px 8px;
-  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 6px;
   white-space: nowrap;
 }
 
 .event-status-indicator.confirmed {
   color: #4caf50;
   background-color: rgba(76, 175, 80, 0.1);
+  border: 2px solid rgba(76, 175, 80, 0.4);
+  box-shadow: 0 2px 6px rgba(76, 175, 80, 0.15);
 }
 
 .dark-mode .event-status-indicator.confirmed {
   background-color: rgba(76, 175, 80, 0.2);
+  border-color: rgba(76, 175, 80, 0.5);
+  box-shadow: 0 2px 6px rgba(76, 175, 80, 0.25);
 }
 
 .event-status-indicator.not-confirmed {
   color: #f9a825;
   background-color: rgba(249, 168, 37, 0.1);
+  border: 2px solid rgba(249, 168, 37, 0.4);
+  box-shadow: 0 2px 6px rgba(249, 168, 37, 0.15);
 }
 
 .dark-mode .event-status-indicator.not-confirmed {
   color: #fdd835;
   background-color: rgba(253, 216, 53, 0.2);
+  border-color: rgba(253, 216, 53, 0.4);
+  box-shadow: 0 2px 6px rgba(253, 216, 53, 0.25);
 }
 
 .event-status-indicator.not-attending {
   color: #f44336;
   background-color: rgba(244, 67, 54, 0.1);
+  border: 2px solid rgba(244, 67, 54, 0.4);
+  box-shadow: 0 2px 6px rgba(244, 67, 54, 0.15);
 }
 
 .dark-mode .event-status-indicator.not-attending {
   color: #ef5350;
   background-color: rgba(244, 67, 54, 0.2);
+  border-color: rgba(244, 67, 54, 0.5);
+  box-shadow: 0 2px 6px rgba(244, 67, 54, 0.25);
 }
 
 .event-confirmation-buttons {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  padding-left: 12px;
+  margin-left: 4px;
+  border-left: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.event-confirmation-section .event-note-link {
+  margin-left: 2px;
+}
+
+.dark-mode .event-confirmation-buttons {
+  border-left-color: rgba(255, 255, 255, 0.15);
 }
 
 .event-confirmation-buttons .btn-xs {
-  font-size: 0.75rem;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-weight: 500;
+  font-size: 0.7rem;
+  padding: 3px 6px;
+  border-radius: 3px;
+  font-weight: 400;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  opacity: 0.75;
+}
+
+.event-confirmation-buttons .btn-xs:hover {
+  opacity: 1;
 }
 
 .event-confirmation-buttons .btn-outline-success {
-  color: #4caf50;
-  border: 1px solid #4caf50;
+  color: #66bb6a;
+  border: 1px solid rgba(76, 175, 80, 0.5);
   background-color: transparent;
 }
 
@@ -3576,8 +3625,8 @@ input::placeholder {
 }
 
 .event-confirmation-buttons .btn-outline-danger {
-  color: #f44336;
-  border: 1px solid #f44336;
+  color: #e57373;
+  border: 1px solid rgba(244, 67, 54, 0.5);
   background-color: transparent;
 }
 
@@ -3586,8 +3635,8 @@ input::placeholder {
 }
 
 .event-confirmation-buttons .btn-outline-secondary {
-  color: #757575;
-  border: 1px solid #bdbdbd;
+  color: #9e9e9e;
+  border: 1px solid rgba(189, 189, 189, 0.5);
   background-color: transparent;
 }
 
@@ -3616,21 +3665,27 @@ input::placeholder {
 
 /* Event confirmation member name label */
 .event-confirmation-member-name {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #333;
-  min-width: 80px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1976d2;
+  width: fit-content;
+  flex: 0 0 auto;
+  text-align: left;
+  padding: 4px 8px;
+  background-color: rgba(25, 118, 210, 0.08);
+  border-radius: 4px;
 }
 
 .dark-mode .event-confirmation-member-name {
-  color: #e0e0e0;
+  color: #64b5f6;
+  background-color: rgba(100, 181, 246, 0.12);
 }
 
 /* Related member confirmation section */
 .event-confirmation-section.related-member {
   border-top: 1px solid rgba(0, 0, 0, 0.1);
-  padding-top: 8px;
-  margin-top: 4px;
+  padding-top: 6px;
+  margin-top: 2px;
 }
 
 .dark-mode .event-confirmation-section.related-member {
@@ -3769,10 +3824,6 @@ input::placeholder {
     width: 100%;
   }
 
-  .training-confirmation-member-name {
-    flex: 0 0 100%;
-  }
-
   .training-confirmation-section .training-status-indicator,
   .training-confirmation-section .training-note-link {
     margin-left: 0;
@@ -3780,6 +3831,30 @@ input::placeholder {
   }
 
   .training-confirmation-buttons {
+    border-left: none;
+    padding-left: 0;
+    margin-left: 0;
+    justify-content: center;
+    width: auto;
+    flex: 0 0 100%;
+  }
+
+  .event-confirmation-section {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+  }
+
+  .event-confirmation-section .event-status-indicator,
+  .event-confirmation-section .event-note-link {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .event-confirmation-buttons {
     border-left: none;
     padding-left: 0;
     margin-left: 0;
@@ -6243,6 +6318,82 @@ body.dark-mode .password-dialog-actions {
   }
 }
 
+:root {
+  --radius: 16px;
+  --radius-sm: 12px;
+}
+
+.hero,
+.card,
+.feature-card,
+.stat-card,
+.members-card,
+.login-card,
+.event-card,
+.training-card,
+.collapsible-content,
+.user-menu,
+#access-link-dialog {
+  border-radius: var(--radius);
+}
+
+.btn,
+.btn-refresh,
+.btn-icon,
+.btn-dropdown,
+.event-card-btn,
+.training-card-btn,
+.collapsible-toggle,
+.mobile-back-btn,
+.members-search-input,
+.form-group input,
+.form-group textarea,
+.form-group select {
+  border-radius: var(--radius-sm);
+}
+
+.card,
+.feature-card,
+.stat-card,
+.login-card,
+.event-card,
+.training-card {
+  box-shadow: var(--shadow);
+}
+
+.btn,
+.btn-refresh,
+.btn-icon,
+.btn-dropdown,
+.event-card-btn,
+.training-card-btn,
+.collapsible-toggle,
+.feature-card,
+.event-card,
+.training-card,
+.nav-link,
+.mobile-back-btn {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.btn:hover,
+.btn-refresh:hover,
+.btn-icon:hover,
+.btn-dropdown:hover,
+.event-card-btn:hover,
+.training-card-btn:hover,
+.collapsible-toggle:hover,
+.feature-card:hover,
+.event-card:hover,
+.training-card:hover {
+  transform: translateY(-1px);
+}
+
         </style>
         
     </head>
@@ -6325,6 +6476,7 @@ body.dark-mode .password-dialog-actions {
   position: sticky;
   top: 0;
   z-index: 2;
+  border-radius: 0 0 var(--radius) var(--radius);
 }
 
 .navbar-brand a {
@@ -6365,6 +6517,7 @@ body.dark-mode .password-dialog-actions {
   color: var(--text-color);
   text-decoration: none;
   border-radius: var(--radius-sm);
+  border: 1px solid transparent;
   transition: all 0.2s ease;
   font-weight: 500;
 }
@@ -6372,6 +6525,7 @@ body.dark-mode .password-dialog-actions {
 .nav-link:hover {
   background: rgba(102, 126, 234, 0.1);
   color: var(--primary-color);
+  border-color: var(--border-color);
 }
 
 .nav-link.active {
@@ -6430,6 +6584,7 @@ body.dark-mode .password-dialog-actions {
     box-shadow: var(--shadow);
     z-index: 9998;
     overflow-y: auto;
+    border-radius: 0 0 var(--radius) var(--radius);
   }
 
   .navbar-menu.active {
@@ -6479,7 +6634,7 @@ body.dark-mode .password-dialog-actions {
     gap: 12px;
     padding: 15px 20px;
     background: rgba(102, 126, 234, 0.05);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius);
     margin-bottom: 10px;
   }
 
