@@ -390,9 +390,9 @@ function getEventById_({eventId}) {
         datetime: eventDate,
         meetingPlace: eventMeetingPlace,
         diagrams: diagrams,
-        attendees: eventAssistance.attendees || [],
-        rejections: eventAssistance.rejections || [],
-        notes: eventAssistance.notes || {}
+        attendees: eventAssistance.attendees,
+        rejections: eventAssistance.rejections,
+        notes: eventAssistance.notes
       },
     });
   } catch (error) {
@@ -577,36 +577,6 @@ function getTrainingAttendanceContext_({trainingId, user}) {
 }
 
 /**
- * Reset training attendance to not-confirmed state
- * @param {string} trainingId - The training ID
- * @param {Object} user - The user object with alias
- * @returns {Object} Result object with status
- */
-function resetTrainingAttendance_({trainingId, user}) {
-  try {
-    const context = getTrainingAttendanceContext_({trainingId, user});
-    if (context.error) return context.error;
-
-    context.sheet.getRange(context.userRow, context.dateColumn).setValue('');
-
-    // Invalidate cache
-    CACHE.retrieveTrainingsFromDB();
-
-    return API.newResult_({
-      result: {
-        trainingId: context.trainingId,
-        status: 'not-confirmed',
-        value: '',
-        message: 'Estat restablert a no confirmat',
-      },
-    });
-  } catch (error) {
-    console.error('Error resetting training attendance:', error.toString());
-    return API.newError_({ error: 'Error actualitzant l\'assistència: ' + error.toString() });
-  }
-}
-
-/**
  * Confirm training attendance
  * @param {string} trainingId - The training ID
  * @param {Object} user - The user object with alias
@@ -764,47 +734,6 @@ function cancelRelatedMemberAttendance_({trainingId, memberId, memberAlias, user
 }
 
 /**
- * Reset training attendance for a related member to not-confirmed state
- * @param {string} trainingId - The training ID
- * @param {string} memberId - The ID of the related member
- * @param {string} memberAlias - The alias of the related member
- * @param {Object} user - The user object with alias and relatedMembers
- * @returns {Object} Result object with status
- */
-function resetRelatedMemberAttendance_({trainingId, memberId, memberAlias, user}) {
-  try {
-    // Verify the memberId is in the user's relatedMembers
-    if (!isRelatedMember_(memberId, user)) {
-      return API.newError_({ error: 'No tens permís per gestionar l\'assistència d\'aquest membre.', status: 403 });
-    }
-
-    // Create a user object with the related member's alias
-    const relatedUser = { alias: memberAlias };
-    const context = getTrainingAttendanceContext_({trainingId, user: relatedUser});
-    if (context.error) return context.error;
-
-    context.sheet.getRange(context.userRow, context.dateColumn).setValue('');
-
-    // Invalidate cache
-    CACHE.retrieveTrainingsFromDB();
-
-    return API.newResult_({
-      result: {
-        trainingId: context.trainingId,
-        memberId: memberId,
-        memberAlias: memberAlias,
-        status: 'not-confirmed',
-        value: '',
-        message: 'Estat restablert a no confirmat',
-      },
-    });
-  } catch (error) {
-    console.error('Error resetting related member attendance:', error.toString());
-    return API.newError_({ error: 'Error actualitzant l\'assistència: ' + error.toString() });
-  }
-}
-
-/**
  * Admin function to set member attendance for a training session
  * @param {string} trainingId - The training ID
  * @param {string} memberAlias - The member alias to set attendance for
@@ -891,9 +820,9 @@ function saveRelatedMemberTrainingNote_({trainingId, memberId, memberAlias, note
   }
 }
 
-function adminSetEventMemberAttendance_({eventId, memberAlias, attending}) {
+function confirmEventMemberAttendance_({eventId, memberAlias, attending}) {
   try {
-    const spreadsheet = SpreadsheetApp.openById(TRAINING_SPREADSHEET_ID);
+    const spreadsheet = SpreadsheetApp.openById(EVENTS_SPREADSHEET_ID);
     const sheet = spreadsheet.getSheetByName(ASSISTANCE_SHEET_NAME);
     const data = sheet.getDataRange().getValues();
     const notes = sheet.getDataRange().getNotes();
@@ -909,7 +838,7 @@ function adminSetEventMemberAttendance_({eventId, memberAlias, attending}) {
     }
 
     if (eventColumnIndex === -1) {
-      return API.newError_({ error: 'No s\'ha trobat la columna per a l\'desenvolupament' });
+      return API.newError_({ error: 'No s\'ha trobat la columna per a l\'esdeveniment' });
     }
 
     // Find the row for this member

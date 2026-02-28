@@ -156,7 +156,7 @@ const CACHE = new class GAppsServerCache {
         }
       }
 
-      const eventAssistance = assistance[name] || { attendees: [], rejections: [], notes: {} };
+      const eventAssistance = assistance[name] || { attendees: null, rejections: null, notes: null };
 
       const event = {
         id: name.replace(/[:\\/\?\*\[\]]/g, '-').trim(),
@@ -166,9 +166,9 @@ const CACHE = new class GAppsServerCache {
         placeUrl: row[3] || '',
         confirmed: row[4] === '' || row[4] === undefined ? false : Boolean(row[4]),
         visible: row[5] === '' || row[5] === undefined ? false : Boolean(row[5]),
-        attendees: eventAssistance.attendees || [],
-        rejections: eventAssistance.rejections || [],
-        notes: eventAssistance.notes || {},
+        attendees: eventAssistance.attendees,
+        rejections: eventAssistance.rejections,
+        notes: eventAssistance.notes,
       };
 
       events.push(event);

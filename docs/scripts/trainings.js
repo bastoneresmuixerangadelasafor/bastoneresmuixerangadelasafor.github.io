@@ -334,6 +334,7 @@ function prepareTrainingAttendanceSection() {
   const attendanceSection = document.getElementById("training-member-attendance-section");
   const attendanceList = document.getElementById("training-member-attendance-list");
   const attendanceToggle = document.getElementById("training-attendance-toggle");
+  const countSpan = document.getElementById("training-attendance-count");
   
   if (!attendanceSection || !attendanceList) {
     return;
@@ -350,6 +351,13 @@ function prepareTrainingAttendanceSection() {
     }
     // Clear list
     attendanceList.innerHTML = "";
+
+    const trainingData = APP.currentTrainingData || {};
+    const attendCount = (trainingData.assistance || []).length;
+    const rejectCount = (trainingData.rejections || []).length;
+    if (countSpan) {
+      countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
+    }
   } else {
     attendanceSection.style.display = "none";
   }
@@ -760,13 +768,6 @@ function cancelAttendance(trainingId) {
   handleAttendanceAction(trainingId, 'cancel');
 }
 
-/**
- * Reset training attendance for current user (back to not confirmed)
- * @param {string} trainingId - The training ID (date key)
- */
-function resetAttendance(trainingId) {
-  handleAttendanceAction(trainingId, 'reset');
-}
 
 /**
  * Confirm training attendance for a related member
@@ -789,21 +790,11 @@ function cancelRelatedMemberAttendance(trainingId, memberId, memberAlias) {
 }
 
 /**
- * Reset training attendance for a related member (back to not confirmed)
+ * Handle attendance action for a related member (confirm or cancel)
  * @param {string} trainingId - The training ID (date key)
  * @param {string} memberId - The ID of the related member
  * @param {string} memberAlias - The alias of the related member
- */
-function resetRelatedMemberAttendance(trainingId, memberId, memberAlias) {
-  handleRelatedMemberAttendanceAction(trainingId, memberId, memberAlias, 'reset');
-}
-
-/**
- * Handle attendance action for a related member (confirm, cancel, or reset)
- * @param {string} trainingId - The training ID (date key)
- * @param {string} memberId - The ID of the related member
- * @param {string} memberAlias - The alias of the related member
- * @param {string} action - The action to perform: 'confirm', 'cancel', or 'reset'
+ * @param {string} action - The action to perform: 'confirm' or 'cancel'
  */
 function handleRelatedMemberAttendanceAction(trainingId, memberId, memberAlias, action) {
   if (!trainingId || !memberId || !memberAlias) return;
@@ -828,10 +819,8 @@ function handleRelatedMemberAttendanceAction(trainingId, memberId, memberAlias, 
   let apiCall;
   if (action === 'confirm') {
     apiCall = API.confirmRelatedMemberAttendance({ trainingId: trainingId, memberId: memberId, memberAlias: memberAlias });
-  } else if (action === 'cancel') {
-    apiCall = API.cancelRelatedMemberAttendance({ trainingId: trainingId, memberId: memberId, memberAlias: memberAlias });
   } else {
-    apiCall = API.resetRelatedMemberAttendance({ trainingId: trainingId, memberId: memberId, memberAlias: memberAlias });
+    apiCall = API.cancelRelatedMemberAttendance({ trainingId: trainingId, memberId: memberId, memberAlias: memberAlias });
   }
 
   apiCall
@@ -857,11 +846,9 @@ function handleRelatedMemberAttendanceAction(trainingId, memberId, memberAlias, 
         let button2Html = '';
         
         if (result.status === 'confirmed') {
-          button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="resetRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="Restablir a no confirmat">↩ Restablir</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="No assistirà">✕ No assistirà</button>`;
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="No assistirà">✕ No assistirà</button>`;
         } else if (result.status === 'not-attending') {
           button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="confirmRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="Confirmar assistència">✔ Confirmar</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="resetRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="Restablir a no confirmat">↩ Restablir</button>`;
         } else {
           button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="confirmRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="Confirmar assistència">✔ Confirmar</button>`;
           button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="No assistirà">✕ No assistirà</button>`;
@@ -880,7 +867,11 @@ function handleRelatedMemberAttendanceAction(trainingId, memberId, memberAlias, 
           const noteLinkHtml = `<a href="javascript:void(0)" class="training-note-link" onclick="openTrainingNoteDialog('${escapeHtml(trainingId)}', '${escapeHtml(memberId)}', '${escapeHtml(memberAlias)}', '${escapedMemberName}')">+ Afegir nota</a>`;
           const newLink = document.createElement('span');
           newLink.innerHTML = noteLinkHtml;
-          section.appendChild(newLink.firstChild);
+          if (statusIndicator) {
+            statusIndicator.insertAdjacentElement('afterend', newLink.firstChild);
+          } else {
+            section.appendChild(newLink.firstChild);
+          }
         }
       } else {
         if (existingNoteLink) {
@@ -940,9 +931,9 @@ function handleRelatedMemberAttendanceAction(trainingId, memberId, memberAlias, 
 }
 
 /**
- * Handle attendance action (confirm, cancel, or reset)
+ * Handle attendance action (confirm or cancel)
  * @param {string} trainingId - The training ID (date key)
- * @param {string} action - The action to perform: 'confirm', 'cancel', or 'reset'
+ * @param {string} action - The action to perform: 'confirm' or 'cancel'
  */
 function handleAttendanceAction(trainingId, action) {
   if (!trainingId) return;
@@ -967,10 +958,8 @@ function handleAttendanceAction(trainingId, action) {
   let apiCall;
   if (action === 'confirm') {
     apiCall = API.confirmTrainingAttendance({ trainingId: trainingId });
-  } else if (action === 'cancel') {
-    apiCall = API.cancelTrainingAttendance({ trainingId: trainingId });
   } else {
-    apiCall = API.resetTrainingAttendance({ trainingId: trainingId });
+    apiCall = API.cancelTrainingAttendance({ trainingId: trainingId });
   }
 
   apiCall
@@ -993,11 +982,9 @@ function handleAttendanceAction(trainingId, action) {
         let button2Html = '';
         
         if (result.status === 'confirmed') {
-          button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="resetAttendance('${escapeHtml(trainingId)}')" title="Restablir a no confirmat">↩ Restablir</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelAttendance('${escapeHtml(trainingId)}')" title="No assistiré">✕ No assistiré</button>`;
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelAttendance('${escapeHtml(trainingId)}')" title="No assistiré">✕ No assistiré</button>`;
         } else if (result.status === 'not-attending') {
           button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="confirmAttendance('${escapeHtml(trainingId)}')" title="Confirmar assistència">✔ Confirmar</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="resetAttendance('${escapeHtml(trainingId)}')" title="Restablir a no confirmat">↩ Restablir</button>`;
         } else {
           button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="confirmAttendance('${escapeHtml(trainingId)}')" title="Confirmar assistència">✔ Confirmar</button>`;
           button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelAttendance('${escapeHtml(trainingId)}')" title="No assistiré">✕ No assistiré</button>`;
@@ -1013,7 +1000,11 @@ function handleAttendanceAction(trainingId, action) {
           const noteLinkHtml = `<a href="javascript:void(0)" class="training-note-link" onclick="openTrainingNoteDialog('${escapeHtml(trainingId)}', '', '', '')">+ Afegir nota</a>`;
           const newLink = document.createElement('span');
           newLink.innerHTML = noteLinkHtml;
-          section.appendChild(newLink.firstChild);
+          if (statusIndicator) {
+            statusIndicator.insertAdjacentElement('afterend', newLink.firstChild);
+          } else {
+            section.appendChild(newLink.firstChild);
+          }
         }
       } else {
         if (existingNoteLink) {
@@ -1192,9 +1183,6 @@ function renderPlanningTrainingsList(trainings) {
         const cancelFn = isRelatedMember ? 
           `cancelRelatedMemberAttendance('${escapeHtml(training.id)}', '${escapeHtml(memberId)}', '${escapeHtml(memberAlias)}')` : 
           `cancelAttendance('${escapeHtml(training.id)}')`;
-        const resetFn = isRelatedMember ? 
-          `resetRelatedMemberAttendance('${escapeHtml(training.id)}', '${escapeHtml(memberId)}', '${escapeHtml(memberAlias)}')` : 
-          `resetAttendance('${escapeHtml(training.id)}')`;
         const openNoteFn = isRelatedMember ?
           `openTrainingNoteDialog('${escapeHtml(training.id)}', '${escapeHtml(memberId)}', '${escapeHtml(memberAlias)}', '${escapeHtml(memberName)}')` :
           `openTrainingNoteDialog('${escapeHtml(training.id)}', '', '', '')`;
@@ -1205,22 +1193,20 @@ function renderPlanningTrainingsList(trainings) {
         if (isConfirmed) {
           statusClass = 'training-status-indicator confirmed';
           statusText = '✔ Confirmat';
-          button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${cancelFn}" title="${notAttendingTitle}">✕ ${notAttendingText}</button>`;
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="event.stopPropagation(); ${cancelFn}" title="${notAttendingTitle}">✕ ${notAttendingText}</button>`;
           noteLinkHtml = memberNote ? 
-            `<a href="javascript:void(0)" class="training-note-link has-note" onclick="${openNoteFn}" title="Editar nota">ℹ️ «${escapeHtml(memberNote)}»</a>` :
-            `<a href="javascript:void(0)" class="training-note-link" onclick="${openNoteFn}">+ Afegir nota</a>`;
+            `<a href="javascript:void(0)" class="training-note-link has-note" onclick="event.stopPropagation(); ${openNoteFn}" title="Editar nota">ℹ️ «${escapeHtml(memberNote)}»</a>` :
+            `<a href="javascript:void(0)" class="training-note-link" onclick="event.stopPropagation(); ${openNoteFn}">+ Afegir nota</a>`;
         } else if (isRejected) {
           statusClass = 'training-status-indicator not-attending';
           statusText = `✕ ${notAttendingText}`;
-          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="event.stopPropagation(); ${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
           noteLinkHtml = memberNote ? 
-            `<a href="javascript:void(0)" class="training-note-link has-note" onclick="${openNoteFn}" title="Editar nota">ℹ️ «${escapeHtml(memberNote)}»</a>` :
-            `<a href="javascript:void(0)" class="training-note-link" onclick="${openNoteFn}">+ Afegir nota</a>`;
+            `<a href="javascript:void(0)" class="training-note-link has-note" onclick="event.stopPropagation(); ${openNoteFn}" title="Editar nota">ℹ️ «${escapeHtml(memberNote)}»</a>` :
+            `<a href="javascript:void(0)" class="training-note-link" onclick="event.stopPropagation(); ${openNoteFn}">+ Afegir nota</a>`;
         } else {
-          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${cancelFn}" title="${notAttendingTitle}">✕ ${notAttendingText}</button>`;
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="event.stopPropagation(); ${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="event.stopPropagation(); ${cancelFn}" title="${notAttendingTitle}">✕ ${notAttendingText}</button>`;
         }
         
         const sectionClass = isRelatedMember ? 'training-confirmation-section related-member' : 'training-confirmation-section';
@@ -1234,11 +1220,11 @@ function renderPlanningTrainingsList(trainings) {
           <div class="${sectionClass}" ${dataAttr}>
             ${nameHtml}
             <span class="${statusClass}">${statusText}</span>
+            ${noteLinkHtml}
             <div class="training-confirmation-buttons">
               ${button1Html}
               ${button2Html}
             </div>
-            ${noteLinkHtml}
           </div>`;
       }
       
@@ -1257,11 +1243,11 @@ function renderPlanningTrainingsList(trainings) {
     
     const actionHtml = `
       <div class="training-card-action-group">
-        <button type="button" class="training-card-btn view-btn" onclick="navigateToTraining('${escapeHtml(training.id)}')">Detalls</button>
+        <button type="button" class="training-card-btn view-btn" onclick="event.stopPropagation(); navigateToTraining('${escapeHtml(training.id)}')">Detalls</button>
       </div>
     `;
     return `
-<div class="training-card" data-training-id="${training.id}">
+<div class="training-card" data-training-id="${training.id}" onclick="navigateToTraining('${escapeHtml(training.id)}')">
 <div class="training-card-info">
     <span class="training-card-name">${escapeHtml(training.name)}</span>
     <span class="training-card-date">${formattedDate}</span>
@@ -1447,6 +1433,11 @@ function loadPlanningTrainingData() {
                 <p>No s'han pogut carregar els assajos</p>
                 </div>
             `;
+      
+      const refreshBtn = document.getElementById("refresh-training-btn");
+      if (refreshBtn) {
+        refreshBtn.style.display = "block";
+      }
     });
 }
 

@@ -78,6 +78,11 @@ function loadPlanningEventData() {
                 <p>No s'han pogut carregar les actuacions</p>
                 </div>
             `;
+      
+      const refreshBtn = document.getElementById("refresh-event-btn");
+      if (refreshBtn) {
+        refreshBtn.style.display = "block";
+      }
     });
 }
 
@@ -145,15 +150,17 @@ function renderPlanningEventsList(events) {
 
       // Generate confirmation status for current user
       let confirmationStatusHtml = "";
-      if (APP.currentUser) {
-        const now = new Date();
-        const eventDate = new Date(event.date);
-        const isPastEvent = eventDate < now;
+      const now = new Date();
+      const eventDate = new Date(event.date);
+      const isPastEvent = eventDate < now;
+      const shouldShowConfirmation = !isPastEvent || event.attendees !== null;
+
+      if (APP.currentUser && shouldShowConfirmation) {
         const relatedMembers = APP.currentUser.relatedMembers || [];
         const hasRelatedMembers = relatedMembers.length > 0;
 
         function generateEventConfirmationSection(memberAlias, memberName, isRelatedMember, showName) {
-          const isConfirmed = (event.assistance || []).some(function(attendee) {
+          const isConfirmed = (event.attendees || []).some(function(attendee) {
             return attendee === memberAlias;
           });
           const isRejected = (event.rejections || []).some(function(rejector) {
@@ -922,7 +929,7 @@ function handleMemberEventAttendanceChange(event) {
   const customCheckbox = checkbox.nextElementSibling;
   customCheckbox.classList.add('loading');
   
-  API.adminSetEventMemberAttendance({ eventId, memberAlias, attending })
+  API.confirmEventMemberAttendance({ eventId, memberAlias, attending })
     .then(function(response) {
       customCheckbox.classList.remove('loading', 'empty', 'attending', 'rejected');
       customCheckbox.classList.add(attending ? 'attending' : 'empty');
@@ -1023,18 +1030,111 @@ function resetEventRelatedMemberAttendance(eventId, memberAlias) {
  * Update event attendance status via API
  */
 function updateEventAttendance(eventId, memberAlias, attending) {
-  APP.showLoading(true);
+  const section = document.querySelector(`.event-confirmation-section[data-event-id="${eventId}"][data-member-alias="${memberAlias}"]`);
+  if (!section) {
+    console.error('Event confirmation section not found');
+    return;
+  }
 
-  API.adminSetEventMemberAttendance({ eventId, memberAlias, attending })
-    .then(function() {
-      APP.showLoading(false);
+  const statusIndicator = section.querySelector('.event-status-indicator');
+  const buttonsContainer = section.querySelector('.event-confirmation-buttons');
+  
+  const originalStatusHtml = statusIndicator ? statusIndicator.outerHTML : '';
+  const originalButtonsHtml = buttonsContainer ? buttonsContainer.innerHTML : '';
+
+  if (buttonsContainer) {
+    buttonsContainer.innerHTML = '<span class="event-confirmation-spinner"></span>';
+  }
+
+  API.confirmEventMemberAttendance({ eventId, memberAlias, attending })
+    .then(function(result) {
+      // Update the status indicator
+      if (statusIndicator) {
+        statusIndicator.className = 'event-status-indicator';
+        if (attending === true) {
+          statusIndicator.classList.add('confirmed');
+          statusIndicator.textContent = '✔ Confirmat';
+        } else if (attending === false) {
+          statusIndicator.classList.add('not-attending');
+          const isRelatedMember = section.classList.contains('related-member');
+          statusIndicator.textContent = isRelatedMember ? '✕ No assistirà' : '✕ No assistiré';
+        } else {
+          statusIndicator.classList.add('not-confirmed');
+          statusIndicator.textContent = '? No confirmat';
+        }
+      }
+      
+      // Update the buttons based on new status
+      if (buttonsContainer) {
+        const isRelatedMember = section.classList.contains('related-member');
+        const confirmFn = isRelatedMember ?
+          `confirmEventRelatedMemberAttendance('${escapeHtml(eventId)}', '${escapeHtml(memberAlias)}')` :
+          `confirmEventAttendance('${escapeHtml(eventId)}')`;
+        const rejectFn = isRelatedMember ?
+          `rejectEventRelatedMemberAttendance('${escapeHtml(eventId)}', '${escapeHtml(memberAlias)}')` :
+          `rejectEventAttendance('${escapeHtml(eventId)}')`;
+        const resetFn = isRelatedMember ?
+          `resetEventRelatedMemberAttendance('${escapeHtml(eventId)}', '${escapeHtml(memberAlias)}')` :
+          `resetEventAttendance('${escapeHtml(eventId)}')`;
+        
+        const noAttendingText = isRelatedMember ? 'No assistirà' : 'No assistiré';
+        const noAttendingTitle = isRelatedMember ? 'No assistirà' : 'No assistiré';
+        
+        let button1Html = '';
+        let button2Html = '';
+        
+        if (attending === true) {
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕ ${noAttendingText}</button>`;
+        } else if (attending === false) {
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
+        } else {
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕ ${noAttendingText}</button>`;
+        }
+        
+        buttonsContainer.innerHTML = button1Html + button2Html;
+      }
+      
       showToast('Confirmació actualitzada', 'success');
-      // Reload events list to reflect updated confirmation status
-      loadEvents();
+      
+      // Update local event data in cache
+      const events = CACHE.getEvents() || [];
+      const eventIndex = events.findIndex(e => e.id === eventId);
+      if (eventIndex !== -1) {
+        const event = events[eventIndex];
+        if (!event.attendees) event.attendees = [];
+        if (!event.rejections) event.rejections = [];
+        
+        // Remove member from both lists
+        event.attendees = event.attendees.filter(a => a !== memberAlias);
+        event.rejections = event.rejections.filter(r => r !== memberAlias);
+        
+        // Add member to the appropriate list based on new status
+        if (attending === true) {
+          event.attendees.push(memberAlias);
+        } else if (attending === false) {
+          event.rejections.push(memberAlias);
+        }
+        
+        CACHE.saveEvents({ events });
+        
+        // Update APP.currentEventData if it's the same event
+        if (APP.currentEventData && APP.currentEventData.id === eventId) {
+          APP.currentEventData.attendees = event.attendees;
+          APP.currentEventData.rejections = event.rejections;
+        }
+      }
     })
     .catch(function(error) {
-      APP.showLoading(false);
       console.error('Error updating event attendance:', error);
       showToast(error || 'Error actualitzant confirmació', 'error');
+      if (statusIndicator && originalStatusHtml) {
+        statusIndicator.outerHTML = originalStatusHtml;
+      }
+      if (buttonsContainer && originalButtonsHtml) {
+        buttonsContainer.innerHTML = originalButtonsHtml;
+      }
     });
 }

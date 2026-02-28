@@ -81,4 +81,12 @@ const CACHE = new (class CacheManager {
   saveTrainings({ trainings } = {}) {
     this._write({ key: "trainings", data: trainings });
   }
+
+  getEvents() {
+    return this._read({ key: "events" });
+  }
+
+  saveEvents({ events } = {}) {
+    this._write({ key: "events", data: events });
+  }
 })();

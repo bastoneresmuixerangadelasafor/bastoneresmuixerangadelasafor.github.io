@@ -262,10 +262,6 @@ const API = new (class GAppsApiClient {
     return this._post({ action: "cancelTrainingAttendance", body: { trainingId }, requiresAuth: true });
   }
 
-  resetTrainingAttendance({ trainingId } = {}) {
-    return this._post({ action: "resetTrainingAttendance", body: { trainingId }, requiresAuth: true });
-  }
-
   confirmRelatedMemberAttendance({ trainingId, memberId, memberAlias } = {}) {
     return this._post({ action: "confirmRelatedMemberAttendance", body: { trainingId, memberId, memberAlias }, requiresAuth: true });
   }
@@ -274,16 +270,12 @@ const API = new (class GAppsApiClient {
     return this._post({ action: "cancelRelatedMemberAttendance", body: { trainingId, memberId, memberAlias }, requiresAuth: true });
   }
 
-  resetRelatedMemberAttendance({ trainingId, memberId, memberAlias } = {}) {
-    return this._post({ action: "resetRelatedMemberAttendance", body: { trainingId, memberId, memberAlias }, requiresAuth: true });
-  }
-
   adminSetMemberAttendance({ trainingId, memberAlias, attending } = {}) {
     return this._post({ action: "adminSetMemberAttendance", body: { trainingId, memberAlias, attending }, requiresAuth: true });
   }
 
-  adminSetEventMemberAttendance({ eventId, memberAlias, attending } = {}) {
-    return this._post({ action: "adminSetEventMemberAttendance", body: { eventId, memberAlias, attending }, requiresAuth: true });
+  confirmEventMemberAttendance({ eventId, memberAlias, attending } = {}) {
+    return this._post({ action: "confirmEventMemberAttendance", body: { eventId, memberAlias, attending }, requiresAuth: true });
   }
 
   saveTrainingNote({ trainingId, note } = {}) {

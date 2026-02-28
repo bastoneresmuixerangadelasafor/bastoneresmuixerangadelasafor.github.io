@@ -83,6 +83,18 @@ const NAVIGATION = new (class AppNavigator {
       });
     }
 
+    const mobileBackBtn = document.getElementById("mobile-back-btn");
+    if (mobileBackBtn) {
+      mobileBackBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (window.history.length > 1) {
+          window.history.back();
+          return;
+        }
+        this.navigateTo(APP.isAuthenticated ? "home" : "home-guest");
+      });
+    }
+
     const userMenuTrigger = document.querySelector(
       ".user-menu-trigger .member-name",
     );
@@ -313,6 +325,15 @@ const NAVIGATION = new (class AppNavigator {
 
     // Close mobile menu
     document.querySelector(".navbar-menu")?.classList.remove("active");
+
+    // Update mobile back button visibility
+    const mobileBackBtn = document.getElementById("mobile-back-btn");
+    if (mobileBackBtn) {
+      const topLevelRoutes = ["home", "home-guest"];
+      const currentBaseRoute = route.split("/")[0];
+      const shouldShowBackBtn = !topLevelRoutes.includes(currentBaseRoute);
+      mobileBackBtn.style.display = shouldShowBackBtn ? "" : "none";
+    }
 
     // Scroll to top
     window.scrollTo(0, 0);

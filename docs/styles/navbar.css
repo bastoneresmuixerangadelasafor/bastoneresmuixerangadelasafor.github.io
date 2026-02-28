@@ -19,6 +19,27 @@
   text-decoration: none;
 }
 
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-back-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-color);
+  font-size: 1.1em;
+  line-height: 1;
+  cursor: pointer;
+}
+
 .navbar-menu {
   display: flex;
   gap: 10px;
@@ -77,6 +98,10 @@
 }
 
 @media (max-width: 768px) {
+  .mobile-back-btn {
+    display: inline-flex;
+  }
+
   .navbar-menu {
     position: fixed;
     top: 64px;

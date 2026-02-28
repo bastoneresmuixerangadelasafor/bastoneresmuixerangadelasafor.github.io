@@ -154,11 +154,6 @@ const API = class GAppsApiServer {
         const cancelAttendanceReq = JSON.parse(e.postData?.contents);
         data = cancelAttendanceWorker({ trainingId: cancelAttendanceReq?.trainingId, token: e.parameter?.token });
         break;
-      case "resetTrainingAttendance":
-        const resetAttendanceWorker = this.validateUserToken_({fn: resetTrainingAttendance_, requiresAuth: true, token: e.parameter?.token});
-        const resetAttendanceReq = JSON.parse(e.postData?.contents);
-        data = resetAttendanceWorker({ trainingId: resetAttendanceReq?.trainingId, token: e.parameter?.token });
-        break;
       case "confirmRelatedMemberAttendance":
         const confirmRelatedWorker = this.validateUserToken_({fn: confirmRelatedMemberAttendance_, requiresAuth: true, token: e.parameter?.token});
         const confirmRelatedReq = JSON.parse(e.postData?.contents);
@@ -169,18 +164,13 @@ const API = class GAppsApiServer {
         const cancelRelatedReq = JSON.parse(e.postData?.contents);
         data = cancelRelatedWorker({ trainingId: cancelRelatedReq?.trainingId, memberId: cancelRelatedReq?.memberId, memberAlias: cancelRelatedReq?.memberAlias, token: e.parameter?.token });
         break;
-      case "resetRelatedMemberAttendance":
-        const resetRelatedWorker = this.validateUserToken_({fn: resetRelatedMemberAttendance_, requiresAuth: true, token: e.parameter?.token});
-        const resetRelatedReq = JSON.parse(e.postData?.contents);
-        data = resetRelatedWorker({ trainingId: resetRelatedReq?.trainingId, memberId: resetRelatedReq?.memberId, memberAlias: resetRelatedReq?.memberAlias, token: e.parameter?.token });
-        break;
       case "adminSetMemberAttendance":
         const adminSetAttendanceWorker = this.validateUserToken_({fn: adminSetMemberAttendance_, requiresAuth: true, requiresAdmin: true, token: e.parameter?.token});
         const adminSetAttendanceReq = JSON.parse(e.postData?.contents);
         data = adminSetAttendanceWorker({ trainingId: adminSetAttendanceReq?.trainingId, memberAlias: adminSetAttendanceReq?.memberAlias, attending: adminSetAttendanceReq?.attending });
         break;
-      case "adminSetEventMemberAttendance":
-        const adminSetEventAttendanceWorker = this.validateUserToken_({fn: adminSetEventMemberAttendance_, requiresAuth: true, requiresAdmin: true, token: e.parameter?.token});
+      case "confirmEventMemberAttendance":
+        const adminSetEventAttendanceWorker = this.validateUserToken_({fn: confirmEventMemberAttendance_, requiresAuth: true, requiresAdmin: true, token: e.parameter?.token});
         const adminSetEventAttendanceReq = JSON.parse(e.postData?.contents);
         data = adminSetEventAttendanceWorker({ eventId: adminSetEventAttendanceReq?.eventId, memberAlias: adminSetEventAttendanceReq?.memberAlias, attending: adminSetEventAttendanceReq?.attending });
         break;

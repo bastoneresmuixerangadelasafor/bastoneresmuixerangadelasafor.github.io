@@ -400,6 +400,7 @@ const AUTH = new (class AppAuthentication {
     }
 
     const cleanupAfterLogout = () => { 
+      APP.closeAllDialogs();
       this._clearUserData();
 
       updateAuthUI();
