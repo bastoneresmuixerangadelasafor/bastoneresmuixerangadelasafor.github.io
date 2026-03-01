@@ -3446,7 +3446,6 @@ input::placeholder {
 }
 
 .training-confirmation-buttons .btn-xs {
-  font-family: inherit;
   font-size: 0.7rem;
   padding: 3px 6px;
   border-radius: 3px;
@@ -3661,7 +3660,6 @@ input::placeholder {
 }
 
 .event-confirmation-buttons .btn-xs {
-  font-family: inherit;
   font-size: 0.7rem;
   padding: 3px 6px;
   border-radius: 3px;
