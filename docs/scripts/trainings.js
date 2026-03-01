@@ -1241,11 +1241,6 @@ function renderPlanningTrainingsList(trainings) {
       });
     }
     
-    const actionHtml = `
-      <div class="training-card-action-group">
-        <button type="button" class="training-card-btn view-btn" onclick="event.stopPropagation(); navigateToTraining('${escapeHtml(training.id)}')">Detalls</button>
-      </div>
-    `;
     return `
 <div class="training-card" data-training-id="${training.id}" onclick="navigateToTraining('${escapeHtml(training.id)}')">
 <div class="training-card-info">
@@ -1255,9 +1250,6 @@ function renderPlanningTrainingsList(trainings) {
     ${meetingPlaceHtml}
     ${attendanceIndicatorHtml}
     ${confirmationStatusHtml}
-</div>
-<div class="training-card-actions">
-    ${actionHtml}
 </div>
 </div>
 `;
@@ -1320,7 +1312,7 @@ function renderPlanningTrainingsList(trainings) {
       const content = pastTrainingsContainer;
       pastTrainingsToggle.classList.toggle("active");
       if (content.style.display === "none") {
-        content.style.display = "flex";
+        content.style.display = "";
       } else {
         content.style.display = "none";
       }

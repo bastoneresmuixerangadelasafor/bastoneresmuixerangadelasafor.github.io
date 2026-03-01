@@ -20,21 +20,32 @@ const APP = new (class AppState{
   }
 
   _configureTheme() {
-    // Check if browser prefers dark mode
+    const savedTheme = localStorage.getItem("theme");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
 
-    // Apply dark mode if preferred
-    if (prefersDark.matches) {
+    if (savedTheme === "dark") {
+      document.body.classList.add("dark-mode");
+    } else if (savedTheme === "light") {
+      document.body.classList.remove("dark-mode");
+    } else if (prefersDark.matches) {
       document.body.classList.add("dark-mode");
     }
 
-    // Listen for changes to the system preference
-    prefersDark.addEventListener("change", function (e) {
+    prefersDark.addEventListener("change", (e) => {
+      if (localStorage.getItem("theme")) return;
       if (e.matches) {
         document.body.classList.add("dark-mode");
       } else {
         document.body.classList.remove("dark-mode");
       }
+    });
+
+    const toggleBtns = document.querySelectorAll("#theme-toggle, #desktop-theme-toggle");
+    toggleBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const isDark = document.body.classList.toggle("dark-mode");
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+      });
     });
   }
 

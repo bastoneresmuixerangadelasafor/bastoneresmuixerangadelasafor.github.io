@@ -3,7 +3,7 @@
   border: none;
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-  min-width: 380px;
+  min-width: min(380px, 90vw);
   max-width: 90vw;
   background: #fff;
   color: #1f2937;
@@ -56,17 +56,17 @@ body.dark-mode #access-link-dialog {
   --primary-color: #7c3aed; /* A vibrant purple */
   --primary-dark: #6d28d9;
   --secondary-color: #9f7aea; /* A lighter, complementary purple */
-  --success-color: #34d399; /* A modern, bright green */
-  --warning-color: #fbbf24; /* A warm, modern yellow */
-  --danger-color: #f87171; /* A softer, modern red */
-  --info-color: #60a5fa; /* A clear, modern blue */
+  --success-color: #15803d; /* AAA-compliant green */
+  --warning-color: #a16207; /* AAA-compliant yellow/amber */
+  --danger-color: #dc2626; /* AAA-compliant red */
+  --info-color: #1d4ed8; /* AAA-compliant blue */
 
-  --text-color: #1f2937; /* Darker grey for better contrast */
-  --text-muted: #6b7280; /* Softer grey for muted text */
+  --text-color: #111827; /* Darker grey for AAA contrast */
+  --text-muted: #4b5563; /* AAA-compliant muted text (7:1 on white) */
 
   --bg-color: #ffffff; /* White background */
   --card-bg: #f9fafb; /* Very light grey for cards */
-  --border-color: #e5e7eb; /* A light border color */
+  --border-color: #9ca3af; /* AAA non-text contrast (3:1 on white) */
 
   --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07), 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-lg:
@@ -82,11 +82,43 @@ body.dark-mode #access-link-dialog {
 
 /* Dark mode variables */
 body.dark-mode {
-  --text-color: #e2e8f0;
-  --text-muted: #a0aec0;
-  --bg-color: #1a202c;
-  --card-bg: #2d3748;
-  --border-color: #4a5568;
+  --text-color: #f1f5f9;
+  --text-muted: #94a3b8;
+  --bg-color: #0f172a;
+  --card-bg: #1e293b;
+  --border-color: #64748b;
+}
+
+/* Skip navigation link */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--primary-color);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 0 0 8px 8px;
+  z-index: 10000;
+  font-weight: 600;
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* Base styles */
@@ -262,7 +294,8 @@ body {
 
 .hero .subtitle {
   font-size: 1.3em;
-  opacity: 0.9;
+  opacity: 1;
+  color: rgba(255, 255, 255, 0.95);
   margin-bottom: 30px;
 }
 
@@ -438,6 +471,7 @@ body.dark-mode .members-card {
 .members-filter-select:focus {
   outline: none;
   border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.3);
 }
 
 .members-table-wrapper {
@@ -533,12 +567,12 @@ table tbody tr:last-child td {
 }
 
 .type-adult {
-  color: var(--success-color);
+  color: #15803d;
   font-weight: 600;
 }
 
 .type-kid {
-  color: var(--warning-color);
+  color: #92400e;
   font-weight: 600;
 }
 
@@ -962,13 +996,13 @@ table tbody tr:last-child td {
 }
 
 .badge-role {
-  background: #e3f2fd;
-  color: #1565c0;
+  background: #dbeafe;
+  color: #1e40af;
 }
 
 .badge-relation {
-  background: #f3e5f5;
-  color: #7b1fa2;
+  background: #f3e8ff;
+  color: #6b21a8;
 }
 
 /* Forms */
@@ -1225,7 +1259,7 @@ table tbody tr:last-child td {
 }
 
 .btn-success:hover {
-  background: #2cc58a;
+  background: #166534;
   filter: brightness(1.1);
 }
 
@@ -1287,6 +1321,7 @@ table tbody tr:last-child td {
   color: white;
   padding: 32px 32px;
   text-align: center;
+  border-radius: var(--radius) var(--radius) 0 0;
 }
 
 .login-header h1 {
@@ -1936,16 +1971,152 @@ table tbody tr:last-child td {
 
   .toggle {
     width: 56px;
-    height: 32px;
+    height: 44px;
   }
 
   .toggle-slider:before {
-    height: 26px;
-    width: 26px;
+    height: 36px;
+    width: 36px;
   }
 
   .toggle input:checked + .toggle-slider:before {
-    transform: translateX(24px);
+    transform: translateX(12px);
+  }
+
+  /* Icon-only buttons */
+  .btn-icon {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px;
+  }
+
+  /* Refresh button */
+  .btn-refresh {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Mobile back button */
+  .mobile-back-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Close buttons on dialogs */
+  .login-close-btn,
+  #register-close-btn,
+  .dance-audio-close-btn,
+  .training-note-close-btn {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px;
+  }
+
+  /* Confirmation buttons (attend/decline/cancel) */
+  .training-confirmation-buttons .btn-xs,
+  .event-confirmation-buttons .btn-xs {
+    font-size: 0.8rem;
+    padding: 10px 12px;
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .training-confirmation-buttons,
+  .event-confirmation-buttons {
+    gap: 8px;
+  }
+
+  /* Note links in confirmation sections */
+  .training-note-link,
+  .event-note-link {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 10px 12px;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Dropdown triggers */
+  .btn-dropdown {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+
+  /* Person selector dropdown items */
+  .person-dropdown li {
+    padding: 12px 14px;
+    min-height: 44px;
+  }
+
+  /* Type filter dropdown items */
+  .type-filter-option {
+    padding: 12px 16px;
+    min-height: 44px;
+  }
+
+  /* Relations dropdown checkbox labels */
+  .relations-dropdown-content .checkbox-label {
+    padding: 10px 12px;
+    min-height: 44px;
+  }
+
+  /* Checkbox list items */
+  .checkbox-list .checkbox-label {
+    padding: 10px 12px;
+    min-height: 44px;
+  }
+
+  /* Edit description icon button */
+  .edit-description-btn {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px;
+  }
+
+  /* Password change icon button */
+  .btn-change-password {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 12px;
+  }
+
+  /* Page actions buttons override explicit height */
+  .page-actions .btn {
+    height: auto;
+    min-height: 44px;
+  }
+
+  /* Email sign-in button */
+  .btn-mail {
+    min-height: 44px;
+    height: auto;
+  }
+
+  /* Training/event member attendance items */
+  .training-member-item,
+  .event-member-item {
+    min-height: 48px;
+    padding: 12px;
+  }
+
+  /* Dance chips (detected + selector) */
+  .training-detected-dance-chip,
+  .dance-chip {
+    min-height: 44px;
+    padding: 0.6em 1.2em;
+  }
+
+  /* Collapsible toggle */
+  .collapsible-toggle {
+    min-height: 48px;
+  }
+
+  /* Nav links (touch override) */
+  .nav-link {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
   }
 }
 
@@ -1979,7 +2150,7 @@ table tbody tr:last-child td {
 
   .card {
     box-shadow: none;
-    border: 1px solid #ccc;
+    border: 1px solid #767676;
   }
 }
 
@@ -2331,7 +2502,7 @@ table tbody tr:last-child td {
 .login-info a,
 .signup-link,
 .register-link {
-  color: #7c3aed;
+  color: #ffffff;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s ease;
@@ -2341,7 +2512,7 @@ table tbody tr:last-child td {
 .login-info a:hover,
 .signup-link:hover,
 .register-link:hover {
-  color: #7c3aed;
+  color: #e0e0e0;
   text-decoration: underline;
 }
 
@@ -2410,7 +2581,7 @@ body.dark-mode dialog .register-link:hover {
 }
 
 input::placeholder {
-  color: #9aa2ad;
+  color: #6b7280;
 }
 
 .btn-primary {
@@ -2586,7 +2757,7 @@ input::placeholder {
   }
 
   .btn-mail {
-    height: 36px;
+    min-height: 44px;
     font-size: 13px;
     padding: 0 12px;
     gap: 10px;
@@ -2895,12 +3066,12 @@ input::placeholder {
 .past-event-empty {
   padding: 20px;
   text-align: center;
-  color: #999;
+  color: #4b5563;
   font-size: 0.9rem;
 }
 
 .dark-mode .past-event-empty {
-  color: #777;
+  color: #94a3b8;
 }
 
 .events-loading {
@@ -2935,6 +3106,7 @@ input::placeholder {
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
   transition: all 0.2s;
+  cursor: pointer;
 }
 
 .event-card:hover {
@@ -2973,59 +3145,24 @@ input::placeholder {
 
 .event-card-date {
   font-size: 0.9rem;
-  color: #666;
+  color: #374151;
 }
 
 .dark-mode .event-card-date {
-  color: #aaa;
+  color: #cbd5e1;
 }
 
 .event-card-place {
   font-size: 0.85rem;
-  color: #888;
+  color: #4b5563;
   text-decoration: none;
 }
 
 .dark-mode .event-card-place {
-  color: #999;
+  color: #94a3b8;
 }
 
-.event-card-actions {
-  display: flex;
-  gap: 8px;
-}
 
-.event-card-btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.event-card-btn.view-btn {
-  background: #1976d2;
-  color: #fff;
-}
-
-.event-card-btn.view-btn:hover {
-  background: #1565c0;
-}
-
-.event-card-btn.view-btn:active {
-  background: #0d47a1;
-  transform: scale(0.97);
-}
-
-.event-card-btn:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.3);
-}
-
-.event-card-btn:focus:not(:focus-visible) {
-  box-shadow: none;
-}
 
 .events-empty {
   text-align: center;
@@ -3061,13 +3198,6 @@ input::placeholder {
     box-sizing: border-box;
   }
 
-  .event-card-actions {
-    width: 100%;
-  }
-
-  .event-card-btn {
-    flex: 1;
-  }
 }
 
 /* Training Card Styles */
@@ -3138,68 +3268,26 @@ input::placeholder {
   color: #999;
 }
 
-.training-card-actions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
 
-.training-card-action-group {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.training-card-btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.training-card-btn.view-btn {
-  background: #1976d2;
-  color: #fff;
-}
-
-.training-card-btn.view-btn:hover {
-  background: #1565c0;
-}
-
-.training-card-btn.view-btn:active {
-  background: #0d47a1;
-  transform: scale(0.97);
-}
-
-.training-card-btn:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.3);
-}
-
-.training-card-btn:focus:not(:focus-visible) {
-  box-shadow: none;
-}
 
 .training-count {
   font-style: italic;
-  color: #666;
+  color: #374151;
   font-size: 0.9rem;
   white-space: nowrap;
 }
 
 .dark-mode .training-count {
-  color: #aaa;
+  color: #cbd5e1;
 }
 
 .training-tbc {
   font-style: italic;
-  color: #666;
+  color: #374151;
 }
 
 .dark-mode .training-tbc {
-  color: #aaa;
+  color: #cbd5e1;
 }
 
 /* Training confirmation status (for upcoming trainings) */
@@ -3358,6 +3446,7 @@ input::placeholder {
 }
 
 .training-confirmation-buttons .btn-xs {
+  font-family: inherit;
   font-size: 0.7rem;
   padding: 3px 6px;
   border-radius: 3px;
@@ -3456,11 +3545,11 @@ input::placeholder {
 
 .training-confirmation-section.past .training-attendance-note {
   font-size: 0.75rem;
-  color: #4caf50;
+  color: #15803d;
 }
 
 .dark-mode .training-confirmation-section.past .training-attendance-note {
-  color: #81c784;
+  color: #86efac;
 }
 
 /* Training attendance indicator (for past trainings) */
@@ -3572,6 +3661,7 @@ input::placeholder {
 }
 
 .event-confirmation-buttons .btn-xs {
+  font-family: inherit;
   font-size: 0.7rem;
   padding: 3px 6px;
   border-radius: 3px;
@@ -3716,7 +3806,7 @@ input::placeholder {
 
 .training-attendance-note {
   font-size: 0.75rem;
-  color: #4caf50;
+  color: #15803d;
   max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -3724,7 +3814,7 @@ input::placeholder {
 }
 
 .dark-mode .training-attendance-note {
-  color: #81c784;
+  color: #86efac;
 }
 
 .training-attendance-member-name {
@@ -3764,21 +3854,6 @@ input::placeholder {
     gap: 12px;
     width: 100%;
     box-sizing: border-box;
-  }
-
-  .training-card-actions {
-    width: 100%;
-  }
-
-  .training-card-action-group {
-    flex-direction: column;
-    width: 100%;
-    gap: 8px;
-  }
-
-  .training-card-btn {
-    flex: 1;
-    width: 100%;
   }
 
   .training-count {
@@ -3907,7 +3982,9 @@ input::placeholder {
 }
 
 .training-field textarea {
-  min-width: 300px;
+  min-width: 0;
+  width: 100%;
+  max-width: 600px;
   resize: vertical;
 }
 
@@ -3926,7 +4003,8 @@ input::placeholder {
   font-size: 1rem;
   color: var(--text-color);
   display: block;
-  width: 600px;
+  max-width: 600px;
+  width: 100%;
   word-break: break-word;
   white-space: pre-wrap;
   overflow-wrap: break-word;
@@ -4054,8 +4132,6 @@ input::placeholder {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-height: 400px;
-  overflow-y: auto;
   transition: all 0.3s ease;
 }
 
@@ -4104,7 +4180,7 @@ input::placeholder {
 
 .training-member-note {
   font-size: 0.75rem;
-  color: #4caf50;
+  color: #15803d;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -4114,7 +4190,7 @@ input::placeholder {
 }
 
 .dark-mode .training-member-note {
-  color: #81c784;
+  color: #86efac;
 }
 
 .training-member-item:hover {
@@ -4201,7 +4277,7 @@ input::placeholder {
   max-height: 24px;
   flex-shrink: 0;
   border-radius: 4px;
-  border: 2px solid #ddd;
+  border: 2px solid #767676;
   background: transparent;
   transition:
     background 0.2s ease,
@@ -4355,8 +4431,6 @@ input::placeholder {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-height: 400px;
-  overflow-y: auto;
   transition: all 0.3s ease;
 }
 
@@ -4405,7 +4479,7 @@ input::placeholder {
 
 .event-member-note {
   font-size: 0.75rem;
-  color: #4caf50;
+  color: #15803d;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -4415,7 +4489,7 @@ input::placeholder {
 }
 
 .dark-mode .event-member-note {
-  color: #81c784;
+  color: #86efac;
 }
 
 .event-member-item:hover {
@@ -4471,7 +4545,7 @@ input::placeholder {
   max-height: 24px;
   flex-shrink: 0;
   border-radius: 4px;
-  border: 2px solid #ddd;
+  border: 2px solid #767676;
   background: transparent;
   transition:
     background 0.2s ease,
@@ -4653,7 +4727,7 @@ input::placeholder {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--text-color);
 }
 
 .dance-audio-body {
@@ -4683,13 +4757,13 @@ input::placeholder {
 
 .dance-audio-item-title {
   font-weight: 600;
-  color: #fff;
+  color: var(--text-color);
   margin: 0 0 8px 0;
   font-size: 1rem;
 }
 
 .dance-audio-item-artist {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-muted);
   font-size: 0.9rem;
   margin: 0 0 12px 0;
 }
@@ -4740,7 +4814,7 @@ input::placeholder {
 
 .dance-audio-empty {
   text-align: center;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-muted);
   padding: 40px 20px;
   font-size: 0.95rem;
 }
@@ -4751,7 +4825,7 @@ input::placeholder {
   color: #1976d2;
   text-decoration: none;
   cursor: pointer;
-  padding: 2px 6px;
+  padding: 8px 10px;
   border-radius: 4px;
   transition: all 0.2s;
   white-space: nowrap;
@@ -4759,6 +4833,8 @@ input::placeholder {
   overflow: hidden;
   text-overflow: ellipsis;
   display: inline-block;
+  min-height: 44px;
+  line-height: 28px;
 }
 
 .training-note-link:hover {
@@ -4841,13 +4917,13 @@ input::placeholder {
   margin: 0;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--text-color);
 }
 
 .training-note-member-name {
   display: block;
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-muted);
   margin-top: 4px;
 }
 
@@ -4859,10 +4935,10 @@ input::placeholder {
   width: 100%;
   min-height: 100px;
   padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.2);
-  color: #fff;
+  background: var(--bg-color);
+  color: var(--text-color);
   font-size: 0.95rem;
   resize: vertical;
   font-family: inherit;
@@ -4878,7 +4954,7 @@ input::placeholder {
 .training-note-char-count {
   text-align: right;
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-muted);
   margin-top: 4px;
 }
 
@@ -5176,7 +5252,7 @@ body.dark-mode .event-meeting-place-display {
 
 .diagram-description-text {
   font-size: 0.95rem;
-  color: #555;
+  color: #374151;
   font-style: italic;
 }
 
@@ -5195,8 +5271,10 @@ body.dark-mode .event-meeting-place-display {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px;
-  color: #666;
+  padding: 10px;
+  min-width: 44px;
+  min-height: 44px;
+  color: #4b5563;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5229,7 +5307,7 @@ body.dark-mode .event-meeting-place-display {
 .diagram-description-input {
   padding: 0.4em 0.6em;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  border: 1px solid #767676;
   font-size: 0.95rem;
   min-width: 250px;
   font-style: italic;
@@ -5248,7 +5326,7 @@ body.dark-mode .event-meeting-place-display {
   gap: 8px 16px;
   font-size: 0.85rem;
   color: #333;
-  border: 1px solid #ccc;
+  border: 1px solid #767676;
   border-radius: 8px;
   padding: 6px 12px;
   background: #fff;
@@ -5335,7 +5413,7 @@ body.dark-mode .event-meeting-place-display {
   width: 100%;
   max-width: 100%;
   height: auto;
-  border: 1px solid #ccc;
+  border: 1px solid #767676;
   background: #fff;
   display: block;
 }
@@ -5382,7 +5460,7 @@ body.dark-mode .event-meeting-place-display {
   border: none;
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-  min-width: 380px;
+  min-width: min(380px, 90vw);
   max-width: 90vw;
   background: #fff;
   color: #1f2937;
@@ -5536,7 +5614,7 @@ body.dark-mode .clear-person-btn:focus {
   max-width: 300px;
   background: #fff;
   color: #1f2937;
-  border: 1px solid #ccc;
+  border: 1px solid #767676;
 }
 
 body.dark-mode .person-combo-wrapper input {
@@ -5555,7 +5633,7 @@ body.dark-mode .person-combo-wrapper input {
   max-height: 250px;
   overflow-y: auto;
   background: #fff;
-  border: 1px solid #ccc;
+  border: 1px solid #767676;
   border-top: none;
   border-radius: 0 0 6px 6px;
   margin: 0;
@@ -5628,7 +5706,7 @@ body.dark-mode .person-dropdown li.selected {
 }
 
 .dance-chips-loading {
-  color: #666;
+  color: #4b5563;
   font-size: 0.95rem;
   padding: 0.5em 0;
 }
@@ -6137,7 +6215,7 @@ body.dark-mode .person-dropdown li.selected {
   border: none;
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-  min-width: 380px;
+  min-width: min(380px, 90vw);
   max-width: 90vw;
   background: #fff;
   color: #1f2937;
@@ -6214,7 +6292,7 @@ body.dark-mode .password-dialog-content label {
 .password-dialog-content input[type="password"] {
   width: 100%;
   padding: 0.7em 1em;
-  border: 1px solid #ddd;
+  border: 1px solid #767676;
   border-radius: 8px;
   font-size: 1rem;
   box-sizing: border-box;
@@ -6312,8 +6390,6 @@ body.dark-mode .password-dialog-actions {
 .btn-refresh,
 .btn-icon,
 .btn-dropdown,
-.event-card-btn,
-.training-card-btn,
 .collapsible-toggle,
 .mobile-back-btn,
 .members-search-input,
@@ -6336,8 +6412,6 @@ body.dark-mode .password-dialog-actions {
 .btn-refresh,
 .btn-icon,
 .btn-dropdown,
-.event-card-btn,
-.training-card-btn,
 .collapsible-toggle,
 .feature-card,
 .event-card,
@@ -6356,11 +6430,18 @@ body.dark-mode .password-dialog-actions {
 .btn-refresh:hover,
 .btn-icon:hover,
 .btn-dropdown:hover,
-.event-card-btn:hover,
-.training-card-btn:hover,
 .collapsible-toggle:hover,
 .feature-card:hover,
 .event-card:hover,
 .training-card:hover {
   transform: translateY(-1px);
+}
+
+@media (min-width: 768px) {
+  .planning-event-list,
+  .planning-training-list,
+  .collapsible-content {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
 }

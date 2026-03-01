@@ -51,6 +51,7 @@
         
         <!-- App Container -->
 <div id="app" class="app-container" style="display: none;">
+    <a href="#main-content" class="skip-link">Salta al contingut</a>
     <!-- Navigation Bar -->
 <nav id="navbar" class="navbar">
     <div class="navbar-brand">
@@ -77,6 +78,12 @@
         <a href="#" data-route="members" class="nav-link auth-required admin-only">Administració</a>
         <a href="#" data-route="planning-event" class="nav-link auth-required">Actuacions</a>
         <a href="#" data-route="planning-training" class="nav-link auth-required">Assajos</a>
+        <div class="theme-toggle-wrapper">
+            <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Canviar tema">
+                <svg class="theme-toggle-icon theme-icon-light" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                <svg class="theme-toggle-icon theme-icon-dark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            </button>
+        </div>
     </div>
     <div class="navbar-auth">
         <div id="user-info" class="user-info" style="display: none;">
@@ -89,8 +96,13 @@
                     <a href="#" class="user-menu-item" data-menu-view="profile">Perfil</a>
                     <a href="#" class="user-menu-item" data-menu-view="dashboard">Tauler</a>
                     <div class="user-menu-divider" style="height:1px;background:#eee;margin:0.3rem 0;"></div>
-                    <a href="#" id="logout-btn" class="user-menu-item" style="font-weight:600;">Tancar
-                        sessió</a>
+                    <div class="user-menu-theme-row">
+                        <a href="#" id="logout-btn" class="user-menu-item" style="font-weight:600;">Tancar sessió</a>
+                        <button type="button" id="desktop-theme-toggle" class="theme-toggle desktop-theme-toggle" aria-label="Canviar tema">
+                            <svg class="theme-toggle-icon theme-icon-light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                            <svg class="theme-toggle-icon theme-icon-dark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -108,7 +120,7 @@
         <div class="hero">
             <h1>Hola <span id="home-user-name"></span>!</h1>
             <div class="features-grid">
-                <div class="feature-card" data-route="planning-event" style="cursor: pointer;">
+                <div class="feature-card" data-route="planning-event" style="cursor: pointer;" role="link" tabindex="0" aria-label="Properes actuacions">
                     <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
                             width="64px" height="64px" aria-hidden="true" style="flex-shrink: 0;">
                             <rect x="44" y="10" width="12" height="80" rx="4" ry="4" fill="#8b5a2b"
@@ -119,7 +131,7 @@
                     <h3>Properes actuacions</h3>
                     <span id="next-event-text">Carregant...</span>
                 </div>
-                <div class="feature-card" data-route="planning-training" style="cursor: pointer;">
+                <div class="feature-card" data-route="planning-training" style="cursor: pointer;" role="link" tabindex="0" aria-label="Assajos programats">
                     <div class="feature-icon">💪</div>
                     <h3>Assajos programats</h3>
                     <span id="next-training-text">Carregant...</span>
@@ -373,7 +385,7 @@
                 <div class="section-header">
                     <h2>Actuacions</h2>
                     <button type="button" class="btn-refresh" id="refresh-event-btn" style="display: none;"
-                        title="Actualitzar llista">
+                        title="Actualitzar llista" aria-label="Actualitzar llista d'actuacions">
                         <svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
@@ -423,7 +435,7 @@
                 <div class="section-header">
                     <h2>Assajos</h2>
                     <button type="button" class="btn-refresh" id="refresh-training-btn" style="display: none;"
-                        title="Actualitzar llista">
+                        title="Actualitzar llista" aria-label="Actualitzar llista d'assajos">
                         <svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
@@ -500,7 +512,7 @@
             <!-- Floating buttons container -->
             <div class="floating-buttons-container">
                 <!-- Floating save button (admin only) -->
-                <button id="floating-save-training-btn" class="floating-save-btn" title="Desar assaig" disabled style="display: none;">
+                <button id="floating-save-training-btn" class="floating-save-btn" title="Desar assaig" aria-label="Desar assaig" disabled style="display: none;">
                     <svg class="save-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
@@ -509,7 +521,7 @@
                     </svg>
                 </button>
                 <!-- Floating lock button (for past trainings) -->
-                <button id="floating-lock-training-btn" class="floating-lock-btn admin-only" title="Long-press per 3 segons per fer editable" style="display: none;">
+                <button id="floating-lock-training-btn" class="floating-lock-btn admin-only" title="Long-press per 3 segons per fer editable" aria-label="Desbloquejar assaig" style="display: none;">
                     <svg class="progress-ring-container" width="48" height="48" viewBox="0 0 48 48" style="position: absolute; top: 0; left: 0;">
                         <circle class="progress-ring" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="138.23" stroke-dashoffset="138.23"></circle>
                     </svg>
@@ -631,11 +643,12 @@
                     <h3 style="margin-top:0; text-align:center;">Selecciona un nom</h3>
                     <div id="person-loading" style="display:none; text-align:center; padding:1em 0;">
                         <div class="dialog-spinner"></div>
-                        <p style="margin:0.5em 0 0 0; color:#666;">Carregant membres...</p>
+                        <p style="margin:0.5em 0 0 0; color:var(--text-muted);">Carregant membres...</p>
                     </div>
                     <div class="person-combo-wrapper">
+                        <label for="person-combo" class="sr-only">Cerca o selecciona persona</label>
                         <input id="person-combo" placeholder="Cerca o selecciona..."
-                            style="width:100%; padding:0.4em; border-radius:6px; border:1px solid #ccc; font-size:1em;"
+                            style="width:100%; padding:0.4em; border-radius:6px; border:1px solid #767676; font-size:1em;"
                             autocomplete="off">
                         <ul id="person-list" class="person-dropdown"></ul>
                     </div>
@@ -646,7 +659,7 @@
             <!-- Floating buttons container -->
             <div class="floating-buttons-container">
                 <!-- Floating save button -->
-                <button id="floating-save-btn" class="floating-save-btn" title="Desar actuació" disabled>
+                <button id="floating-save-btn" class="floating-save-btn" title="Desar actuació" aria-label="Desar actuació" disabled>
                     <svg class="save-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
@@ -655,7 +668,7 @@
                     </svg>
                 </button>
                 <!-- Floating lock button (for past events) -->
-                <button id="floating-lock-btn" class="floating-lock-btn admin-only" title="Long-press per 3 segons per fer editable">
+                <button id="floating-lock-btn" class="floating-lock-btn admin-only" title="Long-press per 3 segons per fer editable" aria-label="Desbloquejar actuació">
                     <svg class="progress-ring-container" width="48" height="48" viewBox="0 0 48 48" style="position: absolute; top: 0; left: 0;">
                         <circle class="progress-ring" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="138.23" stroke-dashoffset="138.23"></circle>
                     </svg>
@@ -666,7 +679,7 @@
                     </svg>
                 </button>
                 <!-- Floating share button -->
-                <button id="floating-share-btn" class="floating-share-btn" title="Compartir com a imatge">
+                <button id="floating-share-btn" class="floating-share-btn" title="Compartir com a imatge" aria-label="Compartir com a imatge">
                     <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="18" cy="5" r="3"></circle>
@@ -2234,7 +2247,7 @@ ${descriptionHtml}
                 <div class="page-title">
                     <h1>Llista de Membres</h1>
                     <button type="button" class="btn-refresh" id="refresh-members-btn"
-                        title="Actualitzar llista">
+                        title="Actualitzar llista" aria-label="Actualitzar llista de membres">
                         <svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />

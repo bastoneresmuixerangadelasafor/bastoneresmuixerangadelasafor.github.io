@@ -35,7 +35,7 @@
   // Apply ripple effect to all buttons
   function initButtonFeedback() {
     const buttons = document.querySelectorAll(
-      'button, .btn, [role="button"], .dance-chip, .event-card-btn, .collapsible-toggle, .refresh-event-btn',
+      'button, .btn, [role="button"], .dance-chip, .collapsible-toggle, .refresh-event-btn',
     );
 
     buttons.forEach(function (button) {

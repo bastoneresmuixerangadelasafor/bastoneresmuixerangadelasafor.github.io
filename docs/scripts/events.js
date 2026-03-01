@@ -144,9 +144,9 @@ function renderPlanningEventsList(events) {
           meetingPlaceHtml = `<span class="event-card-place">📍 ${escapeHtml(event.meetingPlace)}</span>`;
         }
       }
-      const actionHtml = event.confirmed || isAdmin
-        ? `<button type="button" class="event-card-btn view-btn" onclick="viewEvent('${escapeHtml(event.id)}')">Detalls</button>`
-        : `<span class="event-tbc" style="font-style: italic; color: var(--text-secondary, #666);">TBC</span>`;
+      const tbcHtml = !(event.confirmed || isAdmin)
+        ? `<span class="event-tbc" style="font-style: italic; color: var(--text-secondary, #666);">TBC</span>`
+        : '';
 
       // Generate confirmation status for current user
       let confirmationStatusHtml = "";
@@ -234,15 +234,13 @@ function renderPlanningEventsList(events) {
       }
 
       return `
-      <div class="event-card" data-event-id="${event.id}">
+      <div class="event-card" data-event-id="${event.id}" onclick="viewEvent('${escapeHtml(event.id)}')">
       <div class="event-card-info">
       <span class="event-card-name">${event.name}</span>
       <span class="event-card-date">${formattedDate}</span>
       ${meetingPlaceHtml}
+      ${tbcHtml}
       ${confirmationStatusHtml}
-      </div>
-      <div class="event-card-actions">
-      ${actionHtml}
       </div>
       </div>
       `;
@@ -301,7 +299,7 @@ function renderPlanningEventsList(events) {
       const content = pastEventsContainer;
       pastEventsToggle.classList.toggle("active");
       if (content.style.display === "none") {
-        content.style.display = "flex";
+        content.style.display = "";
       } else {
         content.style.display = "none";
       }
