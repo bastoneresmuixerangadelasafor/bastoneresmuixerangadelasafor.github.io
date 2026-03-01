@@ -846,12 +846,12 @@ function handleRelatedMemberAttendanceAction(trainingId, memberId, memberAlias, 
         let button2Html = '';
         
         if (result.status === 'confirmed') {
-          button1Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="No assistirà">✕ No assistirà</button>`;
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="No assistirà">✕︎ No assistirà</button>`;
         } else if (result.status === 'not-attending') {
-          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="confirmRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="Confirmar assistència">✔ Confirmar</button>`;
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="confirmRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="Confirmar assistència">✔︎ Confirmar</button>`;
         } else {
-          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="confirmRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="Confirmar assistència">✔ Confirmar</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="No assistirà">✕ No assistirà</button>`;
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="confirmRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="Confirmar assistència">✔︎ Confirmar</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelRelatedMemberAttendance('${escapedTrainingId}', '${escapedMemberId}', '${escapedMemberAlias}')" title="No assistirà">✕︎ No assistirà</button>`;
         }
         
         buttonsContainer.innerHTML = button1Html + button2Html;
@@ -982,12 +982,12 @@ function handleAttendanceAction(trainingId, action) {
         let button2Html = '';
         
         if (result.status === 'confirmed') {
-          button1Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelAttendance('${escapeHtml(trainingId)}')" title="No assistiré">✕ No assistiré</button>`;
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelAttendance('${escapeHtml(trainingId)}')" title="No assistiré">✕︎ No assistiré</button>`;
         } else if (result.status === 'not-attending') {
-          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="confirmAttendance('${escapeHtml(trainingId)}')" title="Confirmar assistència">✔ Confirmar</button>`;
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="confirmAttendance('${escapeHtml(trainingId)}')" title="Confirmar assistència">✔︎ Confirmar</button>`;
         } else {
-          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="confirmAttendance('${escapeHtml(trainingId)}')" title="Confirmar assistència">✔ Confirmar</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelAttendance('${escapeHtml(trainingId)}')" title="No assistiré">✕ No assistiré</button>`;
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="confirmAttendance('${escapeHtml(trainingId)}')" title="Confirmar assistència">✔︎ Confirmar</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="cancelAttendance('${escapeHtml(trainingId)}')" title="No assistiré">✕︎ No assistiré</button>`;
         }
         
         buttonsContainer.innerHTML = button1Html + button2Html;
@@ -1192,21 +1192,21 @@ function renderPlanningTrainingsList(trainings) {
         
         if (isConfirmed) {
           statusClass = 'training-status-indicator confirmed';
-          statusText = '✔ Confirmat';
-          button1Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="event.stopPropagation(); ${cancelFn}" title="${notAttendingTitle}">✕ ${notAttendingText}</button>`;
+          statusText = '✔\uFE0E Confirmat';
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="event.stopPropagation(); ${cancelFn}" title="${notAttendingTitle}">✕︎ ${notAttendingText}</button>`;
           noteLinkHtml = memberNote ? 
             `<a href="javascript:void(0)" class="training-note-link has-note" onclick="event.stopPropagation(); ${openNoteFn}" title="Editar nota">ℹ️ «${escapeHtml(memberNote)}»</a>` :
             `<a href="javascript:void(0)" class="training-note-link" onclick="event.stopPropagation(); ${openNoteFn}">+ Afegir nota</a>`;
         } else if (isRejected) {
           statusClass = 'training-status-indicator not-attending';
-          statusText = `✕ ${notAttendingText}`;
-          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="event.stopPropagation(); ${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
+          statusText = `✕\uFE0E ${notAttendingText}`;
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="event.stopPropagation(); ${confirmFn}" title="Confirmar assistència">✔︎ Confirmar</button>`;
           noteLinkHtml = memberNote ? 
             `<a href="javascript:void(0)" class="training-note-link has-note" onclick="event.stopPropagation(); ${openNoteFn}" title="Editar nota">ℹ️ «${escapeHtml(memberNote)}»</a>` :
             `<a href="javascript:void(0)" class="training-note-link" onclick="event.stopPropagation(); ${openNoteFn}">+ Afegir nota</a>`;
         } else {
-          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="event.stopPropagation(); ${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="event.stopPropagation(); ${cancelFn}" title="${notAttendingTitle}">✕ ${notAttendingText}</button>`;
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="event.stopPropagation(); ${confirmFn}" title="Confirmar assistència">✔︎ Confirmar</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="event.stopPropagation(); ${cancelFn}" title="${notAttendingTitle}">✕︎ ${notAttendingText}</button>`;
         }
         
         const sectionClass = isRelatedMember ? 'training-confirmation-section related-member' : 'training-confirmation-section';

@@ -196,17 +196,17 @@ function renderPlanningEventsList(events) {
 
             if (isConfirmed) {
               statusClass = 'event-status-indicator confirmed';
-              statusText = '✔ Confirmat';
-              button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
-              button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕ ${noAttendingText}</button>`;
+              statusText = '✔\uFE0E Confirmat';
+              button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩︎ Restablir</button>`;
+              button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕︎ ${noAttendingText}</button>`;
             } else if (isRejected) {
               statusClass = 'event-status-indicator not-attending';
-              statusText = `✕ ${noAttendingText}`;
-              button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
-              button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
+              statusText = `✕\uFE0E ${noAttendingText}`;
+              button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔︎ Confirmar</button>`;
+              button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩︎ Restablir</button>`;
             } else {
-              button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
-              button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕ ${noAttendingText}</button>`;
+              button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔︎ Confirmar</button>`;
+              button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕︎ ${noAttendingText}</button>`;
             }
           }
 
@@ -1082,14 +1082,14 @@ function updateEventAttendance(eventId, memberAlias, attending) {
         let button2Html = '';
         
         if (attending === true) {
-          button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕ ${noAttendingText}</button>`;
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩︎ Restablir</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕︎ ${noAttendingText}</button>`;
         } else if (attending === false) {
-          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩ Restablir</button>`;
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔︎ Confirmar</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩︎ Restablir</button>`;
         } else {
-          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔ Confirmar</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕ ${noAttendingText}</button>`;
+          button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔︎ Confirmar</button>`;
+          button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕︎ ${noAttendingText}</button>`;
         }
         
         buttonsContainer.innerHTML = button1Html + button2Html;
