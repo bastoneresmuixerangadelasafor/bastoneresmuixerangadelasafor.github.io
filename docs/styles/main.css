@@ -3448,6 +3448,8 @@ input::placeholder {
 .training-confirmation-buttons .btn-xs {
   font-size: 0.7rem;
   padding: 3px 6px;
+  min-height: 44px;
+  min-width: 44px;
   border-radius: 3px;
   font-weight: 400;
   cursor: pointer;
@@ -3662,6 +3664,8 @@ input::placeholder {
 .event-confirmation-buttons .btn-xs {
   font-size: 0.7rem;
   padding: 3px 6px;
+  min-height: 44px;
+  min-width: 44px;
   border-radius: 3px;
   font-weight: 400;
   cursor: pointer;
