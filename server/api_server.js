@@ -110,6 +110,10 @@ const API = class GAppsApiServer {
         const audioWorker = this.validateUserToken_({fn: getAudioById_, requiresAuth: true, token: e.parameter?.token});
         data = audioWorker({ audioId: e.parameter?.audioId });
         break;
+      case "memberPositions":
+        const memberPositionsWorker = this.validateUserToken_({fn: getMemberPositions_, requiresAuth: true, token: e.parameter?.token});
+        data = memberPositionsWorker({ memberAlias: e.parameter?.memberAlias });
+        break;
       default:
         return API.newError_({ error: `Unknown GET action: ${action}`, status:404 });
     }

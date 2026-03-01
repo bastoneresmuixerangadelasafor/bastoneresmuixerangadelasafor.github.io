@@ -101,11 +101,13 @@ function renderPlanningEventsList(events) {
   if (!container) return;
 
   if (!events || events.length === 0) {
+    const isAdmin = APP.currentUser && (APP.currentUser.roles || []).includes("ADMIN");
+    const createHint = isAdmin ? '<p>Crea una nova actuació per començar!</p>' : '';
     container.innerHTML = `
     <div class="events-empty">
     <div class="events-empty-icon">📅</div>
     <p>No hi ha actuacions programades</p>
-    <p>Crea un nou assaig o actuació per començar!</p>
+    ${createHint}
     </div>
     `;
     if (pastEventsContainer) pastEventsContainer.innerHTML = "";
@@ -116,8 +118,13 @@ function renderPlanningEventsList(events) {
   const upcomingEvents = [];
   const pastEvents = [];
 
-  // Separate upcoming and past events
+  const isAdmin = APP.currentUser && (APP.currentUser.roles || []).includes("ADMIN");
+
+  // Separate upcoming and past events, filtering out non-visible events for non-admin users
   events.forEach(function (event) {
+    const showEvent = event.visible || isAdmin;
+    if (!showEvent) return;
+
     if (event.date) {
       const eventDate = new Date(event.date);
       if (eventDate < now) {
@@ -130,23 +137,17 @@ function renderPlanningEventsList(events) {
     }
   });
 
-  // Helper function to create event card HTML
   function createEventCardHTML(event) {
-    const isAdmin = APP.currentUser && (APP.currentUser.roles || []).includes("ADMIN");
-    const showEvent = event.visible || isAdmin;
-    if(showEvent) {
       const formattedDate = formatEventDate(event.date);
       let meetingPlaceHtml = "";
       if (event.meetingPlace) {
         if (event.placeUrl) {
-          meetingPlaceHtml = `<a href="${escapeHtml(event.placeUrl)}" target="_blank" class="event-card-place">📍 ${escapeHtml(event.meetingPlace)} 🗺️</a>`;
+          meetingPlaceHtml = `<a href="${escapeHtml(event.placeUrl)}" target="_blank" class="event-card-place" onclick="event.stopPropagation()">📍 ${escapeHtml(event.meetingPlace)} 🗺️</a>`;
         } else {
           meetingPlaceHtml = `<span class="event-card-place">📍 ${escapeHtml(event.meetingPlace)}</span>`;
         }
       }
-      const tbcHtml = !(event.confirmed || isAdmin)
-        ? `<span class="event-tbc" style="font-style: italic; color: var(--text-secondary, #666);">TBC</span>`
-        : '';
+
 
       // Generate confirmation status for current user
       let confirmationStatusHtml = "";
@@ -239,21 +240,20 @@ function renderPlanningEventsList(events) {
       <span class="event-card-name">${event.name}</span>
       <span class="event-card-date">${formattedDate}</span>
       ${meetingPlaceHtml}
-      ${tbcHtml}
       ${confirmationStatusHtml}
       </div>
       </div>
       `;
-    }
   }
 
   // Render upcoming events
   if (upcomingEvents.length === 0) {
+    const createHint = isAdmin ? '<p>Crea una nova actuació per començar!</p>' : '';
     container.innerHTML = `
     <div class="events-empty">
     <div class="events-empty-icon">📅</div>
     <p>No hi ha actuacions programades</p>
-    <p>Crea un nou assaig o actuació per començar!</p>
+    ${createHint}
     </div>
     `;
   } else {

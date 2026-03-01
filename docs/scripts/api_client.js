@@ -289,4 +289,8 @@ const API = new (class GAppsApiClient {
   getAudioById({ audioId } = {}) {
     return this._get({ action: "audio", parameters: { audioId }, requiresAuth: true, cache: 'audio' });
   }
+
+  getMemberPositions({ memberAlias } = {}) {
+    return this._get({ action: "memberPositions", parameters: { memberAlias }, requiresAuth: true });
+  }
 })();

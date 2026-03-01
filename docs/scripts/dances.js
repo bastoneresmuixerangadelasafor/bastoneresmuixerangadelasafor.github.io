@@ -83,6 +83,7 @@ const DANCES = [
       }
     ],
     "minGroups": 1,
+    "showInPositions": true,
     "audios": [
       {
         "fileId": "1Oz7GCasuPWfVLZeHJytelv85zCw3PhOx",
@@ -132,6 +133,7 @@ const DANCES = [
       }
     ],
     "minGroups": 3,
+    "showInPositions": true,
     "audios": [
       {
         "fileId": "1miptCmAVlHV14bdmPYGdg37o5YaTQZoV",
@@ -224,6 +226,7 @@ const DANCES = [
       }
     ],
     "minGroups": 1,
+    "showInPositions": true,
     "audios": [
       {
         "fileId": "1IV0yshP7Xly9L-B07dqq2xCfAmCPRTkg",
@@ -305,6 +308,7 @@ const DANCES = [
       }
     ],
     "minGroups": 1,
+    "showInPositions": true,
     "audios": [
       {
         "fileId": "1IV0yshP7Xly9L-B07dqq2xCfAmCPRTkg",
@@ -370,6 +374,7 @@ const DANCES = [
       }
     ],
     "minGroups": 1,
+    "showInPositions": true,
     "audios": []
   },
   {
@@ -424,6 +429,7 @@ const DANCES = [
       }
     ],
     "minGroups": 1,
+    "showInPositions": true,
     "audios": [
       {
         "fileId": "1q10nIzTSyRAFZRtiPVo8r_2Ga3kiEPnM",
@@ -484,6 +490,7 @@ const DANCES = [
       }
     ],
     "minGroups": 1,
+    "showInPositions": true,
     "audios": []
   },
   {
@@ -634,6 +641,7 @@ const DANCES = [
       }
     ],
     "minGroups": 1,
+    "showInPositions": false,
     "audios": []
   },
   {
@@ -686,6 +694,7 @@ const DANCES = [
       }
     ],
     "minGroups": 1,
+    "showInPositions": true,
     "audios": [
       {
         "fileId": "1gNplR0UF5LpWZrWv4O-zP1WbVtz6DRuu",

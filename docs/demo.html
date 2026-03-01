@@ -982,6 +982,79 @@ table tbody tr:last-child td {
   margin-top: 8px;
 }
 
+.profile-links {
+  margin-bottom: 20px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+}
+
+.profile-link-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  color: var(--text-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.profile-link-item:hover {
+  background: var(--background-color);
+}
+
+.profile-link-icon {
+  display: flex;
+  align-items: center;
+  color: var(--primary-color);
+}
+
+.profile-link-arrow {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  color: var(--text-muted);
+}
+
+/* Member Positions */
+.positions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.position-card {
+  border: 2px solid var(--primary-color);
+  border-radius: 12px;
+  padding: 20px;
+  background: #f0f4ff;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+}
+
+.dark-mode .position-card {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  box-shadow: none;
+}
+
+.position-card .diagram-header {
+  margin-bottom: 10px;
+}
+
+.position-card .diagrams-canvas-container {
+  padding: 0;
+}
+
+.position-card .diagrams-canvas-wrapper canvas {
+  border: none;
+  background: transparent;
+}
+
 .profile-details {
   margin-bottom: 30px;
   padding: 20px;
@@ -1606,9 +1679,6 @@ table tbody tr:last-child td {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .profile-card {
-    max-width: 100%;
-  }
 }
 
 /* Mobile breakpoint */
@@ -1751,35 +1821,6 @@ table tbody tr:last-child td {
 
   .members-edit-actions .edit-buttons {
     width: 100%;
-    justify-content: center;
-  }
-
-  /* Profile page */
-  .profile-card {
-    max-width: 100%;
-  }
-
-  .profile-header {
-    flex-direction: column;
-    text-align: center;
-    gap: 15px;
-  }
-
-  .profile-avatar {
-    width: 80px;
-    height: 80px;
-  }
-
-  .profile-info h2 {
-    font-size: 1.4em;
-  }
-
-  .profile-details {
-    padding: 15px;
-  }
-
-  .roles-list,
-  .relations-list {
     justify-content: center;
   }
 
@@ -2368,78 +2409,46 @@ table tbody tr:last-child td {
 /* Related Members Section */
 .related-members-section {
   margin-top: 20px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+}
+
+.related-members-section-title {
+  font-size: 0.85em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 12px;
 }
 
 .related-members-list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
 }
 
-.related-members-list .profile-header {
+.related-member-card {
+  padding: 12px 14px;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+}
+
+.related-member-card .profile-header {
   margin-bottom: 0;
 }
 
-/* Profile page mobile styles */
-@media (max-width: 768px) {
-  .profile-card {
-    max-width: 100%;
-  }
-
-  .profile-header {
-    flex-direction: column;
-    text-align: center;
-    padding-bottom: 15px;
-    margin-bottom: 20px;
-  }
-
-  .profile-info h2 {
-    font-size: 1.3em;
-  }
-
-  .profile-info .text-muted {
-    font-size: 0.9em;
-    word-break: break-all;
-  }
-
-  .profile-details {
-    padding: 15px;
-  }
-
-  .detail-group {
-    margin-bottom: 20px;
-  }
-
-  .roles-list,
-  .relations-list {
-    justify-content: flex-start;
-  }
-
-  .badge {
-    font-size: 0.8em;
-    padding: 3px 8px;
-  }
-
-  .related-members-list {
-    grid-template-columns: 1fr;
-  }
-
-  .related-member-card {
-    padding: 10px;
-  }
+.related-member-card .profile-links {
+  margin-top: 8px;
+  margin-bottom: 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color);
+}
+  border-top: 1px solid var(--border-color);
 }
 
-@media (max-width: 480px) {
-  .profile-avatar {
-    width: 70px;
-    height: 70px;
-  }
 
-  .member-type-badge {
-    font-size: 0.8em;
-    padding: 3px 10px;
-  }
-}
 
 /* Login dialog modal styles */
 #view-login {
@@ -3173,6 +3182,7 @@ input::placeholder {
   font-size: 0.85rem;
   color: #4b5563;
   text-decoration: none;
+  align-self: flex-start;
 }
 
 .dark-mode .event-card-place {
@@ -3295,15 +3305,6 @@ input::placeholder {
 }
 
 .dark-mode .training-count {
-  color: #cbd5e1;
-}
-
-.training-tbc {
-  font-style: italic;
-  color: #374151;
-}
-
-.dark-mode .training-tbc {
   color: #cbd5e1;
 }
 
@@ -4148,10 +4149,16 @@ input::placeholder {
 }
 
 .training-member-attendance-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 8px;
   transition: all 0.3s ease;
+}
+
+@media (min-width: 720px) {
+  .training-member-attendance-list {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .training-member-attendance-list.collapsed {
@@ -4447,10 +4454,16 @@ input::placeholder {
 }
 
 .event-member-attendance-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 8px;
   transition: all 0.3s ease;
+}
+
+@media (min-width: 720px) {
+  .event-member-attendance-list {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .event-member-attendance-list.collapsed {
@@ -7164,13 +7177,50 @@ body.dark-mode .theme-icon-dark {
                     </div>
                 </div>
 
+                <!-- Profile Links Section -->
+                <div class="profile-links">
+                    <a href="#member-positions" class="profile-link-item" data-route="member-positions">
+                        <span class="profile-link-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                        </span>
+                        <span>Les meues posicions</span>
+                        <span class="profile-link-arrow">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </span>
+                    </a>
+                </div>
+
                 <!-- Related Members Section -->
                 <div id="related-members-section" class="related-members-section" style="display: none;">
+                    <p class="related-members-section-title">Membres relacionats</p>
                     <div id="related-members-list" class="related-members-list">
                         <!-- Each related member will use profile-header structure -->
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+<!-- Member Positions View -->
+    <div id="view-member-positions" class="view" data-view="member-positions" data-auth="required" style="display: none;">
+        <div class="container">
+            <div class="page-header">
+                <h1>Les meues posicions</h1>
+            </div>
+            <div id="member-positions-loading" class="loading-indicator" style="display: none;">
+                <div class="spinner"></div>
+                <p>Carregant posicions...</p>
+            </div>
+            <div id="member-positions-empty" class="empty-state" style="display: none;">
+                <p>No s'han trobat posicions assignades.</p>
+            </div>
+            <div id="member-positions-list" class="positions-list"></div>
         </div>
     </div>
 <!-- Login Dialog Modal -->
@@ -7756,10 +7806,12 @@ body.dark-mode .theme-icon-dark {
             });
 
             // Disable canvas click handlers
+            const currentUserRoles = (APP && APP.currentUser && APP.currentUser.roles) || [];
+            const isAdmin = currentUserRoles.includes('ADMIN');
             const canvases = diagramsList.querySelectorAll('canvas');
             canvases.forEach(function (canvas) {
-                canvas.style.cursor = isEditable ? 'pointer' : 'default';
-                canvas.style.pointerEvents = isEditable ? 'auto' : 'none';
+                canvas.style.cursor = (isEditable && isAdmin) ? 'pointer' : 'default';
+                canvas.style.pointerEvents = (isEditable && isAdmin) ? 'auto' : 'none';
             });
         }
 
@@ -8156,6 +8208,9 @@ ${descriptionHtml}
                 if (!canvas) return;
 
                 canvas.addEventListener('click', function (e) {
+                    const userRoles = (APP && APP.currentUser && APP.currentUser.roles) || [];
+                    if (!userRoles.includes('ADMIN')) return;
+
                     const diagram = diagrams.find(d => d.id === diagramId);
                     if (!diagram) return;
 
@@ -10540,6 +10595,7 @@ const EVENTS_SPREADSHEET_ID = "1wpkYYOrzypsfdVDP5WGS1aX5OLjL5ITZj_ogtJgzHGE"
 const EVENTS_SHEET_NAME = "Llistat"
 const TRAINING_SPREADSHEET_ID = "1veNnPWgx4B1NQ1CMt1zejt-q_geJAKd-p2yAUcQObxg"
 const ASSISTANCE_SHEET_NAME = "Assistencia"
+const POSITIONS_SPREADSHEET_ID = ""
 const MEMBER_CACHE = "MEMBERS"
 const EVENT_CACHE = "EVENTS"
 const TRAINING_CACHE = "TRAININGS"
@@ -10941,6 +10997,10 @@ const API = new (class GAppsApiClient {
   getAudioById({ audioId } = {}) {
     return this._get({ action: "audio", parameters: { audioId }, requiresAuth: true, cache: 'audio' });
   }
+
+  getMemberPositions({ memberAlias } = {}) {
+    return this._get({ action: "memberPositions", parameters: { memberAlias }, requiresAuth: true });
+  }
 })();
 
         </script>
@@ -11108,6 +11168,9 @@ const API = new (class GAppsApiClient {
         break;
       case "planning-training":
         loadPlanningTrainingData();
+        break;
+      case "member-positions":
+        loadMemberPositionsData();
         break;
     }
   }
@@ -11345,6 +11408,269 @@ function updateAuthUI() {
   }
 }
 
+function loadMemberPositionsData() {
+  const list = document.getElementById("member-positions-list");
+  const loading = document.getElementById("member-positions-loading");
+  const empty = document.getElementById("member-positions-empty");
+  if (!list) return;
+
+  list.innerHTML = "";
+  if (loading) loading.style.display = "flex";
+  if (empty) empty.style.display = "none";
+
+  const alias = APP.memberPositionsAlias || APP.currentUser?.alias;
+  APP.memberPositionsAlias = null;
+  if (!alias) {
+    if (loading) loading.style.display = "none";
+    if (empty) empty.style.display = "block";
+    return;
+  }
+
+  var titleEl = document.querySelector("#view-member-positions .page-header h1");
+  if (titleEl) {
+    titleEl.textContent = alias === APP.currentUser?.alias ? "Les meues posicions" : "Posicions de " + alias;
+  }
+
+  API.getMemberPositions({ memberAlias: alias })
+    .then(function (positions) {
+      if (loading) loading.style.display = "none";
+
+      var positionCardId = 0;
+
+      DANCES.forEach(function (dance) {
+        var danceName = dance.name;
+        var memberEntries = positions[danceName] || {};
+        var dancePositions = dance.positions || [];
+        var memberTags = dancePositions.filter(function (pos) {
+          return String(memberEntries[pos.order]).toUpperCase() === 'SI';
+        }).map(function (pos) { return pos.tag; });
+        var inProgressTags = dancePositions.filter(function (pos) {
+          return String(memberEntries[pos.order]).toUpperCase() === 'EN PROGRESO';
+        }).map(function (pos) { return pos.tag; });
+        var diagramColors = dance.diagram || { backgroundColor: {}, textColor: {} };
+        var rows = dance.structure ? dance.structure.rows : 2;
+        var cols = dance.structure ? dance.structure.columns : 2;
+
+        var cardId = positionCardId++;
+        var canvasId = "position-canvas-" + cardId;
+
+        var legendHtml = "";
+        var seenLabels = {};
+        dancePositions.forEach(function (pos) {
+          if (seenLabels[pos.positionType.label]) return;
+          seenLabels[pos.positionType.label] = true;
+          var color = (diagramColors.backgroundColor && diagramColors.backgroundColor[pos.positionType.label]) || "#808080";
+          legendHtml += '<div class="diagram-legend-item">' +
+            '<span class="legend-color-box" style="background: ' + color + ';"></span>' +
+            '<span>' + pos.positionType.label + '</span>' +
+            '</div>';
+        });
+        var showLegend = Object.keys(seenLabels).length > 1;
+
+        var card = document.createElement("div");
+        card.className = "position-card";
+        card.innerHTML =
+          '<div class="diagram-header">' +
+            '<div class="diagram-title-row">' +
+              '<h3 class="diagram-title">' + danceName + '</h3>' +
+            '</div>' +
+            '<div class="diagram-legend" style="' + (showLegend ? '' : 'display:none;') + '">' +
+              legendHtml +
+            '</div>' +
+          '</div>' +
+          '<div class="diagrams-canvas-container">' +
+            '<div class="diagrams-canvas-wrapper">' +
+              '<canvas id="' + canvasId + '" width="600" height="250"></canvas>' +
+            '</div>' +
+          '</div>';
+
+        list.appendChild(card);
+
+        drawPositionDiagram({
+          canvasId: canvasId,
+          rows: rows,
+          cols: cols,
+          positions: dancePositions,
+          diagramColors: diagramColors,
+          highlightTags: memberTags,
+          inProgressTags: inProgressTags
+        });
+      });
+    })
+    .catch(function (error) {
+      console.error("Failed to load positions:", error);
+      if (loading) loading.style.display = "none";
+      list.innerHTML = '<div class="empty-state"><p>No s\'han pogut carregar les posicions.</p></div>';
+    });
+}
+
+function drawPositionDiagram(opts) {
+  var canvas = document.getElementById(opts.canvasId);
+  if (!canvas) return;
+  var ctx = canvas.getContext("2d");
+  var rows = opts.rows || 2;
+  var cols = opts.cols || 2;
+  var positions = opts.positions || [];
+  var diagramColors = opts.diagramColors || { backgroundColor: {}, textColor: {} };
+  var highlightTags = opts.highlightTags || [];
+  var inProgressTags = opts.inProgressTags || [];
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  var layout = calcDiagramLayout(canvas, 1, rows, cols);
+  var squareWidth = layout.squareWidth;
+  var squareHeight = layout.squareHeight;
+  var squareSpacingX = layout.squareSpacingX;
+  var squareSpacingY = layout.squareSpacingY;
+  var gridWidth = layout.gridWidth;
+  var gridHeight = layout.gridHeight;
+  var offsetX0 = layout.offsetX0;
+  var offsetY = layout.offsetY;
+  var scale = layout.scale;
+
+  var placaHeight = Math.max(25, 40 * scale);
+  var placaY = offsetY + gridHeight + 60 * scale;
+  var requiredHeight = placaY + placaHeight + 15;
+  if (canvas.height !== Math.round(requiredHeight)) {
+    canvas.height = Math.round(requiredHeight);
+  }
+
+  var primaryColor = getComputedStyle(document.documentElement).getPropertyValue("--primary-color").trim() || "#6366f1";
+
+  for (var row = 0; row < rows; row++) {
+    for (var col = 0; col < cols; col++) {
+      var order = row * cols + col + 1;
+      var pos = positions.find(function (p) { return p.order === order; });
+      var tag = pos ? pos.tag : "";
+      var label = pos && pos.positionType ? pos.positionType.label : "";
+      var isHighlighted = highlightTags.indexOf(tag) !== -1;
+      var isInProgress = inProgressTags.indexOf(tag) !== -1;
+
+      var bgColor = "#808080";
+      if (label && diagramColors.backgroundColor && diagramColors.backgroundColor[label]) {
+        bgColor = diagramColors.backgroundColor[label];
+      }
+
+      var textColor = "#FFFFFF";
+      if (label && diagramColors.textColor && diagramColors.textColor[label]) {
+        textColor = diagramColors.textColor[label];
+      }
+
+      var x = offsetX0 + col * (squareWidth + squareSpacingX);
+      var y = offsetY + row * (squareHeight + squareSpacingY);
+
+      if (!isHighlighted && !isInProgress) {
+        ctx.globalAlpha = 0.3;
+      }
+
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(x, y, squareWidth, squareHeight);
+
+      ctx.globalAlpha = 1;
+
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = Math.max(2, 4 * scale);
+      ctx.strokeRect(x, y, squareWidth, squareHeight);
+
+      if (isHighlighted) {
+        ctx.strokeStyle = primaryColor;
+        ctx.lineWidth = Math.max(3, 6 * scale);
+        ctx.strokeRect(x, y, squareWidth, squareHeight);
+
+        var cx = x + squareWidth / 2;
+        var cy = y + squareHeight / 2;
+        var r = Math.min(squareWidth, squareHeight) * 0.32;
+
+        ctx.save();
+        ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+        ctx.shadowBlur = 6 * scale;
+        ctx.shadowOffsetY = 2 * scale;
+
+        var outerRing = ctx.createLinearGradient(cx, cy - r, cx, cy + r);
+        outerRing.addColorStop(0, "#C9A84C");
+        outerRing.addColorStop(0.5, "#F5D77A");
+        outerRing.addColorStop(1, "#A67C2E");
+        ctx.fillStyle = outerRing;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.shadowColor = "transparent";
+
+        var innerR = r * 0.78;
+        var innerGrad = ctx.createLinearGradient(cx, cy - innerR, cx, cy + innerR);
+        innerGrad.addColorStop(0, "#FFE8A0");
+        innerGrad.addColorStop(0.35, "#FFD54F");
+        innerGrad.addColorStop(0.65, "#FFCA28");
+        innerGrad.addColorStop(1, "#F0B400");
+        ctx.fillStyle = innerGrad;
+        ctx.beginPath();
+        ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = "rgba(160, 120, 30, 0.35)";
+        ctx.lineWidth = Math.max(1, 1.5 * scale);
+        ctx.beginPath();
+        ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
+        ctx.stroke();
+
+        var ts = r * 0.48;
+        ctx.strokeStyle = "#6D4C00";
+        ctx.lineWidth = Math.max(2.5, 4.5 * scale);
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.beginPath();
+        ctx.moveTo(cx - ts * 0.55, cy + ts * 0.05);
+        ctx.lineTo(cx - ts * 0.05, cy + ts * 0.5);
+        ctx.lineTo(cx + ts * 0.65, cy - ts * 0.45);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+      if (isInProgress) {
+        var iconS = Math.min(squareWidth, squareHeight) * 0.45;
+        var ix = x + (squareWidth - iconS) / 2;
+        var iy = y + (squareHeight - iconS) / 2;
+        var lw = Math.max(2, 3 * scale);
+
+        ctx.save();
+        ctx.strokeStyle = "#FF9800";
+        ctx.lineWidth = lw;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+
+        ctx.beginPath();
+        ctx.moveTo(ix, iy);
+        ctx.lineTo(ix, iy + iconS);
+        ctx.lineTo(ix + iconS, iy + iconS);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(ix + iconS * 0.15, iy + iconS * 0.7);
+        ctx.lineTo(ix + iconS * 0.4, iy + iconS * 0.4);
+        ctx.lineTo(ix + iconS * 0.6, iy + iconS * 0.55);
+        ctx.lineTo(ix + iconS * 0.85, iy + iconS * 0.15);
+        ctx.stroke();
+
+        ctx.restore();
+      }    }
+  }
+
+  ctx.save();
+  ctx.fillStyle = "#fff";
+  ctx.strokeStyle = "#000";
+  ctx.lineWidth = Math.max(1, 2 * scale);
+  ctx.fillRect(offsetX0, placaY, gridWidth, placaHeight);
+  ctx.strokeRect(offsetX0, placaY, gridWidth, placaHeight);
+  var placaFontSize = Math.max(12, Math.round(20 * scale));
+  ctx.fillStyle = "#000";
+  ctx.font = "bold " + placaFontSize + "px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("PLAÇA", offsetX0 + gridWidth / 2, placaY + placaHeight / 2);
+  ctx.restore();
+}
+
 
 
 
@@ -11429,6 +11755,14 @@ function updateAuthUI() {
         if (trainingId) {
           APP.trainingIdToLoad = escapeHtml(trainingId);
           this.navigateTo("edit-training", false);
+          return;
+        }
+      }
+      if (route.startsWith("member-positions/")) {
+        const alias = decodeURIComponent(route.substring(17));
+        if (alias) {
+          APP.memberPositionsAlias = alias;
+          this.navigateTo("member-positions", false);
           return;
         }
       }
@@ -11541,6 +11875,14 @@ function updateAuthUI() {
         if (trainingId) {
           APP.trainingIdToLoad = escapeHtml(trainingId);
           this.navigateTo("edit-training", false);
+          return;
+        }
+      }
+      if (initialRoute.startsWith("member-positions/")) {
+        const alias = decodeURIComponent(initialRoute.substring(17));
+        if (alias) {
+          APP.memberPositionsAlias = alias;
+          this.navigateTo("member-positions", false);
           return;
         }
       }
@@ -12126,6 +12468,7 @@ window.onerror = function (message, source, lineno, colno, error) {
                   ? "Xiquet/a"
                   : memberType;
             return (
+              '<div class="related-member-card">' +
               '<div class="profile-header">' +
               '<img class="profile-avatar" src="' +
               avatarUrl +
@@ -12140,6 +12483,25 @@ window.onerror = function (message, source, lineno, colno, error) {
               memberTypeLabel +
               "</p>" +
               "</div>" +
+              "</div>" +
+              '<div class="profile-links">' +
+              '<a href="#member-positions/' + encodeURIComponent(member.alias) + '" class="profile-link-item" data-route="member-positions/' + encodeURIComponent(member.alias) + '">' +
+              '<span class="profile-link-icon">' +
+              '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+              '<rect x="3" y="3" width="7" height="7"></rect>' +
+              '<rect x="14" y="3" width="7" height="7"></rect>' +
+              '<rect x="14" y="14" width="7" height="7"></rect>' +
+              '<rect x="3" y="14" width="7" height="7"></rect>' +
+              '</svg>' +
+              '</span>' +
+              '<span>Posicions</span>' +
+              '<span class="profile-link-arrow">' +
+              '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+              '<polyline points="9 18 15 12 9 6"></polyline>' +
+              '</svg>' +
+              '</span>' +
+              '</a>' +
+              '</div>' +
               "</div>"
             );
           })
@@ -13578,11 +13940,13 @@ function renderPlanningEventsList(events) {
   if (!container) return;
 
   if (!events || events.length === 0) {
+    const isAdmin = APP.currentUser && (APP.currentUser.roles || []).includes("ADMIN");
+    const createHint = isAdmin ? '<p>Crea una nova actuació per començar!</p>' : '';
     container.innerHTML = `
     <div class="events-empty">
     <div class="events-empty-icon">📅</div>
     <p>No hi ha actuacions programades</p>
-    <p>Crea un nou assaig o actuació per començar!</p>
+    ${createHint}
     </div>
     `;
     if (pastEventsContainer) pastEventsContainer.innerHTML = "";
@@ -13593,8 +13957,13 @@ function renderPlanningEventsList(events) {
   const upcomingEvents = [];
   const pastEvents = [];
 
-  // Separate upcoming and past events
+  const isAdmin = APP.currentUser && (APP.currentUser.roles || []).includes("ADMIN");
+
+  // Separate upcoming and past events, filtering out non-visible events for non-admin users
   events.forEach(function (event) {
+    const showEvent = event.visible || isAdmin;
+    if (!showEvent) return;
+
     if (event.date) {
       const eventDate = new Date(event.date);
       if (eventDate < now) {
@@ -13607,23 +13976,17 @@ function renderPlanningEventsList(events) {
     }
   });
 
-  // Helper function to create event card HTML
   function createEventCardHTML(event) {
-    const isAdmin = APP.currentUser && (APP.currentUser.roles || []).includes("ADMIN");
-    const showEvent = event.visible || isAdmin;
-    if(showEvent) {
       const formattedDate = formatEventDate(event.date);
       let meetingPlaceHtml = "";
       if (event.meetingPlace) {
         if (event.placeUrl) {
-          meetingPlaceHtml = `<a href="${escapeHtml(event.placeUrl)}" target="_blank" class="event-card-place">📍 ${escapeHtml(event.meetingPlace)} 🗺️</a>`;
+          meetingPlaceHtml = `<a href="${escapeHtml(event.placeUrl)}" target="_blank" class="event-card-place" onclick="event.stopPropagation()">📍 ${escapeHtml(event.meetingPlace)} 🗺️</a>`;
         } else {
           meetingPlaceHtml = `<span class="event-card-place">📍 ${escapeHtml(event.meetingPlace)}</span>`;
         }
       }
-      const tbcHtml = !(event.confirmed || isAdmin)
-        ? `<span class="event-tbc" style="font-style: italic; color: var(--text-secondary, #666);">TBC</span>`
-        : '';
+
 
       // Generate confirmation status for current user
       let confirmationStatusHtml = "";
@@ -13716,21 +14079,20 @@ function renderPlanningEventsList(events) {
       <span class="event-card-name">${event.name}</span>
       <span class="event-card-date">${formattedDate}</span>
       ${meetingPlaceHtml}
-      ${tbcHtml}
       ${confirmationStatusHtml}
       </div>
       </div>
       `;
-    }
   }
 
   // Render upcoming events
   if (upcomingEvents.length === 0) {
+    const createHint = isAdmin ? '<p>Crea una nova actuació per començar!</p>' : '';
     container.innerHTML = `
     <div class="events-empty">
     <div class="events-empty-icon">📅</div>
     <p>No hi ha actuacions programades</p>
-    <p>Crea un nou assaig o actuació per començar!</p>
+    ${createHint}
     </div>
     `;
   } else {

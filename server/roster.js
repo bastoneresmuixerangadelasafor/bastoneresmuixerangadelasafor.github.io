@@ -197,6 +197,18 @@ function saveAllMembers_({members}) {
 	}
 }
 
+function getMemberPositions_({memberAlias}) {
+	if (!memberAlias) return API.newError_({ error: 'No s\'ha especificat l\'àlies del membre.' });
+
+	try {
+		const positions = CACHE.retrieveMemberPositionsFromDB(memberAlias);
+		return API.newResult_({ result: positions });
+	} catch (error) {
+		console.log('Error getting member positions: ' + error.toString());
+		return API.newError_({ error: error.toString() });
+	}
+}
+
 function generateMemberId_() {
 	// Generate ID based on timestamp and random component
 	const timestamp = new Date().getTime();

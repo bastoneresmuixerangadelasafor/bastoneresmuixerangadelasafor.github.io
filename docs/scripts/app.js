@@ -159,6 +159,9 @@ const APP = new (class AppState{
       case "planning-training":
         loadPlanningTrainingData();
         break;
+      case "member-positions":
+        loadMemberPositionsData();
+        break;
     }
   }
 
@@ -393,6 +396,269 @@ function updateAuthUI() {
       el.style.display = "none";
     });
   }
+}
+
+function loadMemberPositionsData() {
+  const list = document.getElementById("member-positions-list");
+  const loading = document.getElementById("member-positions-loading");
+  const empty = document.getElementById("member-positions-empty");
+  if (!list) return;
+
+  list.innerHTML = "";
+  if (loading) loading.style.display = "flex";
+  if (empty) empty.style.display = "none";
+
+  const alias = APP.memberPositionsAlias || APP.currentUser?.alias;
+  APP.memberPositionsAlias = null;
+  if (!alias) {
+    if (loading) loading.style.display = "none";
+    if (empty) empty.style.display = "block";
+    return;
+  }
+
+  var titleEl = document.querySelector("#view-member-positions .page-header h1");
+  if (titleEl) {
+    titleEl.textContent = alias === APP.currentUser?.alias ? "Les meues posicions" : "Posicions de " + alias;
+  }
+
+  API.getMemberPositions({ memberAlias: alias })
+    .then(function (positions) {
+      if (loading) loading.style.display = "none";
+
+      var positionCardId = 0;
+
+      DANCES.filter(function (dance) { return dance.showInPositions === true; }).forEach(function (dance) {
+        var danceName = dance.name;
+        var memberEntries = positions[danceName] || {};
+        var dancePositions = dance.positions || [];
+        var memberTags = dancePositions.filter(function (pos) {
+          return String(memberEntries[pos.order]).toUpperCase() === 'SI';
+        }).map(function (pos) { return pos.tag; });
+        var inProgressTags = dancePositions.filter(function (pos) {
+          return String(memberEntries[pos.order]).toUpperCase() === 'EN PROGRESO';
+        }).map(function (pos) { return pos.tag; });
+        var diagramColors = dance.diagram || { backgroundColor: {}, textColor: {} };
+        var rows = dance.structure ? dance.structure.rows : 2;
+        var cols = dance.structure ? dance.structure.columns : 2;
+
+        var cardId = positionCardId++;
+        var canvasId = "position-canvas-" + cardId;
+
+        var legendHtml = "";
+        var seenLabels = {};
+        dancePositions.forEach(function (pos) {
+          if (seenLabels[pos.positionType.label]) return;
+          seenLabels[pos.positionType.label] = true;
+          var color = (diagramColors.backgroundColor && diagramColors.backgroundColor[pos.positionType.label]) || "#808080";
+          legendHtml += '<div class="diagram-legend-item">' +
+            '<span class="legend-color-box" style="background: ' + color + ';"></span>' +
+            '<span>' + pos.positionType.label + '</span>' +
+            '</div>';
+        });
+        var showLegend = Object.keys(seenLabels).length > 1;
+
+        var card = document.createElement("div");
+        card.className = "position-card";
+        card.innerHTML =
+          '<div class="diagram-header">' +
+            '<div class="diagram-title-row">' +
+              '<h3 class="diagram-title">' + danceName + '</h3>' +
+            '</div>' +
+            '<div class="diagram-legend" style="' + (showLegend ? '' : 'display:none;') + '">' +
+              legendHtml +
+            '</div>' +
+          '</div>' +
+          '<div class="diagrams-canvas-container">' +
+            '<div class="diagrams-canvas-wrapper">' +
+              '<canvas id="' + canvasId + '" width="600" height="250"></canvas>' +
+            '</div>' +
+          '</div>';
+
+        list.appendChild(card);
+
+        drawPositionDiagram({
+          canvasId: canvasId,
+          rows: rows,
+          cols: cols,
+          positions: dancePositions,
+          diagramColors: diagramColors,
+          highlightTags: memberTags,
+          inProgressTags: inProgressTags
+        });
+      });
+    })
+    .catch(function (error) {
+      console.error("Failed to load positions:", error);
+      if (loading) loading.style.display = "none";
+      list.innerHTML = '<div class="empty-state"><p>No s\'han pogut carregar les posicions.</p></div>';
+    });
+}
+
+function drawPositionDiagram(opts) {
+  var canvas = document.getElementById(opts.canvasId);
+  if (!canvas) return;
+  var ctx = canvas.getContext("2d");
+  var rows = opts.rows || 2;
+  var cols = opts.cols || 2;
+  var positions = opts.positions || [];
+  var diagramColors = opts.diagramColors || { backgroundColor: {}, textColor: {} };
+  var highlightTags = opts.highlightTags || [];
+  var inProgressTags = opts.inProgressTags || [];
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  var layout = calcDiagramLayout(canvas, 1, rows, cols);
+  var squareWidth = layout.squareWidth;
+  var squareHeight = layout.squareHeight;
+  var squareSpacingX = layout.squareSpacingX;
+  var squareSpacingY = layout.squareSpacingY;
+  var gridWidth = layout.gridWidth;
+  var gridHeight = layout.gridHeight;
+  var offsetX0 = layout.offsetX0;
+  var offsetY = layout.offsetY;
+  var scale = layout.scale;
+
+  var placaHeight = Math.max(25, 40 * scale);
+  var placaY = offsetY + gridHeight + 60 * scale;
+  var requiredHeight = placaY + placaHeight + 15;
+  if (canvas.height !== Math.round(requiredHeight)) {
+    canvas.height = Math.round(requiredHeight);
+  }
+
+  var primaryColor = getComputedStyle(document.documentElement).getPropertyValue("--primary-color").trim() || "#6366f1";
+
+  for (var row = 0; row < rows; row++) {
+    for (var col = 0; col < cols; col++) {
+      var order = row * cols + col + 1;
+      var pos = positions.find(function (p) { return p.order === order; });
+      var tag = pos ? pos.tag : "";
+      var label = pos && pos.positionType ? pos.positionType.label : "";
+      var isHighlighted = highlightTags.indexOf(tag) !== -1;
+      var isInProgress = inProgressTags.indexOf(tag) !== -1;
+
+      var bgColor = "#808080";
+      if (label && diagramColors.backgroundColor && diagramColors.backgroundColor[label]) {
+        bgColor = diagramColors.backgroundColor[label];
+      }
+
+      var textColor = "#FFFFFF";
+      if (label && diagramColors.textColor && diagramColors.textColor[label]) {
+        textColor = diagramColors.textColor[label];
+      }
+
+      var x = offsetX0 + col * (squareWidth + squareSpacingX);
+      var y = offsetY + row * (squareHeight + squareSpacingY);
+
+      if (!isHighlighted && !isInProgress) {
+        ctx.globalAlpha = 0.3;
+      }
+
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(x, y, squareWidth, squareHeight);
+
+      ctx.globalAlpha = 1;
+
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = Math.max(2, 4 * scale);
+      ctx.strokeRect(x, y, squareWidth, squareHeight);
+
+      if (isHighlighted) {
+        ctx.strokeStyle = primaryColor;
+        ctx.lineWidth = Math.max(3, 6 * scale);
+        ctx.strokeRect(x, y, squareWidth, squareHeight);
+
+        var cx = x + squareWidth / 2;
+        var cy = y + squareHeight / 2;
+        var r = Math.min(squareWidth, squareHeight) * 0.32;
+
+        ctx.save();
+        ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+        ctx.shadowBlur = 6 * scale;
+        ctx.shadowOffsetY = 2 * scale;
+
+        var outerRing = ctx.createLinearGradient(cx, cy - r, cx, cy + r);
+        outerRing.addColorStop(0, "#C9A84C");
+        outerRing.addColorStop(0.5, "#F5D77A");
+        outerRing.addColorStop(1, "#A67C2E");
+        ctx.fillStyle = outerRing;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.shadowColor = "transparent";
+
+        var innerR = r * 0.78;
+        var innerGrad = ctx.createLinearGradient(cx, cy - innerR, cx, cy + innerR);
+        innerGrad.addColorStop(0, "#FFE8A0");
+        innerGrad.addColorStop(0.35, "#FFD54F");
+        innerGrad.addColorStop(0.65, "#FFCA28");
+        innerGrad.addColorStop(1, "#F0B400");
+        ctx.fillStyle = innerGrad;
+        ctx.beginPath();
+        ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = "rgba(160, 120, 30, 0.35)";
+        ctx.lineWidth = Math.max(1, 1.5 * scale);
+        ctx.beginPath();
+        ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
+        ctx.stroke();
+
+        var ts = r * 0.48;
+        ctx.strokeStyle = "#6D4C00";
+        ctx.lineWidth = Math.max(2.5, 4.5 * scale);
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.beginPath();
+        ctx.moveTo(cx - ts * 0.55, cy + ts * 0.05);
+        ctx.lineTo(cx - ts * 0.05, cy + ts * 0.5);
+        ctx.lineTo(cx + ts * 0.65, cy - ts * 0.45);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+      if (isInProgress) {
+        var iconS = Math.min(squareWidth, squareHeight) * 0.45;
+        var ix = x + (squareWidth - iconS) / 2;
+        var iy = y + (squareHeight - iconS) / 2;
+        var lw = Math.max(2, 3 * scale);
+
+        ctx.save();
+        ctx.strokeStyle = "#FF9800";
+        ctx.lineWidth = lw;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+
+        ctx.beginPath();
+        ctx.moveTo(ix, iy);
+        ctx.lineTo(ix, iy + iconS);
+        ctx.lineTo(ix + iconS, iy + iconS);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(ix + iconS * 0.15, iy + iconS * 0.7);
+        ctx.lineTo(ix + iconS * 0.4, iy + iconS * 0.4);
+        ctx.lineTo(ix + iconS * 0.6, iy + iconS * 0.55);
+        ctx.lineTo(ix + iconS * 0.85, iy + iconS * 0.15);
+        ctx.stroke();
+
+        ctx.restore();
+      }    }
+  }
+
+  ctx.save();
+  ctx.fillStyle = "#fff";
+  ctx.strokeStyle = "#000";
+  ctx.lineWidth = Math.max(1, 2 * scale);
+  ctx.fillRect(offsetX0, placaY, gridWidth, placaHeight);
+  ctx.strokeRect(offsetX0, placaY, gridWidth, placaHeight);
+  var placaFontSize = Math.max(12, Math.round(20 * scale));
+  ctx.fillStyle = "#000";
+  ctx.font = "bold " + placaFontSize + "px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("PLAÇA", offsetX0 + gridWidth / 2, placaY + placaHeight / 2);
+  ctx.restore();
 }
 
 

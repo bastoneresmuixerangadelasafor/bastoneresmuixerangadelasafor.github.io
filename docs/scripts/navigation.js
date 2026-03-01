@@ -72,6 +72,14 @@ const NAVIGATION = new (class AppNavigator {
           return;
         }
       }
+      if (route.startsWith("member-positions/")) {
+        const alias = decodeURIComponent(route.substring(17));
+        if (alias) {
+          APP.memberPositionsAlias = alias;
+          this.navigateTo("member-positions", false);
+          return;
+        }
+      }
 
       this.navigateTo(route, false);
     });
@@ -181,6 +189,14 @@ const NAVIGATION = new (class AppNavigator {
         if (trainingId) {
           APP.trainingIdToLoad = escapeHtml(trainingId);
           this.navigateTo("edit-training", false);
+          return;
+        }
+      }
+      if (initialRoute.startsWith("member-positions/")) {
+        const alias = decodeURIComponent(initialRoute.substring(17));
+        if (alias) {
+          APP.memberPositionsAlias = alias;
+          this.navigateTo("member-positions", false);
           return;
         }
       }

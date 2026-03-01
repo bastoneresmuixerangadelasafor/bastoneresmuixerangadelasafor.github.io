@@ -953,6 +953,79 @@ table tbody tr:last-child td {
   margin-top: 8px;
 }
 
+.profile-links {
+  margin-bottom: 20px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+}
+
+.profile-link-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  color: var(--text-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.profile-link-item:hover {
+  background: var(--background-color);
+}
+
+.profile-link-icon {
+  display: flex;
+  align-items: center;
+  color: var(--primary-color);
+}
+
+.profile-link-arrow {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  color: var(--text-muted);
+}
+
+/* Member Positions */
+.positions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.position-card {
+  border: 2px solid var(--primary-color);
+  border-radius: 12px;
+  padding: 20px;
+  background: #f0f4ff;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+}
+
+.dark-mode .position-card {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  box-shadow: none;
+}
+
+.position-card .diagram-header {
+  margin-bottom: 10px;
+}
+
+.position-card .diagrams-canvas-container {
+  padding: 0;
+}
+
+.position-card .diagrams-canvas-wrapper canvas {
+  border: none;
+  background: transparent;
+}
+
 .profile-details {
   margin-bottom: 30px;
   padding: 20px;
@@ -1577,9 +1650,6 @@ table tbody tr:last-child td {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .profile-card {
-    max-width: 100%;
-  }
 }
 
 /* Mobile breakpoint */
@@ -1722,35 +1792,6 @@ table tbody tr:last-child td {
 
   .members-edit-actions .edit-buttons {
     width: 100%;
-    justify-content: center;
-  }
-
-  /* Profile page */
-  .profile-card {
-    max-width: 100%;
-  }
-
-  .profile-header {
-    flex-direction: column;
-    text-align: center;
-    gap: 15px;
-  }
-
-  .profile-avatar {
-    width: 80px;
-    height: 80px;
-  }
-
-  .profile-info h2 {
-    font-size: 1.4em;
-  }
-
-  .profile-details {
-    padding: 15px;
-  }
-
-  .roles-list,
-  .relations-list {
     justify-content: center;
   }
 
@@ -2339,78 +2380,46 @@ table tbody tr:last-child td {
 /* Related Members Section */
 .related-members-section {
   margin-top: 20px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+}
+
+.related-members-section-title {
+  font-size: 0.85em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 12px;
 }
 
 .related-members-list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
 }
 
-.related-members-list .profile-header {
+.related-member-card {
+  padding: 12px 14px;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+}
+
+.related-member-card .profile-header {
   margin-bottom: 0;
 }
 
-/* Profile page mobile styles */
-@media (max-width: 768px) {
-  .profile-card {
-    max-width: 100%;
-  }
-
-  .profile-header {
-    flex-direction: column;
-    text-align: center;
-    padding-bottom: 15px;
-    margin-bottom: 20px;
-  }
-
-  .profile-info h2 {
-    font-size: 1.3em;
-  }
-
-  .profile-info .text-muted {
-    font-size: 0.9em;
-    word-break: break-all;
-  }
-
-  .profile-details {
-    padding: 15px;
-  }
-
-  .detail-group {
-    margin-bottom: 20px;
-  }
-
-  .roles-list,
-  .relations-list {
-    justify-content: flex-start;
-  }
-
-  .badge {
-    font-size: 0.8em;
-    padding: 3px 8px;
-  }
-
-  .related-members-list {
-    grid-template-columns: 1fr;
-  }
-
-  .related-member-card {
-    padding: 10px;
-  }
+.related-member-card .profile-links {
+  margin-top: 8px;
+  margin-bottom: 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color);
+}
+  border-top: 1px solid var(--border-color);
 }
 
-@media (max-width: 480px) {
-  .profile-avatar {
-    width: 70px;
-    height: 70px;
-  }
 
-  .member-type-badge {
-    font-size: 0.8em;
-    padding: 3px 10px;
-  }
-}
 
 /* Login dialog modal styles */
 #view-login {
@@ -3144,6 +3153,7 @@ input::placeholder {
   font-size: 0.85rem;
   color: #4b5563;
   text-decoration: none;
+  align-self: flex-start;
 }
 
 .dark-mode .event-card-place {
@@ -3266,15 +3276,6 @@ input::placeholder {
 }
 
 .dark-mode .training-count {
-  color: #cbd5e1;
-}
-
-.training-tbc {
-  font-style: italic;
-  color: #374151;
-}
-
-.dark-mode .training-tbc {
   color: #cbd5e1;
 }
 
@@ -4119,10 +4120,16 @@ input::placeholder {
 }
 
 .training-member-attendance-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 8px;
   transition: all 0.3s ease;
+}
+
+@media (min-width: 720px) {
+  .training-member-attendance-list {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .training-member-attendance-list.collapsed {
@@ -4418,10 +4425,16 @@ input::placeholder {
 }
 
 .event-member-attendance-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 8px;
   transition: all 0.3s ease;
+}
+
+@media (min-width: 720px) {
+  .event-member-attendance-list {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .event-member-attendance-list.collapsed {

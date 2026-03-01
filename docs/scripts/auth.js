@@ -303,6 +303,7 @@ const AUTH = new (class AppAuthentication {
                   ? "Xiquet/a"
                   : memberType;
             return (
+              '<div class="related-member-card">' +
               '<div class="profile-header">' +
               '<img class="profile-avatar" src="' +
               avatarUrl +
@@ -317,6 +318,25 @@ const AUTH = new (class AppAuthentication {
               memberTypeLabel +
               "</p>" +
               "</div>" +
+              "</div>" +
+              '<div class="profile-links">' +
+              '<a href="#member-positions/' + encodeURIComponent(member.alias) + '" class="profile-link-item" data-route="member-positions/' + encodeURIComponent(member.alias) + '">' +
+              '<span class="profile-link-icon">' +
+              '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+              '<rect x="3" y="3" width="7" height="7"></rect>' +
+              '<rect x="14" y="3" width="7" height="7"></rect>' +
+              '<rect x="14" y="14" width="7" height="7"></rect>' +
+              '<rect x="3" y="14" width="7" height="7"></rect>' +
+              '</svg>' +
+              '</span>' +
+              '<span>Posicions</span>' +
+              '<span class="profile-link-arrow">' +
+              '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+              '<polyline points="9 18 15 12 9 6"></polyline>' +
+              '</svg>' +
+              '</span>' +
+              '</a>' +
+              '</div>' +
               "</div>"
             );
           })

@@ -13,6 +13,7 @@ const DANCES = [
     structure: new DanceStructure({ rows: 2, columns: 4 }),
     diagram: new DanceDiagram({blockName: "Grup", backgroundColor: {"BAIX":"#FFF2CC", "DALT":"#92D050"}, textColor: {"BAIX":"#000000", "DALT":"#000000"}}),
     minGroups: 1,
+    showInPositions: true,
     positions: [
       new DancePosition({ order: 1, tag: "5", positionType: new PositionType({ label: "DALT" }), specifications: "Cantó equerre/cara plaça" }),
       new DancePosition({ order: 2, tag: "6", positionType: new PositionType({ label: "BAIX" }), specifications: "Mig equerre/cara plaça" }),
@@ -33,6 +34,7 @@ const DANCES = [
     structure: new DanceStructure({ rows: 2, columns: 1 }),
     diagram: new DanceDiagram({blockName: "Parella", backgroundColor: {"ANTIHORARI":"#FFF2CC", "HORARI":"#92D050"}, textColor: {"ANTIHORARI":"#000000", "HORARI":"#000000"}}),
     minGroups: 3,
+    showInPositions: true,
     positions: [
       new DancePosition({ order: 1, tag: "1", positionType: new PositionType({ label: "ANTIHORARI" }), specifications: "Antihorari" }),
       new DancePosition({ order: 2, tag: "2", positionType: new PositionType({ label: "HORARI" }), specifications: "Horari" }),
@@ -46,6 +48,7 @@ const DANCES = [
     structure: new DanceStructure({ rows: 2, columns: 4 }),
     diagram: new DanceDiagram({blockName: "Grup", backgroundColor: {"CARLOTETA":"#FFF2CC", "CORRER":"#92D050"}, textColor: {"CARLOTETA":"#000000", "CORRER":"#000000"}}),
     minGroups: 1,
+    showInPositions: true,
     positions: [
       new DancePosition({ order: 1, tag: "5", positionType: new PositionType({ label: "CORRER" }), specifications: "Cantó equerre/cara plaça" }),
       new DancePosition({ order: 2, tag: "6", positionType: new PositionType({ label: "CARLOTETA" }), specifications: "Mig equerre/cara plaça" }),
@@ -66,6 +69,7 @@ const DANCES = [
     structure: new DanceStructure({ rows: 2, columns: 3 }),
     diagram: new DanceDiagram({blockName: "Grup", backgroundColor: {"CARLOTETA":"#FFF2CC", "CORRER":"#92D050"}, textColor: {"CARLOTETA":"#000000", "CORRER":"#000000"}}),
     minGroups: 1,
+    showInPositions: true,
     positions: [
       new DancePosition({ order: 1, tag: "4", positionType: new PositionType({ label: "CORRER" }), specifications: "Cantó equerre/cara plaça" }),
       new DancePosition({ order: 2, tag: "5", positionType: new PositionType({ label: "CARLOTETA" }), specifications: "Mig/cara plaça" }),
@@ -85,6 +89,7 @@ const DANCES = [
     structure: new DanceStructure({ rows: 2, columns: 2 }),
     diagram: new DanceDiagram({blockName: "Quadre", backgroundColor: {"ANTIHORARI":"#FFF2CC", "HORARI":"#92D050"}, textColor: {"ANTIHORARI":"#000000", "HORARI":"#000000"}}),
     minGroups: 1,
+    showInPositions: true,
     positions: [
       new DancePosition({ order: 1, tag: "3", positionType: new PositionType({ label: "ANTIHORARI" }), specifications: "Esquerre/cara plaça" }),
       new DancePosition({ order: 2, tag: "4", positionType: new PositionType({ label: "ANTIHORARI" }), specifications: "Dreta/cara plaça" }),
@@ -97,6 +102,7 @@ const DANCES = [
     structure: new DanceStructure({ rows: 2, columns: 2 }),
     diagram: new DanceDiagram({blockName: "Quadre", backgroundColor: {"FORA":"#92D050", "DINS":"#FFF2CC"}, textColor: {"FORA":"#000000", "DINS":"#000000"}}),
     minGroups: 1,
+    showInPositions: true,
     positions: [
       new DancePosition({ order: 1, tag: "3", positionType: new PositionType({ label: "FORA" }), specifications: "Esquerre/cara plaça" }),
       new DancePosition({ order: 2, tag: "4", positionType: new PositionType({ label: "DINS" }), specifications: "Dreta/cara plaça" }),
@@ -112,6 +118,7 @@ const DANCES = [
     structure: new DanceStructure({ rows: 2, columns: 2 }),
     diagram: new DanceDiagram({blockName: "Grup", backgroundColor: {"BAIX":"#FFF2CC", "DALT":"#92D050"}, textColor: {"BAIX":"#000000", "DALT":"#000000"}}),
     minGroups: 1,
+    showInPositions: true,
     positions: [
       new DancePosition({ order: 1, tag: "4", positionType: new PositionType({ label: "DALT" }), specifications: "Cantó equerre/cara plaça" }),
       new DancePosition({ order: 2, tag: "3", positionType: new PositionType({ label: "BAIX" }), specifications: "Cantó dret/cara plaça" }),
@@ -124,6 +131,7 @@ const DANCES = [
     structure: new DanceStructure({ rows: 2, columns: 8 }),
     diagram: new DanceDiagram({blockName: "Grup", backgroundColor: {"BAIX":"#FFF2CC", "DALT":"#92D050"}, textColor: {"BAIX":"#000000", "DALT":"#000000"}}),
     minGroups: 1,
+    showInPositions: false,
     positions: [
       new DancePosition({ order: 1, tag: "9", positionType: new PositionType({ label: "DALT" }), specifications: "Cantó equerre/cara plaça" }),
       new DancePosition({ order: 2, tag: "10", positionType: new PositionType({ label: "BAIX" }), specifications: "Mig equerre/cara plaça" }),
@@ -148,6 +156,7 @@ const DANCES = [
     structure: new DanceStructure({ rows: 2, columns: 2 }),
     diagram: new DanceDiagram({blockName: "Grup", backgroundColor: {"POSICIÓ":"#FFF2CC"}, textColor: {"POSICIÓ":"#000000"}}),
     minGroups: 1,
+    showInPositions: true,
     positions: [
       new DancePosition({ order: 1, tag: "4", positionType: new PositionType({ label: "POSICIÓ" }), specifications: "Cantó equerre/cara plaça" }),
       new DancePosition({ order: 2, tag: "3", positionType: new PositionType({ label: "POSICIÓ" }), specifications: "Cantó dret/cara plaça" }),

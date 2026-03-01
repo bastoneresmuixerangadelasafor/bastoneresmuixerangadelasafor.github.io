@@ -15,6 +15,7 @@ events_spreadsheet_id: 1blwF8V49tz2YtwXpjD6Zl5nlGrtm3bTGqgkhI1NPtCk
 events_sheet_name: Llistat
 training_spreadsheet_id: 12zIHjHlOcMfpdembwGm7C60F0K9CjAIVS7ogNLJnKFA
 assistance_sheet_name: Assistencia
+positions_spreadsheet_id: 1On4jsBvr3oVan9WFhzgIcJPkxKq5Ph5wB8M6KNQpjrU
 member_cache: MEMBERS
 event_cache: EVENTS
 training_cache: TRAININGS

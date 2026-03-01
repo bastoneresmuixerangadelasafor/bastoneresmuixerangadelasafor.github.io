@@ -6,6 +6,7 @@ import { DanceStructure } from "./DanceStructure.js";
 interface DanceParams {
   name: string;
   minGroups: number;
+  showInPositions: boolean;
   structure: DanceStructure;
   diagram: DanceDiagram;
   positions?: DancePosition[];
@@ -15,6 +16,7 @@ interface DanceParams {
 export class Dance {
   readonly name: string;
   readonly minGroups: number;
+  readonly showInPositions: boolean;
   readonly structure: DanceStructure;
   readonly diagram: DanceDiagram;
   readonly positions: DancePosition[];
@@ -23,6 +25,7 @@ export class Dance {
   constructor({
     name,
     minGroups,
+    showInPositions,
     structure,
     diagram,
     positions = [],
@@ -48,6 +51,7 @@ export class Dance {
     this.diagram = diagram;
     this.positions = positions;
     this.minGroups = minGroups;
+    this.showInPositions = showInPositions;
     this.audios = audios;
   }
 }

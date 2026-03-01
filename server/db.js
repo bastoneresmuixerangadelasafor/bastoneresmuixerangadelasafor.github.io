@@ -314,6 +314,39 @@ const CACHE = new class GAppsServerCache {
     return eventAssistance;
   }
 
+  retrieveMemberPositionsFromDB(memberAlias) {
+    const spreadsheet = SpreadsheetApp.openById(POSITIONS_SPREADSHEET_ID);
+    const sheet = spreadsheet.getSheetByName(memberAlias);
+
+    if (!sheet) {
+      return {};
+    }
+
+    const data = sheet.getDataRange().getValues();
+
+    if (!data || data.length < 2) {
+      return {};
+    }
+
+    const headers = data[0];
+    const positions = {};
+
+    for (let colIndex = 1; colIndex < headers.length; colIndex++) {
+      const danceName = headers[colIndex];
+      if (!danceName) continue;
+      const entries = {};
+      for (let row = 1; row < data.length; row++) {
+        const positionId = data[row][0];
+        if (!positionId && positionId !== 0) continue;
+        const value = String(data[row][colIndex]).trim().toUpperCase();
+        entries[positionId] = value;
+      }
+      positions[danceName] = entries;
+    }
+
+    return positions;
+  }
+
   removeExpiredSessionTokens() {
     try {
       const sessionsData = this.cache_.getProperty(USER_SESSION);

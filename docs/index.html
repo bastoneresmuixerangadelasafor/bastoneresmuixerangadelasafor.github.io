@@ -271,13 +271,50 @@
                     </div>
                 </div>
 
+                <!-- Profile Links Section -->
+                <div class="profile-links">
+                    <a href="#member-positions" class="profile-link-item" data-route="member-positions">
+                        <span class="profile-link-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                        </span>
+                        <span>Les meues posicions</span>
+                        <span class="profile-link-arrow">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </span>
+                    </a>
+                </div>
+
                 <!-- Related Members Section -->
                 <div id="related-members-section" class="related-members-section" style="display: none;">
+                    <p class="related-members-section-title">Membres relacionats</p>
                     <div id="related-members-list" class="related-members-list">
                         <!-- Each related member will use profile-header structure -->
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+<!-- Member Positions View -->
+    <div id="view-member-positions" class="view" data-view="member-positions" data-auth="required" style="display: none;">
+        <div class="container">
+            <div class="page-header">
+                <h1>Les meues posicions</h1>
+            </div>
+            <div id="member-positions-loading" class="loading-indicator" style="display: none;">
+                <div class="spinner"></div>
+                <p>Carregant posicions...</p>
+            </div>
+            <div id="member-positions-empty" class="empty-state" style="display: none;">
+                <p>No s'han trobat posicions assignades.</p>
+            </div>
+            <div id="member-positions-list" class="positions-list"></div>
         </div>
     </div>
 <!-- Login Dialog Modal -->
@@ -863,10 +900,12 @@
             });
 
             // Disable canvas click handlers
+            const currentUserRoles = (APP && APP.currentUser && APP.currentUser.roles) || [];
+            const isAdmin = currentUserRoles.includes('ADMIN');
             const canvases = diagramsList.querySelectorAll('canvas');
             canvases.forEach(function (canvas) {
-                canvas.style.cursor = isEditable ? 'pointer' : 'default';
-                canvas.style.pointerEvents = isEditable ? 'auto' : 'none';
+                canvas.style.cursor = (isEditable && isAdmin) ? 'pointer' : 'default';
+                canvas.style.pointerEvents = (isEditable && isAdmin) ? 'auto' : 'none';
             });
         }
 
@@ -1263,6 +1302,9 @@ ${descriptionHtml}
                 if (!canvas) return;
 
                 canvas.addEventListener('click', function (e) {
+                    const userRoles = (APP && APP.currentUser && APP.currentUser.roles) || [];
+                    if (!userRoles.includes('ADMIN')) return;
+
                     const diagram = diagrams.find(d => d.id === diagramId);
                     if (!diagram) return;
 
@@ -2937,6 +2979,7 @@ const EVENTS_SPREADSHEET_ID = "1blwF8V49tz2YtwXpjD6Zl5nlGrtm3bTGqgkhI1NPtCk"
 const EVENTS_SHEET_NAME = "Llistat"
 const TRAINING_SPREADSHEET_ID = "12zIHjHlOcMfpdembwGm7C60F0K9CjAIVS7ogNLJnKFA"
 const ASSISTANCE_SHEET_NAME = "Assistencia"
+const POSITIONS_SPREADSHEET_ID = "1On4jsBvr3oVan9WFhzgIcJPkxKq5Ph5wB8M6KNQpjrU"
 const MEMBER_CACHE = "MEMBERS"
 const EVENT_CACHE = "EVENTS"
 const TRAINING_CACHE = "TRAININGS"
