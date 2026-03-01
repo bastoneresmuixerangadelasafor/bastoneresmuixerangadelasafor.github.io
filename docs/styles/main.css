@@ -2012,19 +2012,7 @@ table tbody tr:last-child td {
     padding: 10px;
   }
 
-  /* Confirmation buttons (attend/decline/cancel) */
-  .training-confirmation-buttons .btn-xs,
-  .event-confirmation-buttons .btn-xs {
-    font-size: 0.8rem;
-    padding: 10px 12px;
-    min-height: 44px;
-    min-width: 44px;
-  }
 
-  .training-confirmation-buttons,
-  .event-confirmation-buttons {
-    gap: 8px;
-  }
 
   /* Note links in confirmation sections */
   .training-note-link,
@@ -3431,7 +3419,7 @@ input::placeholder {
 .training-confirmation-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   padding-left: 12px;
   margin-left: 4px;
   border-left: 2px solid rgba(0, 0, 0, 0.1);
@@ -3446,8 +3434,8 @@ input::placeholder {
 }
 
 .training-confirmation-buttons .btn-xs {
-  font-size: 0.7rem;
-  padding: 3px 6px;
+  font-size: 0.8rem;
+  padding: 10px 12px;
   min-height: 44px;
   min-width: 44px;
   border-radius: 3px;
@@ -3647,7 +3635,7 @@ input::placeholder {
 .event-confirmation-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   padding-left: 12px;
   margin-left: 4px;
   border-left: 2px solid rgba(0, 0, 0, 0.1);
@@ -3662,8 +3650,8 @@ input::placeholder {
 }
 
 .event-confirmation-buttons .btn-xs {
-  font-size: 0.7rem;
-  padding: 3px 6px;
+  font-size: 0.8rem;
+  padding: 10px 12px;
   min-height: 44px;
   min-width: 44px;
   border-radius: 3px;
