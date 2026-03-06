@@ -5440,6 +5440,88 @@ body.dark-mode .event-meeting-place-display {
   -webkit-overflow-scrolling: touch;
 }
 
+.diagram-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 10px 0;
+}
+
+.reserva-btn {
+  display: inline-block;
+  background: var(--primary-color, #6366f1);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  transition: background 0.2s, transform 0.1s;
+}
+
+.reserva-btn:hover {
+  background: var(--primary-dark, #5558e3);
+  transform: scale(1.02);
+}
+
+.reserva-btn:active {
+  transform: scale(0.98);
+}
+
+.backup-members-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  flex: 1;
+  min-width: 0;
+}
+
+.backup-member-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--primary-color, #6366f1);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.remove-backup-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.remove-backup-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode .backup-members-list {
+  background: #1e293b;
+  border-color: #475569;
+}
+
 .diagram-form-toggle {
   display: flex;
   justify-content: flex-end;
@@ -7711,6 +7793,13 @@ body.dark-mode .theme-icon-dark {
                 return true;
             }
 
+            const userRoles = (APP && APP.currentUser && APP.currentUser.roles) || [];
+            const isAdmin = userRoles.includes('ADMIN');
+            if (!isAdmin) {
+                isEventEditable = false;
+                return false;
+            }
+
             const eventDatetimeInput = document.getElementById('event-datetime-input');
             if (!eventDatetimeInput || !eventDatetimeInput.value) {
                 return true; // Assume editable if no date set
@@ -7815,17 +7904,16 @@ body.dark-mode .theme-icon-dark {
             });
 
             // Disable all action buttons (including main-btn variants)
-            const actionButtons = diagramsList.querySelectorAll('.add-group-btn, .remove-diagram-btn, .edit-description-btn, .add-description-link, .main-btn');
+            const actionButtons = diagramsList.querySelectorAll('.add-group-btn, .remove-diagram-btn, .edit-description-btn, .add-description-link, .main-btn, .reserva-btn, .remove-backup-btn');
             actionButtons.forEach(function (btn) {
                 btn.disabled = !isEditable;
                 btn.style.cursor = isEditable ? 'pointer' : 'not-allowed';
                 btn.style.pointerEvents = isEditable ? 'auto' : 'none';
             });
 
-            // Hide diagram header actions when not editable
-            const diagramHeaderActions = diagramsList.querySelectorAll('.diagram-header-actions');
-            diagramHeaderActions.forEach(function (headerActions) {
-                headerActions.style.display = isEditable ? 'flex' : 'none';
+            const lockedHiddenElements = diagramsList.querySelectorAll('.diagram-header-actions, .reserva-btn, .remove-backup-btn');
+            lockedHiddenElements.forEach(function (el) {
+                el.style.display = isEditable ? '' : 'none';
             });
 
             // Hide edit-description-btn when not editable
@@ -8302,6 +8390,21 @@ body.dark-mode .theme-icon-dark {
                 }
             }
 
+            // Generate backup members display
+            const backup = diagram.backup || [];
+            let backupHtml = '';
+            if (backup.length > 0) {
+                backupHtml = '<div class="backup-members-list">';
+                backup.forEach(function (memberAlias) {
+                    backupHtml += `<span class="backup-member-chip">${memberAlias}`;
+                    if (isAdmin) {
+                        backupHtml += `<button type="button" class="remove-backup-btn" data-diagram-id="${diagram.id}" data-member="${memberAlias}" title="Eliminar">×</button>`;
+                    }
+                    backupHtml += '</span>';
+                });
+                backupHtml += '</div>';
+            }
+
             div.innerHTML = `
 <div class="diagram-header">
 ${descriptionHtml}
@@ -8322,6 +8425,10 @@ ${descriptionHtml}
     <canvas id="diagram-canvas-${diagram.id}" width="1200" height="350"></canvas>
 </div>
 </div>
+<div class="diagram-actions-row">
+<button type="button" class="reserva-btn" style="${adminOnlyStyle}" data-diagram-id="${diagram.id}">RESERVA</button>
+${backupHtml}
+</div>
 `;
             return div;
         }
@@ -8339,6 +8446,7 @@ ${descriptionHtml}
             window.selectedGroup = null;
             window.selectedSquare = null;
             window.currentOptions = [];
+            window.isSelectingBackup = false;
 
             // Load dances from server and populate chips
             function loadDancesData() {
@@ -8393,7 +8501,8 @@ ${descriptionHtml}
                     positions: positions,
                     diagram: diagramData,
                     groups: initialGroups,
-                    forms: structure.forms || ['grid']
+                    forms: structure.forms || ['grid'],
+                    backup: []
                 };
                 diagrams.push(newDiagram);
                 setDiagramsDirty(true);
@@ -8552,6 +8661,72 @@ ${descriptionHtml}
                 personCombo.style.display = isLoading ? 'none' : 'block';
             }
 
+            // Helper to populate the person list for backup selection
+            function populatePersonListForBackup(diagramId) {
+                const diagram = diagrams.find(d => d.id === diagramId);
+                if (!diagram) return;
+
+                // Update position info to show "RESERVA"
+                const positionInfo = document.getElementById('position-info');
+                positionInfo.textContent = 'RESERVA - ' + diagram.danceName;
+
+                // Get all members already used in the diagram
+                const cellCount = (diagram.rows || 2) * (diagram.columns || 2);
+                let usedIds = [];
+                for (let gi = 0; gi < diagram.groups.length; gi++) {
+                    for (let si = 0; si < cellCount; si++) {
+                        if (diagram.groups[gi][si]) usedIds.push(diagram.groups[gi][si]);
+                    }
+                }
+
+                // Also include members already in backup
+                if (diagram.backup) {
+                    usedIds = usedIds.concat(diagram.backup);
+                }
+
+                // Check if event is in the past - if so, include inactive members
+                let isEventInPast = false;
+                const eventDateValue = eventDatetimeInput.value;
+                if (eventDateValue) {
+                    const eventDate = new Date(eventDateValue);
+                    const now = new Date();
+                    isEventInPast = eventDate < now;
+                }
+
+                // Filter members: only active for future events, all for past events
+                const personAliases = MEMBERS.membersData
+                    .filter(m => isEventInPast || m.active)
+                    .map(m => m.alias)
+                    .filter(Boolean);
+                window.currentOptions = personAliases.filter(id => !usedIds.includes(id));
+                personList.innerHTML = '';
+
+                if (window.currentOptions.length === 0) {
+                    personCombo.style.display = 'none';
+                    personLoading.style.display = 'block';
+                    personLoading.querySelector('.dialog-spinner').style.display = 'none';
+                    personLoading.querySelector('p').textContent = 'No hi ha membres disponibles';
+                } else {
+                    personCombo.style.display = 'block';
+                    personLoading.style.display = 'none';
+                    personLoading.querySelector('.dialog-spinner').style.display = 'block';
+                    personLoading.querySelector('p').textContent = 'Carregant membres...';
+                    personCombo.placeholder = 'Cerca o selecciona...';
+                    personCombo.disabled = false;
+                    // Populate dropdown with all options initially
+                    updateDropdownOptions(window.currentOptions);
+                }
+
+                personCombo.value = '';
+                clearPersonBtn.style.display = 'none';
+                showDialogWithBackdrop(dialog);
+                // Focus and show dropdown
+                setTimeout(function () {
+                    personCombo.focus();
+                    personList.classList.add('open');
+                }, 100);
+            }
+
             // Helper to populate the person list
             function populatePersonList(diagramId, g, squareIdx) {
                 const diagram = diagrams.find(d => d.id === diagramId);
@@ -8629,6 +8804,10 @@ ${descriptionHtml}
 
             // Handle clear button click
             clearPersonBtn.addEventListener('click', function () {
+                if (window.isSelectingBackup) {
+                    // Can't clear backup from dialog, need to use remove button
+                    return;
+                }
                 if (window.selectedDiagramId !== null && window.selectedGroup !== null && window.selectedSquare !== null) {
                     const diagram = diagrams.find(d => d.id === window.selectedDiagramId);
                     if (diagram) {
@@ -8645,10 +8824,47 @@ ${descriptionHtml}
             // If openNextBlock is true, automatically open the dialog for the next empty block
             function handlePersonSelection(openNextBlock) {
                 const id = personCombo.value.trim();
-                if (window.selectedDiagramId !== null && window.selectedGroup !== null && window.selectedSquare !== null && id && window.currentOptions.includes(id)) {
+                if (!id || !window.currentOptions.includes(id)) return;
+
+                // Handle backup selection
+                if (window.isSelectingBackup && window.selectedDiagramId !== null) {
+                    const diagram = diagrams.find(d => d.id === window.selectedDiagramId);
+                    if (diagram) {
+                        if (!diagram.backup) diagram.backup = [];
+                        diagram.backup.push(id);
+                        setDiagramsDirty(true);
+                        // Re-render the diagram element to show the backup member
+                        const oldElement = document.getElementById('diagram-item-' + window.selectedDiagramId);
+                        if (oldElement) {
+                            const newElement = createDiagramElement(diagram);
+                            oldElement.replaceWith(newElement);
+                            setupCanvasClickHandler(window.selectedDiagramId);
+                            drawDiagram(diagram);
+                        }
+                        window.isSelectingBackup = false;
+                        closeDialogWithBackdrop(dialog);
+                    }
+                    return;
+                }
+
+                // Handle regular position selection
+                if (window.selectedDiagramId !== null && window.selectedGroup !== null && window.selectedSquare !== null) {
                     const diagram = diagrams.find(d => d.id === window.selectedDiagramId);
                     if (diagram) {
                         diagram.groups[window.selectedGroup][window.selectedSquare] = id;
+                        
+                        // Remove person from backup list if they were in it
+                        if (diagram.backup && diagram.backup.includes(id)) {
+                            diagram.backup = diagram.backup.filter(m => m !== id);
+                            // Re-render the diagram element to update the backup list
+                            const oldElement = document.getElementById('diagram-item-' + window.selectedDiagramId);
+                            if (oldElement) {
+                                const newElement = createDiagramElement(diagram);
+                                oldElement.replaceWith(newElement);
+                                setupCanvasClickHandler(window.selectedDiagramId);
+                            }
+                        }
+                        
                         setDiagramsDirty(true);
                         drawDiagram(diagram);
 
@@ -8913,6 +9129,52 @@ ${descriptionHtml}
                         setDiagramsDirty(true);
                     }
                 }
+                // RESERVA button
+                if (e.target.classList.contains('reserva-btn')) {
+                    const diagramId = parseInt(e.target.dataset.diagramId);
+                    const diagram = diagrams.find(d => d.id === diagramId);
+                    if (!diagram) return;
+
+                    // Set selection state for backup
+                    window.selectedDiagramId = diagramId;
+                    window.selectedGroup = null;
+                    window.selectedSquare = null;
+                    window.isSelectingBackup = true;
+
+                    if (!MEMBERS.membersData || MEMBERS.membersData.length === 0) {
+                        setDialogLoading(true);
+                        showDialogWithBackdrop(dialog);
+                        const checkInterval = setInterval(function () {
+                            if (MEMBERS.membersData && MEMBERS.membersData.length > 0) {
+                                clearInterval(checkInterval);
+                                setDialogLoading(false);
+                                populatePersonListForBackup(diagramId);
+                            }
+                        }, 200);
+                        return;
+                    }
+
+                    setDialogLoading(false);
+                    populatePersonListForBackup(diagramId);
+                }
+                // Remove backup button
+                if (e.target.classList.contains('remove-backup-btn')) {
+                    const diagramId = parseInt(e.target.dataset.diagramId);
+                    const memberAlias = e.target.dataset.member;
+                    const diagram = diagrams.find(d => d.id === diagramId);
+                    if (diagram) {
+                        diagram.backup = diagram.backup.filter(m => m !== memberAlias);
+                        setDiagramsDirty(true);
+                        // Re-render the diagram element
+                        const oldElement = document.getElementById('diagram-item-' + diagramId);
+                        if (oldElement) {
+                            const newElement = createDiagramElement(diagram);
+                            oldElement.replaceWith(newElement);
+                            setupCanvasClickHandler(diagramId);
+                            drawDiagram(diagram);
+                        }
+                    }
+                }
                 // Form toggle button
                 if (e.target.classList.contains('form-toggle-btn')) {
                     const diagramId = parseInt(e.target.dataset.diagramId);
@@ -9019,7 +9281,8 @@ ${descriptionHtml}
                             rows: d.rows,
                             columns: d.columns,
                             positions: d.positions,
-                            groups: d.groups
+                            groups: d.groups,
+                            backup: d.backup || []
                         };
                     })
                 };
@@ -9100,7 +9363,10 @@ ${descriptionHtml}
                         const padding = 30;
                         const descriptionHeight = diagram.description ? 30 : 0;
                         const titleHeight = 35;
-                        const totalHeight = headerHeight + titleHeight + descriptionHeight + canvas.height + padding * 2;
+                        const backupMembers = Array.isArray(diagram.backup) ? diagram.backup.filter(Boolean) : [];
+                        const backupText = backupMembers.length > 0 ? `Reserves: ${backupMembers.join(', ')}` : '';
+                        const backupHeight = backupText ? 40 : 0;
+                        const totalHeight = headerHeight + titleHeight + descriptionHeight + canvas.height + padding * 2 + backupHeight;
 
                         // Create a canvas for this diagram
                         const imageCanvas = document.createElement('canvas');
@@ -9138,6 +9404,14 @@ ${descriptionHtml}
 
                         // Draw the diagram canvas
                         ctx.drawImage(canvas, 0, yOffset);
+
+                        if (backupText) {
+                            const backupY = yOffset + canvas.height + 28;
+                            ctx.fillStyle = '#333';
+                            ctx.font = '18px sans-serif';
+                            ctx.textAlign = 'left';
+                            ctx.fillText(backupText, 30, backupY);
+                        }
 
                         // Convert to blob and create file
                         imageCanvas.toBlob(function (blob) {
@@ -11708,6 +11982,10 @@ function updateAuthUI() {
       el.style.display = "none";
     });
   }
+
+  if (typeof applyEditableState === "function") {
+    applyEditableState();
+  }
 }
 
 function loadMemberPositionsData() {
@@ -13135,6 +13413,18 @@ window.onerror = function (message, source, lineno, colno, error) {
     if (typeof diagramsIsDirty !== "undefined") {
       diagramsIsDirty = false;
     }
+    if (typeof isEventManuallyUnlocked !== "undefined") {
+      isEventManuallyUnlocked = false;
+    }
+    if (typeof isTrainingManuallyUnlocked !== "undefined") {
+      isTrainingManuallyUnlocked = false;
+    }
+    if (typeof isEventEditable !== "undefined") {
+      isEventEditable = true;
+    }
+    if (typeof isTrainingEditable !== "undefined") {
+      isTrainingEditable = true;
+    }
   }
 
   handleLogin() {
@@ -14358,6 +14648,12 @@ function resetEventsForm() {
   if (typeof diagramsIsDirty !== "undefined") {
     diagramsIsDirty = false;
   }
+  if (typeof isEventManuallyUnlocked !== "undefined") {
+    isEventManuallyUnlocked = false;
+  }
+  if (typeof isEventEditable !== "undefined") {
+    isEventEditable = true;
+  }
 }
 
 
@@ -14422,6 +14718,11 @@ function renderPlanningEventsList(events) {
     </div>
     `;
     if (pastEventsContainer) pastEventsContainer.innerHTML = "";
+    
+    const refreshBtn = document.getElementById("refresh-event-btn");
+    if (refreshBtn) {
+      refreshBtn.style.display = "block";
+    }
     return;
   }
 
@@ -14669,6 +14970,13 @@ function loadEventData(eventId) {
   }
   
   APP.currentEventId = eventId;
+
+  if (typeof isEventManuallyUnlocked !== "undefined") {
+    isEventManuallyUnlocked = false;
+  }
+  if (typeof isEventEditable !== "undefined") {
+    isEventEditable = true;
+  }
   
   APP.showLoading(true);
 
@@ -14828,6 +15136,7 @@ function renderDiagrams(eventData) {
         : { backgroundColor: {}, textColor: {} },
       groups: diagramData.groups || [],
       forms: danceInfo && danceInfo.structure && danceInfo.structure.forms ? danceInfo.structure.forms : ['grid'],
+      backup: diagramData.backup || []
     };
 
     // If positions don't have colors, try to get them from dance info

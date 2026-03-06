@@ -47,6 +47,12 @@ function resetEventsForm() {
   if (typeof diagramsIsDirty !== "undefined") {
     diagramsIsDirty = false;
   }
+  if (typeof isEventManuallyUnlocked !== "undefined") {
+    isEventManuallyUnlocked = false;
+  }
+  if (typeof isEventEditable !== "undefined") {
+    isEventEditable = true;
+  }
 }
 
 
@@ -111,6 +117,11 @@ function renderPlanningEventsList(events) {
     </div>
     `;
     if (pastEventsContainer) pastEventsContainer.innerHTML = "";
+    
+    const refreshBtn = document.getElementById("refresh-event-btn");
+    if (refreshBtn) {
+      refreshBtn.style.display = "block";
+    }
     return;
   }
 
@@ -358,6 +369,13 @@ function loadEventData(eventId) {
   }
   
   APP.currentEventId = eventId;
+
+  if (typeof isEventManuallyUnlocked !== "undefined") {
+    isEventManuallyUnlocked = false;
+  }
+  if (typeof isEventEditable !== "undefined") {
+    isEventEditable = true;
+  }
   
   APP.showLoading(true);
 
@@ -517,6 +535,7 @@ function renderDiagrams(eventData) {
         : { backgroundColor: {}, textColor: {} },
       groups: diagramData.groups || [],
       forms: danceInfo && danceInfo.structure && danceInfo.structure.forms ? danceInfo.structure.forms : ['grid'],
+      backup: diagramData.backup || []
     };
 
     // If positions don't have colors, try to get them from dance info

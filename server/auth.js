@@ -10,21 +10,21 @@ function loginWithEmailPassword_({ email, password }) {
       return API.newError_({ error: "Format de correu electrònic no vàlid" });
     }
 
-    // // Get stored credentials from Script Properties (admin-managed)
-    // const usersData = scriptProps.getProperty(USER_CREDS);
-    // const users = usersData ? JSON.parse(usersData) : {};
+    // Get stored credentials from Script Properties (admin-managed)
+    const usersData = scriptProps.getProperty(USER_CREDS);
+    const users = usersData ? JSON.parse(usersData) : {};
 
-    // // Check if user exists
-    // const storedUser = users[email.toLowerCase()];
-    // if (!storedUser) {
-    //   return API.newError_({ error: "Correu electrònic o contrasenya incorrectes", status:400 });
-    // }
+    // Check if user exists
+    const storedUser = users[email.toLowerCase()];
+    if (!storedUser) {
+      return API.newError_({ error: "Correu electrònic o contrasenya incorrectes", status:400 });
+    }
 
-    // // Verify password (using simple hash comparison)
-    // const hashedPassword = hashPassword_({ password });
-    // if (storedUser.passwordHash !== hashedPassword) {
-    //   return API.newError_({ error: "Correu electrònic o contrasenya incorrectes", status:400 });
-    // }
+    // Verify password (using simple hash comparison)
+    const hashedPassword = hashPassword_({ password });
+    if (storedUser.passwordHash !== hashedPassword) {
+      return API.newError_({ error: "Correu electrònic o contrasenya incorrectes", status:400 });
+    }
 
     // Find matching member from MEMBERS
     const member = CACHE.getMembers().find(function (m) {

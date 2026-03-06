@@ -396,6 +396,10 @@ function updateAuthUI() {
       el.style.display = "none";
     });
   }
+
+  if (typeof applyEditableState === "function") {
+    applyEditableState();
+  }
 }
 
 function loadMemberPositionsData() {

@@ -498,6 +498,18 @@ const AUTH = new (class AppAuthentication {
     if (typeof diagramsIsDirty !== "undefined") {
       diagramsIsDirty = false;
     }
+    if (typeof isEventManuallyUnlocked !== "undefined") {
+      isEventManuallyUnlocked = false;
+    }
+    if (typeof isTrainingManuallyUnlocked !== "undefined") {
+      isTrainingManuallyUnlocked = false;
+    }
+    if (typeof isEventEditable !== "undefined") {
+      isEventEditable = true;
+    }
+    if (typeof isTrainingEditable !== "undefined") {
+      isTrainingEditable = true;
+    }
   }
 
   handleLogin() {

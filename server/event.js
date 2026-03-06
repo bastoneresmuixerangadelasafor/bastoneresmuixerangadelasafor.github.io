@@ -34,12 +34,12 @@ function saveEvent_({event}) {
   if (event.diagrams && event.diagrams.length > 0) {
     event.diagrams.forEach(function(diagram, diagramIndex) {
       // Dance name header
-      data.push(['Ball:', diagram.danceName]);
+      const backup = diagram.backup || [];
+      const ballRow = ['Ball:', diagram.danceName, 'Reserves:'].concat(backup);
+      data.push(ballRow);
       
       // Description (if any)
-      if (diagram.description) {
-        data.push(['Descripció:', diagram.description]);
-      }
+      data.push(['Descripció:', diagram.description ?? '']);
       
       const rows = diagram.rows || 2;
       const cols = diagram.columns || 2;
@@ -64,7 +64,7 @@ function saveEvent_({event}) {
           posRow.push(group[cellIndex] || '');
         });
         data.push(posRow);
-      }
+      }     
       
       data.push([]); // Empty row between dances
     });
@@ -293,13 +293,26 @@ function getEventById_({eventId}) {
           diagrams.push(currentDance);
         }
         
+        // Read backup list from Ball row (columns 3 onwards: each member in separate cell)
+        let backup = [];
+        if (row[2] === 'Reserves:') {
+          for (let col = 3; col < row.length; col++) {
+            if (row[col] && String(row[col]).trim().length > 0) {
+              backup.push(String(row[col]).trim());
+            } else {
+              break;
+            }
+          }
+        }
+        
         currentDance = {
           danceName: row[1] || '',
           description: '',
           rows: 0,
           columns: 0,
           positions: [],
-          groups: []
+          groups: [],
+          backup: backup
         };
         i++;
         
