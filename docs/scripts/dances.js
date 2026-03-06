@@ -3,7 +3,10 @@ const DANCES = [
     "name": "La polca",
     "structure": {
       "rows": 2,
-      "columns": 4
+      "columns": 4,
+      "forms": [
+        "grid"
+      ]
     },
     "diagram": {
       "blockName": "Grup",
@@ -101,7 +104,11 @@ const DANCES = [
     "name": "Ara i sempre",
     "structure": {
       "rows": 2,
-      "columns": 1
+      "columns": 1,
+      "forms": [
+        "radial",
+        "grid"
+      ]
     },
     "diagram": {
       "blockName": "Parella",
@@ -146,7 +153,10 @@ const DANCES = [
     "name": "La boja de 8",
     "structure": {
       "rows": 2,
-      "columns": 4
+      "columns": 4,
+      "forms": [
+        "grid"
+      ]
     },
     "diagram": {
       "blockName": "Grup",
@@ -244,7 +254,10 @@ const DANCES = [
     "name": "La boja de 6",
     "structure": {
       "rows": 2,
-      "columns": 3
+      "columns": 3,
+      "forms": [
+        "grid"
+      ]
     },
     "diagram": {
       "blockName": "Grup",
@@ -326,7 +339,10 @@ const DANCES = [
     "name": "Micalet",
     "structure": {
       "rows": 2,
-      "columns": 2
+      "columns": 2,
+      "forms": [
+        "grid"
+      ]
     },
     "diagram": {
       "blockName": "Quadre",
@@ -381,7 +397,10 @@ const DANCES = [
     "name": "No en volem cap",
     "structure": {
       "rows": 2,
-      "columns": 2
+      "columns": 2,
+      "forms": [
+        "grid"
+      ]
     },
     "diagram": {
       "blockName": "Quadre",
@@ -442,7 +461,10 @@ const DANCES = [
     "name": "Joan del riu",
     "structure": {
       "rows": 2,
-      "columns": 2
+      "columns": 2,
+      "forms": [
+        "grid"
+      ]
     },
     "diagram": {
       "blockName": "Grup",
@@ -497,7 +519,10 @@ const DANCES = [
     "name": "Joan del riu de 16",
     "structure": {
       "rows": 2,
-      "columns": 8
+      "columns": 8,
+      "forms": [
+        "grid"
+      ]
     },
     "diagram": {
       "blockName": "Grup",
@@ -648,7 +673,10 @@ const DANCES = [
     "name": "Passi-ho bé",
     "structure": {
       "rows": 2,
-      "columns": 2
+      "columns": 2,
+      "forms": [
+        "grid"
+      ]
     },
     "diagram": {
       "blockName": "Grup",

@@ -5,12 +5,13 @@ import { DanceDiagram } from '../model/generated/DanceDiagram.js';
 import { DanceMusic } from '../model/generated/DanceMusic.js';
 import { DancePosition } from '../model/generated/DancePosition.js';
 import { DanceStructure } from '../model/generated/DanceStructure.js';
+import { DanceStructureForm } from '../model/generated/DanceStructureForm.js';
 import { PositionType } from '../model/generated/PositionType.js';
 
 const DANCES = [
   new Dance({
     name: "La polca",
-    structure: new DanceStructure({ rows: 2, columns: 4 }),
+    structure: new DanceStructure({ rows: 2, columns: 4, forms: [new DanceStructureForm(DanceStructureForm.GRID)] }),
     diagram: new DanceDiagram({blockName: "Grup", backgroundColor: {"BAIX":"#FFF2CC", "DALT":"#92D050"}, textColor: {"BAIX":"#000000", "DALT":"#000000"}}),
     minGroups: 1,
     showInPositions: true,
@@ -31,7 +32,7 @@ const DANCES = [
   }),
   new Dance({
     name: "Ara i sempre",
-    structure: new DanceStructure({ rows: 2, columns: 1 }),
+    structure: new DanceStructure({ rows: 2, columns: 1, forms: [new DanceStructureForm(DanceStructureForm.RADIAL), new DanceStructureForm(DanceStructureForm.GRID)] }),
     diagram: new DanceDiagram({blockName: "Parella", backgroundColor: {"ANTIHORARI":"#FFF2CC", "HORARI":"#92D050"}, textColor: {"ANTIHORARI":"#000000", "HORARI":"#000000"}}),
     minGroups: 3,
     showInPositions: true,
@@ -45,7 +46,7 @@ const DANCES = [
   }),
   new Dance({
     name: "La boja de 8",
-    structure: new DanceStructure({ rows: 2, columns: 4 }),
+    structure: new DanceStructure({ rows: 2, columns: 4, forms: [new DanceStructureForm(DanceStructureForm.GRID)] }),
     diagram: new DanceDiagram({blockName: "Grup", backgroundColor: {"CARLOTETA":"#FFF2CC", "CORRER":"#92D050"}, textColor: {"CARLOTETA":"#000000", "CORRER":"#000000"}}),
     minGroups: 1,
     showInPositions: true,
@@ -66,7 +67,7 @@ const DANCES = [
   }),
   new Dance({
     name: "La boja de 6",
-    structure: new DanceStructure({ rows: 2, columns: 3 }),
+    structure: new DanceStructure({ rows: 2, columns: 3, forms: [new DanceStructureForm(DanceStructureForm.GRID)] }),
     diagram: new DanceDiagram({blockName: "Grup", backgroundColor: {"CARLOTETA":"#FFF2CC", "CORRER":"#92D050"}, textColor: {"CARLOTETA":"#000000", "CORRER":"#000000"}}),
     minGroups: 1,
     showInPositions: true,
@@ -86,7 +87,7 @@ const DANCES = [
   // FALTA CONFIG
   new Dance({
     name: "Micalet",
-    structure: new DanceStructure({ rows: 2, columns: 2 }),
+    structure: new DanceStructure({ rows: 2, columns: 2, forms: [new DanceStructureForm(DanceStructureForm.GRID)] }),
     diagram: new DanceDiagram({blockName: "Quadre", backgroundColor: {"ANTIHORARI":"#FFF2CC", "HORARI":"#92D050"}, textColor: {"ANTIHORARI":"#000000", "HORARI":"#000000"}}),
     minGroups: 1,
     showInPositions: true,
@@ -99,7 +100,7 @@ const DANCES = [
   }),
   new Dance({
     name: "No en volem cap",
-    structure: new DanceStructure({ rows: 2, columns: 2 }),
+    structure: new DanceStructure({ rows: 2, columns: 2, forms: [new DanceStructureForm(DanceStructureForm.GRID)] }),
     diagram: new DanceDiagram({blockName: "Quadre", backgroundColor: {"FORA":"#92D050", "DINS":"#FFF2CC"}, textColor: {"FORA":"#000000", "DINS":"#000000"}}),
     minGroups: 1,
     showInPositions: true,
@@ -115,7 +116,7 @@ const DANCES = [
   }),
   new Dance({
     name: "Joan del riu",
-    structure: new DanceStructure({ rows: 2, columns: 2 }),
+    structure: new DanceStructure({ rows: 2, columns: 2, forms: [new DanceStructureForm(DanceStructureForm.GRID)] }),
     diagram: new DanceDiagram({blockName: "Grup", backgroundColor: {"BAIX":"#FFF2CC", "DALT":"#92D050"}, textColor: {"BAIX":"#000000", "DALT":"#000000"}}),
     minGroups: 1,
     showInPositions: true,
@@ -128,7 +129,7 @@ const DANCES = [
   }),
   new Dance({
     name: "Joan del riu de 16",
-    structure: new DanceStructure({ rows: 2, columns: 8 }),
+    structure: new DanceStructure({ rows: 2, columns: 8, forms: [new DanceStructureForm(DanceStructureForm.GRID)] }),
     diagram: new DanceDiagram({blockName: "Grup", backgroundColor: {"BAIX":"#FFF2CC", "DALT":"#92D050"}, textColor: {"BAIX":"#000000", "DALT":"#000000"}}),
     minGroups: 1,
     showInPositions: false,
@@ -153,7 +154,7 @@ const DANCES = [
   }),
   new Dance({
     name: "Passi-ho bé",
-    structure: new DanceStructure({ rows: 2, columns: 2 }),
+    structure: new DanceStructure({ rows: 2, columns: 2, forms: [new DanceStructureForm(DanceStructureForm.GRID)] }),
     diagram: new DanceDiagram({blockName: "Grup", backgroundColor: {"POSICIÓ":"#FFF2CC"}, textColor: {"POSICIÓ":"#000000"}}),
     minGroups: 1,
     showInPositions: true,

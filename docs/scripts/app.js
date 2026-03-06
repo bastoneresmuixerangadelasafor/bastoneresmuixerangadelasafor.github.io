@@ -435,7 +435,7 @@ function loadMemberPositionsData() {
           return String(memberEntries[pos.order]).toUpperCase() === 'SI';
         }).map(function (pos) { return pos.tag; });
         var inProgressTags = dancePositions.filter(function (pos) {
-          return String(memberEntries[pos.order]).toUpperCase() === 'EN PROGRESO';
+          return String(memberEntries[pos.order]).toUpperCase() === 'EN PROGRES';
         }).map(function (pos) { return pos.tag; });
         var diagramColors = dance.diagram || { backgroundColor: {}, textColor: {} };
         var rows = dance.structure ? dance.structure.rows : 2;
@@ -618,30 +618,14 @@ function drawPositionDiagram(opts) {
         ctx.restore();
       }
       if (isInProgress) {
-        var iconS = Math.min(squareWidth, squareHeight) * 0.45;
-        var ix = x + (squareWidth - iconS) / 2;
-        var iy = y + (squareHeight - iconS) / 2;
-        var lw = Math.max(2, 3 * scale);
+        var iconS = Math.min(squareWidth, squareHeight) * 0.6;
+        var fontSize = Math.round(iconS);
 
         ctx.save();
-        ctx.strokeStyle = "#FF9800";
-        ctx.lineWidth = lw;
-        ctx.lineCap = "round";
-        ctx.lineJoin = "round";
-
-        ctx.beginPath();
-        ctx.moveTo(ix, iy);
-        ctx.lineTo(ix, iy + iconS);
-        ctx.lineTo(ix + iconS, iy + iconS);
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.moveTo(ix + iconS * 0.15, iy + iconS * 0.7);
-        ctx.lineTo(ix + iconS * 0.4, iy + iconS * 0.4);
-        ctx.lineTo(ix + iconS * 0.6, iy + iconS * 0.55);
-        ctx.lineTo(ix + iconS * 0.85, iy + iconS * 0.15);
-        ctx.stroke();
-
+        ctx.font = fontSize + "px sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("🏋️‍♀️", x + squareWidth / 2, y + squareHeight / 2);
         ctx.restore();
       }    }
   }
