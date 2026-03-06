@@ -457,6 +457,18 @@ function loadMemberPositionsData() {
         });
         var showLegend = Object.keys(seenLabels).length > 1;
 
+        var forms = dance.structure && dance.structure.forms ? dance.structure.forms : ['grid'];
+        var formToggleHtml = '';
+        if (forms.length >= 2) {
+          formToggleHtml = '<div class="diagram-form-toggle">';
+          forms.forEach(function (form, idx) {
+            var activeClass = idx === 0 ? ' active' : '';
+            var label = form === 'radial' ? '\u25EF' : '\u25A6';
+            formToggleHtml += '<button type="button" class="form-toggle-btn' + activeClass + '" data-canvas-id="' + canvasId + '" data-form="' + form + '" title="' + form + '">' + label + '</button>';
+          });
+          formToggleHtml += '</div>';
+        }
+
         var card = document.createElement("div");
         card.className = "position-card";
         card.innerHTML =
@@ -470,21 +482,37 @@ function loadMemberPositionsData() {
           '</div>' +
           '<div class="diagrams-canvas-container">' +
             '<div class="diagrams-canvas-wrapper">' +
+              formToggleHtml +
               '<canvas id="' + canvasId + '" width="600" height="250"></canvas>' +
             '</div>' +
           '</div>';
 
         list.appendChild(card);
 
-        drawPositionDiagram({
+        var positionDrawOpts = {
           canvasId: canvasId,
           rows: rows,
           cols: cols,
           positions: dancePositions,
           diagramColors: diagramColors,
           highlightTags: memberTags,
-          inProgressTags: inProgressTags
-        });
+          inProgressTags: inProgressTags,
+          form: forms[0]
+        };
+        drawPositionDiagram(positionDrawOpts);
+
+        if (forms.length >= 2) {
+          card.querySelectorAll('.form-toggle-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+              var selectedForm = btn.dataset.form;
+              btn.closest('.diagram-form-toggle').querySelectorAll('.form-toggle-btn').forEach(function (b) {
+                b.classList.toggle('active', b.dataset.form === selectedForm);
+              });
+              positionDrawOpts.form = selectedForm;
+              drawPositionDiagram(positionDrawOpts);
+            });
+          });
+        }
       });
     })
     .catch(function (error) {
@@ -492,6 +520,158 @@ function loadMemberPositionsData() {
       if (loading) loading.style.display = "none";
       list.innerHTML = '<div class="empty-state"><p>No s\'han pogut carregar les posicions.</p></div>';
     });
+}
+
+function drawRadialPositionDiagram(ctx, canvas, rows, cols, positions, diagramColors, highlightTags, inProgressTags) {
+  var rl = calcRadialPositionLayout(canvas, rows, cols);
+  if (canvas.height !== Math.round(rl.requiredHeight)) {
+    canvas.height = Math.round(rl.requiredHeight);
+  }
+
+  var primaryColor = getComputedStyle(document.documentElement).getPropertyValue("--primary-color").trim() || "#6366f1";
+
+  for (var row = 0; row < rows; row++) {
+    for (var col = 0; col < cols; col++) {
+      var order = row * cols + col + 1;
+      var pos = positions.find(function (p) { return p.order === order; });
+      var tag = pos ? pos.tag : "";
+      var label = pos && pos.positionType ? pos.positionType.label : "";
+      var isHighlighted = highlightTags.indexOf(tag) !== -1;
+      var isInProgress = inProgressTags.indexOf(tag) !== -1;
+
+      var bgColor = "#808080";
+      if (label && diagramColors.backgroundColor && diagramColors.backgroundColor[label]) {
+        bgColor = diagramColors.backgroundColor[label];
+      }
+      var textColor = "#FFFFFF";
+      if (label && diagramColors.textColor && diagramColors.textColor[label]) {
+        textColor = diagramColors.textColor[label];
+      }
+
+      var cellCenterX = rl.centerX;
+      var cellCenterY = rl.centerY - rl.coupleHeight / 2 + row * (rl.cellHeight + rl.coupleGap) + rl.cellHeight / 2;
+      var x = cellCenterX - rl.cellWidth / 2;
+      var y = cellCenterY - rl.cellHeight / 2;
+
+      if (!isHighlighted && !isInProgress) {
+        ctx.globalAlpha = 0.3;
+      }
+
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(x, y, rl.cellWidth, rl.cellHeight);
+      ctx.globalAlpha = 1;
+
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = Math.max(2, 4 * rl.scale);
+      ctx.strokeRect(x, y, rl.cellWidth, rl.cellHeight);
+
+      if (isHighlighted) {
+        ctx.strokeStyle = primaryColor;
+        ctx.lineWidth = Math.max(3, 6 * rl.scale);
+        ctx.strokeRect(x, y, rl.cellWidth, rl.cellHeight);
+
+        var cx = x + rl.cellWidth / 2;
+        var cy = y + rl.cellHeight / 2;
+        var r = Math.min(rl.cellWidth, rl.cellHeight) * 0.32;
+
+        ctx.save();
+        ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+        ctx.shadowBlur = 6 * rl.scale;
+        ctx.shadowOffsetY = 2 * rl.scale;
+
+        var outerRing = ctx.createLinearGradient(cx, cy - r, cx, cy + r);
+        outerRing.addColorStop(0, "#C9A84C");
+        outerRing.addColorStop(0.5, "#F5D77A");
+        outerRing.addColorStop(1, "#A67C2E");
+        ctx.fillStyle = outerRing;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.shadowColor = "transparent";
+
+        var innerR = r * 0.78;
+        var innerGrad = ctx.createLinearGradient(cx, cy - innerR, cx, cy + innerR);
+        innerGrad.addColorStop(0, "#FFE8A0");
+        innerGrad.addColorStop(0.35, "#FFD54F");
+        innerGrad.addColorStop(0.65, "#FFCA28");
+        innerGrad.addColorStop(1, "#F0B400");
+        ctx.fillStyle = innerGrad;
+        ctx.beginPath();
+        ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = "rgba(160, 120, 30, 0.35)";
+        ctx.lineWidth = Math.max(1, 1.5 * rl.scale);
+        ctx.beginPath();
+        ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
+        ctx.stroke();
+
+        var ts = r * 0.48;
+        ctx.strokeStyle = "#6D4C00";
+        ctx.lineWidth = Math.max(2.5, 4.5 * rl.scale);
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.beginPath();
+        ctx.moveTo(cx - ts * 0.55, cy + ts * 0.05);
+        ctx.lineTo(cx - ts * 0.05, cy + ts * 0.5);
+        ctx.lineTo(cx + ts * 0.65, cy - ts * 0.45);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+      if (isInProgress) {
+        var iconS = Math.min(rl.cellWidth, rl.cellHeight) * 0.6;
+        var fontSize = Math.round(iconS);
+        ctx.save();
+        ctx.font = fontSize + "px sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("\uD83C\uDFCB\uFE0F\u200D\u2640\uFE0F", x + rl.cellWidth / 2, y + rl.cellHeight / 2);
+        ctx.restore();
+      }
+    }
+  }
+
+  ctx.save();
+  ctx.fillStyle = "#fff";
+  ctx.strokeStyle = "#000";
+  ctx.lineWidth = Math.max(1, 2 * rl.scale);
+  ctx.fillRect(rl.placaX, rl.placaY, rl.placaWidth, rl.placaHeight);
+  ctx.strokeRect(rl.placaX, rl.placaY, rl.placaWidth, rl.placaHeight);
+  var placaFontSize = Math.max(12, Math.round(20 * rl.scale));
+  ctx.fillStyle = "#000";
+  ctx.font = "bold " + placaFontSize + "px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("PLAÇA", rl.placaX + rl.placaWidth / 2, rl.placaY + rl.placaHeight / 2);
+  ctx.restore();
+}
+
+function calcRadialPositionLayout(canvas, rows, cols) {
+  var baseCellWidth = 100;
+  var baseCellHeight = 50;
+  var baseCoupleGap = 8;
+  var baseCoupleHeight = baseCellHeight * rows + baseCoupleGap * (rows - 1);
+  var availableWidth = canvas.width - 40;
+  var scale = Math.min(1, availableWidth / (baseCellWidth + 40));
+  var cellWidth = baseCellWidth * scale;
+  var cellHeight = baseCellHeight * scale;
+  var coupleGap = baseCoupleGap * scale;
+  var coupleHeight = cellHeight * rows + coupleGap * (rows - 1);
+  var centerX = canvas.width / 2;
+  var centerY = 20 + coupleHeight / 2;
+  var placaHeight = Math.max(25, 40 * scale);
+  var placaY = centerY + coupleHeight / 2 + 60 * scale;
+  var placaWidth = cellWidth;
+  var placaX = centerX - placaWidth / 2;
+  var requiredHeight = placaY + placaHeight + 15;
+  return {
+    cellWidth: cellWidth, cellHeight: cellHeight, coupleGap: coupleGap, coupleHeight: coupleHeight,
+    centerX: centerX, centerY: centerY,
+    placaX: placaX, placaY: placaY, placaWidth: placaWidth, placaHeight: placaHeight,
+    scale: scale, requiredHeight: requiredHeight
+  };
 }
 
 function drawPositionDiagram(opts) {
@@ -504,8 +684,14 @@ function drawPositionDiagram(opts) {
   var diagramColors = opts.diagramColors || { backgroundColor: {}, textColor: {} };
   var highlightTags = opts.highlightTags || [];
   var inProgressTags = opts.inProgressTags || [];
+  var activeForm = opts.form || 'grid';
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (activeForm === 'radial') {
+    drawRadialPositionDiagram(ctx, canvas, rows, cols, positions, diagramColors, highlightTags, inProgressTags);
+    return;
+  }
 
   var layout = calcDiagramLayout(canvas, 1, rows, cols);
   var squareWidth = layout.squareWidth;

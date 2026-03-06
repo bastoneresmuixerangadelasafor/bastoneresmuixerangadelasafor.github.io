@@ -516,6 +516,7 @@ function renderDiagrams(eventData) {
         ? danceInfo.diagram
         : { backgroundColor: {}, textColor: {} },
       groups: diagramData.groups || [],
+      forms: danceInfo && danceInfo.structure && danceInfo.structure.forms ? danceInfo.structure.forms : ['grid'],
     };
 
     // If positions don't have colors, try to get them from dance info
@@ -612,6 +613,34 @@ function setupCanvasClickHandlerForDiagram(diagramId) {
     const scaleY = canvas.height / rect.height;
     const clickX = (e.clientX - rect.left) * scaleX;
     const clickY = (e.clientY - rect.top) * scaleY;
+
+    const forms = diagram.forms || ['grid'];
+    const activeForm = diagram.activeForm || forms[0];
+    if (activeForm === 'radial') {
+      const rl = calcRadialDiagramLayout(canvas, groupCount, rows, cols);
+      for (let g = 0; g < groupCount; g++) {
+        const angle = -Math.PI / 2 + (2 * Math.PI * g) / groupCount;
+        const groupCenterX = rl.centerX + rl.radius * Math.cos(angle);
+        const groupCenterY = rl.centerY + rl.radius * Math.sin(angle);
+        for (let row = 0; row < rows; row++) {
+          for (let col = 0; col < cols; col++) {
+            const cx = groupCenterX;
+            const cy = groupCenterY - rl.coupleHeight / 2 + row * (rl.cellHeight + rl.coupleGap) + rl.cellHeight / 2;
+            const cellX = cx - rl.cellWidth / 2;
+            const cellY = cy - rl.cellHeight / 2;
+            if (clickX >= cellX && clickX <= cellX + rl.cellWidth && clickY >= cellY && clickY <= cellY + rl.cellHeight) {
+              const idx = row * cols + col;
+              window.selectedDiagramId = diagramId;
+              window.selectedGroup = g;
+              window.selectedSquare = idx;
+              populatePersonListForDiagram(diagram, g, idx);
+              return;
+            }
+          }
+        }
+      }
+      return;
+    }
 
     for (let g = 0; g < groupCount; g++) {
       const offsetX = offsetX0 + g * (gridWidth + spacing);

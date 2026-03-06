@@ -5440,6 +5440,41 @@ body.dark-mode .event-meeting-place-display {
   -webkit-overflow-scrolling: touch;
 }
 
+.diagram-form-toggle {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 4px 6px;
+}
+
+.form-toggle-btn {
+  border: 1px solid #ccc;
+  background: #f5f5f5;
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  transition: opacity 0.15s, border-color 0.15s;
+  pointer-events: auto;
+}
+
+.form-toggle-btn.active {
+  opacity: 1;
+  border-color: var(--primary-color, #6366f1);
+  background: #fff;
+}
+
+.form-toggle-btn[data-form="radial"] {
+  color: var(--primary-color, #6366f1);
+  -webkit-text-stroke: 1px var(--primary-color, #6366f1);
+}
+
 #diagrams-canvas,
 .diagrams-canvas-wrapper canvas {
   width: 100%;
@@ -7885,6 +7920,161 @@ body.dark-mode .theme-icon-dark {
             };
         }
 
+        function calcRadialDiagramLayout(canvas, groupCount, rows, cols) {
+            const baseCellWidth = 100;
+            const baseCellHeight = 50;
+            const baseCoupleGap = 8;
+            const baseCellArcGap = 50;
+            const baseLabelSpace = 40;
+            const baseCoupleHeight = baseCellHeight * rows + baseCoupleGap * (rows - 1);
+            const minCircumference = groupCount * (baseCellWidth + baseCellArcGap);
+            const baseRadius = Math.max(minCircumference / (2 * Math.PI), 90);
+            const maxHorizontalExtent = baseCellWidth / 2;
+            const maxVerticalExtent = baseCoupleHeight / 2;
+            const totalDiameter = 2 * (baseRadius + maxHorizontalExtent + baseLabelSpace + 20);
+            const availableWidth = canvas.width - 40;
+            const scale = Math.min(1, availableWidth / totalDiameter);
+            const cellWidth = baseCellWidth * scale;
+            const cellHeight = baseCellHeight * scale;
+            const coupleGap = baseCoupleGap * scale;
+            const coupleHeight = cellHeight * rows + coupleGap * (rows - 1);
+            const labelSpace = baseLabelSpace * scale;
+            const radius = baseRadius * scale;
+            const centerX = canvas.width / 2;
+            const centerY = radius + maxVerticalExtent * scale + labelSpace + 30;
+            const circleBottom = centerY + radius + maxVerticalExtent * scale + labelSpace;
+            const placaHeight = Math.max(25, 40 * scale);
+            const placaY = circleBottom + 60 * scale;
+            const placaWidth = 2 * radius;
+            const placaX = centerX - placaWidth / 2;
+            const requiredHeight = placaY + placaHeight + 15;
+            return {
+                cellWidth, cellHeight, coupleGap, coupleHeight, labelSpace,
+                radius, centerX, centerY,
+                placaX, placaY, placaWidth, placaHeight,
+                scale, requiredHeight
+            };
+        }
+
+        function drawRadialDiagram(ctx, canvas, groups, rows, cols, positions, diagramColors, groupCount) {
+            const rl = calcRadialDiagramLayout(canvas, groupCount, rows, cols);
+            if (canvas.height !== Math.round(rl.requiredHeight)) {
+                canvas.height = Math.round(rl.requiredHeight);
+            }
+
+            function getCellBgColor(row, col) {
+                const order = row * cols + col + 1;
+                const pos = positions.find(function (p) { return p.order === order; });
+                if (pos && pos.positionType.label && diagramColors.backgroundColor && diagramColors.backgroundColor[pos.positionType.label]) {
+                    return diagramColors.backgroundColor[pos.positionType.label];
+                }
+                return '#808080';
+            }
+
+            function getCellTxtColor(row, col) {
+                const order = row * cols + col + 1;
+                const pos = positions.find(function (p) { return p.order === order; });
+                if (pos && pos.positionType.label && diagramColors.textColor && diagramColors.textColor[pos.positionType.label]) {
+                    return diagramColors.textColor[pos.positionType.label];
+                }
+                return '#FFFFFF';
+            }
+
+            const currentUserAlias = (APP && APP.currentUser && APP.currentUser.alias) || null;
+            const currentUserRoles = (APP && APP.currentUser && APP.currentUser.roles) || [];
+            const isCurrentUserAdmin = currentUserRoles.includes('ADMIN');
+            const relatedMembers = (APP && APP.currentUser && APP.currentUser.relatedMembers) || [];
+            const relatedAliases = relatedMembers.map(function(rm) { return rm.alias; }).filter(Boolean);
+            const allAliases = currentUserAlias ? [currentUserAlias].concat(relatedAliases) : relatedAliases;
+
+            for (let g = 0; g < groupCount; g++) {
+                const group = groups[g];
+                const angle = -Math.PI / 2 + (2 * Math.PI * g) / groupCount;
+                const groupCenterX = rl.centerX + rl.radius * Math.cos(angle);
+                const groupCenterY = rl.centerY + rl.radius * Math.sin(angle);
+
+                if (groupCount > 1) {
+                    ctx.save();
+                    const cosA = Math.abs(Math.cos(angle));
+                    const sinA = Math.abs(Math.sin(angle));
+                    const coupleExtent = rl.cellWidth / 2 * cosA + rl.coupleHeight / 2 * sinA;
+                    const labelRadius = rl.radius + coupleExtent + rl.labelSpace;
+                    const labelX = rl.centerX + labelRadius * Math.cos(angle);
+                    const labelY = rl.centerY + labelRadius * Math.sin(angle);
+                    const groupLabelFontSize = Math.max(10, Math.round(16 * rl.scale));
+                    ctx.font = 'bold ' + groupLabelFontSize + 'px sans-serif';
+                    ctx.fillStyle = '#555';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    const groupLetter = String.fromCharCode(65 + g);
+                    const blockName = diagramColors.blockName || '';
+                    const groupLabel = blockName ? blockName + ' ' + groupLetter : groupLetter;
+                    ctx.fillText(groupLabel, labelX, labelY);
+                    ctx.restore();
+                }
+
+                for (let row = 0; row < rows; row++) {
+                    for (let col = 0; col < cols; col++) {
+                        const i = row * cols + col;
+                        const cellCenterX = groupCenterX;
+                        const cellCenterY = groupCenterY - rl.coupleHeight / 2 + row * (rl.cellHeight + rl.coupleGap) + rl.cellHeight / 2;
+                        const x = cellCenterX - rl.cellWidth / 2;
+                        const y = cellCenterY - rl.cellHeight / 2;
+
+                        ctx.fillStyle = getCellBgColor(row, col);
+                        ctx.fillRect(x, y, rl.cellWidth, rl.cellHeight);
+                        ctx.strokeStyle = '#fff';
+                        ctx.lineWidth = Math.max(2, 4 * rl.scale);
+                        ctx.strokeRect(x, y, rl.cellWidth, rl.cellHeight);
+
+                        if (!isCurrentUserAdmin && group[i] && allAliases.includes(group[i])) {
+                            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+                            ctx.strokeStyle = primaryColor || '#6366f1';
+                            ctx.lineWidth = Math.max(4, 8 * rl.scale);
+                            ctx.strokeRect(x, y, rl.cellWidth, rl.cellHeight);
+                        }
+
+                        if (isCurrentUserAdmin) {
+                            const cellOrder = row * cols + col + 1;
+                            const cellPos = positions.find(function (p) { return p.order === cellOrder; });
+                            const cellTag = cellPos && cellPos.tag ? cellPos.tag : '';
+                            ctx.save();
+                            const orderFontSize = Math.max(8, Math.round(12 * rl.scale));
+                            ctx.font = orderFontSize + 'px sans-serif';
+                            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                            ctx.textAlign = 'right';
+                            ctx.textBaseline = 'bottom';
+                            ctx.fillText(cellTag, x + rl.cellWidth - 4 * rl.scale, y + rl.cellHeight - 3 * rl.scale);
+                            ctx.restore();
+                        }
+
+                        if (group[i]) {
+                            ctx.fillStyle = getCellTxtColor(row, col);
+                            const nameFontSize = Math.max(10, Math.round(18 * rl.scale));
+                            ctx.font = 'bold ' + nameFontSize + 'px sans-serif';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            ctx.fillText(group[i], cellCenterX, cellCenterY);
+                        }
+                    }
+                }
+            }
+
+            ctx.save();
+            ctx.fillStyle = '#fff';
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = Math.max(1, 2 * rl.scale);
+            ctx.fillRect(rl.placaX, rl.placaY, rl.placaWidth, rl.placaHeight);
+            ctx.strokeRect(rl.placaX, rl.placaY, rl.placaWidth, rl.placaHeight);
+            const placaFontSize = Math.max(12, Math.round(20 * rl.scale));
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold ' + placaFontSize + 'px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('PLAÇA', rl.placaX + rl.placaWidth / 2, rl.placaY + rl.placaHeight / 2);
+            ctx.restore();
+        }
+
         // Draw a specific diagram
         function drawDiagram(diagram) {
             const canvas = document.getElementById('diagram-canvas-' + diagram.id);
@@ -7896,9 +8086,15 @@ body.dark-mode .theme-icon-dark {
             const positions = diagram.positions || [];
             const diagramColors = diagram.diagram || { backgroundColor: {}, textColor: {} };
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // Layout: stack groups horizontally, centered vertically
             const groupCount = groups.length;
+            const forms = diagram.forms || ['grid'];
+            const activeForm = diagram.activeForm || forms[0];
+            if (activeForm === 'radial') {
+                drawRadialDiagram(ctx, canvas, groups, rows, cols, positions, diagramColors, groupCount);
+                return;
+            }
 
+            // Layout: stack groups horizontally, centered vertically
             // Calculate scaled layout based on group count
             const layout = calcDiagramLayout(canvas, groupCount, rows, cols);
             const { squareWidth, squareHeight, squareSpacingX, squareSpacingY, spacing, gridWidth, gridHeight, totalWidth, offsetX0, offsetY, scale, requiredHeight } = layout;
@@ -7998,28 +8194,25 @@ body.dark-mode .theme-icon-dark {
                     }
                 }
             }
-            // Draw individual PLAÇA for each group
+            // Draw single PLAÇA spanning all groups
             const placaHeight = Math.max(25, 40 * scale);
             const placaY = offsetY + gridHeight + 60 * scale;
             const placaFontSize = Math.max(12, Math.round(20 * scale));
+            const placaX = offsetX0;
+            const placaWidth = totalWidth;
 
-            for (let g = 0; g < groupCount; g++) {
-                const placaX = offsetX0 + g * (gridWidth + spacing);
-                const placaWidth = gridWidth;
-
-                ctx.save();
-                ctx.fillStyle = '#fff';
-                ctx.strokeStyle = '#000';
-                ctx.lineWidth = Math.max(1, 2 * scale);
-                ctx.fillRect(placaX, placaY, placaWidth, placaHeight);
-                ctx.strokeRect(placaX, placaY, placaWidth, placaHeight);
-                ctx.fillStyle = '#000';
-                ctx.font = 'bold ' + placaFontSize + 'px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('PLAÇA', placaX + placaWidth / 2, placaY + placaHeight / 2);
-                ctx.restore();
-            }
+            ctx.save();
+            ctx.fillStyle = '#fff';
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = Math.max(1, 2 * scale);
+            ctx.fillRect(placaX, placaY, placaWidth, placaHeight);
+            ctx.strokeRect(placaX, placaY, placaWidth, placaHeight);
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold ' + placaFontSize + 'px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('PLAÇA', placaX + placaWidth / 2, placaY + placaHeight / 2);
+            ctx.restore();
         }
 
         // Draw all diagrams
@@ -8064,6 +8257,19 @@ body.dark-mode .theme-icon-dark {
             const userRoles = (APP && APP.currentUser && APP.currentUser.roles) || [];
             const isAdmin = userRoles.includes('ADMIN');
             const adminOnlyStyle = isAdmin ? '' : 'display: none;';
+
+            const forms = diagram.forms || ['grid'];
+            let formsHtml = '';
+            if (forms.length >= 2) {
+                const activeForm = diagram.activeForm || forms[0];
+                formsHtml = '<div class="diagram-form-toggle">';
+                forms.forEach(function (form) {
+                    const activeClass = form === activeForm ? ' active' : '';
+                    const label = form === 'radial' ? '◯' : '▦';
+                    formsHtml += '<button type="button" class="form-toggle-btn' + activeClass + '" data-diagram-id="' + diagram.id + '" data-form="' + form + '" title="' + form + '">' + label + '</button>';
+                });
+                formsHtml += '</div>';
+            }
 
             const description = diagram.description || '';
             const hasDescription = description.trim().length > 0;
@@ -8112,6 +8318,7 @@ ${descriptionHtml}
 </div>
 <div class="diagrams-canvas-container">
 <div class="diagrams-canvas-wrapper">
+    ${formsHtml}
     <canvas id="diagram-canvas-${diagram.id}" width="1200" height="350"></canvas>
 </div>
 </div>
@@ -8185,7 +8392,8 @@ ${descriptionHtml}
                     columns: cols,
                     positions: positions,
                     diagram: diagramData,
-                    groups: initialGroups
+                    groups: initialGroups,
+                    forms: structure.forms || ['grid']
                 };
                 diagrams.push(newDiagram);
                 setDiagramsDirty(true);
@@ -8228,6 +8436,47 @@ ${descriptionHtml}
                     const scaleY = canvas.height / rect.height;
                     const clickX = (e.clientX - rect.left) * scaleX;
                     const clickY = (e.clientY - rect.top) * scaleY;
+
+                    const forms = diagram.forms || ['grid'];
+                    const activeForm = diagram.activeForm || forms[0];
+                    if (activeForm === 'radial') {
+                        const rl = calcRadialDiagramLayout(canvas, groupCount, rows, cols);
+                        for (let g = 0; g < groupCount; g++) {
+                            const angle = -Math.PI / 2 + (2 * Math.PI * g) / groupCount;
+                            const groupCenterX = rl.centerX + rl.radius * Math.cos(angle);
+                            const groupCenterY = rl.centerY + rl.radius * Math.sin(angle);
+                            for (let row = 0; row < rows; row++) {
+                                for (let col = 0; col < cols; col++) {
+                                    const cx = groupCenterX;
+                                    const cy = groupCenterY - rl.coupleHeight / 2 + row * (rl.cellHeight + rl.coupleGap) + rl.cellHeight / 2;
+                                    const cellX = cx - rl.cellWidth / 2;
+                                    const cellY = cy - rl.cellHeight / 2;
+                                    if (clickX >= cellX && clickX <= cellX + rl.cellWidth && clickY >= cellY && clickY <= cellY + rl.cellHeight) {
+                                        const idx = row * cols + col;
+                                        window.selectedDiagramId = diagramId;
+                                        window.selectedGroup = g;
+                                        window.selectedSquare = idx;
+                                        if (!MEMBERS.membersData || MEMBERS.membersData.length === 0) {
+                                            setDialogLoading(true);
+                                            showDialogWithBackdrop(dialog);
+                                            const checkInterval = setInterval(function () {
+                                                if (MEMBERS.membersData && MEMBERS.membersData.length > 0) {
+                                                    clearInterval(checkInterval);
+                                                    setDialogLoading(false);
+                                                    populatePersonList(diagramId, g, idx);
+                                                }
+                                            }, 200);
+                                            return;
+                                        }
+                                        setDialogLoading(false);
+                                        populatePersonList(diagramId, g, idx);
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                        return;
+                    }
 
                     for (let g = 0; g < groupCount; g++) {
                         const offsetX = offsetX0 + g * (gridWidth + spacing);
@@ -8662,6 +8911,22 @@ ${descriptionHtml}
                         const element = document.getElementById('diagram-item-' + diagramId);
                         if (element) element.remove();
                         setDiagramsDirty(true);
+                    }
+                }
+                // Form toggle button
+                if (e.target.classList.contains('form-toggle-btn')) {
+                    const diagramId = parseInt(e.target.dataset.diagramId);
+                    const form = e.target.dataset.form;
+                    const diagram = diagrams.find(d => d.id === diagramId);
+                    if (diagram) {
+                        diagram.activeForm = form;
+                        const container = e.target.closest('.diagram-form-toggle');
+                        if (container) {
+                            container.querySelectorAll('.form-toggle-btn').forEach(function (btn) {
+                                btn.classList.toggle('active', btn.dataset.form === form);
+                            });
+                        }
+                        drawDiagram(diagram);
                     }
                 }
             });
@@ -9883,7 +10148,10 @@ console = new Proxy(console, {
     "name": "La polca",
     "structure": {
       "rows": 2,
-      "columns": 4
+      "columns": 4,
+      "forms": [
+        "grid"
+      ]
     },
     "diagram": {
       "blockName": "Grup",
@@ -9981,7 +10249,11 @@ console = new Proxy(console, {
     "name": "Ara i sempre",
     "structure": {
       "rows": 2,
-      "columns": 1
+      "columns": 1,
+      "forms": [
+        "radial",
+        "grid"
+      ]
     },
     "diagram": {
       "blockName": "Parella",
@@ -10026,7 +10298,10 @@ console = new Proxy(console, {
     "name": "La boja de 8",
     "structure": {
       "rows": 2,
-      "columns": 4
+      "columns": 4,
+      "forms": [
+        "grid"
+      ]
     },
     "diagram": {
       "blockName": "Grup",
@@ -10124,7 +10399,10 @@ console = new Proxy(console, {
     "name": "La boja de 6",
     "structure": {
       "rows": 2,
-      "columns": 3
+      "columns": 3,
+      "forms": [
+        "grid"
+      ]
     },
     "diagram": {
       "blockName": "Grup",
@@ -10206,7 +10484,10 @@ console = new Proxy(console, {
     "name": "Micalet",
     "structure": {
       "rows": 2,
-      "columns": 2
+      "columns": 2,
+      "forms": [
+        "grid"
+      ]
     },
     "diagram": {
       "blockName": "Quadre",
@@ -10261,7 +10542,10 @@ console = new Proxy(console, {
     "name": "No en volem cap",
     "structure": {
       "rows": 2,
-      "columns": 2
+      "columns": 2,
+      "forms": [
+        "grid"
+      ]
     },
     "diagram": {
       "blockName": "Quadre",
@@ -10322,7 +10606,10 @@ console = new Proxy(console, {
     "name": "Joan del riu",
     "structure": {
       "rows": 2,
-      "columns": 2
+      "columns": 2,
+      "forms": [
+        "grid"
+      ]
     },
     "diagram": {
       "blockName": "Grup",
@@ -10377,7 +10664,10 @@ console = new Proxy(console, {
     "name": "Joan del riu de 16",
     "structure": {
       "rows": 2,
-      "columns": 8
+      "columns": 8,
+      "forms": [
+        "grid"
+      ]
     },
     "diagram": {
       "blockName": "Grup",
@@ -10528,7 +10818,10 @@ console = new Proxy(console, {
     "name": "Passi-ho bé",
     "structure": {
       "rows": 2,
-      "columns": 2
+      "columns": 2,
+      "forms": [
+        "grid"
+      ]
     },
     "diagram": {
       "blockName": "Grup",
@@ -11476,6 +11769,18 @@ function loadMemberPositionsData() {
         });
         var showLegend = Object.keys(seenLabels).length > 1;
 
+        var forms = dance.structure && dance.structure.forms ? dance.structure.forms : ['grid'];
+        var formToggleHtml = '';
+        if (forms.length >= 2) {
+          formToggleHtml = '<div class="diagram-form-toggle">';
+          forms.forEach(function (form, idx) {
+            var activeClass = idx === 0 ? ' active' : '';
+            var label = form === 'radial' ? '\u25EF' : '\u25A6';
+            formToggleHtml += '<button type="button" class="form-toggle-btn' + activeClass + '" data-canvas-id="' + canvasId + '" data-form="' + form + '" title="' + form + '">' + label + '</button>';
+          });
+          formToggleHtml += '</div>';
+        }
+
         var card = document.createElement("div");
         card.className = "position-card";
         card.innerHTML =
@@ -11489,21 +11794,37 @@ function loadMemberPositionsData() {
           '</div>' +
           '<div class="diagrams-canvas-container">' +
             '<div class="diagrams-canvas-wrapper">' +
+              formToggleHtml +
               '<canvas id="' + canvasId + '" width="600" height="250"></canvas>' +
             '</div>' +
           '</div>';
 
         list.appendChild(card);
 
-        drawPositionDiagram({
+        var positionDrawOpts = {
           canvasId: canvasId,
           rows: rows,
           cols: cols,
           positions: dancePositions,
           diagramColors: diagramColors,
           highlightTags: memberTags,
-          inProgressTags: inProgressTags
-        });
+          inProgressTags: inProgressTags,
+          form: forms[0]
+        };
+        drawPositionDiagram(positionDrawOpts);
+
+        if (forms.length >= 2) {
+          card.querySelectorAll('.form-toggle-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+              var selectedForm = btn.dataset.form;
+              btn.closest('.diagram-form-toggle').querySelectorAll('.form-toggle-btn').forEach(function (b) {
+                b.classList.toggle('active', b.dataset.form === selectedForm);
+              });
+              positionDrawOpts.form = selectedForm;
+              drawPositionDiagram(positionDrawOpts);
+            });
+          });
+        }
       });
     })
     .catch(function (error) {
@@ -11511,6 +11832,158 @@ function loadMemberPositionsData() {
       if (loading) loading.style.display = "none";
       list.innerHTML = '<div class="empty-state"><p>No s\'han pogut carregar les posicions.</p></div>';
     });
+}
+
+function drawRadialPositionDiagram(ctx, canvas, rows, cols, positions, diagramColors, highlightTags, inProgressTags) {
+  var rl = calcRadialPositionLayout(canvas, rows, cols);
+  if (canvas.height !== Math.round(rl.requiredHeight)) {
+    canvas.height = Math.round(rl.requiredHeight);
+  }
+
+  var primaryColor = getComputedStyle(document.documentElement).getPropertyValue("--primary-color").trim() || "#6366f1";
+
+  for (var row = 0; row < rows; row++) {
+    for (var col = 0; col < cols; col++) {
+      var order = row * cols + col + 1;
+      var pos = positions.find(function (p) { return p.order === order; });
+      var tag = pos ? pos.tag : "";
+      var label = pos && pos.positionType ? pos.positionType.label : "";
+      var isHighlighted = highlightTags.indexOf(tag) !== -1;
+      var isInProgress = inProgressTags.indexOf(tag) !== -1;
+
+      var bgColor = "#808080";
+      if (label && diagramColors.backgroundColor && diagramColors.backgroundColor[label]) {
+        bgColor = diagramColors.backgroundColor[label];
+      }
+      var textColor = "#FFFFFF";
+      if (label && diagramColors.textColor && diagramColors.textColor[label]) {
+        textColor = diagramColors.textColor[label];
+      }
+
+      var cellCenterX = rl.centerX;
+      var cellCenterY = rl.centerY - rl.coupleHeight / 2 + row * (rl.cellHeight + rl.coupleGap) + rl.cellHeight / 2;
+      var x = cellCenterX - rl.cellWidth / 2;
+      var y = cellCenterY - rl.cellHeight / 2;
+
+      if (!isHighlighted && !isInProgress) {
+        ctx.globalAlpha = 0.3;
+      }
+
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(x, y, rl.cellWidth, rl.cellHeight);
+      ctx.globalAlpha = 1;
+
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = Math.max(2, 4 * rl.scale);
+      ctx.strokeRect(x, y, rl.cellWidth, rl.cellHeight);
+
+      if (isHighlighted) {
+        ctx.strokeStyle = primaryColor;
+        ctx.lineWidth = Math.max(3, 6 * rl.scale);
+        ctx.strokeRect(x, y, rl.cellWidth, rl.cellHeight);
+
+        var cx = x + rl.cellWidth / 2;
+        var cy = y + rl.cellHeight / 2;
+        var r = Math.min(rl.cellWidth, rl.cellHeight) * 0.32;
+
+        ctx.save();
+        ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+        ctx.shadowBlur = 6 * rl.scale;
+        ctx.shadowOffsetY = 2 * rl.scale;
+
+        var outerRing = ctx.createLinearGradient(cx, cy - r, cx, cy + r);
+        outerRing.addColorStop(0, "#C9A84C");
+        outerRing.addColorStop(0.5, "#F5D77A");
+        outerRing.addColorStop(1, "#A67C2E");
+        ctx.fillStyle = outerRing;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.shadowColor = "transparent";
+
+        var innerR = r * 0.78;
+        var innerGrad = ctx.createLinearGradient(cx, cy - innerR, cx, cy + innerR);
+        innerGrad.addColorStop(0, "#FFE8A0");
+        innerGrad.addColorStop(0.35, "#FFD54F");
+        innerGrad.addColorStop(0.65, "#FFCA28");
+        innerGrad.addColorStop(1, "#F0B400");
+        ctx.fillStyle = innerGrad;
+        ctx.beginPath();
+        ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = "rgba(160, 120, 30, 0.35)";
+        ctx.lineWidth = Math.max(1, 1.5 * rl.scale);
+        ctx.beginPath();
+        ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
+        ctx.stroke();
+
+        var ts = r * 0.48;
+        ctx.strokeStyle = "#6D4C00";
+        ctx.lineWidth = Math.max(2.5, 4.5 * rl.scale);
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.beginPath();
+        ctx.moveTo(cx - ts * 0.55, cy + ts * 0.05);
+        ctx.lineTo(cx - ts * 0.05, cy + ts * 0.5);
+        ctx.lineTo(cx + ts * 0.65, cy - ts * 0.45);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+      if (isInProgress) {
+        var iconS = Math.min(rl.cellWidth, rl.cellHeight) * 0.6;
+        var fontSize = Math.round(iconS);
+        ctx.save();
+        ctx.font = fontSize + "px sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("\uD83C\uDFCB\uFE0F\u200D\u2640\uFE0F", x + rl.cellWidth / 2, y + rl.cellHeight / 2);
+        ctx.restore();
+      }
+    }
+  }
+
+  ctx.save();
+  ctx.fillStyle = "#fff";
+  ctx.strokeStyle = "#000";
+  ctx.lineWidth = Math.max(1, 2 * rl.scale);
+  ctx.fillRect(rl.placaX, rl.placaY, rl.placaWidth, rl.placaHeight);
+  ctx.strokeRect(rl.placaX, rl.placaY, rl.placaWidth, rl.placaHeight);
+  var placaFontSize = Math.max(12, Math.round(20 * rl.scale));
+  ctx.fillStyle = "#000";
+  ctx.font = "bold " + placaFontSize + "px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("PLAÇA", rl.placaX + rl.placaWidth / 2, rl.placaY + rl.placaHeight / 2);
+  ctx.restore();
+}
+
+function calcRadialPositionLayout(canvas, rows, cols) {
+  var baseCellWidth = 100;
+  var baseCellHeight = 50;
+  var baseCoupleGap = 8;
+  var baseCoupleHeight = baseCellHeight * rows + baseCoupleGap * (rows - 1);
+  var availableWidth = canvas.width - 40;
+  var scale = Math.min(1, availableWidth / (baseCellWidth + 40));
+  var cellWidth = baseCellWidth * scale;
+  var cellHeight = baseCellHeight * scale;
+  var coupleGap = baseCoupleGap * scale;
+  var coupleHeight = cellHeight * rows + coupleGap * (rows - 1);
+  var centerX = canvas.width / 2;
+  var centerY = 20 + coupleHeight / 2;
+  var placaHeight = Math.max(25, 40 * scale);
+  var placaY = centerY + coupleHeight / 2 + 60 * scale;
+  var placaWidth = cellWidth;
+  var placaX = centerX - placaWidth / 2;
+  var requiredHeight = placaY + placaHeight + 15;
+  return {
+    cellWidth: cellWidth, cellHeight: cellHeight, coupleGap: coupleGap, coupleHeight: coupleHeight,
+    centerX: centerX, centerY: centerY,
+    placaX: placaX, placaY: placaY, placaWidth: placaWidth, placaHeight: placaHeight,
+    scale: scale, requiredHeight: requiredHeight
+  };
 }
 
 function drawPositionDiagram(opts) {
@@ -11523,8 +11996,14 @@ function drawPositionDiagram(opts) {
   var diagramColors = opts.diagramColors || { backgroundColor: {}, textColor: {} };
   var highlightTags = opts.highlightTags || [];
   var inProgressTags = opts.inProgressTags || [];
+  var activeForm = opts.form || 'grid';
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (activeForm === 'radial') {
+    drawRadialPositionDiagram(ctx, canvas, rows, cols, positions, diagramColors, highlightTags, inProgressTags);
+    return;
+  }
 
   var layout = calcDiagramLayout(canvas, 1, rows, cols);
   var squareWidth = layout.squareWidth;
@@ -14348,6 +14827,7 @@ function renderDiagrams(eventData) {
         ? danceInfo.diagram
         : { backgroundColor: {}, textColor: {} },
       groups: diagramData.groups || [],
+      forms: danceInfo && danceInfo.structure && danceInfo.structure.forms ? danceInfo.structure.forms : ['grid'],
     };
 
     // If positions don't have colors, try to get them from dance info
@@ -14444,6 +14924,34 @@ function setupCanvasClickHandlerForDiagram(diagramId) {
     const scaleY = canvas.height / rect.height;
     const clickX = (e.clientX - rect.left) * scaleX;
     const clickY = (e.clientY - rect.top) * scaleY;
+
+    const forms = diagram.forms || ['grid'];
+    const activeForm = diagram.activeForm || forms[0];
+    if (activeForm === 'radial') {
+      const rl = calcRadialDiagramLayout(canvas, groupCount, rows, cols);
+      for (let g = 0; g < groupCount; g++) {
+        const angle = -Math.PI / 2 + (2 * Math.PI * g) / groupCount;
+        const groupCenterX = rl.centerX + rl.radius * Math.cos(angle);
+        const groupCenterY = rl.centerY + rl.radius * Math.sin(angle);
+        for (let row = 0; row < rows; row++) {
+          for (let col = 0; col < cols; col++) {
+            const cx = groupCenterX;
+            const cy = groupCenterY - rl.coupleHeight / 2 + row * (rl.cellHeight + rl.coupleGap) + rl.cellHeight / 2;
+            const cellX = cx - rl.cellWidth / 2;
+            const cellY = cy - rl.cellHeight / 2;
+            if (clickX >= cellX && clickX <= cellX + rl.cellWidth && clickY >= cellY && clickY <= cellY + rl.cellHeight) {
+              const idx = row * cols + col;
+              window.selectedDiagramId = diagramId;
+              window.selectedGroup = g;
+              window.selectedSquare = idx;
+              populatePersonListForDiagram(diagram, g, idx);
+              return;
+            }
+          }
+        }
+      }
+      return;
+    }
 
     for (let g = 0; g < groupCount; g++) {
       const offsetX = offsetX0 + g * (gridWidth + spacing);
