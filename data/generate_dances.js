@@ -125,7 +125,10 @@ const DANCES = [
       new DancePosition({ order: 2, tag: "3", positionType: new PositionType({ label: "BAIX" }), specifications: "Cantó dret/cara plaça" }),
       new DancePosition({ order: 3, tag: "2", positionType: new PositionType({ label: "BAIX" }), specifications: "Cantó equerre/esquena plaça" }),
       new DancePosition({ order: 4, tag: "1", positionType: new PositionType({ label: "DALT" }), specifications: "Cantó dret/esquena plaça" }),
-    ]
+    ],
+    audios: [
+      new DanceMusic({ fileId: "1XIhGj3cylFK2velpOdpWX4bW8FHx9RaT", title: "Joan del riu - Per assajar", artist: "Reina, Josep i Quim" }),
+    ],
   }),
   new Dance({
     name: "Joan del riu de 16",
@@ -150,7 +153,10 @@ const DANCES = [
       new DancePosition({ order: 14, tag: "3", positionType: new PositionType({ label: "DALT" }), specifications: "Mig esquerre/esquena plaça" }),
       new DancePosition({ order: 15, tag: "2", positionType: new PositionType({ label: "BAIX" }), specifications: "Mig dret/esquena plaça" }),
       new DancePosition({ order: 16, tag: "1", positionType: new PositionType({ label: "DALT" }), specifications: "Cantó dret/esquena plaça" }),
-    ]
+    ],
+    audios: [
+      new DanceMusic({ fileId: "1XIhGj3cylFK2velpOdpWX4bW8FHx9RaT", title: "Joan del riu - Per assajar", artist: "Reina, Josep i Quim" }),
+    ],
   }),
   new Dance({
     name: "Passi-ho bé",

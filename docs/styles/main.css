@@ -1,11 +1,16 @@
+dialog {
+  background: transparent;
+  border: none;
+}
+
 #access-link-dialog {
   padding: 0;
   border: none;
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  box-shadow: none;
   min-width: min(380px, 90vw);
   max-width: 90vw;
-  background: #fff;
+  background: transparent;
   color: #1f2937;
   text-align: left;
 }
@@ -26,7 +31,7 @@
 }
 
 body.dark-mode #access-link-dialog {
-  background: #2d3748;
+  background: transparent;
   color: #e2e8f0;
 }
 
@@ -2416,10 +2421,6 @@ table tbody tr:last-child td {
   padding-top: 8px;
   border-top: 1px solid var(--border-color);
 }
-  border-top: 1px solid var(--border-color);
-}
-
-
 
 /* Login dialog modal styles */
 #view-login {
@@ -2462,30 +2463,32 @@ table tbody tr:last-child td {
   position: absolute;
   top: 16px;
   right: 16px;
-  background: none;
-  border: none;
+  background: var(--primary-color);
+  border: 1px solid color-mix(in srgb, var(--primary-color), #000000 18%);
   cursor: pointer;
-  color: var(--text-color);
-  padding: 4px;
+  color: #ffffff;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  transition: background 0.2s;
+  border-radius: 50%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
   z-index: 10;
 }
 
 .login-close-btn:hover {
-  background: rgba(0, 0, 0, 0.06);
+  filter: brightness(0.92);
 }
 
 .dark-mode .login-close-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  filter: brightness(1.08);
 }
 
 .login-close-btn:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.3);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color), #ffffff 60%);
 }
 
 .login-close-btn svg {
@@ -2807,30 +2810,32 @@ input::placeholder {
   position: absolute;
   top: 16px;
   right: 16px;
-  background: none;
-  border: none;
+  background: var(--primary-color);
+  border: 1px solid color-mix(in srgb, var(--primary-color), #000000 18%);
   cursor: pointer;
-  color: var(--text-color);
-  padding: 4px;
+  color: #ffffff;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  transition: background 0.2s;
+  border-radius: 50%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
   z-index: 10;
 }
 
 #register-close-btn:hover {
-  background: rgba(0, 0, 0, 0.06);
+  filter: brightness(0.92);
 }
 
 .dark-mode #register-close-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  filter: brightness(1.08);
 }
 
 #register-close-btn:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.3);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color), #ffffff 60%);
 }
 
 #register-close-btn svg {
@@ -4710,15 +4715,28 @@ input::placeholder {
   position: absolute;
   top: 12px;
   right: 12px;
-  background: none;
-  border: none;
-  color: inherit;
+  background: var(--primary-color);
+  border: 1px solid color-mix(in srgb, var(--primary-color), #000000 18%);
+  color: #ffffff;
   cursor: pointer;
-  padding: 8px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 50%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
   z-index: 1001;
+}
+
+.dance-audio-close-btn:hover {
+  filter: brightness(0.92);
+}
+
+.dance-audio-close-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color), #ffffff 60%);
 }
 
 .dance-audio-header {
@@ -4901,15 +4919,28 @@ input::placeholder {
   position: absolute;
   top: 12px;
   right: 12px;
-  background: none;
-  border: none;
-  color: inherit;
+  background: var(--primary-color);
+  border: 1px solid color-mix(in srgb, var(--primary-color), #000000 18%);
+  color: #ffffff;
   cursor: pointer;
-  padding: 8px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 50%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
   z-index: 1001;
+}
+
+.training-note-close-btn:hover {
+  filter: brightness(0.92);
+}
+
+.training-note-close-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color), #ffffff 60%);
 }
 
 .training-note-header {
@@ -5579,17 +5610,17 @@ body.dark-mode .backup-members-list {
   padding: 0;
   border: none;
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  box-shadow: none;
   min-width: min(380px, 90vw);
   max-width: 90vw;
-  background: #fff;
+  background: transparent;
   color: #1f2937;
   text-align: left;
   overflow: visible;
 }
 
 body.dark-mode #person-dialog {
-  background: #2d3748;
+  background: transparent;
   color: #e2e8f0;
 }
 
@@ -6334,16 +6365,16 @@ body.dark-mode .person-dropdown li.selected {
   padding: 0;
   border: none;
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  box-shadow: none;
   min-width: min(380px, 90vw);
   max-width: 90vw;
-  background: #fff;
+  background: transparent;
   color: #1f2937;
   text-align: left;
 }
 
 body.dark-mode #password-change-dialog {
-  background: #2d3748;
+  background: transparent;
   color: #e2e8f0;
 }
 

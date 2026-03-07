@@ -513,7 +513,13 @@ const DANCES = [
     ],
     "minGroups": 1,
     "showInPositions": true,
-    "audios": []
+    "audios": [
+      {
+        "fileId": "1XIhGj3cylFK2velpOdpWX4bW8FHx9RaT",
+        "title": "Joan del riu - Per assajar",
+        "artist": "Reina, Josep i Quim"
+      }
+    ]
   },
   {
     "name": "Joan del riu de 16",
@@ -667,7 +673,13 @@ const DANCES = [
     ],
     "minGroups": 1,
     "showInPositions": false,
-    "audios": []
+    "audios": [
+      {
+        "fileId": "1XIhGj3cylFK2velpOdpWX4bW8FHx9RaT",
+        "title": "Joan del riu - Per assajar",
+        "artist": "Reina, Josep i Quim"
+      }
+    ]
   },
   {
     "name": "Passi-ho bé",

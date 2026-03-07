@@ -462,16 +462,6 @@ function loadMemberPositionsData() {
         var showLegend = Object.keys(seenLabels).length > 1;
 
         var forms = dance.structure && dance.structure.forms ? dance.structure.forms : ['grid'];
-        var formToggleHtml = '';
-        if (forms.length >= 2) {
-          formToggleHtml = '<div class="diagram-form-toggle">';
-          forms.forEach(function (form, idx) {
-            var activeClass = idx === 0 ? ' active' : '';
-            var label = form === 'radial' ? '\u25EF' : '\u25A6';
-            formToggleHtml += '<button type="button" class="form-toggle-btn' + activeClass + '" data-canvas-id="' + canvasId + '" data-form="' + form + '" title="' + form + '">' + label + '</button>';
-          });
-          formToggleHtml += '</div>';
-        }
 
         var card = document.createElement("div");
         card.className = "position-card";
@@ -486,7 +476,6 @@ function loadMemberPositionsData() {
           '</div>' +
           '<div class="diagrams-canvas-container">' +
             '<div class="diagrams-canvas-wrapper">' +
-              formToggleHtml +
               '<canvas id="' + canvasId + '" width="600" height="250"></canvas>' +
             '</div>' +
           '</div>';
@@ -505,18 +494,6 @@ function loadMemberPositionsData() {
         };
         drawPositionDiagram(positionDrawOpts);
 
-        if (forms.length >= 2) {
-          card.querySelectorAll('.form-toggle-btn').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-              var selectedForm = btn.dataset.form;
-              btn.closest('.diagram-form-toggle').querySelectorAll('.form-toggle-btn').forEach(function (b) {
-                b.classList.toggle('active', b.dataset.form === selectedForm);
-              });
-              positionDrawOpts.form = selectedForm;
-              drawPositionDiagram(positionDrawOpts);
-            });
-          });
-        }
       });
     })
     .catch(function (error) {

@@ -182,7 +182,7 @@ function renderPlanningEventsList(events) {
           let statusClass = 'event-status-indicator not-confirmed';
           let statusText = '? No confirmat';
           let button1Html = '';
-          let button2Html = '';
+          let buttonHtml = '';
 
           if (isPastEvent) {
             if (isConfirmed) {
@@ -199,9 +199,6 @@ function renderPlanningEventsList(events) {
             const rejectFn = isRelatedMember ?
               `rejectEventRelatedMemberAttendance('${escapeHtml(event.id)}', '${escapeHtml(memberAlias)}')` :
               `rejectEventAttendance('${escapeHtml(event.id)}')`;
-            const resetFn = isRelatedMember ?
-              `resetEventRelatedMemberAttendance('${escapeHtml(event.id)}', '${escapeHtml(memberAlias)}')` :
-              `resetEventAttendance('${escapeHtml(event.id)}')`;
 
             const noAttendingText = isRelatedMember ? 'No assistirà' : 'No assistiré';
             const noAttendingTitle = isRelatedMember ? 'No assistirà' : 'No assistiré';
@@ -209,22 +206,19 @@ function renderPlanningEventsList(events) {
             if (isConfirmed) {
               statusClass = 'event-status-indicator confirmed';
               statusText = '✔\uFE0E Confirmat';
-              button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩︎ Restablir</button>`;
-              button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕︎ ${noAttendingText}</button>`;
+              buttonHtml = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕︎ ${noAttendingText}</button>`;
             } else if (isRejected) {
               statusClass = 'event-status-indicator not-attending';
               statusText = `✕\uFE0E ${noAttendingText}`;
-              button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔︎ Confirmar</button>`;
-              button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩︎ Restablir</button>`;
+              buttonHtml = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩︎ Restablir</button>`;
             } else {
-              button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔︎ Confirmar</button>`;
-              button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕︎ ${noAttendingText}</button>`;
+              buttonHtml = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕︎ ${noAttendingText}</button>`;
             }
           }
 
           const sectionClass = isRelatedMember ? 'event-confirmation-section related-member' : 'event-confirmation-section';
           const nameHtml = showName ? `<span class="event-confirmation-member-name">${escapeHtml(memberName)}</span>` : '';
-          const buttonsHtml = isPastEvent ? '' : `<div class="event-confirmation-buttons">${button1Html}${button2Html}</div>`;
+          const buttonsHtml = isPastEvent ? '' : `<div class="event-confirmation-buttons" onclick="event.stopPropagation()">${buttonHtml}</div>`;
 
           return `
             <div class="${sectionClass}" data-event-id="${escapeHtml(event.id)}" data-member-alias="${escapeHtml(memberAlias)}">
@@ -1040,18 +1034,6 @@ function rejectEventAttendance(eventId) {
 }
 
 /**
- * Reset event attendance for current user to not-confirmed
- */
-function resetEventAttendance(eventId) {
-  if (!APP.currentUser) {
-    showToast('Si us plau, inicia sessió', 'warning');
-    return;
-  }
-
-  updateEventAttendance(eventId, APP.currentUser.alias, null);
-}
-
-/**
  * Confirm event attendance for related member
  */
 function confirmEventRelatedMemberAttendance(eventId, memberAlias) {
@@ -1063,13 +1045,6 @@ function confirmEventRelatedMemberAttendance(eventId, memberAlias) {
  */
 function rejectEventRelatedMemberAttendance(eventId, memberAlias) {
   updateEventAttendance(eventId, memberAlias, false);
-}
-
-/**
- * Reset event attendance for related member to not-confirmed
- */
-function resetEventRelatedMemberAttendance(eventId, memberAlias) {
-  updateEventAttendance(eventId, memberAlias, null);
 }
 
 /**
@@ -1119,9 +1094,7 @@ function updateEventAttendance(eventId, memberAlias, attending) {
         const rejectFn = isRelatedMember ?
           `rejectEventRelatedMemberAttendance('${escapeHtml(eventId)}', '${escapeHtml(memberAlias)}')` :
           `rejectEventAttendance('${escapeHtml(eventId)}')`;
-        const resetFn = isRelatedMember ?
-          `resetEventRelatedMemberAttendance('${escapeHtml(eventId)}', '${escapeHtml(memberAlias)}')` :
-          `resetEventAttendance('${escapeHtml(eventId)}')`;
+        const resetFn = `updateEventAttendance('${escapeHtml(eventId)}', '${escapeHtml(memberAlias)}', null)`;
         
         const noAttendingText = isRelatedMember ? 'No assistirà' : 'No assistiré';
         const noAttendingTitle = isRelatedMember ? 'No assistirà' : 'No assistiré';

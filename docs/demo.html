@@ -27,14 +27,19 @@
         
         
         <style>
-        #access-link-dialog {
+        dialog {
+  background: transparent;
+  border: none;
+}
+
+#access-link-dialog {
   padding: 0;
   border: none;
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  box-shadow: none;
   min-width: min(380px, 90vw);
   max-width: 90vw;
-  background: #fff;
+  background: transparent;
   color: #1f2937;
   text-align: left;
 }
@@ -55,7 +60,7 @@
 }
 
 body.dark-mode #access-link-dialog {
-  background: #2d3748;
+  background: transparent;
   color: #e2e8f0;
 }
 
@@ -2445,10 +2450,6 @@ table tbody tr:last-child td {
   padding-top: 8px;
   border-top: 1px solid var(--border-color);
 }
-  border-top: 1px solid var(--border-color);
-}
-
-
 
 /* Login dialog modal styles */
 #view-login {
@@ -2491,30 +2492,32 @@ table tbody tr:last-child td {
   position: absolute;
   top: 16px;
   right: 16px;
-  background: none;
-  border: none;
+  background: var(--primary-color);
+  border: 1px solid color-mix(in srgb, var(--primary-color), #000000 18%);
   cursor: pointer;
-  color: var(--text-color);
-  padding: 4px;
+  color: #ffffff;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  transition: background 0.2s;
+  border-radius: 50%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
   z-index: 10;
 }
 
 .login-close-btn:hover {
-  background: rgba(0, 0, 0, 0.06);
+  filter: brightness(0.92);
 }
 
 .dark-mode .login-close-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  filter: brightness(1.08);
 }
 
 .login-close-btn:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.3);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color), #ffffff 60%);
 }
 
 .login-close-btn svg {
@@ -2836,30 +2839,32 @@ input::placeholder {
   position: absolute;
   top: 16px;
   right: 16px;
-  background: none;
-  border: none;
+  background: var(--primary-color);
+  border: 1px solid color-mix(in srgb, var(--primary-color), #000000 18%);
   cursor: pointer;
-  color: var(--text-color);
-  padding: 4px;
+  color: #ffffff;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  transition: background 0.2s;
+  border-radius: 50%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
   z-index: 10;
 }
 
 #register-close-btn:hover {
-  background: rgba(0, 0, 0, 0.06);
+  filter: brightness(0.92);
 }
 
 .dark-mode #register-close-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  filter: brightness(1.08);
 }
 
 #register-close-btn:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.3);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color), #ffffff 60%);
 }
 
 #register-close-btn svg {
@@ -4739,15 +4744,28 @@ input::placeholder {
   position: absolute;
   top: 12px;
   right: 12px;
-  background: none;
-  border: none;
-  color: inherit;
+  background: var(--primary-color);
+  border: 1px solid color-mix(in srgb, var(--primary-color), #000000 18%);
+  color: #ffffff;
   cursor: pointer;
-  padding: 8px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 50%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
   z-index: 1001;
+}
+
+.dance-audio-close-btn:hover {
+  filter: brightness(0.92);
+}
+
+.dance-audio-close-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color), #ffffff 60%);
 }
 
 .dance-audio-header {
@@ -4930,15 +4948,28 @@ input::placeholder {
   position: absolute;
   top: 12px;
   right: 12px;
-  background: none;
-  border: none;
-  color: inherit;
+  background: var(--primary-color);
+  border: 1px solid color-mix(in srgb, var(--primary-color), #000000 18%);
+  color: #ffffff;
   cursor: pointer;
-  padding: 8px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 50%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
   z-index: 1001;
+}
+
+.training-note-close-btn:hover {
+  filter: brightness(0.92);
+}
+
+.training-note-close-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color), #ffffff 60%);
 }
 
 .training-note-header {
@@ -5608,17 +5639,17 @@ body.dark-mode .backup-members-list {
   padding: 0;
   border: none;
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  box-shadow: none;
   min-width: min(380px, 90vw);
   max-width: 90vw;
-  background: #fff;
+  background: transparent;
   color: #1f2937;
   text-align: left;
   overflow: visible;
 }
 
 body.dark-mode #person-dialog {
-  background: #2d3748;
+  background: transparent;
   color: #e2e8f0;
 }
 
@@ -6363,16 +6394,16 @@ body.dark-mode .person-dropdown li.selected {
   padding: 0;
   border: none;
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  box-shadow: none;
   min-width: min(380px, 90vw);
   max-width: 90vw;
-  background: #fff;
+  background: transparent;
   color: #1f2937;
   text-align: left;
 }
 
 body.dark-mode #password-change-dialog {
-  background: #2d3748;
+  background: transparent;
   color: #e2e8f0;
 }
 
@@ -10932,7 +10963,13 @@ console = new Proxy(console, {
     ],
     "minGroups": 1,
     "showInPositions": true,
-    "audios": []
+    "audios": [
+      {
+        "fileId": "1XIhGj3cylFK2velpOdpWX4bW8FHx9RaT",
+        "title": "Joan del riu - Per assajar",
+        "artist": "Reina, Josep i Quim"
+      }
+    ]
   },
   {
     "name": "Joan del riu de 16",
@@ -11086,7 +11123,13 @@ console = new Proxy(console, {
     ],
     "minGroups": 1,
     "showInPositions": false,
-    "audios": []
+    "audios": [
+      {
+        "fileId": "1XIhGj3cylFK2velpOdpWX4bW8FHx9RaT",
+        "title": "Joan del riu - Per assajar",
+        "artist": "Reina, Josep i Quim"
+      }
+    ]
   },
   {
     "name": "Passi-ho bé",
@@ -12048,16 +12091,6 @@ function loadMemberPositionsData() {
         var showLegend = Object.keys(seenLabels).length > 1;
 
         var forms = dance.structure && dance.structure.forms ? dance.structure.forms : ['grid'];
-        var formToggleHtml = '';
-        if (forms.length >= 2) {
-          formToggleHtml = '<div class="diagram-form-toggle">';
-          forms.forEach(function (form, idx) {
-            var activeClass = idx === 0 ? ' active' : '';
-            var label = form === 'radial' ? '\u25EF' : '\u25A6';
-            formToggleHtml += '<button type="button" class="form-toggle-btn' + activeClass + '" data-canvas-id="' + canvasId + '" data-form="' + form + '" title="' + form + '">' + label + '</button>';
-          });
-          formToggleHtml += '</div>';
-        }
 
         var card = document.createElement("div");
         card.className = "position-card";
@@ -12072,7 +12105,6 @@ function loadMemberPositionsData() {
           '</div>' +
           '<div class="diagrams-canvas-container">' +
             '<div class="diagrams-canvas-wrapper">' +
-              formToggleHtml +
               '<canvas id="' + canvasId + '" width="600" height="250"></canvas>' +
             '</div>' +
           '</div>';
@@ -12091,18 +12123,6 @@ function loadMemberPositionsData() {
         };
         drawPositionDiagram(positionDrawOpts);
 
-        if (forms.length >= 2) {
-          card.querySelectorAll('.form-toggle-btn').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-              var selectedForm = btn.dataset.form;
-              btn.closest('.diagram-form-toggle').querySelectorAll('.form-toggle-btn').forEach(function (b) {
-                b.classList.toggle('active', b.dataset.form === selectedForm);
-              });
-              positionDrawOpts.form = selectedForm;
-              drawPositionDiagram(positionDrawOpts);
-            });
-          });
-        }
       });
     })
     .catch(function (error) {
@@ -14783,7 +14803,7 @@ function renderPlanningEventsList(events) {
           let statusClass = 'event-status-indicator not-confirmed';
           let statusText = '? No confirmat';
           let button1Html = '';
-          let button2Html = '';
+          let buttonHtml = '';
 
           if (isPastEvent) {
             if (isConfirmed) {
@@ -14800,9 +14820,6 @@ function renderPlanningEventsList(events) {
             const rejectFn = isRelatedMember ?
               `rejectEventRelatedMemberAttendance('${escapeHtml(event.id)}', '${escapeHtml(memberAlias)}')` :
               `rejectEventAttendance('${escapeHtml(event.id)}')`;
-            const resetFn = isRelatedMember ?
-              `resetEventRelatedMemberAttendance('${escapeHtml(event.id)}', '${escapeHtml(memberAlias)}')` :
-              `resetEventAttendance('${escapeHtml(event.id)}')`;
 
             const noAttendingText = isRelatedMember ? 'No assistirà' : 'No assistiré';
             const noAttendingTitle = isRelatedMember ? 'No assistirà' : 'No assistiré';
@@ -14810,22 +14827,19 @@ function renderPlanningEventsList(events) {
             if (isConfirmed) {
               statusClass = 'event-status-indicator confirmed';
               statusText = '✔\uFE0E Confirmat';
-              button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩︎ Restablir</button>`;
-              button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕︎ ${noAttendingText}</button>`;
+              buttonHtml = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕︎ ${noAttendingText}</button>`;
             } else if (isRejected) {
               statusClass = 'event-status-indicator not-attending';
               statusText = `✕\uFE0E ${noAttendingText}`;
-              button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔︎ Confirmar</button>`;
-              button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩︎ Restablir</button>`;
+              buttonHtml = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩︎ Restablir</button>`;
             } else {
-              button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔︎ Confirmar</button>`;
-              button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕︎ ${noAttendingText}</button>`;
+              buttonHtml = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕︎ ${noAttendingText}</button>`;
             }
           }
 
           const sectionClass = isRelatedMember ? 'event-confirmation-section related-member' : 'event-confirmation-section';
           const nameHtml = showName ? `<span class="event-confirmation-member-name">${escapeHtml(memberName)}</span>` : '';
-          const buttonsHtml = isPastEvent ? '' : `<div class="event-confirmation-buttons">${button1Html}${button2Html}</div>`;
+          const buttonsHtml = isPastEvent ? '' : `<div class="event-confirmation-buttons" onclick="event.stopPropagation()">${buttonHtml}</div>`;
 
           return `
             <div class="${sectionClass}" data-event-id="${escapeHtml(event.id)}" data-member-alias="${escapeHtml(memberAlias)}">
@@ -15641,18 +15655,6 @@ function rejectEventAttendance(eventId) {
 }
 
 /**
- * Reset event attendance for current user to not-confirmed
- */
-function resetEventAttendance(eventId) {
-  if (!APP.currentUser) {
-    showToast('Si us plau, inicia sessió', 'warning');
-    return;
-  }
-
-  updateEventAttendance(eventId, APP.currentUser.alias, null);
-}
-
-/**
  * Confirm event attendance for related member
  */
 function confirmEventRelatedMemberAttendance(eventId, memberAlias) {
@@ -15664,13 +15666,6 @@ function confirmEventRelatedMemberAttendance(eventId, memberAlias) {
  */
 function rejectEventRelatedMemberAttendance(eventId, memberAlias) {
   updateEventAttendance(eventId, memberAlias, false);
-}
-
-/**
- * Reset event attendance for related member to not-confirmed
- */
-function resetEventRelatedMemberAttendance(eventId, memberAlias) {
-  updateEventAttendance(eventId, memberAlias, null);
 }
 
 /**
@@ -15720,9 +15715,7 @@ function updateEventAttendance(eventId, memberAlias, attending) {
         const rejectFn = isRelatedMember ?
           `rejectEventRelatedMemberAttendance('${escapeHtml(eventId)}', '${escapeHtml(memberAlias)}')` :
           `rejectEventAttendance('${escapeHtml(eventId)}')`;
-        const resetFn = isRelatedMember ?
-          `resetEventRelatedMemberAttendance('${escapeHtml(eventId)}', '${escapeHtml(memberAlias)}')` :
-          `resetEventAttendance('${escapeHtml(eventId)}')`;
+        const resetFn = `updateEventAttendance('${escapeHtml(eventId)}', '${escapeHtml(memberAlias)}', null)`;
         
         const noAttendingText = isRelatedMember ? 'No assistirà' : 'No assistiré';
         const noAttendingTitle = isRelatedMember ? 'No assistirà' : 'No assistiré';
