@@ -8,11 +8,6 @@ function loadTrainingData(trainingId) {
     return;
   }
 
-  // Prevent loading the same training multiple times
-  if (APP.currentTrainingId === trainingId) {
-    return;
-  }
-  
   APP.currentTrainingId = trainingId;
   
   // Reset manual unlock state when loading a new training

@@ -210,7 +210,7 @@ function renderPlanningEventsList(events) {
             } else if (isRejected) {
               statusClass = 'event-status-indicator not-attending';
               statusText = `✕\uFE0E ${noAttendingText}`;
-              buttonHtml = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩︎ Restablir</button>`;
+              buttonHtml = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔︎ Confirmar</button>`;
             } else {
               buttonHtml = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕︎ ${noAttendingText}</button>`;
             }
@@ -357,11 +357,6 @@ function loadEventData(eventId) {
     return;
   }
 
-  // Prevent loading the same event multiple times
-  if (APP.currentEventId === eventId) {
-    return;
-  }
-  
   APP.currentEventId = eventId;
 
   if (typeof isEventManuallyUnlocked !== "undefined") {
@@ -754,6 +749,29 @@ function populatePersonListForDiagram(diagram, g, squareIdx) {
   clearPersonBtn.style.display = diagram.groups[g][squareIdx]
     ? "block"
     : "none";
+
+  // Set position-info
+  const positions = diagram.positions || [];
+  const order = squareIdx + 1;
+  const pos = positions.find(function (p) { return p.order === order; });
+  const groupLetter = String.fromCharCode(65 + g);
+  const diagramColors = diagram.diagram || {};
+  const blockName = diagramColors.blockName || 'Grup';
+
+  // Determine position info text
+  let positionInfoText = blockName + ' ' + groupLetter;
+  if (pos && pos.specifications) {
+    positionInfoText = pos.specifications;
+  } else if (pos && pos.positionType && pos.positionType.label) {
+    positionInfoText = pos.positionType.label;
+  }
+
+  const positionInfo = document.getElementById('position-info');
+  if (positionInfo) {
+    positionInfo.textContent = positionInfoText;
+    positionInfo.style.display = 'block';
+  }
+
   if (dialog) {
     showDialogWithBackdrop(dialog);
   }
@@ -916,8 +934,9 @@ function displayEventMemberAttendanceList(eventData) {
     
     const memberNote = memberNotes[memberAlias] || '';
     const noteHtml = memberNote ? `<span class="event-member-note" title="${escapeHtml(memberNote)}">ℹ️ «${escapeHtml(memberNote)}»</span>` : '';
-    const disabledAttr = isPastEvent ? 'disabled' : '';
-    const disabledClass = isPastEvent ? ' disabled' : '';
+    const isDisabled = isPastEvent || !isEventEditable;
+    const disabledAttr = isDisabled ? 'disabled' : '';
+    const disabledClass = isDisabled ? ' disabled' : '';
     
     return `
       <div class="event-member-item${memberNote ? ' has-note' : ''}${disabledClass}">
@@ -941,7 +960,7 @@ function displayEventMemberAttendanceList(eventData) {
     countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
   }
   
-  if (!isPastEvent) {
+  if (!isPastEvent && isEventEditable) {
     attendanceList.querySelectorAll('.event-member-checkbox').forEach(checkbox => {
       checkbox.addEventListener('change', handleMemberEventAttendanceChange);
     });
@@ -1103,11 +1122,11 @@ function updateEventAttendance(eventId, memberAlias, attending) {
         let button2Html = '';
         
         if (attending === true) {
-          button1Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩︎ Restablir</button>`;
+          button1Html = ``;
           button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕︎ ${noAttendingText}</button>`;
         } else if (attending === false) {
           button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔︎ Confirmar</button>`;
-          button2Html = `<button type="button" class="btn btn-xs btn-outline-secondary" onclick="${resetFn}" title="Restablir a no confirmat">↩︎ Restablir</button>`;
+          button2Html = ``;
         } else {
           button1Html = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔︎ Confirmar</button>`;
           button2Html = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕︎ ${noAttendingText}</button>`;

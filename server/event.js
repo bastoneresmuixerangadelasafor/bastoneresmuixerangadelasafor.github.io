@@ -761,7 +761,7 @@ function adminSetMemberAttendance_({trainingId, memberAlias, attending, user}) {
     const context = getTrainingAttendanceContext_({trainingId, user: memberUser});
     if (context.error) return context.error;
 
-    const newValue = attending ? 'SI' : '';
+    const newValue = attending ? 'SI' : 'NO';
     context.sheet.getRange(context.userRow, context.dateColumn).setValue(newValue);
 
     // Invalidate cache
@@ -772,7 +772,7 @@ function adminSetMemberAttendance_({trainingId, memberAlias, attending, user}) {
         trainingId: context.trainingId,
         memberAlias: memberAlias,
         attending: attending,
-        message: attending ? 'Assistència confirmada' : 'Assistència esborrada',
+        message: attending ? 'Assistència confirmada' : 'Assistència rebutjada',
       },
     });
   } catch (error) {
@@ -868,7 +868,7 @@ function confirmEventMemberAttendance_({eventId, memberAlias, attending}) {
     }
 
     // Update the attendance value
-    const newValue = attending ? 'SI' : '';
+    const newValue = attending ? 'SI' : 'NO';
     sheet.getRange(memberRowIndex + 1, eventColumnIndex + 1).setValue(newValue);
 
     // Invalidate cache
@@ -879,7 +879,7 @@ function confirmEventMemberAttendance_({eventId, memberAlias, attending}) {
         eventId: eventId,
         memberAlias: memberAlias,
         attending: attending,
-        message: attending ? 'Assistència confirmada' : 'Assistència esborrada',
+        message: attending ? 'Assistència confirmada' : 'Assistència rebutjada',
       },
     });
   } catch (error) {

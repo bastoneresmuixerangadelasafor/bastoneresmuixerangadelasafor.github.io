@@ -689,8 +689,7 @@
                             autocomplete="off">
                         <ul id="person-list" class="person-dropdown"></ul>
                     </div>
-                    <button type="button" id="clear-person-btn" class="clear-person-btn" style="display:none;">âœ•
-                        Esborrar selecció</button>
+                    <button type="button" id="clear-person-btn" class="clear-person-btn" style="display:none;">                       Esborrar selecció</button>
                 </form>
             </dialog>
             <!-- Floating buttons container -->
@@ -1086,7 +1085,11 @@
                         const x = cellCenterX - rl.cellWidth / 2;
                         const y = cellCenterY - rl.cellHeight / 2;
 
-                        ctx.fillStyle = getCellBgColor(row, col);
+                        // Check if member is not attending
+                        const rejections = (APP.currentEventData && APP.currentEventData.rejections) || [];
+                        const isRejected = group[i] && rejections.includes(group[i]);
+
+                        ctx.fillStyle = isRejected ? '#dc3545' : getCellBgColor(row, col);
                         ctx.fillRect(x, y, rl.cellWidth, rl.cellHeight);
                         ctx.strokeStyle = '#fff';
                         ctx.lineWidth = Math.max(2, 4 * rl.scale);
@@ -1100,12 +1103,13 @@
                         }
 
                         if (group[i]) {
-                            ctx.fillStyle = getCellTxtColor(row, col);
+                            ctx.fillStyle = isRejected ? '#ffffff' : getCellTxtColor(row, col);
                             const nameFontSize = Math.max(10, Math.round(18 * rl.scale));
                             ctx.font = 'bold ' + nameFontSize + 'px sans-serif';
                             ctx.textAlign = 'center';
                             ctx.textBaseline = 'middle';
-                            ctx.fillText(group[i], cellCenterX, cellCenterY);
+                            const displayName = isRejected ? '⚠️ ' + group[i] : group[i];
+                            ctx.fillText(displayName, cellCenterX, cellCenterY);
                         }
                     }
                 }
@@ -1198,7 +1202,12 @@
                         const i = row * cols + col;
                         const x = offsetX + col * (squareWidth + squareSpacingX);
                         const y = offsetY + row * (squareHeight + squareSpacingY);
-                        ctx.fillStyle = getCellBackgroundColor(row, col);
+                        
+                        // Check if member is not attending
+                        const rejections = (APP.currentEventData && APP.currentEventData.rejections) || [];
+                        const isRejected = group[i] && rejections.includes(group[i]);
+                        
+                        ctx.fillStyle = isRejected ? '#dc3545' : getCellBackgroundColor(row, col);
                         ctx.fillRect(x, y, squareWidth, squareHeight);
                         ctx.strokeStyle = '#fff';
                         ctx.lineWidth = Math.max(2, 4 * scale);
@@ -1219,12 +1228,12 @@
                         }
 
                         if (group[i]) {
-                            ctx.fillStyle = getCellTextColor(row, col);
+                            ctx.fillStyle = isRejected ? '#ffffff' : getCellTextColor(row, col);
                             const nameFontSize = Math.max(10, Math.round(20 * scale));
                             ctx.font = 'bold ' + nameFontSize + 'px sans-serif';
                             ctx.textAlign = 'center';
                             ctx.textBaseline = 'middle';
-                            const displayName =  group[i];
+                            const displayName = isRejected ? '⚠️ ' + group[i] : group[i];
                             ctx.fillText(displayName, x + squareWidth / 2, y + squareHeight / 2);
                         }
                     }
@@ -1342,9 +1351,13 @@
             const backup = diagram.backup || [];
             let backupHtml = '';
             if (backup.length > 0) {
+                const rejections = (APP.currentEventData && APP.currentEventData.rejections) || [];
                 backupHtml = '<div class="backup-members-list">';
                 backup.forEach(function (memberAlias) {
-                    backupHtml += `<span class="backup-member-chip">${memberAlias}`;
+                    const isRejected = rejections.includes(memberAlias);
+                    const chipStyle = isRejected ? 'background-color: #dc3545; border-color: #dc3545; color: white;' : '';
+                    const warningIcon = isRejected ? '⚠️ ' : '';
+                    backupHtml += `<span class="backup-member-chip" style="${chipStyle}">${warningIcon}${memberAlias}`;
                     if (isAdmin) {
                         backupHtml += `<button type="button" class="remove-backup-btn" data-diagram-id="${diagram.id}" data-member="${memberAlias}" title="Eliminar">×</button>`;
                     }
@@ -1614,9 +1627,8 @@ ${backupHtml}
                 const diagram = diagrams.find(d => d.id === diagramId);
                 if (!diagram) return;
 
-                // Update position info to show "RESERVA"
-                const positionInfo = document.getElementById('position-info');
-                positionInfo.textContent = 'RESERVA - ' + diagram.danceName;
+                // Determine position info text for backup
+                const reservaText = 'RESERVA - ' + diagram.danceName;
 
                 // Get all members already used in the diagram
                 const cellCount = (diagram.rows || 2) * (diagram.columns || 2);
@@ -1667,12 +1679,23 @@ ${backupHtml}
 
                 personCombo.value = '';
                 clearPersonBtn.style.display = 'none';
-                showDialogWithBackdrop(dialog);
+                
+                // Set position-info BEFORE showing dialog
+                const positionInfo = document.getElementById('position-info');
+                if (positionInfo) {
+                    positionInfo.textContent = reservaText;
+                    positionInfo.style.display = 'block';
+                    console.log('populatePersonListForBackup - after setting textContent:', positionInfo.textContent);
+                }
+                
+                // Only show dialog if it's not already open
+                if (!dialog.open) {
+                    showDialogWithBackdrop(dialog);
+                }
+                
                 // Focus and show dropdown
-                setTimeout(function () {
-                    personCombo.focus();
-                    personList.classList.add('open');
-                }, 100);
+                personCombo.focus();
+                personList.classList.add('open');
             }
 
             // Helper to populate the person list
@@ -1680,8 +1703,6 @@ ${backupHtml}
                 const diagram = diagrams.find(d => d.id === diagramId);
                 if (!diagram) return;
 
-                // Update position info in dialog
-                const positionInfo = document.getElementById('position-info');
                 const positions = diagram.positions || [];
                 const order = squareIdx + 1;
                 const pos = positions.find(function (p) { return p.order === order; });
@@ -1689,13 +1710,12 @@ ${backupHtml}
                 const diagramColors = diagram.diagram || {};
                 const blockName = diagramColors.blockName || 'Grup';
 
-                // Show specifications if available
+                // Determine position info text
+                let positionInfoText = blockName + ' ' + groupLetter;
                 if (pos && pos.specifications) {
-                    positionInfo.textContent = pos.specifications;
-                } else if (pos && pos.positionType.label) {
-                    positionInfo.textContent = pos.positionType.label;
-                } else {
-                    positionInfo.textContent = blockName + ' ' + groupLetter;
+                    positionInfoText = pos.specifications;
+                } else if (pos && pos.positionType && pos.positionType.label) {
+                    positionInfoText = pos.positionType.label;
                 }
 
                 const cellCount = (diagram.rows || 2) * (diagram.columns || 2);
@@ -1742,12 +1762,22 @@ ${backupHtml}
 
                 personCombo.value = diagram.groups[g][squareIdx] || '';
                 clearPersonBtn.style.display = diagram.groups[g][squareIdx] ? 'block' : 'none';
-                showDialogWithBackdrop(dialog);
+                
+                // Set position-info BEFORE showing dialog
+                const positionInfo = document.getElementById('position-info');
+                if (positionInfo) {
+                    positionInfo.textContent = positionInfoText;
+                    positionInfo.style.display = 'block';
+                }
+                
+                // Only show dialog if it's not already open
+                if (!dialog.open) {
+                    showDialogWithBackdrop(dialog);
+                }
+                
                 // Focus and show dropdown
-                setTimeout(function () {
-                    personCombo.focus();
-                    personList.classList.add('open');
-                }, 100);
+                personCombo.focus();
+                personList.classList.add('open');
             }
 
             // Handle clear button click
