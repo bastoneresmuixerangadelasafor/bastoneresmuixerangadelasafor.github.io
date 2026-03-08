@@ -2335,6 +2335,25 @@ ${backupHtml}
                         const canvas = document.getElementById('diagram-canvas-' + diagram.id);
                         if (!canvas) return;
 
+                        // Extract legend items (unique labels only)
+                        const positions = diagram.positions || [];
+                        const diagramColors = diagram.diagram || { backgroundColor: {}, textColor: {} };
+                        const legendItems = [];
+                        const seenLabels = new Set();
+                        positions.forEach(function (pos) {
+                            if (seenLabels.has(pos.positionType.label)) return;
+                            seenLabels.add(pos.positionType.label);
+                            const color = (diagramColors.backgroundColor && diagramColors.backgroundColor[pos.positionType.label]) || '#808080';
+                            legendItems.push({
+                                label: pos.positionType.label,
+                                color: color
+                            });
+                        });
+                        
+                        // Calculate if legend should be shown (only if more than 1 item)
+                        const showLegend = legendItems.length > 1;
+                        const legendHeight = showLegend ? 45 : 0;
+
                         // Calculate height for this individual image
                         const headerHeight = 80;
                         const padding = 30;
@@ -2343,7 +2362,7 @@ ${backupHtml}
                         const backupMembers = Array.isArray(diagram.backup) ? diagram.backup.filter(Boolean) : [];
                         const backupText = backupMembers.length > 0 ? `Reserves: ${backupMembers.join(', ')}` : '';
                         const backupHeight = backupText ? 40 : 0;
-                        const totalHeight = headerHeight + titleHeight + descriptionHeight + canvas.height + padding * 2 + backupHeight;
+                        const totalHeight = headerHeight + titleHeight + descriptionHeight + legendHeight + canvas.height + padding * 2 + backupHeight;
 
                         // Create a canvas for this diagram
                         const imageCanvas = document.createElement('canvas');
@@ -2372,6 +2391,7 @@ ${backupHtml}
                         }
 
                         let yOffset = headerHeight + padding;
+                        
                         // Draw dance name
                         ctx.fillStyle = '#333';
                         ctx.font = 'bold 22px sans-serif';
@@ -2388,6 +2408,79 @@ ${backupHtml}
                             ctx.font = '18px sans-serif';
                             ctx.textAlign = 'left';
                             ctx.fillText(backupText, 30, backupY);
+                        }
+
+                        // Draw legend centered at the bottom if more than one position type
+                        if (showLegend && legendItems.length > 0) {
+                            const boxSize = 14;
+                            const boxMargin = 6;
+                            const itemGap = 30;
+                            const legendBottomPadding = 10;
+                            
+                            // Measure text widths to calculate proper spacing
+                            ctx.font = '13px sans-serif';
+                            const itemWidths = legendItems.map(function (item) {
+                                const textMetrics = ctx.measureText(item.label);
+                                return boxSize + boxMargin + textMetrics.width;
+                            });
+                            
+                            // Determine how many items per row
+                            const availableWidth = imageCanvas.width - 60;
+                            let currentRow = [];
+                            let rows = [];
+                            let currentRowWidth = 0;
+                            
+                            itemWidths.forEach(function (width, idx) {
+                                const itemWithGap = currentRow.length === 0 ? width : width + itemGap;
+                                if (currentRowWidth + itemWithGap > availableWidth && currentRow.length > 0) {
+                                    rows.push(currentRow);
+                                    currentRow = [idx];
+                                    currentRowWidth = width;
+                                } else {
+                                    currentRow.push(idx);
+                                    currentRowWidth += itemWithGap;
+                                }
+                            });
+                            if (currentRow.length > 0) {
+                                rows.push(currentRow);
+                            }
+                            
+                            // Draw legend rows
+                            const legendY = imageCanvas.height - legendHeight + legendBottomPadding;
+                            rows.forEach(function (row, rowIdx) {
+                                // Calculate row width and center it
+                                let rowWidth = 0;
+                                row.forEach(function (idx, i) {
+                                    rowWidth += itemWidths[idx];
+                                    if (i < row.length - 1) {
+                                        rowWidth += itemGap;
+                                    }
+                                });
+                                
+                                const startX = (imageCanvas.width - rowWidth) / 2;
+                                let currentX = startX;
+                                
+                                // Draw items in this row
+                                row.forEach(function (itemIdx) {
+                                    const item = legendItems[itemIdx];
+                                    const currentY = legendY + (rowIdx * 22);
+                                    
+                                    // Draw color box
+                                    ctx.fillStyle = item.color;
+                                    ctx.fillRect(currentX, currentY + 2, boxSize, boxSize);
+                                    ctx.strokeStyle = '#fff';
+                                    ctx.lineWidth = 1.5;
+                                    ctx.strokeRect(currentX, currentY + 2, boxSize, boxSize);
+                                    
+                                    // Draw label
+                                    ctx.fillStyle = '#333';
+                                    ctx.font = '13px sans-serif';
+                                    ctx.textAlign = 'left';
+                                    ctx.fillText(item.label, currentX + boxSize + boxMargin, currentY + 12);
+                                    
+                                    currentX += itemWidths[itemIdx] + itemGap;
+                                });
+                            });
                         }
 
                         // Convert to blob and create file
