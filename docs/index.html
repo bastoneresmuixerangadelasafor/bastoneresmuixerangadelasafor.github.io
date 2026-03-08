@@ -1099,20 +1099,6 @@
                             ctx.strokeRect(x, y, rl.cellWidth, rl.cellHeight);
                         }
 
-                        if (isCurrentUserAdmin) {
-                            const cellOrder = row * cols + col + 1;
-                            const cellPos = positions.find(function (p) { return p.order === cellOrder; });
-                            const cellTag = cellPos && cellPos.tag ? cellPos.tag : '';
-                            ctx.save();
-                            const orderFontSize = Math.max(8, Math.round(12 * rl.scale));
-                            ctx.font = orderFontSize + 'px sans-serif';
-                            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-                            ctx.textAlign = 'right';
-                            ctx.textBaseline = 'bottom';
-                            ctx.fillText(cellTag, x + rl.cellWidth - 4 * rl.scale, y + rl.cellHeight - 3 * rl.scale);
-                            ctx.restore();
-                        }
-
                         if (group[i]) {
                             ctx.fillStyle = getCellTxtColor(row, col);
                             const nameFontSize = Math.max(10, Math.round(18 * rl.scale));
@@ -1230,21 +1216,6 @@
                             ctx.strokeStyle = primaryColor || '#6366f1';
                             ctx.lineWidth = Math.max(4, 8 * scale);
                             ctx.strokeRect(x, y, squareWidth, squareHeight);
-                        }
-
-                        // Draw position tag in bottom right corner of each cell (admin only)
-                        if (isCurrentUserAdmin) {
-                            const cellOrder = row * cols + col + 1;
-                            const cellPos = positions.find(function (p) { return p.order === cellOrder; });
-                            const cellTag = cellPos && cellPos.tag ? cellPos.tag : '';
-                            ctx.save();
-                            const orderFontSize = Math.max(8, Math.round(12 * scale));
-                            ctx.font = orderFontSize + 'px sans-serif';
-                            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-                            ctx.textAlign = 'right';
-                            ctx.textBaseline = 'bottom';
-                            ctx.fillText(cellTag, x + squareWidth - 4 * scale, y + squareHeight - 3 * scale);
-                            ctx.restore();
                         }
 
                         if (group[i]) {
