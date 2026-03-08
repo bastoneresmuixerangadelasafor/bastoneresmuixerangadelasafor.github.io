@@ -469,19 +469,19 @@ const DANCES = [
     "diagram": {
       "blockName": "Grup",
       "backgroundColor": {
-        "BAIX": "#FFF2CC",
-        "DALT": "#92D050"
+        "HORARI/PRIMER BAIX": "#FFF2CC",
+        "ANTIHORARI/PRIMER DALT": "#92D050"
       },
       "textColor": {
-        "BAIX": "#000000",
-        "DALT": "#000000"
+        "HORARI/PRIMER BAIX": "#000000",
+        "ANTIHORARI/PRIMER DALT": "#000000"
       }
     },
     "positions": [
       {
         "order": 1,
         "positionType": {
-          "label": "DALT"
+          "label": "ANTIHORARI/PRIMER DALT"
         },
         "specifications": "Cantó equerre/cara plaça",
         "tag": "4"
@@ -489,7 +489,7 @@ const DANCES = [
       {
         "order": 2,
         "positionType": {
-          "label": "BAIX"
+          "label": "HORARI/PRIMER BAIX"
         },
         "specifications": "Cantó dret/cara plaça",
         "tag": "3"
@@ -497,7 +497,7 @@ const DANCES = [
       {
         "order": 3,
         "positionType": {
-          "label": "BAIX"
+          "label": "HORARI/PRIMER BAIX"
         },
         "specifications": "Cantó equerre/esquena plaça",
         "tag": "2"
@@ -505,7 +505,7 @@ const DANCES = [
       {
         "order": 4,
         "positionType": {
-          "label": "DALT"
+          "label": "ANTIHORARI/PRIMER DALT"
         },
         "specifications": "Cantó dret/esquena plaça",
         "tag": "1"
@@ -533,19 +533,19 @@ const DANCES = [
     "diagram": {
       "blockName": "Grup",
       "backgroundColor": {
-        "BAIX": "#FFF2CC",
-        "DALT": "#92D050"
+        "HORARI/PRIMER BAIX": "#FFF2CC",
+        "ANTIHORARI/PRIMER DALT": "#92D050"
       },
       "textColor": {
-        "BAIX": "#000000",
-        "DALT": "#000000"
+        "HORARI/PRIMER BAIX": "#000000",
+        "ANTIHORARI/PRIMER DALT": "#000000"
       }
     },
     "positions": [
       {
         "order": 1,
         "positionType": {
-          "label": "DALT"
+          "label": "ANTIHORARI/PRIMER DALT"
         },
         "specifications": "Cantó equerre/cara plaça",
         "tag": "9"
@@ -553,7 +553,7 @@ const DANCES = [
       {
         "order": 2,
         "positionType": {
-          "label": "BAIX"
+          "label": "HORARI/PRIMER BAIX"
         },
         "specifications": "Mig equerre/cara plaça",
         "tag": "10"
@@ -561,7 +561,7 @@ const DANCES = [
       {
         "order": 3,
         "positionType": {
-          "label": "DALT"
+          "label": "ANTIHORARI/SEGON DALT"
         },
         "specifications": "Mig dret/cara plaça",
         "tag": "11"
@@ -569,7 +569,7 @@ const DANCES = [
       {
         "order": 4,
         "positionType": {
-          "label": "BAIX"
+          "label": "HORARI/SEGON BAIX"
         },
         "specifications": "Cantó dret/cara plaça",
         "tag": "12"
@@ -577,7 +577,7 @@ const DANCES = [
       {
         "order": 5,
         "positionType": {
-          "label": "DALT"
+          "label": "ANTIHORARI/SEGON DALT"
         },
         "specifications": "Cantó equerre/esquena plaça",
         "tag": "13"
@@ -585,7 +585,7 @@ const DANCES = [
       {
         "order": 6,
         "positionType": {
-          "label": "BAIX"
+          "label": "HORARI/SEGON BAIX"
         },
         "specifications": "Mig esquerre/esquena plaça",
         "tag": "14"
@@ -593,7 +593,7 @@ const DANCES = [
       {
         "order": 7,
         "positionType": {
-          "label": "DALT"
+          "label": "ANTIHORARI/SEGON DALT"
         },
         "specifications": "Mig dret/esquena plaça",
         "tag": "15"
@@ -601,7 +601,7 @@ const DANCES = [
       {
         "order": 8,
         "positionType": {
-          "label": "BAIX"
+          "label": "HORARI/SEGON BAIX"
         },
         "specifications": "Cantó dret/esquena plaça",
         "tag": "16"
@@ -609,7 +609,7 @@ const DANCES = [
       {
         "order": 9,
         "positionType": {
-          "label": "BAIX"
+          "label": "HORARI/SEGON BAIX"
         },
         "specifications": "Cantó equerre/cara plaça",
         "tag": "8"
@@ -617,7 +617,7 @@ const DANCES = [
       {
         "order": 10,
         "positionType": {
-          "label": "DALT"
+          "label": "ANTIHORARI/SEGON DALT"
         },
         "specifications": "Mig equerre/cara plaça",
         "tag": "7"
@@ -625,7 +625,7 @@ const DANCES = [
       {
         "order": 11,
         "positionType": {
-          "label": "BAIX"
+          "label": "HORARI/SEGON BAIX"
         },
         "specifications": "Mig dret/cara plaça",
         "tag": "6"
@@ -633,7 +633,7 @@ const DANCES = [
       {
         "order": 12,
         "positionType": {
-          "label": "DALT"
+          "label": "ANTIHORARI/SEGON DALT"
         },
         "specifications": "Cantó dret/cara plaça",
         "tag": "5"
@@ -641,7 +641,7 @@ const DANCES = [
       {
         "order": 13,
         "positionType": {
-          "label": "BAIX"
+          "label": "HORARI/SEGON BAIX"
         },
         "specifications": "Cantó equerre/esquena plaça",
         "tag": "4"
@@ -649,7 +649,7 @@ const DANCES = [
       {
         "order": 14,
         "positionType": {
-          "label": "DALT"
+          "label": "ANTIHORARI/SEGON DALT"
         },
         "specifications": "Mig esquerre/esquena plaça",
         "tag": "3"
@@ -657,7 +657,7 @@ const DANCES = [
       {
         "order": 15,
         "positionType": {
-          "label": "BAIX"
+          "label": "HORARI/SEGON BAIX"
         },
         "specifications": "Mig dret/esquena plaça",
         "tag": "2"
@@ -665,7 +665,7 @@ const DANCES = [
       {
         "order": 16,
         "positionType": {
-          "label": "DALT"
+          "label": "ANTIHORARI/SEGON DALT"
         },
         "specifications": "Cantó dret/esquena plaça",
         "tag": "1"
