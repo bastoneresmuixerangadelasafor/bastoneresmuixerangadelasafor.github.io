@@ -203,8 +203,32 @@ function canManageMemberPositions_({ user, memberAlias }) {
 	const targetAlias = String(memberAlias).trim().toLowerCase();
 	const userAlias = String(user.alias || '').trim().toLowerCase();
 	const isAdmin = (user.roles || []).indexOf('ADMIN') !== -1;
+	const relatedMemberIds = Array.isArray(user.relations)
+		? user.relations.map(function(id) { return String(id); })
+		: [];
 
-	return isAdmin || (userAlias && userAlias === targetAlias);
+	if (isAdmin || (userAlias && userAlias === targetAlias)) {
+		return true;
+	}
+
+	if (!relatedMemberIds.length) {
+		return false;
+	}
+
+	try {
+		const members = CACHE.getMembers();
+		const targetMember = members.find(function(member) {
+			return String(member.alias || '').trim().toLowerCase() === targetAlias;
+		});
+
+		if (!targetMember || !targetMember.id) {
+			return false;
+		}
+
+		return relatedMemberIds.indexOf(String(targetMember.id)) !== -1;
+	} catch (error) {
+		return false;
+	}
 }
 
 function getMemberPositions_({memberAlias, user}) {

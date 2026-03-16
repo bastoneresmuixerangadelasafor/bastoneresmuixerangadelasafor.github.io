@@ -1105,85 +1105,90 @@ const MEMBERS = new (class AppMembers {
         var positionCardId = 0;
 
         DANCES.filter(function (dance) { return dance.showInPositions === true; }).forEach(function (dance) {
-          var danceName = dance.name;
-          var memberEntries = positions[danceName] || {};
-          var dancePositions = dance.positions || [];
-          var memberTags = dancePositions.filter(function (pos) {
-            return String(memberEntries[pos.order]).toUpperCase() === MEMBERS.POSITION_OK;
-          }).map(function (pos) { return pos.tag; });
-          var inProgressTags = dancePositions.filter(function (pos) {
-            return String(memberEntries[pos.order]).toUpperCase() === MEMBERS.POSITION_IN_PROGRESS;
-          }).map(function (pos) { return pos.tag; });
-          var diagramColors = dance.diagram || { backgroundColor: {}, textColor: {} };
-          var rows = dance.structure ? dance.structure.rows : 2;
-          var cols = dance.structure ? dance.structure.columns : 2;
+          try {
+            var danceName = dance.name;
+            var memberEntries = positions[danceName] || {};
+            var dancePositions = Array.isArray(dance.positions) ? dance.positions : [];
+            var memberTags = dancePositions.filter(function (pos) {
+              return pos && pos.order != null && String(memberEntries[pos.order]).toUpperCase() === MEMBERS.POSITION_OK;
+            }).map(function (pos) { return pos.tag; });
+            var inProgressTags = dancePositions.filter(function (pos) {
+              return pos && pos.order != null && String(memberEntries[pos.order]).toUpperCase() === MEMBERS.POSITION_IN_PROGRESS;
+            }).map(function (pos) { return pos.tag; });
+            var diagramColors = dance.diagram || { backgroundColor: {}, textColor: {} };
+            var rows = dance.structure ? dance.structure.rows : 2;
+            var cols = dance.structure ? dance.structure.columns : 2;
 
-          var cardId = positionCardId++;
-          var canvasId = "position-canvas-" + cardId;
+            var cardId = positionCardId++;
+            var canvasId = "position-canvas-" + cardId;
 
-          var legendHtml = "";
-          var seenLabels = {};
-          dancePositions.forEach(function (pos) {
-            if (seenLabels[pos.positionType.label]) return;
-            seenLabels[pos.positionType.label] = true;
-            var color = (diagramColors.backgroundColor && diagramColors.backgroundColor[pos.positionType.label]) || "#808080";
-            legendHtml += '<div class="diagram-legend-item">' +
-              '<span class="legend-color-box" style="background: ' + color + ';"></span>' +
-              '<span>' + pos.positionType.label + '</span>' +
-              '</div>';
-          });
-          var showLegend = Object.keys(seenLabels).length > 1;
-
-          var forms = dance.structure && dance.structure.forms ? dance.structure.forms : ['grid'];
-
-          var card = document.createElement("div");
-          card.className = "position-card";
-          card.innerHTML =
-            '<div class="diagram-header">' +
-              '<div class="diagram-title-row">' +
-                '<h3 class="diagram-title">' + danceName + '</h3>' +
-              '</div>' +
-              '<div class="diagram-legend" style="' + (showLegend ? '' : 'display:none;') + '">' +
-                legendHtml +
-              '</div>' +
-            '</div>' +
-            '<div class="diagrams-canvas-container">' +
-              '<div class="diagrams-canvas-wrapper">' +
-                '<canvas id="' + canvasId + '" width="600" height="250"></canvas>' +
-              '</div>' +
-            '</div>';
-
-          list.appendChild(card);
-
-          var positionDrawOpts = {
-            canvasId: canvasId,
-            rows: rows,
-            cols: cols,
-            positions: dancePositions,
-            diagramColors: diagramColors,
-            highlightTags: memberTags,
-            inProgressTags: inProgressTags,
-            form: forms[0]
-          };
-          MEMBERS.drawPositionDiagram(positionDrawOpts);
-
-          var canvas = document.getElementById(canvasId);
-          if (canvas) {
-            canvas.style.cursor = "pointer";
-            canvas.addEventListener("click", function (event) {
-              MEMBERS.handlePositionClick(event, canvas, {
-                memberAlias: alias,
-                danceName: danceName,
-                rows: rows,
-                cols: cols,
-                positions: dancePositions,
-                memberEntries: memberEntries,
-                diagramColors: diagramColors,
-                form: forms[0]
-              });
+            var legendHtml = "";
+            var seenLabels = {};
+            dancePositions.forEach(function (pos) {
+              if (!pos || !pos.positionType || !pos.positionType.label) return;
+              var positionLabel = pos.positionType.label;
+              if (seenLabels[positionLabel]) return;
+              seenLabels[positionLabel] = true;
+              var color = (diagramColors.backgroundColor && diagramColors.backgroundColor[positionLabel]) || "#808080";
+              legendHtml += '<div class="diagram-legend-item">' +
+                '<span class="legend-color-box" style="background: ' + color + ';"></span>' +
+                '<span>' + positionLabel + '</span>' +
+                '</div>';
             });
-          }
+            var showLegend = Object.keys(seenLabels).length > 1;
 
+            var forms = dance.structure && dance.structure.forms ? dance.structure.forms : ['grid'];
+
+            var card = document.createElement("div");
+            card.className = "position-card";
+            card.innerHTML =
+              '<div class="diagram-header">' +
+                '<div class="diagram-title-row">' +
+                  '<h3 class="diagram-title">' + danceName + '</h3>' +
+                '</div>' +
+                '<div class="diagram-legend" style="' + (showLegend ? '' : 'display:none;') + '">' +
+                  legendHtml +
+                '</div>' +
+              '</div>' +
+              '<div class="diagrams-canvas-container">' +
+                '<div class="diagrams-canvas-wrapper">' +
+                  '<canvas id="' + canvasId + '" width="600" height="250"></canvas>' +
+                '</div>' +
+              '</div>';
+
+            list.appendChild(card);
+
+            var positionDrawOpts = {
+              canvasId: canvasId,
+              rows: rows,
+              cols: cols,
+              positions: dancePositions,
+              diagramColors: diagramColors,
+              highlightTags: memberTags,
+              inProgressTags: inProgressTags,
+              form: forms[0]
+            };
+            MEMBERS.drawPositionDiagram(positionDrawOpts);
+
+            var canvas = document.getElementById(canvasId);
+            if (canvas) {
+              canvas.style.cursor = "pointer";
+              canvas.addEventListener("click", function (event) {
+                MEMBERS.handlePositionClick(event, canvas, {
+                  memberAlias: alias,
+                  danceName: danceName,
+                  rows: rows,
+                  cols: cols,
+                  positions: dancePositions,
+                  memberEntries: memberEntries,
+                  diagramColors: diagramColors,
+                  form: forms[0]
+                });
+              });
+            }
+          } catch (danceError) {
+            console.error("Failed to render dance positions:", dance && dance.name, danceError);
+          }
         });
       })
       .catch(function (error) {
