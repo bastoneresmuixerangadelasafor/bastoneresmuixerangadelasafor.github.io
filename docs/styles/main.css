@@ -413,7 +413,8 @@ body {
 }
 
 /* Members Card - Vibrant light mode styling */
-.members-card {
+.members-card,
+.profile-card {
   background: linear-gradient(180deg, var(--card-bg) 0%, var(--bg-color) 100%);
   border: 1px solid var(--border-color);
   border-top: 4px solid var(--primary-color);
@@ -422,12 +423,14 @@ body {
   overflow: hidden;
 }
 
-.members-card h2 {
+.members-card h2,
+.profile-card h2 {
   color: var(--primary-color);
   border-bottom-color: var(--border-color);
 }
 
-body.dark-mode .members-card {
+body.dark-mode .members-card,
+body.dark-mode .profile-card {
   background: var(--card-bg);
   border-color: var(--border-color);
   border-top-color: var(--primary-color);

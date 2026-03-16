@@ -1,6 +1,6 @@
 const MEMBERS = new (class AppMembers {
-  static POSITION_OK = 'SI';
-  static POSITION_IN_PROGRESS = 'EN PROGRES';
+  POSITION_OK = 'SI';
+  POSITION_IN_PROGRESS = 'EN PROGRES';
   constructor() {
     // Current member being edited inline
     this.currentEditingMemberId = null;
@@ -1278,7 +1278,7 @@ const MEMBERS = new (class AppMembers {
       }).map(function (pos) { return pos.tag; });
 
       var inProgressTags = data.positions.filter(function (pos) {
-        return String(data.memberEntries[pos.order]).toUpperCase() === 'EN PROGRES';
+        return String(data.memberEntries[pos.order]).toUpperCase() === MEMBERS.POSITION_IN_PROGRESS;
       }).map(function (pos) { return pos.tag; });
 
       MEMBERS.drawPositionDiagram({
