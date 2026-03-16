@@ -639,6 +639,7 @@ const MEMBERS = new (class AppMembers {
     btnText.style.display = "none";
     btnLoading.style.display = "inline";
     applyBtn.disabled = true;
+    this._setMembersViewControlsDisabled(true);
 
     // Gather data from all editable rows
     const rows = document.querySelectorAll("#members-table tbody tr.editing-row");
@@ -733,6 +734,9 @@ const MEMBERS = new (class AppMembers {
         applyBtn.disabled = false;
         UI.showToast("Error desant els membres: " + error, "error");
         console.error("Save all members error:", error);
+      })
+      .finally(() => {
+        this._setMembersViewControlsDisabled(false);
       });
   }
 
@@ -759,9 +763,14 @@ const MEMBERS = new (class AppMembers {
       `tr[data-member-id="${MEMBERS.currentEditingMemberId}"]`,
     );
     if (!row) {
+      btnText.style.display = "inline";
+      btnLoading.style.display = "none";
+      applyBtn.disabled = false;
       UI.showToast("Error: fila no trobada", "error");
       return;
     }
+
+    this._setMembersViewControlsDisabled(true);
 
     const activeCheckbox = row.querySelector('input[name="inline-active"]');
     const memberData = {
@@ -802,6 +811,7 @@ const MEMBERS = new (class AppMembers {
     // Call server to save
     API.saveMember({ member: memberData })
       .then((result) => {
+        const wasAddingNewMember = this.isAddingNewMember;
         btnText.style.display = "inline";
         btnLoading.style.display = "none";
         applyBtn.disabled = false;
@@ -826,6 +836,12 @@ const MEMBERS = new (class AppMembers {
         document.querySelectorAll(".active-column").forEach((el) => {
           el.style.display = "none";
         });
+
+        if (wasAddingNewMember) {
+          MEMBERS.membersData = MEMBERS.membersData.filter((member) => {
+            return String(member.id) !== "__new__";
+          });
+        }
 
         const savedMember = result?.member;
         if (savedMember) {
@@ -852,6 +868,9 @@ const MEMBERS = new (class AppMembers {
         applyBtn.disabled = false;
         UI.showToast("Error desant el membre: " + error, "error");
         console.error("Save member error:", error);
+      })
+      .finally(() => {
+        this._setMembersViewControlsDisabled(false);
       });
   }
 
@@ -903,6 +922,16 @@ const MEMBERS = new (class AppMembers {
         ...member,
         relatedMembers,
       };
+    });
+  }
+
+  _setMembersViewControlsDisabled(disabled) {
+    const membersView = document.getElementById("view-members");
+    if (!membersView) return;
+
+    const controls = membersView.querySelectorAll("input, select, textarea, button");
+    controls.forEach((control) => {
+      control.disabled = !!disabled;
     });
   }
 

@@ -275,14 +275,12 @@ function updateMemberPosition_({ memberAlias, danceName, positionOrder, value, u
 
 function generateMemberId_() {
 	const members = CACHE.getMembers() || [];
-	let maxId = 0;
-
-	members.forEach(function(member) {
+	const maxId = members.reduce(function(maxId, member) {
 		const numericId = Number(String(member.id || '').trim());
-		if (Number.isFinite(numericId) && numericId > maxId) {
-			maxId = numericId;
+		if (!Number.isFinite(numericId)) {
+			return maxId;
 		}
-	});
-
-	return maxId + 1;
+		return numericId > maxId ? numericId : maxId;
+	}, 0);
+  return maxId + 1;
 }
