@@ -111,6 +111,8 @@ const DANCES = [
       new DancePosition({ order: 4, tag: "1", positionType: new PositionType({ label: "FORA" }), specifications: "Dreta/esquena plaça" }),
     ],
     audios: [
+      new DanceMusic({ fileId: "1jddJfWzWomotfe-wAXIXWY-bFrG7Tp_F", title: "No en volem cap - Per assajar (completa)", artist: "Reina, Josep i Quim" }),
+      new DanceMusic({ fileId: "1DoaFbvJZLJPqB1DcrD4ZXAeYXslmFspU", title: "No en volem cap - Per assajar (sense intro)", artist: "Reina, Josep i Quim" }),
       new DanceMusic({ fileId: "1q10nIzTSyRAFZRtiPVo8r_2Ga3kiEPnM", title: "No en volem cap - A plaça", artist: "-" }),
     ],
   }),
