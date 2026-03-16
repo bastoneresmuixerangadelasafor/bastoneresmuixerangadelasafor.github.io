@@ -298,7 +298,7 @@ const TRAININGS = new (class TrainingSession {
           }
           
           attendanceList.classList.toggle("collapsed");
-          toggleArrow.textContent = attendanceList.classList.contains("collapsed") ? "?" : "?";
+          toggleArrow.textContent = attendanceList.classList.contains("collapsed") ? "▶" : "▼";
           attendanceToggle.setAttribute("aria-expanded", !attendanceList.classList.contains("collapsed"));
         }
       });
@@ -324,7 +324,7 @@ const TRAININGS = new (class TrainingSession {
       attendanceList.classList.add("collapsed");
       if (attendanceToggle) {
         const toggleArrow = attendanceToggle.querySelector(".toggle-arrow");
-        if (toggleArrow) toggleArrow.textContent = "?";
+        if (toggleArrow) toggleArrow.textContent = "▶";
         attendanceToggle.setAttribute("aria-expanded", "false");
       }
       // Clear list
@@ -649,6 +649,9 @@ const TRAININGS = new (class TrainingSession {
             audioElement.controls = true;
             audioElement.style.width = "100%";
             audioElement.src = result.audioData;
+            audioElement.addEventListener("play", () => {
+              TRAININGS.pauseOtherAudiosInDialog(dialog, audioElement);
+            });
             playerContainer.appendChild(audioElement);
           } else {
             const errorDiv = document.createElement("div");
@@ -685,6 +688,17 @@ const TRAININGS = new (class TrainingSession {
     audioElements.forEach((audio) => {
       audio.pause();
       audio.currentTime = 0;
+    });
+  }
+
+  pauseOtherAudiosInDialog(dialogElement, currentAudio) {
+    if (!dialogElement || !currentAudio) return;
+
+    const audioElements = dialogElement.querySelectorAll("audio");
+    audioElements.forEach((audio) => {
+      if (audio !== currentAudio) {
+        audio.pause();
+      }
     });
   }
   
