@@ -28,7 +28,7 @@ function saveMember_({member}) {
 		// Find the member index for existing member
     const members = CACHE.getMembers();
 		const memberIndex = members.findIndex(function(m) { 
-			return m.id === member.id; 
+			return String(m.id) === String(member.id); 
 		});
 
 		if (memberIndex === -1) {
@@ -36,7 +36,8 @@ function saveMember_({member}) {
 		}
 
 		// Capture old email before update to invalidate cache if email changes
-		const oldEmail = members[memberIndex].email;
+		const existingMember = members[memberIndex] || {};
+		const oldEmail = existingMember.email;
 
 		// Update the member data in memory
 		// KID members cannot have email, roles, or relations
@@ -45,9 +46,12 @@ function saveMember_({member}) {
 		const roles = isKid ? [] : (member.roles || []);
 		const relations = isKid ? [] : (member.relations || []);
 		
+		const alias = (member.alias || member.name || existingMember.alias || '').trim();
+		const name = (member.fullName || existingMember.name || alias).trim();
 		members[memberIndex] = {
 			id: member.id,
-			name: member.name,
+			alias: alias,
+			name: name,
 			email: email,
 			type: member.type,
 			roles: roles,
@@ -74,17 +78,18 @@ function saveMember_({member}) {
 		}
 
 		// Prepare the row data
-		// Expected columns: ID, Name, Email, Type, Roles, Relations
-		const rolesString = (member.roles || []).join(', ');
-		const relationsString = (member.relations || []).join(', ');
+		// Expected columns: ID, Alias, Name, Email, Type, Roles, Relations, Active
+		const rolesString = roles.join(', ');
+		const relationsString = relations.join(', ');
 		const rowData = [
 			member.id,
-			member.name,
-			member.email || '',
+			alias,
+			name,
+			email,
 			member.type,
 			rolesString,
 			relationsString,
-     		member.active !== false
+			member.active !== false
 		];
 
 		// Update the row in the spreadsheet
@@ -102,7 +107,7 @@ function saveMember_({member}) {
 
 		console.log('Member updated and persisted: ' + JSON.stringify(members[memberIndex]));
 
-		return API.newResult_({ result: {member: MEMBERS[memberIndex]} });
+		return API.newResult_({ result: {member: members[memberIndex]} });
 	} catch (error) {
 		console.log('Error saving member: ' + error.toString());
 		return API.newError_({ error: error.toString() });
@@ -124,9 +129,12 @@ function createNewMember_(memberData) {
 		const roles = isKid ? [] : (memberData.roles || []);
 		const relations = isKid ? [] : (memberData.relations || []);
 
+		const alias = (memberData.alias || memberData.name || '').trim();
+		const name = (memberData.fullName || alias).trim();
 		const newMember = {
 			id: newId,
-			name: memberData.name.trim(),
+			alias: alias,
+			name: name,
 			email: email,
 			type: memberData.type || 'ADULT',
 			roles: roles,
@@ -146,6 +154,7 @@ function createNewMember_(memberData) {
 		const relationsString = relations.join(', ');
 		const rowData = [
 			newId,
+			newMember.alias,
 			newMember.name,
 			newMember.email,
 			newMember.type,
@@ -178,7 +187,7 @@ function saveAllMembers_({members}) {
 		members.forEach(function(member) {
 			const result = saveMember_({member});
 			if (result.success) {
-				results.push(result.member);
+				results.push(result.result && result.result.member ? result.result.member : member);
 			} else {
 				errors.push({ id: member.id, error: result.error });
 			}

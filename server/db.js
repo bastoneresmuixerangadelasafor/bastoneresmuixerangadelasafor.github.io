@@ -39,23 +39,34 @@ const CACHE = new class GAppsServerCache {
       const row = data[i];
       if (!row[0]) continue; // Skip empty rows
 
+      const validTypes = ['ADULT', 'KID'];
+      const hasShiftedColumns = validTypes.indexOf(String(row[4] || '')) === -1 && validTypes.indexOf(String(row[3] || '')) !== -1;
+
+      const aliasValue = hasShiftedColumns ? (row[1] || '') : (row[1] || '');
+      const nameValue = hasShiftedColumns ? (row[1] || '') : (row[2] || '');
+      const emailValue = hasShiftedColumns ? (row[2] || '') : (row[3] || '');
+      const typeValue = hasShiftedColumns ? (row[3] || '') : (row[4] || '');
+      const rolesValue = hasShiftedColumns ? row[4] : row[5];
+      const relationsValue = hasShiftedColumns ? row[5] : row[6];
+      const activeValue = hasShiftedColumns ? row[6] : row[7];
+
       const member = {
         id: row[0],
-        alias: row[1] || '',
-        name: row[2] || '',
-        email: row[3] || '',
-        type: row[4] || '',
-        active: row[7] === '' || row[7] === undefined ? true : Boolean(row[7]),
+        alias: aliasValue,
+        name: nameValue,
+        email: emailValue,
+        type: typeValue,
+        active: activeValue === '' || activeValue === undefined ? true : Boolean(activeValue),
       };
 
       // Parse Roles (comma-separated string to array)
-      if (row[5]) {
-        member.roles = String(row[5]).split(',').map(r => r.trim());
+      if (rolesValue) {
+        member.roles = String(rolesValue).split(',').map(r => r.trim());
       }
 
       // Parse Relations (comma-separated string to array)
-      if (row[6]) {
-        member.relations = String(row[6]).split(',').map(r => r.trim());
+      if (relationsValue) {
+        member.relations = String(relationsValue).split(',').map(r => r.trim());
       }
 
       members.push(member);

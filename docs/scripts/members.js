@@ -647,6 +647,7 @@ const MEMBERS = new (class AppMembers {
       const typeSelect = row.querySelector('select[name="inline-type"]');
       const memberData = {
         id: memberId,
+        alias: row.querySelector('input[name="inline-name"]').value.trim(),
         name: row.querySelector('input[name="inline-name"]').value.trim(),
         email: "",
         type: typeSelect ? typeSelect.value : "ADULT",
@@ -685,32 +686,41 @@ const MEMBERS = new (class AppMembers {
         btnLoading.style.display = "none";
         applyBtn.disabled = false;
 
-        if (result && result.success) {
-          UI.showToast("Tots els membres desats correctament", "success");
-          MEMBERS.currentEditingMemberId = null;
-          this.allOriginalMemberData = null;
-          this.isEditingAllMembers = false;
+        UI.showToast("Tots els membres desats correctament", "success");
+        MEMBERS.currentEditingMemberId = null;
+        this.allOriginalMemberData = null;
+        this.isEditingAllMembers = false;
 
-          // Hide action bar
-          const actionsBar = document.getElementById("members-edit-actions");
-          if (actionsBar) {
-            actionsBar.style.display = "none";
-          }
-
-          // Show edit button again
-          const editAllBtn = document.getElementById("edit-all-members-btn");
-          if (editAllBtn) editAllBtn.style.display = "";
-
-          // Hide Active column
-          document.querySelectorAll(".active-column").forEach((el) => {
-            el.style.display = "none";
-          });
-
-          // Reload members data
-          MEMBERS.loadMembersData();
-        } else {
-          UI.showToast(result?.error || "Error desant els membres", "error");
+        // Hide action bar
+        const actionsBar = document.getElementById("members-edit-actions");
+        if (actionsBar) {
+          actionsBar.style.display = "none";
         }
+
+        // Show edit button again
+        const editAllBtn = document.getElementById("edit-all-members-btn");
+        if (editAllBtn) editAllBtn.style.display = "";
+
+        // Hide Active column
+        document.querySelectorAll(".active-column").forEach((el) => {
+          el.style.display = "none";
+        });
+
+        allMemberData.forEach((updatedMember) => {
+          const memberIndex = MEMBERS.membersData.findIndex((m) => {
+            return String(m.id) === String(updatedMember.id);
+          });
+          if (memberIndex !== -1) {
+            const currentMember = MEMBERS.membersData[memberIndex] || {};
+            MEMBERS.membersData[memberIndex] = {
+              ...currentMember,
+              ...updatedMember,
+            };
+          }
+        });
+        MEMBERS._rebuildRelatedMembers();
+        CACHE._write({ key: "members", data: MEMBERS.membersData });
+        MEMBERS._renderMembersTable();
       })
       .catch((error) => {
         btnText.style.display = "inline";
@@ -751,6 +761,7 @@ const MEMBERS = new (class AppMembers {
     const activeCheckbox = row.querySelector('input[name="inline-active"]');
     const memberData = {
       id: MEMBERS.currentEditingMemberId === "__new__" ? null : MEMBERS.currentEditingMemberId,
+      alias: row.querySelector('input[name="inline-name"]').value.trim(),
       name: row.querySelector('input[name="inline-name"]').value.trim(),
       email: "",
       type: row.querySelector('select[name="inline-type"]').value,
@@ -790,33 +801,45 @@ const MEMBERS = new (class AppMembers {
         btnLoading.style.display = "none";
         applyBtn.disabled = false;
 
-        if (result && result.success) {
-          const successMsg = this.isAddingNewMember
-            ? "Membre creat correctament"
-            : "Membre desat correctament";
-          UI.showToast(successMsg, "success");
-          MEMBERS.currentEditingMemberId = null;
-          this.originalMemberData = null;
-          this.isAddingNewMember = false;
+        const successMsg = this.isAddingNewMember
+          ? "Membre creat correctament"
+          : "Membre desat correctament";
+        UI.showToast(successMsg, "success");
+        MEMBERS.currentEditingMemberId = null;
+        this.originalMemberData = null;
+        this.isAddingNewMember = false;
 
-          // Hide action bar and restore text
-          const actionsBar = document.getElementById("members-edit-actions");
-          const editInfo = actionsBar?.querySelector(".edit-info");
-          if (actionsBar) {
-            actionsBar.style.display = "none";
-            if (editInfo) editInfo.textContent = "Editant membre...";
-          }
-
-          // Hide Active column
-          document.querySelectorAll(".active-column").forEach((el) => {
-            el.style.display = "none";
-          });
-
-          // Reload members data
-          MEMBERS.loadMembersData();
-        } else {
-          UI.showToast(result?.error || "Error desant el membre", "error");
+        // Hide action bar and restore text
+        const actionsBar = document.getElementById("members-edit-actions");
+        const editInfo = actionsBar?.querySelector(".edit-info");
+        if (actionsBar) {
+          actionsBar.style.display = "none";
+          if (editInfo) editInfo.textContent = "Editant membre...";
         }
+
+        // Hide Active column
+        document.querySelectorAll(".active-column").forEach((el) => {
+          el.style.display = "none";
+        });
+
+        const savedMember = result?.member;
+        if (savedMember) {
+          const memberIndex = MEMBERS.membersData.findIndex((m) => {
+            return String(m.id) === String(savedMember.id);
+          });
+          if (memberIndex !== -1) {
+            const currentMember = MEMBERS.membersData[memberIndex] || {};
+            MEMBERS.membersData[memberIndex] = {
+              ...currentMember,
+              ...savedMember,
+            };
+          } else {
+            MEMBERS.membersData.unshift(savedMember);
+          }
+        }
+        MEMBERS._rebuildRelatedMembers();
+        CACHE._write({ key: "members", data: MEMBERS.membersData });
+        MEMBERS._renderMembersTable();
       })
       .catch((error) => {
         btnText.style.display = "inline";
@@ -836,6 +859,45 @@ const MEMBERS = new (class AppMembers {
       } else {
         icon.textContent = "";
       }
+    });
+  }
+
+  _rebuildRelatedMembers() {
+    const membersById = {};
+    MEMBERS.membersData.forEach((member) => {
+      membersById[String(member.id)] = member;
+    });
+
+    MEMBERS.membersData = MEMBERS.membersData.map((member) => {
+      const relationIds = Array.isArray(member.relations)
+        ? member.relations.map((relationId) => String(relationId))
+        : [];
+
+      const relatedMembers = relationIds
+        .map((relationId) => membersById[relationId])
+        .filter((relatedMember) => !!relatedMember)
+        .map((relatedMember) => {
+          const relatedAlias = relatedMember.alias || relatedMember.name || "";
+          const relatedName = relatedMember.name || relatedAlias;
+          const avatarUrl =
+            relatedMember.avatar ||
+            ("https://ui-avatars.com/api/?name=" +
+              encodeURIComponent(relatedAlias || "?") +
+              "&background=random");
+
+          return {
+            id: relatedMember.id,
+            alias: relatedAlias,
+            name: relatedName,
+            type: relatedMember.type || "",
+            avatar: avatarUrl,
+          };
+        });
+
+      return {
+        ...member,
+        relatedMembers,
+      };
     });
   }
 
