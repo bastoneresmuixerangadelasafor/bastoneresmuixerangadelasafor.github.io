@@ -197,8 +197,21 @@ function saveAllMembers_({members}) {
 	}
 }
 
-function getMemberPositions_({memberAlias}) {
+function canManageMemberPositions_({ user, memberAlias }) {
+	if (!user || !memberAlias) return false;
+
+	const targetAlias = String(memberAlias).trim().toLowerCase();
+	const userAlias = String(user.alias || '').trim().toLowerCase();
+	const isAdmin = (user.roles || []).indexOf('ADMIN') !== -1;
+
+	return isAdmin || (userAlias && userAlias === targetAlias);
+}
+
+function getMemberPositions_({memberAlias, user}) {
 	if (!memberAlias) return API.newError_({ error: 'No s\'ha especificat l\'àlies del membre.' });
+	if (!canManageMemberPositions_({ user, memberAlias })) {
+		return API.newError_({ error: 'No tens permisos per consultar aquestes posicions.', status: 403 });
+	}
 
 	try {
 		const positions = CACHE.retrieveMemberPositionsFromDB(memberAlias);
@@ -209,11 +222,14 @@ function getMemberPositions_({memberAlias}) {
 	}
 }
 
-function updateMemberPosition_({ memberAlias, danceName, positionOrder, value }) {
+function updateMemberPosition_({ memberAlias, danceName, positionOrder, value, user }) {
 	if (!memberAlias) return API.newError_({ error: 'No s\'ha especificat l\'àlies del membre.' });
 	if (!danceName) return API.newError_({ error: 'No s\'ha especificat el nom de la dansa.' });
 	if (positionOrder === undefined || positionOrder === null) return API.newError_({ error: 'No s\'ha especificat l\'ordre de la posició.' });
 	if (!value) return API.newError_({ error: 'No s\'ha especificat el valor.' });
+	if (!canManageMemberPositions_({ user, memberAlias })) {
+		return API.newError_({ error: 'No tens permisos per modificar aquestes posicions.', status: 403 });
+	}
 
 	try {
 		CACHE.updateMemberPositionInDB({ memberAlias, danceName, positionOrder, value });

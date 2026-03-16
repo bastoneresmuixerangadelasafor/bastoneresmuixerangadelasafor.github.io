@@ -198,6 +198,13 @@ const NAVIGATION = new (class AppNavigator {
   navigateTo(route, updateHash = true) {
     const originalRoute = route;
 
+    if (route.startsWith("member-positions/")) {
+      const alias = decodeURIComponent(route.substring(17));
+      if (alias) {
+        APP.memberPositionsAlias = alias;
+      }
+    }
+
     if (route === "login") {
       APP.closeAllDialogs();
       const loginDialog = document.getElementById("view-login");

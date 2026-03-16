@@ -3,12 +3,12 @@ layout: base.njk
 permalink: test.html
 development: true
 script_id: 1RjSSW506qFMuVfksFLZIxeDexoWn-vAWyR8ChMfacdJDpQtREjw87P8E
-api_url: https://script.google.com/macros/s/AKfycbx3Gqjvmtlm88sFA1NDJn1ALVfiRBWR_Ysd8uw_QfN7/dev
+api_url: https://script.google.com/macros/s/AKfycbxaLx8_qY8qOhaKu25V_o0RP8DYpWVZB8Kf4UbMd4eQvb6twXdy0IWARet5nveRCFbk3g/exec
 embedded: true
 language_code: ca
 title: TEST
 company: Fake company
-website_url: https://script.google.com/macros/s/AKfycbx3Gqjvmtlm88sFA1NDJn1ALVfiRBWR_Ysd8uw_QfN7/dev
+website_url: https://script.google.com/macros/s/AKfycbxaLx8_qY8qOhaKu25V_o0RP8DYpWVZB8Kf4UbMd4eQvb6twXdy0IWARet5nveRCFbk3g/exec
 members_spreadsheet_id: 1wk_-NOVh1LmUT5IafqtfFfcK7DS0j_wtS-KYMOZGzGs
 members_sheet_name: Membres
 events_spreadsheet_id: 1wpkYYOrzypsfdVDP5WGS1aX5OLjL5ITZj_ogtJgzHGE

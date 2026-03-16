@@ -2109,7 +2109,8 @@ table tbody tr:last-child td {
   }
 
   /* Password change icon button */
-  .btn-change-password {
+  .btn-change-password,
+  .btn-member-positions {
     min-width: 44px;
     min-height: 44px;
     padding: 12px;
@@ -5135,6 +5136,12 @@ input::placeholder {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color), #ffffff 60%);
 }
 
+.position-value-option.is-selected {
+  border-width: 3px;
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor, transparent 75%);
+  transform: translateX(4px);
+}
+
 .position-value-icon {
   font-size: 1.5rem;
   min-width: 32px;
@@ -6548,7 +6555,8 @@ body.dark-mode .person-dropdown li.selected {
 }
 
 /* Password change button */
-.btn-change-password {
+.btn-change-password,
+.btn-member-positions {
   background: none;
   border: none;
   cursor: pointer;
@@ -6562,12 +6570,14 @@ body.dark-mode .person-dropdown li.selected {
   justify-content: center;
 }
 
-.btn-change-password:hover {
+.btn-change-password:hover,
+.btn-member-positions:hover {
   color: var(--primary-color, #007bff);
   transform: scale(1.1);
 }
 
-.btn-change-password svg {
+.btn-change-password svg,
+.btn-member-positions svg {
   width: 16px;
   height: 16px;
 }

@@ -1,4 +1,6 @@
 const MEMBERS = new (class AppMembers {
+  static POSITION_OK = 'SI';
+  static POSITION_IN_PROGRESS = 'EN PROGRES';
   constructor() {
     // Current member being edited inline
     this.currentEditingMemberId = null;
@@ -26,6 +28,17 @@ const MEMBERS = new (class AppMembers {
     }
 
     document.addEventListener("click", (e) => {
+      const positionsBtn = e.target.closest(".btn-member-positions");
+      if (positionsBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const alias = positionsBtn.getAttribute("data-member-alias");
+        if (alias) {
+          NAVIGATION.navigateTo(`member-positions/${encodeURIComponent(alias)}`);
+        }
+        return;
+      }
+
       const btn = e.target.closest(".btn-change-password");
       if (btn) {
         e.preventDefault();
@@ -207,7 +220,7 @@ const MEMBERS = new (class AppMembers {
     // Render
     tbody.innerHTML = "";
     if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="8">No s\'han trobat membres</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9">No s\'han trobat membres</td></tr>';
       return;
     }
     filtered.forEach((member) => {
@@ -236,7 +249,21 @@ const MEMBERS = new (class AppMembers {
         const nameStyle =
           member.active === false ? "text-decoration: line-through;" : "";
         const showPasswordBtn = member.type === "ADULT" && member.email;
+        const memberAlias = (member.alias || member.name || "").trim();
         const activeIndicator = member.active !== false ? '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #4caf50;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>' : '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #999;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
+        const memberPositionsBtnHtml = memberAlias
+          ? `
+        <button type="button" class="btn-member-positions" title="Veure posicions" data-member-alias="${escapeHtml(memberAlias)}">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" style="vertical-align: middle;">
+            <rect x="4" y="4" width="7" height="7"></rect>
+            <rect x="13" y="4" width="7" height="7"></rect>
+            <rect x="4" y="13" width="7" height="7"></rect>
+            <rect x="13" y="13" width="7" height="7"></rect>
+          </svg>
+        </button>`
+          : "";
         const passwordBtnHtml = showPasswordBtn
           ? `
         <button type="button" class="btn-change-password" title="Canviar contrasenya" data-member-id="${member.id}" data-member-name="${member.alias}" data-member-email="${member.email}">
@@ -258,6 +285,7 @@ const MEMBERS = new (class AppMembers {
         <td class="active-column" style="display: none;"></td>
         <td style="text-align: center;">${activeIndicator}</td>
         <td style="text-align: center;">${passwordBtnHtml}</td>
+        <td style="text-align: center;">${memberPositionsBtnHtml}</td>
         `;
       }
       tbody.appendChild(tr);
@@ -365,7 +393,7 @@ const MEMBERS = new (class AppMembers {
     // Show loading state in the table
     const tbody = document.querySelector("#members-table tbody");
     if (tbody)
-      tbody.innerHTML = '<tr><td colspan="6">Actualitzant membres...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9">Actualitzant membres...</td></tr>';
 
     API.getMembers({ forceRefresh: true })
       .then((members) => {
@@ -377,7 +405,7 @@ const MEMBERS = new (class AppMembers {
 
         if (!Array.isArray(members)) {
           tbody.innerHTML =
-            '<tr><td colspan="6">No s\'ha pogut carregar la llista de membres</td></tr>';
+            '<tr><td colspan="9">No s\'ha pogut carregar la llista de membres</td></tr>';
           return;
         }
         MEMBERS.membersData = members;
@@ -392,7 +420,7 @@ const MEMBERS = new (class AppMembers {
         }
         console.error("Error refreshing members:", error);
         tbody.innerHTML =
-          '<tr><td colspan="6">No s\'ha pogut carregar la llista de membres</td></tr>';
+          '<tr><td colspan="9">No s\'ha pogut carregar la llista de membres</td></tr>';
         UI.showToast("Error actualitzant la llista", "error");
       });
   }
@@ -870,6 +898,7 @@ const MEMBERS = new (class AppMembers {
           </td>
           <td></td>
           <td></td>
+          <td></td>
       `;
   }
 
@@ -883,12 +912,13 @@ const MEMBERS = new (class AppMembers {
     var diagramColors = opts.diagramColors || { backgroundColor: {}, textColor: {} };
     var highlightTags = opts.highlightTags || [];
     var inProgressTags = opts.inProgressTags || [];
+    var pendingTags = opts.pendingTags || [];
     var activeForm = opts.form || 'grid';
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (activeForm === 'radial') {
-      this.drawRadialPositionDiagram(ctx, canvas, rows, cols, positions, diagramColors, highlightTags, inProgressTags);
+      this.drawRadialPositionDiagram(ctx, canvas, rows, cols, positions, diagramColors, highlightTags, inProgressTags, pendingTags);
       return;
     }
 
@@ -920,6 +950,7 @@ const MEMBERS = new (class AppMembers {
         var label = pos && pos.positionType ? pos.positionType.label : "";
         var isHighlighted = highlightTags.indexOf(tag) !== -1;
         var isInProgress = inProgressTags.indexOf(tag) !== -1;
+        var isPending = pendingTags.indexOf(tag) !== -1;
 
         var bgColor = "#808080";
         if (label && diagramColors.backgroundColor && diagramColors.backgroundColor[label]) {
@@ -934,7 +965,7 @@ const MEMBERS = new (class AppMembers {
         var x = offsetX0 + col * (squareWidth + squareSpacingX);
         var y = offsetY + row * (squareHeight + squareSpacingY);
 
-        if (!isHighlighted && !isInProgress) {
+        if (!isHighlighted && !isInProgress && !isPending) {
           ctx.globalAlpha = 0.3;
         }
 
@@ -947,7 +978,7 @@ const MEMBERS = new (class AppMembers {
         ctx.lineWidth = Math.max(2, 4 * scale);
         ctx.strokeRect(x, y, squareWidth, squareHeight);
 
-        if (isHighlighted) {
+        if (isHighlighted && !isPending) {
           ctx.strokeStyle = primaryColor;
           ctx.lineWidth = Math.max(3, 6 * scale);
           ctx.strokeRect(x, y, squareWidth, squareHeight);
@@ -1002,7 +1033,7 @@ const MEMBERS = new (class AppMembers {
 
           ctx.restore();
         }
-        if (isInProgress) {
+        if (isInProgress && !isPending) {
           var iconS = Math.min(squareWidth, squareHeight) * 0.6;
           var fontSize = Math.round(iconS);
 
@@ -1012,7 +1043,21 @@ const MEMBERS = new (class AppMembers {
           ctx.textBaseline = "middle";
           ctx.fillText("🏋️‍♀️", x + squareWidth / 2, y + squareHeight / 2);
           ctx.restore();
-        }    }
+        }
+
+        if (isPending) {
+          var pendingCx = x + squareWidth / 2;
+          var pendingCy = y + squareHeight / 2;
+          var pendingIconSize = Math.round(Math.min(squareWidth, squareHeight) * 0.58);
+
+          ctx.save();
+          ctx.font = pendingIconSize + "px sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("⏳", pendingCx, pendingCy);
+          ctx.restore();
+        }
+      }
     }
 
     ctx.save();
@@ -1064,10 +1109,10 @@ const MEMBERS = new (class AppMembers {
           var memberEntries = positions[danceName] || {};
           var dancePositions = dance.positions || [];
           var memberTags = dancePositions.filter(function (pos) {
-            return String(memberEntries[pos.order]).toUpperCase() === 'SI';
+            return String(memberEntries[pos.order]).toUpperCase() === MEMBERS.POSITION_OK;
           }).map(function (pos) { return pos.tag; });
           var inProgressTags = dancePositions.filter(function (pos) {
-            return String(memberEntries[pos.order]).toUpperCase() === 'EN PROGRES';
+            return String(memberEntries[pos.order]).toUpperCase() === MEMBERS.POSITION_IN_PROGRESS;
           }).map(function (pos) { return pos.tag; });
           var diagramColors = dance.diagram || { backgroundColor: {}, textColor: {} };
           var rows = dance.structure ? dance.structure.rows : 2;
@@ -1145,6 +1190,7 @@ const MEMBERS = new (class AppMembers {
         console.error("Failed to load positions:", error);
         if (loading) loading.style.display = "none";
         list.innerHTML = '<div class="empty-state"><p>No s\'han pogut carregar les posicions.</p></div>';
+        UI.showToast(error || "No s'han pogut carregar les posicions.", "error");
       });
   }
 
@@ -1162,8 +1208,10 @@ const MEMBERS = new (class AppMembers {
     }
     
     var rect = canvas.getBoundingClientRect();
-    var x = event.clientX - rect.left;
-    var y = event.clientY - rect.top;
+    var scaleX = rect.width ? canvas.width / rect.width : 1;
+    var scaleY = rect.height ? canvas.height / rect.height : 1;
+    var x = (event.clientX - rect.left) * scaleX;
+    var y = (event.clientY - rect.top) * scaleY;
 
     var clickedOrder = this.getClickedPositionOrder(x, y, canvas, data.rows, data.cols, data.form);
     if (clickedOrder === null) return;
@@ -1194,6 +1242,15 @@ const MEMBERS = new (class AppMembers {
     
     // Get the new buttons after cloning
     optionButtons = dialog.querySelectorAll(".position-value-option");
+
+    var currentValue = String(data.memberEntries[clickedOrder] || "").toUpperCase();
+
+    optionButtons.forEach(function(btn) {
+      var optionValue = String(btn.getAttribute("data-value") || "").toUpperCase();
+      var isSelected = optionValue === currentValue;
+      btn.classList.toggle("is-selected", isSelected);
+      btn.setAttribute("aria-pressed", isSelected ? "true" : "false");
+    });
     
     var clickHandler = function(event) {
       var selectedValue = this.getAttribute("data-value");
@@ -1210,6 +1267,35 @@ const MEMBERS = new (class AppMembers {
   }
 
   updatePositionValue(canvas, data, clickedOrder, newValue) {
+    var clickedPosition = data.positions.find(function (pos) {
+      return pos.order === clickedOrder;
+    });
+    var pendingTags = clickedPosition && clickedPosition.tag ? [clickedPosition.tag] : [];
+
+    function redrawPosition(pending) {
+      var memberTags = data.positions.filter(function (pos) {
+        return String(data.memberEntries[pos.order]).toUpperCase() === MEMBERS.POSITION_OK;
+      }).map(function (pos) { return pos.tag; });
+
+      var inProgressTags = data.positions.filter(function (pos) {
+        return String(data.memberEntries[pos.order]).toUpperCase() === 'EN PROGRES';
+      }).map(function (pos) { return pos.tag; });
+
+      MEMBERS.drawPositionDiagram({
+        canvasId: canvas.id,
+        rows: data.rows,
+        cols: data.cols,
+        positions: data.positions,
+        diagramColors: data.diagramColors,
+        highlightTags: memberTags,
+        inProgressTags: inProgressTags,
+        pendingTags: pending || [],
+        form: data.form
+      });
+    }
+
+    redrawPosition(pendingTags);
+
     API.updateMemberPosition({
       memberAlias: data.memberAlias,
       danceName: data.danceName,
@@ -1218,32 +1304,14 @@ const MEMBERS = new (class AppMembers {
     })
       .then(function () {
         data.memberEntries[clickedOrder] = newValue;
-
-        var memberTags = data.positions.filter(function (pos) {
-          return String(data.memberEntries[pos.order]).toUpperCase() === 'SI';
-        }).map(function (pos) { return pos.tag; });
-
-        var inProgressTags = data.positions.filter(function (pos) {
-          return String(data.memberEntries[pos.order]).toUpperCase() === 'EN PROGRES';
-        }).map(function (pos) { return pos.tag; });
-
-        var positionDrawOpts = {
-          canvasId: canvas.id,
-          rows: data.rows,
-          cols: data.cols,
-          positions: data.positions,
-          diagramColors: data.diagramColors,
-          highlightTags: memberTags,
-          inProgressTags: inProgressTags,
-          form: data.form
-        };
-        MEMBERS.drawPositionDiagram(positionDrawOpts);
+        redrawPosition([]);
         
         UI.showToast("Posició actualitzada correctament", "success");
       })
       .catch(function (error) {
+        redrawPosition([]);
         console.error("Failed to update position:", error);
-        UI.showToast("Error en actualitzar la posició", "error");
+        UI.showToast(error || "Error en actualitzar la posició", "error");
       });
   }
 
@@ -1574,7 +1642,8 @@ const MEMBERS = new (class AppMembers {
     return null;
   }
 
-  drawRadialPositionDiagram(ctx, canvas, rows, cols, positions, diagramColors, highlightTags, inProgressTags) {
+  drawRadialPositionDiagram(ctx, canvas, rows, cols, positions, diagramColors, highlightTags, inProgressTags, pendingTags) {
+    pendingTags = pendingTags || [];
     var rl = this.calcRadialPositionLayout(canvas, rows, cols);
     if (canvas.height !== Math.round(rl.requiredHeight)) {
       canvas.height = Math.round(rl.requiredHeight);
@@ -1590,6 +1659,7 @@ const MEMBERS = new (class AppMembers {
         var label = pos && pos.positionType ? pos.positionType.label : "";
         var isHighlighted = highlightTags.indexOf(tag) !== -1;
         var isInProgress = inProgressTags.indexOf(tag) !== -1;
+        var isPending = pendingTags.indexOf(tag) !== -1;
 
         var bgColor = "#808080";
         if (label && diagramColors.backgroundColor && diagramColors.backgroundColor[label]) {
@@ -1605,7 +1675,7 @@ const MEMBERS = new (class AppMembers {
         var x = cellCenterX - rl.cellWidth / 2;
         var y = cellCenterY - rl.cellHeight / 2;
 
-        if (!isHighlighted && !isInProgress) {
+        if (!isHighlighted && !isInProgress && !isPending) {
           ctx.globalAlpha = 0.3;
         }
 
@@ -1617,7 +1687,7 @@ const MEMBERS = new (class AppMembers {
         ctx.lineWidth = Math.max(2, 4 * rl.scale);
         ctx.strokeRect(x, y, rl.cellWidth, rl.cellHeight);
 
-        if (isHighlighted) {
+        if (isHighlighted && !isPending) {
           ctx.strokeStyle = primaryColor;
           ctx.lineWidth = Math.max(3, 6 * rl.scale);
           ctx.strokeRect(x, y, rl.cellWidth, rl.cellHeight);
@@ -1672,7 +1742,7 @@ const MEMBERS = new (class AppMembers {
 
           ctx.restore();
         }
-        if (isInProgress) {
+        if (isInProgress && !isPending) {
           var iconS = Math.min(rl.cellWidth, rl.cellHeight) * 0.6;
           var fontSize = Math.round(iconS);
           ctx.save();
@@ -1680,6 +1750,19 @@ const MEMBERS = new (class AppMembers {
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
           ctx.fillText("\uD83C\uDFCB\uFE0F\u200D\u2640\uFE0F", x + rl.cellWidth / 2, y + rl.cellHeight / 2);
+          ctx.restore();
+        }
+
+        if (isPending) {
+          var pendingCx = x + rl.cellWidth / 2;
+          var pendingCy = y + rl.cellHeight / 2;
+          var pendingIconSize = Math.round(Math.min(rl.cellWidth, rl.cellHeight) * 0.58);
+
+          ctx.save();
+          ctx.font = pendingIconSize + "px sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("⏳", pendingCx, pendingCy);
           ctx.restore();
         }
       }
