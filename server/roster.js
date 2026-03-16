@@ -209,6 +209,21 @@ function getMemberPositions_({memberAlias}) {
 	}
 }
 
+function updateMemberPosition_({ memberAlias, danceName, positionOrder, value }) {
+	if (!memberAlias) return API.newError_({ error: 'No s\'ha especificat l\'àlies del membre.' });
+	if (!danceName) return API.newError_({ error: 'No s\'ha especificat el nom de la dansa.' });
+	if (positionOrder === undefined || positionOrder === null) return API.newError_({ error: 'No s\'ha especificat l\'ordre de la posició.' });
+	if (!value) return API.newError_({ error: 'No s\'ha especificat el valor.' });
+
+	try {
+		CACHE.updateMemberPositionInDB({ memberAlias, danceName, positionOrder, value });
+		return API.newResult_({ result: { success: true } });
+	} catch (error) {
+		console.log('Error updating member position: ' + error.toString());
+		return API.newError_({ error: error.toString() });
+	}
+}
+
 function generateMemberId_() {
 	// Generate ID based on timestamp and random component
 	const timestamp = new Date().getTime();

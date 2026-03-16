@@ -30,3 +30,5 @@
 - Update local storage after changing assistance
 - Check training session assistance
 - Edit members: All members or individually
+
+- REFACTOR!!!!

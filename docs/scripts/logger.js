@@ -1,10 +1,15 @@
-////// LOGGER
-const LOG_ENABLED = true;
-console = new Proxy(console, {
-    get(target, prop) {
-        if (!LOG_ENABLED) {
-            return () => { };
+const LOGGER = new (class AppLogger {
+  constructor() {
+    this._enabled = true;
+
+    const self = this;
+    console = new Proxy(console, {
+        get(target, prop) {
+            if (!self._enabled) {
+                return () => { };
+            }
+            return target[prop];
         }
-        return target[prop];
-    }
-});
+    });
+  }
+})();

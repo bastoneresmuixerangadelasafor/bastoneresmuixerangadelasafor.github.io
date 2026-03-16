@@ -293,4 +293,12 @@ const API = new (class GAppsApiClient {
   getMemberPositions({ memberAlias } = {}) {
     return this._get({ action: "memberPositions", parameters: { memberAlias }, requiresAuth: true });
   }
+
+  updateMemberPosition({ memberAlias, danceName, positionOrder, value } = {}) {
+    return this._patch({
+      action: "updateMemberPosition",
+      body: { memberAlias, danceName, positionOrder, value },
+      requiresAuth: true,
+    });
+  }
 })();

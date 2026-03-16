@@ -382,7 +382,7 @@ const MEMBERS = new (class AppMembers {
         }
         MEMBERS.membersData = members;
         this._renderMembersTable();
-        showToast("Llista actualitzada", "success");
+        UI.showToast("Llista actualitzada", "success");
       })
       .catch((error) => {
         // Remove spinning animation
@@ -393,7 +393,7 @@ const MEMBERS = new (class AppMembers {
         console.error("Error refreshing members:", error);
         tbody.innerHTML =
           '<tr><td colspan="6">No s\'ha pogut carregar la llista de membres</td></tr>';
-        showToast("Error actualitzant la llista", "error");
+        UI.showToast("Error actualitzant la llista", "error");
       });
   }
 
@@ -658,7 +658,7 @@ const MEMBERS = new (class AppMembers {
         applyBtn.disabled = false;
 
         if (result && result.success) {
-          showToast("Tots els membres desats correctament", "success");
+          UI.showToast("Tots els membres desats correctament", "success");
           MEMBERS.currentEditingMemberId = null;
           this.allOriginalMemberData = null;
           this.isEditingAllMembers = false;
@@ -681,14 +681,14 @@ const MEMBERS = new (class AppMembers {
           // Reload members data
           MEMBERS.loadMembersData();
         } else {
-          showToast(result?.error || "Error desant els membres", "error");
+          UI.showToast(result?.error || "Error desant els membres", "error");
         }
       })
       .catch((error) => {
         btnText.style.display = "inline";
         btnLoading.style.display = "none";
         applyBtn.disabled = false;
-        showToast("Error desant els membres: " + error, "error");
+        UI.showToast("Error desant els membres: " + error, "error");
         console.error("Save all members error:", error);
       });
   }
@@ -716,7 +716,7 @@ const MEMBERS = new (class AppMembers {
       `tr[data-member-id="${MEMBERS.currentEditingMemberId}"]`,
     );
     if (!row) {
-      showToast("Error: fila no trobada", "error");
+      UI.showToast("Error: fila no trobada", "error");
       return;
     }
 
@@ -766,7 +766,7 @@ const MEMBERS = new (class AppMembers {
           const successMsg = this.isAddingNewMember
             ? "Membre creat correctament"
             : "Membre desat correctament";
-          showToast(successMsg, "success");
+          UI.showToast(successMsg, "success");
           MEMBERS.currentEditingMemberId = null;
           this.originalMemberData = null;
           this.isAddingNewMember = false;
@@ -787,14 +787,14 @@ const MEMBERS = new (class AppMembers {
           // Reload members data
           MEMBERS.loadMembersData();
         } else {
-          showToast(result?.error || "Error desant el membre", "error");
+          UI.showToast(result?.error || "Error desant el membre", "error");
         }
       })
       .catch((error) => {
         btnText.style.display = "inline";
         btnLoading.style.display = "none";
         applyBtn.disabled = false;
-        showToast("Error desant el membre: " + error, "error");
+        UI.showToast("Error desant el membre: " + error, "error");
         console.error("Save member error:", error);
       });
   }
@@ -840,7 +840,7 @@ const MEMBERS = new (class AppMembers {
       relationsHtml =
         '<div class="inline-relations-dropdown" id="inline-relations-container">';
       relationsHtml +=
-        '<button type="button" class="btn-dropdown" onclick="toggleRelationsDropdown(this)">Seleccionar ▼</button>';
+        '<button type="button" class="btn-dropdown" onclick="MEMBERS.toggleRelationsDropdown(this)">Seleccionar ▼</button>';
       relationsHtml +=
         '<div class="relations-dropdown-content" style="display:none;">';
       MEMBERS.membersData.forEach((m) => {
@@ -859,7 +859,7 @@ const MEMBERS = new (class AppMembers {
           <td><input type="text" class="inline-edit-input" name="inline-name" value="${member.alias || ""}" required></td>
           <td class="email-cell">${emailHtml}</td>
           <td>
-          <select class="inline-edit-select" name="inline-type" onchange="handleInlineTypeChange(this)">${typeOptions}</select>
+          <select class="inline-edit-select" name="inline-type" onchange="MEMBERS.handleInlineTypeChange(this)">${typeOptions}</select>
           </td>
           <td class="roles-cell">${rolesHtml}</td>
           <td class="relations-cell">${relationsHtml}</td>
@@ -873,9 +873,378 @@ const MEMBERS = new (class AppMembers {
       `;
   }
 
+  drawPositionDiagram(opts) {
+    var canvas = document.getElementById(opts.canvasId);
+    if (!canvas) return;
+    var ctx = canvas.getContext("2d");
+    var rows = opts.rows || 2;
+    var cols = opts.cols || 2;
+    var positions = opts.positions || [];
+    var diagramColors = opts.diagramColors || { backgroundColor: {}, textColor: {} };
+    var highlightTags = opts.highlightTags || [];
+    var inProgressTags = opts.inProgressTags || [];
+    var activeForm = opts.form || 'grid';
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (activeForm === 'radial') {
+      this.drawRadialPositionDiagram(ctx, canvas, rows, cols, positions, diagramColors, highlightTags, inProgressTags);
+      return;
+    }
+
+    var layout = calcDiagramLayout(canvas, 1, rows, cols);
+    var squareWidth = layout.squareWidth;
+    var squareHeight = layout.squareHeight;
+    var squareSpacingX = layout.squareSpacingX;
+    var squareSpacingY = layout.squareSpacingY;
+    var gridWidth = layout.gridWidth;
+    var gridHeight = layout.gridHeight;
+    var offsetX0 = layout.offsetX0;
+    var offsetY = layout.offsetY;
+    var scale = layout.scale;
+
+    var placaHeight = Math.max(25, 40 * scale);
+    var placaY = offsetY + gridHeight + 60 * scale;
+    var requiredHeight = placaY + placaHeight + 15;
+    if (canvas.height !== Math.round(requiredHeight)) {
+      canvas.height = Math.round(requiredHeight);
+    }
+
+    var primaryColor = getComputedStyle(document.documentElement).getPropertyValue("--primary-color").trim() || "#6366f1";
+
+    for (var row = 0; row < rows; row++) {
+      for (var col = 0; col < cols; col++) {
+        var order = row * cols + col + 1;
+        var pos = positions.find(function (p) { return p.order === order; });
+        var tag = pos ? pos.tag : "";
+        var label = pos && pos.positionType ? pos.positionType.label : "";
+        var isHighlighted = highlightTags.indexOf(tag) !== -1;
+        var isInProgress = inProgressTags.indexOf(tag) !== -1;
+
+        var bgColor = "#808080";
+        if (label && diagramColors.backgroundColor && diagramColors.backgroundColor[label]) {
+          bgColor = diagramColors.backgroundColor[label];
+        }
+
+        var textColor = "#FFFFFF";
+        if (label && diagramColors.textColor && diagramColors.textColor[label]) {
+          textColor = diagramColors.textColor[label];
+        }
+
+        var x = offsetX0 + col * (squareWidth + squareSpacingX);
+        var y = offsetY + row * (squareHeight + squareSpacingY);
+
+        if (!isHighlighted && !isInProgress) {
+          ctx.globalAlpha = 0.3;
+        }
+
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(x, y, squareWidth, squareHeight);
+
+        ctx.globalAlpha = 1;
+
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = Math.max(2, 4 * scale);
+        ctx.strokeRect(x, y, squareWidth, squareHeight);
+
+        if (isHighlighted) {
+          ctx.strokeStyle = primaryColor;
+          ctx.lineWidth = Math.max(3, 6 * scale);
+          ctx.strokeRect(x, y, squareWidth, squareHeight);
+
+          var cx = x + squareWidth / 2;
+          var cy = y + squareHeight / 2;
+          var r = Math.min(squareWidth, squareHeight) * 0.32;
+
+          ctx.save();
+          ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+          ctx.shadowBlur = 6 * scale;
+          ctx.shadowOffsetY = 2 * scale;
+
+          var outerRing = ctx.createLinearGradient(cx, cy - r, cx, cy + r);
+          outerRing.addColorStop(0, "#C9A84C");
+          outerRing.addColorStop(0.5, "#F5D77A");
+          outerRing.addColorStop(1, "#A67C2E");
+          ctx.fillStyle = outerRing;
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.shadowColor = "transparent";
+
+          var innerR = r * 0.78;
+          var innerGrad = ctx.createLinearGradient(cx, cy - innerR, cx, cy + innerR);
+          innerGrad.addColorStop(0, "#FFE8A0");
+          innerGrad.addColorStop(0.35, "#FFD54F");
+          innerGrad.addColorStop(0.65, "#FFCA28");
+          innerGrad.addColorStop(1, "#F0B400");
+          ctx.fillStyle = innerGrad;
+          ctx.beginPath();
+          ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.strokeStyle = "rgba(160, 120, 30, 0.35)";
+          ctx.lineWidth = Math.max(1, 1.5 * scale);
+          ctx.beginPath();
+          ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
+          ctx.stroke();
+
+          var ts = r * 0.48;
+          ctx.strokeStyle = "#6D4C00";
+          ctx.lineWidth = Math.max(2.5, 4.5 * scale);
+          ctx.lineCap = "round";
+          ctx.lineJoin = "round";
+          ctx.beginPath();
+          ctx.moveTo(cx - ts * 0.55, cy + ts * 0.05);
+          ctx.lineTo(cx - ts * 0.05, cy + ts * 0.5);
+          ctx.lineTo(cx + ts * 0.65, cy - ts * 0.45);
+          ctx.stroke();
+
+          ctx.restore();
+        }
+        if (isInProgress) {
+          var iconS = Math.min(squareWidth, squareHeight) * 0.6;
+          var fontSize = Math.round(iconS);
+
+          ctx.save();
+          ctx.font = fontSize + "px sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("🏋️‍♀️", x + squareWidth / 2, y + squareHeight / 2);
+          ctx.restore();
+        }    }
+    }
+
+    ctx.save();
+    ctx.fillStyle = "#fff";
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = Math.max(1, 2 * scale);
+    ctx.fillRect(offsetX0, placaY, gridWidth, placaHeight);
+    ctx.strokeRect(offsetX0, placaY, gridWidth, placaHeight);
+    var placaFontSize = Math.max(12, Math.round(20 * scale));
+    ctx.fillStyle = "#000";
+    ctx.font = "bold " + placaFontSize + "px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("PLAÇA", offsetX0 + gridWidth / 2, placaY + placaHeight / 2);
+    ctx.restore();
+  }
+
+  loadMemberPositionsData() {
+    const list = document.getElementById("member-positions-list");
+    const loading = document.getElementById("member-positions-loading");
+    const empty = document.getElementById("member-positions-empty");
+    if (!list) return;
+
+    list.innerHTML = "";
+    if (loading) loading.style.display = "flex";
+    if (empty) empty.style.display = "none";
+
+    const alias = APP.memberPositionsAlias || APP.currentUser?.alias;
+    APP.memberPositionsAlias = null;
+    if (!alias) {
+      if (loading) loading.style.display = "none";
+      if (empty) empty.style.display = "block";
+      return;
+    }
+
+    var titleEl = document.querySelector("#view-member-positions .page-header h1");
+    if (titleEl) {
+      titleEl.textContent = alias === APP.currentUser?.alias ? "Les meues posicions" : "Posicions de " + alias;
+    }
+
+    API.getMemberPositions({ memberAlias: alias })
+      .then(function (positions) {
+        if (loading) loading.style.display = "none";
+
+        var positionCardId = 0;
+
+        DANCES.filter(function (dance) { return dance.showInPositions === true; }).forEach(function (dance) {
+          var danceName = dance.name;
+          var memberEntries = positions[danceName] || {};
+          var dancePositions = dance.positions || [];
+          var memberTags = dancePositions.filter(function (pos) {
+            return String(memberEntries[pos.order]).toUpperCase() === 'SI';
+          }).map(function (pos) { return pos.tag; });
+          var inProgressTags = dancePositions.filter(function (pos) {
+            return String(memberEntries[pos.order]).toUpperCase() === 'EN PROGRES';
+          }).map(function (pos) { return pos.tag; });
+          var diagramColors = dance.diagram || { backgroundColor: {}, textColor: {} };
+          var rows = dance.structure ? dance.structure.rows : 2;
+          var cols = dance.structure ? dance.structure.columns : 2;
+
+          var cardId = positionCardId++;
+          var canvasId = "position-canvas-" + cardId;
+
+          var legendHtml = "";
+          var seenLabels = {};
+          dancePositions.forEach(function (pos) {
+            if (seenLabels[pos.positionType.label]) return;
+            seenLabels[pos.positionType.label] = true;
+            var color = (diagramColors.backgroundColor && diagramColors.backgroundColor[pos.positionType.label]) || "#808080";
+            legendHtml += '<div class="diagram-legend-item">' +
+              '<span class="legend-color-box" style="background: ' + color + ';"></span>' +
+              '<span>' + pos.positionType.label + '</span>' +
+              '</div>';
+          });
+          var showLegend = Object.keys(seenLabels).length > 1;
+
+          var forms = dance.structure && dance.structure.forms ? dance.structure.forms : ['grid'];
+
+          var card = document.createElement("div");
+          card.className = "position-card";
+          card.innerHTML =
+            '<div class="diagram-header">' +
+              '<div class="diagram-title-row">' +
+                '<h3 class="diagram-title">' + danceName + '</h3>' +
+              '</div>' +
+              '<div class="diagram-legend" style="' + (showLegend ? '' : 'display:none;') + '">' +
+                legendHtml +
+              '</div>' +
+            '</div>' +
+            '<div class="diagrams-canvas-container">' +
+              '<div class="diagrams-canvas-wrapper">' +
+                '<canvas id="' + canvasId + '" width="600" height="250"></canvas>' +
+              '</div>' +
+            '</div>';
+
+          list.appendChild(card);
+
+          var positionDrawOpts = {
+            canvasId: canvasId,
+            rows: rows,
+            cols: cols,
+            positions: dancePositions,
+            diagramColors: diagramColors,
+            highlightTags: memberTags,
+            inProgressTags: inProgressTags,
+            form: forms[0]
+          };
+          MEMBERS.drawPositionDiagram(positionDrawOpts);
+
+          var canvas = document.getElementById(canvasId);
+          if (canvas) {
+            canvas.style.cursor = "pointer";
+            canvas.addEventListener("click", function (event) {
+              MEMBERS.handlePositionClick(event, canvas, {
+                memberAlias: alias,
+                danceName: danceName,
+                rows: rows,
+                cols: cols,
+                positions: dancePositions,
+                memberEntries: memberEntries,
+                diagramColors: diagramColors,
+                form: forms[0]
+              });
+            });
+          }
+
+        });
+      })
+      .catch(function (error) {
+        console.error("Failed to load positions:", error);
+        if (loading) loading.style.display = "none";
+        list.innerHTML = '<div class="empty-state"><p>No s\'han pogut carregar les posicions.</p></div>';
+      });
+  }
+
   toggleRelationsDropdown(btn) {
     const dropdown = btn.nextElementSibling;
     dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+  }
+
+  handlePositionClick(event, canvas, data) {
+    var dialog = document.getElementById("position-value-dialog");
+    
+    // Don't handle click if dialog is currently open
+    if (dialog && dialog.open) {
+      return;
+    }
+    
+    var rect = canvas.getBoundingClientRect();
+    var x = event.clientX - rect.left;
+    var y = event.clientY - rect.top;
+
+    var clickedOrder = this.getClickedPositionOrder(x, y, canvas, data.rows, data.cols, data.form);
+    if (clickedOrder === null) return;
+
+    this.showPositionValueDialog(canvas, data, clickedOrder);
+  }
+
+  showPositionValueDialog(canvas, data, clickedOrder) {
+    var dialog = document.getElementById("position-value-dialog");
+    if (!dialog) return;
+    
+    // If dialog is already open, close it first and wait
+    if (dialog.open) {
+      UI.closeDialogWithBackdrop(dialog);
+      setTimeout(function() {
+        MEMBERS.showPositionValueDialog(canvas, data, clickedOrder);
+      }, 100);
+      return;
+    }
+
+    var optionButtons = dialog.querySelectorAll(".position-value-option");
+    
+    // Remove any existing listeners by cloning and replacing buttons
+    optionButtons.forEach(function(btn) {
+      var newBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
+    });
+    
+    // Get the new buttons after cloning
+    optionButtons = dialog.querySelectorAll(".position-value-option");
+    
+    var clickHandler = function(event) {
+      var selectedValue = this.getAttribute("data-value");
+      UI.closeDialogWithBackdrop(dialog);
+      
+      MEMBERS.updatePositionValue(canvas, data, clickedOrder, selectedValue);
+    };
+    
+    optionButtons.forEach(function(btn) {
+      btn.addEventListener("click", clickHandler);
+    });
+    
+    UI.showDialogWithBackdrop(dialog);
+  }
+
+  updatePositionValue(canvas, data, clickedOrder, newValue) {
+    API.updateMemberPosition({
+      memberAlias: data.memberAlias,
+      danceName: data.danceName,
+      positionOrder: clickedOrder,
+      value: newValue
+    })
+      .then(function () {
+        data.memberEntries[clickedOrder] = newValue;
+
+        var memberTags = data.positions.filter(function (pos) {
+          return String(data.memberEntries[pos.order]).toUpperCase() === 'SI';
+        }).map(function (pos) { return pos.tag; });
+
+        var inProgressTags = data.positions.filter(function (pos) {
+          return String(data.memberEntries[pos.order]).toUpperCase() === 'EN PROGRES';
+        }).map(function (pos) { return pos.tag; });
+
+        var positionDrawOpts = {
+          canvasId: canvas.id,
+          rows: data.rows,
+          cols: data.cols,
+          positions: data.positions,
+          diagramColors: data.diagramColors,
+          highlightTags: memberTags,
+          inProgressTags: inProgressTags,
+          form: data.form
+        };
+        MEMBERS.drawPositionDiagram(positionDrawOpts);
+        
+        UI.showToast("Posició actualitzada correctament", "success");
+      })
+      .catch(function (error) {
+        console.error("Failed to update position:", error);
+        UI.showToast("Error en actualitzar la posició", "error");
+      });
   }
 
   handleInlineTypeChange(selectEl) {
@@ -914,7 +1283,7 @@ const MEMBERS = new (class AppMembers {
         let relationsHtml =
           '<div class="inline-relations-dropdown" id="inline-relations-container">';
         relationsHtml +=
-          '<button type="button" class="btn-dropdown" onclick="toggleRelationsDropdown(this)">Seleccionar ▼</button>';
+          '<button type="button" class="btn-dropdown" onclick="MEMBERS.toggleRelationsDropdown(this)">Seleccionar ▼</button>';
         relationsHtml +=
           '<div class="relations-dropdown-content" style="display:none;">';
         MEMBERS.membersData.forEach((m) => {
@@ -943,7 +1312,7 @@ const MEMBERS = new (class AppMembers {
     });
     if (!member) {
       console.error("Member not found. memberId:", memberId, "Available IDs:", MEMBERS.membersData.map(m => m.id));
-      showToast("Membre no trobat", "error");
+      UI.showToast("Membre no trobat", "error");
       return;
     }
 
@@ -984,12 +1353,12 @@ const MEMBERS = new (class AppMembers {
     if (confirmPasswordInput) confirmPasswordInput.value = "";
 
     this._initPasswordChangeHandlers();
-    showDialogWithBackdrop(dialog);
+    UI.showDialogWithBackdrop(dialog);
     if (newPasswordInput) newPasswordInput.focus();
   }
 
   _closePasswordDialog() {
-    closeDialogWithBackdrop("password-change-dialog");
+    UI.closeDialogWithBackdrop("password-change-dialog");
     this.passwordChangeMemberEmail = null;
   }
 
@@ -1001,22 +1370,22 @@ const MEMBERS = new (class AppMembers {
 
     // Validation
     if (!newPassword) {
-      showToast("Cal introduir una contrasenya", "error");
+      UI.showToast("Cal introduir una contrasenya", "error");
       return;
     }
 
     if (newPassword.length < 8) {
-      showToast("La contrasenya ha de tenir almenys 8 caràcters", "error");
+      UI.showToast("La contrasenya ha de tenir almenys 8 caràcters", "error");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      showToast("Les contrasenyes no coincideixen", "error");
+      UI.showToast("Les contrasenyes no coincideixen", "error");
       return;
     }
 
     if (!this.passwordChangeMemberEmail) {
-      showToast("Error: no s'ha seleccionat cap membre", "error");
+      UI.showToast("Error: no s'ha seleccionat cap membre", "error");
       return;
     }
 
@@ -1033,7 +1402,7 @@ const MEMBERS = new (class AppMembers {
           saveBtn.textContent = "Desar";
         }
         this._closePasswordDialog();
-        showToast(
+        UI.showToast(
           result.message || "Contrasenya canviada correctament",
           "success",
         );
@@ -1043,7 +1412,7 @@ const MEMBERS = new (class AppMembers {
           saveBtn.disabled = false;
           saveBtn.textContent = "Desar";
         }
-        showToast(error || "Error en canviar la contrasenya", "error");
+        UI.showToast(error || "Error en canviar la contrasenya", "error");
         console.error("Password change error:", error);
       });
   }
@@ -1144,12 +1513,219 @@ const MEMBERS = new (class AppMembers {
     }
   }
 
+  formatNamesList(names) {
+    if (!names || names.length === 0) return "";
+    if (names.length === 1) return names[0];
+    if (names.length === 2) return names[0] + " i " + names[1];
+    const lastIndex = names.length - 1;
+    return names.slice(0, lastIndex).join(", ") + " i " + names[lastIndex];
+  }
+
+  getClickedPositionOrder(x, y, canvas, rows, cols, form) {
+    if (form === 'radial') {
+      return this.getClickedPositionOrderRadial(x, y, canvas, rows, cols);
+    }
+    return this.getClickedPositionOrderGrid(x, y, canvas, rows, cols);
+  }
+
+  getClickedPositionOrderRadial(x, y, canvas, rows, cols) {
+    var rl = this.calcRadialPositionLayout(canvas, rows, cols);
+
+    for (var row = 0; row < rows; row++) {
+      for (var col = 0; col < cols; col++) {
+        var order = row * cols + col + 1;
+
+        var cellCenterX = rl.centerX;
+        var cellCenterY = rl.centerY - rl.coupleHeight / 2 + row * (rl.cellHeight + rl.coupleGap) + rl.cellHeight / 2;
+        var cellX = cellCenterX - rl.cellWidth / 2;
+        var cellY = cellCenterY - rl.cellHeight / 2;
+
+        if (x >= cellX && x <= cellX + rl.cellWidth && y >= cellY && y <= cellY + rl.cellHeight) {
+          return order;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  getClickedPositionOrderGrid(x, y, canvas, rows, cols) {
+    var layout = calcDiagramLayout(canvas, 1, rows, cols);
+    var squareWidth = layout.squareWidth;
+    var squareHeight = layout.squareHeight;
+    var squareSpacingX = layout.squareSpacingX;
+    var squareSpacingY = layout.squareSpacingY;
+    var offsetX0 = layout.offsetX0;
+    var offsetY = layout.offsetY;
+
+    for (var row = 0; row < rows; row++) {
+      for (var col = 0; col < cols; col++) {
+        var order = row * cols + col + 1;
+
+        var cellX = offsetX0 + col * (squareWidth + squareSpacingX);
+        var cellY = offsetY + row * (squareHeight + squareSpacingY);
+
+        if (x >= cellX && x <= cellX + squareWidth && y >= cellY && y <= cellY + squareHeight) {
+          return order;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  drawRadialPositionDiagram(ctx, canvas, rows, cols, positions, diagramColors, highlightTags, inProgressTags) {
+    var rl = this.calcRadialPositionLayout(canvas, rows, cols);
+    if (canvas.height !== Math.round(rl.requiredHeight)) {
+      canvas.height = Math.round(rl.requiredHeight);
+    }
+
+    var primaryColor = getComputedStyle(document.documentElement).getPropertyValue("--primary-color").trim() || "#6366f1";
+
+    for (var row = 0; row < rows; row++) {
+      for (var col = 0; col < cols; col++) {
+        var order = row * cols + col + 1;
+        var pos = positions.find(function (p) { return p.order === order; });
+        var tag = pos ? pos.tag : "";
+        var label = pos && pos.positionType ? pos.positionType.label : "";
+        var isHighlighted = highlightTags.indexOf(tag) !== -1;
+        var isInProgress = inProgressTags.indexOf(tag) !== -1;
+
+        var bgColor = "#808080";
+        if (label && diagramColors.backgroundColor && diagramColors.backgroundColor[label]) {
+          bgColor = diagramColors.backgroundColor[label];
+        }
+        var textColor = "#FFFFFF";
+        if (label && diagramColors.textColor && diagramColors.textColor[label]) {
+          textColor = diagramColors.textColor[label];
+        }
+
+        var cellCenterX = rl.centerX;
+        var cellCenterY = rl.centerY - rl.coupleHeight / 2 + row * (rl.cellHeight + rl.coupleGap) + rl.cellHeight / 2;
+        var x = cellCenterX - rl.cellWidth / 2;
+        var y = cellCenterY - rl.cellHeight / 2;
+
+        if (!isHighlighted && !isInProgress) {
+          ctx.globalAlpha = 0.3;
+        }
+
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(x, y, rl.cellWidth, rl.cellHeight);
+        ctx.globalAlpha = 1;
+
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = Math.max(2, 4 * rl.scale);
+        ctx.strokeRect(x, y, rl.cellWidth, rl.cellHeight);
+
+        if (isHighlighted) {
+          ctx.strokeStyle = primaryColor;
+          ctx.lineWidth = Math.max(3, 6 * rl.scale);
+          ctx.strokeRect(x, y, rl.cellWidth, rl.cellHeight);
+
+          var cx = x + rl.cellWidth / 2;
+          var cy = y + rl.cellHeight / 2;
+          var r = Math.min(rl.cellWidth, rl.cellHeight) * 0.32;
+
+          ctx.save();
+          ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+          ctx.shadowBlur = 6 * rl.scale;
+          ctx.shadowOffsetY = 2 * rl.scale;
+
+          var outerRing = ctx.createLinearGradient(cx, cy - r, cx, cy + r);
+          outerRing.addColorStop(0, "#C9A84C");
+          outerRing.addColorStop(0.5, "#F5D77A");
+          outerRing.addColorStop(1, "#A67C2E");
+          ctx.fillStyle = outerRing;
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.shadowColor = "transparent";
+
+          var innerR = r * 0.78;
+          var innerGrad = ctx.createLinearGradient(cx, cy - innerR, cx, cy + innerR);
+          innerGrad.addColorStop(0, "#FFE8A0");
+          innerGrad.addColorStop(0.35, "#FFD54F");
+          innerGrad.addColorStop(0.65, "#FFCA28");
+          innerGrad.addColorStop(1, "#F0B400");
+          ctx.fillStyle = innerGrad;
+          ctx.beginPath();
+          ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.strokeStyle = "rgba(160, 120, 30, 0.35)";
+          ctx.lineWidth = Math.max(1, 1.5 * rl.scale);
+          ctx.beginPath();
+          ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
+          ctx.stroke();
+
+          var ts = r * 0.48;
+          ctx.strokeStyle = "#6D4C00";
+          ctx.lineWidth = Math.max(2.5, 4.5 * rl.scale);
+          ctx.lineCap = "round";
+          ctx.lineJoin = "round";
+          ctx.beginPath();
+          ctx.moveTo(cx - ts * 0.55, cy + ts * 0.05);
+          ctx.lineTo(cx - ts * 0.05, cy + ts * 0.5);
+          ctx.lineTo(cx + ts * 0.65, cy - ts * 0.45);
+          ctx.stroke();
+
+          ctx.restore();
+        }
+        if (isInProgress) {
+          var iconS = Math.min(rl.cellWidth, rl.cellHeight) * 0.6;
+          var fontSize = Math.round(iconS);
+          ctx.save();
+          ctx.font = fontSize + "px sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("\uD83C\uDFCB\uFE0F\u200D\u2640\uFE0F", x + rl.cellWidth / 2, y + rl.cellHeight / 2);
+          ctx.restore();
+        }
+      }
+    }
+
+    ctx.save();
+    ctx.fillStyle = "#fff";
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = Math.max(1, 2 * rl.scale);
+    ctx.fillRect(rl.placaX, rl.placaY, rl.placaWidth, rl.placaHeight);
+    ctx.strokeRect(rl.placaX, rl.placaY, rl.placaWidth, rl.placaHeight);
+    var placaFontSize = Math.max(12, Math.round(20 * rl.scale));
+    ctx.fillStyle = "#000";
+    ctx.font = "bold " + placaFontSize + "px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("PLAÇA", rl.placaX + rl.placaWidth / 2, rl.placaY + rl.placaHeight / 2);
+    ctx.restore();
+  }
+
+  calcRadialPositionLayout(canvas, rows, cols) {
+    var baseCellWidth = 100;
+    var baseCellHeight = 50;
+    var baseCoupleGap = 8;
+    var baseCoupleHeight = baseCellHeight * rows + baseCoupleGap * (rows - 1);
+    var availableWidth = canvas.width - 40;
+    var scale = Math.min(1, availableWidth / (baseCellWidth + 40));
+    var cellWidth = baseCellWidth * scale;
+    var cellHeight = baseCellHeight * scale;
+    var coupleGap = baseCoupleGap * scale;
+    var coupleHeight = cellHeight * rows + coupleGap * (rows - 1);
+    var centerX = canvas.width / 2;
+    var centerY = 20 + coupleHeight / 2;
+    var placaHeight = Math.max(25, 40 * scale);
+    var placaY = centerY + coupleHeight / 2 + 60 * scale;
+    var placaWidth = cellWidth;
+    var placaX = centerX - placaWidth / 2;
+    var requiredHeight = placaY + placaHeight + 15;
+    return {
+      cellWidth: cellWidth, cellHeight: cellHeight, coupleGap: coupleGap, coupleHeight: coupleHeight,
+      centerX: centerX, centerY: centerY,
+      placaX: placaX, placaY: placaY, placaWidth: placaWidth, placaHeight: placaHeight,
+      scale: scale, requiredHeight: requiredHeight
+    };
+  }
+
 })();
-
-
-
-
-// Load members data silently for events view (without updating members table)
-
 
 

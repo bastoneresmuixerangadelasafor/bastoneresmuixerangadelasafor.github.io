@@ -238,6 +238,16 @@ const API = class GAppsApiServer {
           newPassword: passwordRequest?.newPassword,
         });
         break;
+      case "updateMemberPosition":
+        const updatePositionWorker = this.validateUserToken_({fn: updateMemberPosition_, requiresAuth: true, token: e.parameter?.token});
+        const positionRequest = JSON.parse(e.postData?.contents);
+        data = updatePositionWorker({
+          memberAlias: positionRequest?.memberAlias,
+          danceName: positionRequest?.danceName,
+          positionOrder: positionRequest?.positionOrder,
+          value: positionRequest?.value,
+        });
+        break;
       default:
         return API.newError_({ error: `Unknown PATCH action: ${action}`, status:404 });
     }

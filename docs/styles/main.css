@@ -5022,6 +5022,187 @@ input::placeholder {
   }
 }
 
+/* Position Value Dialog Styles */
+#position-value-dialog {
+  padding: 0;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  max-width: 400px;
+  width: 90vw;
+  background: var(--card-bg);
+  color: var(--text-color);
+  overflow: visible;
+}
+
+#position-value-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+#position-value-dialog[open] {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+
+.position-value-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+.position-value-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--primary-color);
+  border: 1px solid color-mix(in srgb, var(--primary-color), #000000 18%);
+  color: #ffffff;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  z-index: 1001;
+}
+
+.position-value-close-btn:hover {
+  filter: brightness(0.92);
+}
+
+.position-value-close-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color), #ffffff 60%);
+}
+
+.position-value-header {
+  padding: 20px 20px 16px 20px;
+}
+
+.position-value-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.position-value-body {
+  padding: 0 20px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.position-value-option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.position-value-option:hover {
+  border-color: var(--primary-color);
+  background: color-mix(in srgb, var(--primary-color), transparent 92%);
+  transform: translateX(4px);
+}
+
+.position-value-option:active {
+  transform: translateX(2px) scale(0.98);
+}
+
+.position-value-option:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color), #ffffff 60%);
+}
+
+.position-value-icon {
+  font-size: 1.5rem;
+  min-width: 32px;
+  text-align: center;
+}
+
+.position-value-label {
+  font-weight: 500;
+  flex: 1;
+}
+
+.position-value-option[data-value="SI"] {
+  color: #66bb6a;
+  border-color: rgba(76, 175, 80, 0.5);
+}
+
+.position-value-option[data-value="SI"]:hover {
+  background: rgba(76, 175, 80, 0.1);
+  border-color: #66bb6a;
+}
+
+.dark-mode .position-value-option[data-value="SI"] {
+  color: #81c784;
+  border-color: #81c784;
+}
+
+.dark-mode .position-value-option[data-value="SI"]:hover {
+  background: rgba(129, 199, 132, 0.1);
+}
+
+.position-value-option[data-value="NO"] {
+  color: #e57373;
+  border-color: rgba(244, 67, 54, 0.5);
+}
+
+.position-value-option[data-value="NO"]:hover {
+  background: rgba(244, 67, 54, 0.1);
+  border-color: #e57373;
+}
+
+.dark-mode .position-value-option[data-value="NO"] {
+  color: #ef5350;
+  border-color: #ef5350;
+}
+
+.dark-mode .position-value-option[data-value="NO"]:hover {
+  background: rgba(239, 83, 80, 0.1);
+}
+
+.position-value-option[data-value="EN PROGRES"] {
+  color: #ff9800;
+  border-color: rgba(255, 152, 0, 0.5);
+}
+
+.position-value-option[data-value="EN PROGRES"]:hover {
+  background: rgba(255, 152, 0, 0.1);
+  border-color: #ff9800;
+}
+
+.dark-mode .position-value-option[data-value="EN PROGRES"] {
+  color: #ffb74d;
+  border-color: #ffb74d;
+}
+
+.dark-mode .position-value-option[data-value="EN PROGRES"]:hover {
+  background: rgba(255, 183, 77, 0.1);
+}
+
 #view-training .container {
   width: 100%;
   max-width: 100%;
@@ -5180,12 +5361,18 @@ body.dark-mode .event-meeting-place-display {
 
 /* Events list styles */
 .diagrams-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 30px;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+}
+
+@media (min-width: 1600px) {
+  .diagrams-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .diagram-item {
@@ -5301,6 +5488,14 @@ body.dark-mode .event-meeting-place-display {
   text-decoration: underline;
 }
 
+.dark-mode .diagram-description-text {
+  color: #aaa;
+}
+
+.dark-mode .add-description-link {
+  color: #4fc3f7;
+}
+
 .edit-description-btn {
   background: none;
   border: none;
@@ -5336,6 +5531,23 @@ body.dark-mode .event-meeting-place-display {
 
 .edit-description-btn:focus:not(:focus-visible) {
   box-shadow: none;
+}
+
+.dark-mode .edit-description-btn {
+  color: #aaa;
+}
+
+.dark-mode .edit-description-btn:hover {
+  background: #444;
+  color: #fff;
+}
+
+.dark-mode .edit-description-btn:active {
+  background: #555;
+}
+
+.dark-mode .edit-description-btn:focus {
+  box-shadow: 0 0 0 2px rgba(79, 195, 247, 0.3);
 }
 
 .diagram-description-input {

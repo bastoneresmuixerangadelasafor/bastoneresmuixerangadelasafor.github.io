@@ -110,6 +110,14 @@
 
         {% if embedded %}
         <script>
+        {% include "../../docs/scripts/home.js" %}
+        </script>
+        {% else %}
+        <script src="scripts/home.js" defer></script>
+        {% endif %}
+
+        {% if embedded %}
+        <script>
         {% include "../../docs/scripts/members.js" %}
         </script>
         {% else %}
@@ -142,18 +150,10 @@
 
         {% if embedded %}
         <script>
-        {% include "../../docs/scripts/validation.js" %}
+        {% include "../../docs/scripts/ui.js" %}
         </script>
         {% else %}
-        <script src="scripts/validation.js" defer></script>
-        {% endif %}
-
-        {% if embedded %}
-        <script>
-        {% include "../../docs/scripts/button-feedback.js" %}
-        </script>
-        {% else %}
-        <script src="scripts/button-feedback.js" defer></script>
+        <script src="scripts/ui.js" defer></script>
         {% endif %}
     </body>
 </html>

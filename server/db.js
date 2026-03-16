@@ -347,6 +347,49 @@ const CACHE = new class GAppsServerCache {
     return positions;
   }
 
+  updateMemberPositionInDB({ memberAlias, danceName, positionOrder, value }) {
+    const spreadsheet = SpreadsheetApp.openById(POSITIONS_SPREADSHEET_ID);
+    const sheet = spreadsheet.getSheetByName(memberAlias);
+
+    if (!sheet) {
+      throw new Error('No s\'ha trobat la fulla de posicions per al membre: ' + memberAlias);
+    }
+
+    const data = sheet.getDataRange().getValues();
+
+    if (!data || data.length < 2) {
+      throw new Error('No hi ha dades de posicions per al membre: ' + memberAlias);
+    }
+
+    const headers = data[0];
+    let danceColIndex = -1;
+
+    for (let colIndex = 1; colIndex < headers.length; colIndex++) {
+      if (headers[colIndex] === danceName) {
+        danceColIndex = colIndex;
+        break;
+      }
+    }
+
+    if (danceColIndex === -1) {
+      throw new Error('No s\'ha trobat la dansa: ' + danceName);
+    }
+
+    let positionRowIndex = -1;
+    for (let row = 1; row < data.length; row++) {
+      if (data[row][0] == positionOrder) {
+        positionRowIndex = row;
+        break;
+      }
+    }
+
+    if (positionRowIndex === -1) {
+      throw new Error('No s\'ha trobat la posició: ' + positionOrder);
+    }
+
+    sheet.getRange(positionRowIndex + 1, danceColIndex + 1).setValue(value);
+  }
+
   removeExpiredSessionTokens() {
     try {
       const sessionsData = this.cache_.getProperty(USER_SESSION);

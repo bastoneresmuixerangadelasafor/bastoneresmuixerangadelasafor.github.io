@@ -39,7 +39,7 @@ const AUTH = new (class AppAuthentication {
     if (loginCloseBtn) {
       loginCloseBtn.addEventListener("click", function () {
         if (loginDialog) {
-          closeDialogWithBackdrop(loginDialog);
+          UI.closeDialogWithBackdrop(loginDialog);
         }
       });
     }
@@ -47,7 +47,7 @@ const AUTH = new (class AppAuthentication {
     if (loginDialog) {
       loginDialog.addEventListener("click", function (e) {
         if (e.target === this) {
-          closeDialogWithBackdrop(this);
+          UI.closeDialogWithBackdrop(this);
         }
       });
     }
@@ -58,7 +58,7 @@ const AUTH = new (class AppAuthentication {
         e.preventDefault();
         const loginDialog = document.getElementById("view-login");
         if (loginDialog) {
-          closeDialogWithBackdrop(loginDialog);
+          UI.closeDialogWithBackdrop(loginDialog);
         }
         NAVIGATION.navigateTo("register");
       });
@@ -69,7 +69,7 @@ const AUTH = new (class AppAuthentication {
     if (registerCloseBtn) {
       registerCloseBtn.addEventListener("click", function () {
         if (registerDialog) {
-          closeDialogWithBackdrop(registerDialog);
+          UI.closeDialogWithBackdrop(registerDialog);
         }
       });
     }
@@ -77,7 +77,7 @@ const AUTH = new (class AppAuthentication {
     if (registerDialog) {
       registerDialog.addEventListener("click", function (e) {
         if (e.target === this) {
-          closeDialogWithBackdrop(this);
+          UI.closeDialogWithBackdrop(this);
         }
       });
     }
@@ -87,7 +87,7 @@ const AUTH = new (class AppAuthentication {
       loginLink.addEventListener("click", function (e) {
         e.preventDefault();
         if (registerDialog) {
-          closeDialogWithBackdrop(registerDialog);
+          UI.closeDialogWithBackdrop(registerDialog);
         }
         NAVIGATION.navigateTo("login");
       });
@@ -102,7 +102,7 @@ const AUTH = new (class AppAuthentication {
     const submitBtn = document.getElementById("email-login-btn");
 
     if (!email || !password) {
-      showToast("Introdueix el correu electrònic i la contrasenya", "warning");
+      UI.showToast("Introdueix el correu electrònic i la contrasenya", "warning");
       return;
     }
 
@@ -127,7 +127,7 @@ const AUTH = new (class AppAuthentication {
         APP.currentUser = result.user;
 
         updateAuthUI();
-        showToast(
+        UI.showToast(
           "Benvingut/da de nou, " + result.user.displayName + "!",
           "success",
         );
@@ -135,7 +135,7 @@ const AUTH = new (class AppAuthentication {
         // Close login dialog before navigating
         const loginDialog = document.getElementById("view-login");
         if (loginDialog) {
-          closeDialogWithBackdrop(loginDialog);
+          UI.closeDialogWithBackdrop(loginDialog);
         }
         
         NAVIGATION.navigateTo("home");
@@ -146,7 +146,7 @@ const AUTH = new (class AppAuthentication {
           submitBtn.disabled = false;
           submitBtn.removeAttribute("aria-busy");
         }
-        showToast(error || "Error d'inici de sessió", "error");
+        UI.showToast(error || "Error d'inici de sessió", "error");
         console.error("Login error:", error);
       });
   }
@@ -163,7 +163,7 @@ const AUTH = new (class AppAuthentication {
     if (emailInput) emailInput.value = "";
     
     this._initAccessLinkDialogHandlers();
-    showDialogWithBackdrop(dialog);
+    UI.showDialogWithBackdrop(dialog);
     if (emailInput) emailInput.focus();
   }
 
@@ -175,7 +175,7 @@ const AUTH = new (class AppAuthentication {
     const submitBtn = document.getElementById("register-btn");
 
     if (!name || !email) {
-      showToast("Introdueix el nom i el correu electrònic", "warning");
+      UI.showToast("Introdueix el nom i el correu electrònic", "warning");
       return;
     }
 
@@ -190,7 +190,7 @@ const AUTH = new (class AppAuthentication {
 
         document.getElementById("register-form").reset();
         APP.closeAllDialogs();
-        showToast(
+        UI.showToast(
           "Sol·licitud enviada correctament. Ens posarem en contacte amb tu!",
           "success",
         );
@@ -200,7 +200,7 @@ const AUTH = new (class AppAuthentication {
         submitBtn.disabled = false;
         document.getElementById("register-form").reset();
         APP.closeAllDialogs();
-        showToast(error || "Error en enviar la sol·licitud", "error");
+        UI.showToast(error || "Error en enviar la sol·licitud", "error");
         console.error("Registration error:", error);
       });
   }
@@ -348,7 +348,7 @@ const AUTH = new (class AppAuthentication {
   }
 
   _closeAccessLinkDialog() {
-    closeDialogWithBackdrop("access-link-dialog");
+    UI.closeDialogWithBackdrop("access-link-dialog");
   }
 
   sendAccessLink() {
@@ -358,12 +358,12 @@ const AUTH = new (class AppAuthentication {
 
     // Validation
     if (!email) {
-      showToast("Cal introduir un correu electrònic", "error");
+      UI.showToast("Cal introduir un correu electrònic", "error");
       return;
     }
 
     if (!email.includes("@")) {
-      showToast("El correu electrònic no és vàlid", "error");
+      UI.showToast("El correu electrònic no és vàlid", "error");
       return;
     }
 
@@ -380,7 +380,7 @@ const AUTH = new (class AppAuthentication {
           sendBtn.textContent = "Enviar accés";
         }
 
-        showToast(
+        UI.showToast(
           result.message || "Enllaç d'accés enviat al teu correu electrònic",
           "success",
         );
@@ -391,7 +391,7 @@ const AUTH = new (class AppAuthentication {
           sendBtn.disabled = false;
           sendBtn.textContent = "Enviar accés";
         }
-        showToast(error || "Error en enviar l'accés", "error");
+        UI.showToast(error || "Error en enviar l'accés", "error");
         console.error("Access link error:", error);
       });
   }
@@ -425,7 +425,7 @@ const AUTH = new (class AppAuthentication {
 
       updateAuthUI();
       NAVIGATION.navigateTo("home-guest");
-      showToast(message, messageType);
+      UI.showToast(message, messageType);
       APP.showLoading(false);
     };
 
