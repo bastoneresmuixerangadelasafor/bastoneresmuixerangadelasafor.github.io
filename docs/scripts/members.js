@@ -108,9 +108,10 @@ const MEMBERS = new (class AppMembers {
     // If editing all members, restore all original data
     if (this.isEditingAllMembers && this.allOriginalMemberData) {
       this.membersData = this.allOriginalMemberData;
-      this.allOriginalMemberData = null;
-      this.isEditingAllMembers = false;
     }
+
+    this.allOriginalMemberData = null;
+    this.isEditingAllMembers = false;
 
     this.currentEditingMemberId = null;
     this.originalMemberData = null;
@@ -300,7 +301,11 @@ const MEMBERS = new (class AppMembers {
     const applyBtn = document.getElementById("members-edit-apply");
 
     if (discardBtn && !discardBtn.dataset.initialized) {
-      discardBtn.addEventListener("click", () => this._cancelInlineEdit());
+      discardBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        this._cancelInlineEdit();
+      });
       discardBtn.dataset.initialized = "true";
     }
 

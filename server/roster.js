@@ -274,8 +274,15 @@ function updateMemberPosition_({ memberAlias, danceName, positionOrder, value, u
 }
 
 function generateMemberId_() {
-	// Generate ID based on timestamp and random component
-	const timestamp = new Date().getTime();
-	const random = Math.floor(Math.random() * 10000);
-	return 'M' + timestamp + random;
+	const members = CACHE.getMembers() || [];
+	let maxId = 0;
+
+	members.forEach(function(member) {
+		const numericId = Number(String(member.id || '').trim());
+		if (Number.isFinite(numericId) && numericId > maxId) {
+			maxId = numericId;
+		}
+	});
+
+	return maxId + 1;
 }

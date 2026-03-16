@@ -603,6 +603,12 @@ table tbody tr:last-child td {
 /* Inline edit action bar */
 .members-edit-actions {
   display: flex;
+  position: fixed;
+  left: 50%;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  width: min(960px, calc(100vw - 24px));
+  z-index: 1200;
   justify-content: space-between;
   align-items: center;
   background: var(--primary-color);
@@ -1793,6 +1799,8 @@ table tbody tr:last-child td {
 
   /* Members edit actions */
   .members-edit-actions {
+    bottom: calc(8px + env(safe-area-inset-bottom));
+    width: calc(100vw - 16px);
     flex-direction: column;
     gap: 12px;
     text-align: center;

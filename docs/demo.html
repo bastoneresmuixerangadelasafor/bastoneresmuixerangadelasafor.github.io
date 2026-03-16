@@ -632,6 +632,12 @@ table tbody tr:last-child td {
 /* Inline edit action bar */
 .members-edit-actions {
   display: flex;
+  position: fixed;
+  left: 50%;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  width: min(960px, calc(100vw - 24px));
+  z-index: 1200;
   justify-content: space-between;
   align-items: center;
   background: var(--primary-color);
@@ -1822,6 +1828,8 @@ table tbody tr:last-child td {
 
   /* Members edit actions */
   .members-edit-actions {
+    bottom: calc(8px + env(safe-area-inset-bottom));
+    width: calc(100vw - 16px);
     flex-direction: column;
     gap: 12px;
     text-align: center;
@@ -10927,9 +10935,10 @@ function updateAuthUI() {
     // If editing all members, restore all original data
     if (this.isEditingAllMembers && this.allOriginalMemberData) {
       this.membersData = this.allOriginalMemberData;
-      this.allOriginalMemberData = null;
-      this.isEditingAllMembers = false;
     }
+
+    this.allOriginalMemberData = null;
+    this.isEditingAllMembers = false;
 
     this.currentEditingMemberId = null;
     this.originalMemberData = null;
@@ -11119,7 +11128,11 @@ function updateAuthUI() {
     const applyBtn = document.getElementById("members-edit-apply");
 
     if (discardBtn && !discardBtn.dataset.initialized) {
-      discardBtn.addEventListener("click", () => this._cancelInlineEdit());
+      discardBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        this._cancelInlineEdit();
+      });
       discardBtn.dataset.initialized = "true";
     }
 
