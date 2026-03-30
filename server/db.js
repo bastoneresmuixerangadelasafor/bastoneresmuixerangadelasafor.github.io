@@ -56,7 +56,7 @@ const CACHE = new class GAppsServerCache {
         name: nameValue,
         email: emailValue,
         type: typeValue,
-        active: activeValue === '' || activeValue === undefined ? true : Boolean(activeValue),
+        active: activeValue === false || activeValue === 'FALSE' || activeValue === 'NO' || activeValue === 0 ? false : true,
       };
 
       // Parse Roles (comma-separated string to array)

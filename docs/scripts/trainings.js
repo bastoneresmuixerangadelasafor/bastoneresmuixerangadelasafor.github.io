@@ -73,15 +73,15 @@ const TRAININGS = new (class TrainingSession {
         // Initialize form event listeners for dance detection
         TRAININGS.initializeTrainingFormListeners();
   
-        // Show/hide attendance section (admin only)
-        TRAININGS.prepareTrainingAttendanceSection();
-  
-        // Update page header to "Assaig" (editing mode)
-        TRAININGS.updateTrainingPageTitle(true);
-  
         // Store training data for later use (e.g. attendance list)
         APP.currentTrainingData = trainingData;
-  
+
+        // Show/hide attendance section (admin only)
+        TRAININGS.prepareTrainingAttendanceSection();
+
+        // Update page header to "Assaig" (editing mode)
+        TRAININGS.updateTrainingPageTitle(true);
+
         // Apply editable state based on admin role
         TRAININGS.applyTrainingEditableState();
   
@@ -397,17 +397,17 @@ const TRAININGS = new (class TrainingSession {
     const isEditable = typeof checkIfTrainingIsEditable === "function" ? checkIfTrainingIsEditable() : true;
     const isDisabledAttendance = isPastTraining && !isEditable;
     
-    const members = (MEMBERS.membersData || []).filter(m => m.active);
-    
+    const attendanceList_aliases = trainingData.attendees || [];
+    const rejectionList_aliases = trainingData.rejections || [];
+    const memberNotes = trainingData.notes || {};
+
+    const allReferencedAliases = new Set([...attendanceList_aliases, ...rejectionList_aliases, ...Object.keys(memberNotes)]);
+    const members = (MEMBERS.membersData || []).filter(m => m.active || allReferencedAliases.has(m.alias));
+
     if (!members || members.length === 0) {
       attendanceList.innerHTML = '<div class="training-member-attendance-loading">Sense membres disponibles</div>';
       return;
     }
-    
-    // Get attendance and rejection lists from training data
-    const attendanceList_aliases = trainingData.attendees || [];
-    const rejectionList_aliases = trainingData.rejections || [];
-    const memberNotes = trainingData.notes || {};
     
     // Build HTML for member list
     const membersHTML = members.map(member => {
