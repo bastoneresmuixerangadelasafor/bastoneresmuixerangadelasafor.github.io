@@ -1232,11 +1232,10 @@ const TRAININGS = new (class TrainingSession {
   </div>
   `;
     } else {
-      // Sort upcoming trainings by date descending (newer/furthest future first)
       upcomingTrainings.sort((a, b) => {
         const dateA = new Date(a.date);
         const dateB = new Date(b.date);
-        return dateB - dateA;
+        return dateA - dateB;
       });
   
       const upcomingHTML = upcomingTrainings.map((t) => createTrainingCardHTML(t, false)).join("");
