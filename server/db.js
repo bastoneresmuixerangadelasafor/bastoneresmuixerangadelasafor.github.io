@@ -198,7 +198,16 @@ const CACHE = new class GAppsServerCache {
   addTraining({ training }) {
     const trainings = this.getTrainings();
     const dateKey = training.date || new Date().toISOString().split('T')[0];
-    trainings[dateKey] = training;
+    const existing = trainings[dateKey] || {};
+    trainings[dateKey] = { ...existing, ...training };
+    this.cache_.setProperty(TRAINING_CACHE, JSON.stringify(trainings));
+  }
+
+  renameTraining({ oldDate, newDate, updates }) {
+    const trainings = this.getTrainings();
+    const existing = trainings[oldDate] || {};
+    delete trainings[oldDate];
+    trainings[newDate] = { ...existing, ...updates, date: newDate };
     this.cache_.setProperty(TRAINING_CACHE, JSON.stringify(trainings));
   }
 

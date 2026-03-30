@@ -999,9 +999,19 @@ const MEMBERS = new (class AppMembers {
   }
 
   drawPositionDiagram(opts) {
-    var canvas = document.getElementById(opts.canvasId);
-    if (!canvas) return;
+    var targetEl = document.getElementById(opts.canvasId);
+    if (!targetEl) return;
+    var isImage = targetEl.tagName === "IMG";
+    var canvas;
+    if (isImage) {
+      canvas = document.createElement("canvas");
+      canvas.width = parseInt(targetEl.getAttribute("width")) || 600;
+      canvas.height = parseInt(targetEl.getAttribute("height")) || 250;
+    } else {
+      canvas = targetEl;
+    }
     var ctx = canvas.getContext("2d");
+    if (!ctx) return;
     var rows = opts.rows || 2;
     var cols = opts.cols || 2;
     var positions = opts.positions || [];
@@ -1015,6 +1025,7 @@ const MEMBERS = new (class AppMembers {
 
     if (activeForm === 'radial') {
       this.drawRadialPositionDiagram(ctx, canvas, rows, cols, positions, diagramColors, highlightTags, inProgressTags, pendingTags);
+      if (isImage) { targetEl.src = canvas.toDataURL(); targetEl.setAttribute("width", canvas.width); targetEl.setAttribute("height", canvas.height); }
       return;
     }
 
@@ -1169,6 +1180,7 @@ const MEMBERS = new (class AppMembers {
     ctx.textBaseline = "middle";
     ctx.fillText("PLAÇA", offsetX0 + gridWidth / 2, placaY + placaHeight / 2);
     ctx.restore();
+    if (isImage) { targetEl.src = canvas.toDataURL(); targetEl.setAttribute("width", canvas.width); targetEl.setAttribute("height", canvas.height); }
   }
 
   loadMemberPositionsData() {
@@ -1266,11 +1278,23 @@ const MEMBERS = new (class AppMembers {
             };
             MEMBERS.drawPositionDiagram(positionDrawOpts);
 
-            var canvas = document.getElementById(canvasId);
-            if (canvas) {
-              canvas.style.cursor = "pointer";
-              canvas.addEventListener("click", function (event) {
-                MEMBERS.handlePositionClick(event, canvas, {
+            var renderedEl = document.getElementById(canvasId);
+            if (renderedEl && renderedEl.tagName === "CANVAS") {
+              try {
+                var img = new Image();
+                img.src = renderedEl.toDataURL();
+                img.id = canvasId;
+                img.setAttribute("width", renderedEl.width);
+                img.setAttribute("height", renderedEl.height);
+                img.style.cssText = "width:100%;max-width:100%;height:auto;display:block;";
+                renderedEl.parentNode.replaceChild(img, renderedEl);
+                renderedEl = img;
+              } catch (e) {}
+            }
+            if (renderedEl) {
+              renderedEl.style.cursor = "pointer";
+              renderedEl.addEventListener("click", function (event) {
+                MEMBERS.handlePositionClick(event, renderedEl, {
                   memberAlias: alias,
                   danceName: danceName,
                   rows: rows,
@@ -1309,12 +1333,14 @@ const MEMBERS = new (class AppMembers {
     }
     
     var rect = canvas.getBoundingClientRect();
-    var scaleX = rect.width ? canvas.width / rect.width : 1;
-    var scaleY = rect.height ? canvas.height / rect.height : 1;
+    var origW = parseInt(canvas.getAttribute("width")) || canvas.width;
+    var origH = parseInt(canvas.getAttribute("height")) || canvas.height;
+    var scaleX = rect.width ? origW / rect.width : 1;
+    var scaleY = rect.height ? origH / rect.height : 1;
     var x = (event.clientX - rect.left) * scaleX;
     var y = (event.clientY - rect.top) * scaleY;
 
-    var clickedOrder = this.getClickedPositionOrder(x, y, canvas, data.rows, data.cols, data.form);
+    var clickedOrder = this.getClickedPositionOrder(x, y, { width: origW, height: origH }, data.rows, data.cols, data.form);
     if (clickedOrder === null) return;
 
     this.showPositionValueDialog(canvas, data, clickedOrder);
@@ -1591,7 +1617,12 @@ const MEMBERS = new (class AppMembers {
     if (tbody)
       tbody.innerHTML = '<tr><td colspan="5">Carregant membres...</td></tr>';
 
-    API.getMembers()
+    API.getMembers({ onBackgroundUpdate: (members) => {
+        if (Array.isArray(members)) {
+          MEMBERS.membersData = members;
+          this._renderMembersTable();
+        }
+      }})
       .then((members) => {
         if (!Array.isArray(members)) {
           tbody.innerHTML =

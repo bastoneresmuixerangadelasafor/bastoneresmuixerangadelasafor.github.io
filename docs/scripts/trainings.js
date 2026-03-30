@@ -184,6 +184,10 @@ const TRAININGS = new (class TrainingSession {
         trainingDescriptionLabel.textContent = trainingDescriptionInput.value;
       }
     }
+
+    if (APP.currentTrainingData) {
+      this.displayMemberAttendanceList(APP.currentTrainingData);
+    }
   }
 
   updateTrainingPageTitle(isEditing) {
@@ -331,7 +335,7 @@ const TRAININGS = new (class TrainingSession {
       attendanceList.innerHTML = "";
   
       const trainingData = APP.currentTrainingData || {};
-      const attendCount = (trainingData.assistance || []).length;
+      const attendCount = (trainingData.attendees || []).length;
       const rejectCount = (trainingData.rejections || []).length;
       if (countSpan) {
         countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
@@ -390,8 +394,9 @@ const TRAININGS = new (class TrainingSession {
     
     // Check if training is past
     const isPastTraining = trainingData.date && new Date(trainingData.date) < new Date();
+    const isEditable = typeof checkIfTrainingIsEditable === "function" ? checkIfTrainingIsEditable() : true;
+    const isDisabledAttendance = isPastTraining && !isEditable;
     
-    // Get members list
     const members = (MEMBERS.membersData || []).filter(m => m.active);
     
     if (!members || members.length === 0) {
@@ -400,7 +405,7 @@ const TRAININGS = new (class TrainingSession {
     }
     
     // Get attendance and rejection lists from training data
-    const attendanceList_aliases = trainingData.assistance || [];
+    const attendanceList_aliases = trainingData.attendees || [];
     const rejectionList_aliases = trainingData.rejections || [];
     const memberNotes = trainingData.notes || {};
     
@@ -422,8 +427,8 @@ const TRAININGS = new (class TrainingSession {
       
       const memberNote = memberNotes[memberAlias] || '';
       const noteHtml = memberNote ? `<span class="training-member-note" title="${escapeHtml(memberNote)}">📝 «${escapeHtml(memberNote)}»</span>` : '';
-      const disabledAttr = isPastTraining ? 'disabled' : '';
-      const disabledClass = isPastTraining ? ' disabled' : '';
+      const disabledAttr = isDisabledAttendance ? 'disabled' : '';
+      const disabledClass = isDisabledAttendance ? ' disabled' : '';
       
       return `
         <div class="training-member-item${memberNote ? ' has-note' : ''}${disabledClass}">
@@ -448,7 +453,7 @@ const TRAININGS = new (class TrainingSession {
     }
     
     // Add event listeners to checkboxes (only if not past training)
-    if (!isPastTraining) {
+    if (!isDisabledAttendance) {
       attendanceList.querySelectorAll('.training-member-checkbox').forEach(checkbox => {
         checkbox.addEventListener('change', function(event) { TRAININGS.handleMemberAttendanceChange(event); });
       });
@@ -482,23 +487,23 @@ const TRAININGS = new (class TrainingSession {
         
         // Update local training data
         if (APP.currentTrainingData) {
-          const assistanceList = APP.currentTrainingData.assistance || [];
+          const attendeesList = APP.currentTrainingData.attendees || [];
           if (attending) {
-            if (!assistanceList.includes(memberAlias)) {
-              assistanceList.push(memberAlias);
+            if (!attendeesList.includes(memberAlias)) {
+              attendeesList.push(memberAlias);
             }
           } else {
-            const index = assistanceList.indexOf(memberAlias);
+            const index = attendeesList.indexOf(memberAlias);
             if (index > -1) {
-              assistanceList.splice(index, 1);
+              attendeesList.splice(index, 1);
             }
           }
-          APP.currentTrainingData.assistance = assistanceList;
+          APP.currentTrainingData.attendees = attendeesList;
           
           // Update the attendance count
           const countSpan = document.getElementById("training-attendance-count");
           if (countSpan) {
-            const attendCount = assistanceList.length;
+            const attendCount = attendeesList.length;
             const rejectCount = (APP.currentTrainingData.rejections || []).length;
             countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
           }
@@ -521,6 +526,7 @@ const TRAININGS = new (class TrainingSession {
     const trainingDatetimeInput = document.getElementById("training-datetime-input");
     const trainingDescriptionInput = document.getElementById("training-description-input");
     const saveBtnTraining = document.getElementById("floating-save-training-btn");
+    const saveIcon = saveBtnTraining ? saveBtnTraining.querySelector('.save-icon') : null;
   
     // Validate required fields
     if (!trainingDatetimeInput || !trainingDatetimeInput.value) {
@@ -528,48 +534,75 @@ const TRAININGS = new (class TrainingSession {
       return;
     }
   
-    // Determine if we're editing or creating
-    // If currentTrainingId is set, we're editing; otherwise we're creating
     const isEditing = !!APP.currentTrainingId;
     const trainingId = isEditing ? APP.currentTrainingId : trainingDatetimeInput.value;
   
-    // Prepare training data
-    // The 'date' field is the training ID (key in the system)
     const training = {
       date: trainingId,
       description: trainingDescriptionInput ? trainingDescriptionInput.value : "",
     };
+
+    if (isEditing && trainingDatetimeInput.value !== APP.currentTrainingId) {
+      training.newDate = trainingDatetimeInput.value;
+    }
   
-    // Show loading state
     if (saveBtnTraining) {
       saveBtnTraining.disabled = true;
+      saveBtnTraining.classList.add('saving');
     }
-    APP.showLoading(true);
+    if (saveIcon) {
+      saveIcon.innerHTML = '<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="32" stroke-dashoffset="32"><animate attributeName="stroke-dashoffset" values="32;0" dur="1s" repeatCount="indefinite"/></circle>';
+    }
   
-    // Call API to save training
     API.saveTraining({ training })
       .then((response) => {
-        APP.showLoading(false);
         if (saveBtnTraining) {
-          saveBtnTraining.disabled = false;
+          saveBtnTraining.classList.remove('saving');
+          saveBtnTraining.classList.add('success');
+        }
+        if (saveIcon) {
+          saveIcon.innerHTML = '<polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></polyline>';
         }
   
-        // If we reach here, the save was successful (API client would have rejected on error)
         UI.showToast(response?.message || "Assaig desat correctament", "success");
+
+        CACHE.saveTrainings({ trainings: null });
         
-        // If this was a new training, update the current ID
-        if (!isEditing && response?.trainingId) {
+        if (response?.trainingId) {
           APP.currentTrainingId = response.trainingId;
-          TRAININGS.refreshPlanningTrainings();
         }
+        TRAININGS.refreshPlanningTrainings();
+
+        setTimeout(function () {
+          if (saveBtnTraining) {
+            saveBtnTraining.disabled = false;
+            saveBtnTraining.classList.remove('success');
+          }
+          if (saveIcon) {
+            saveIcon.innerHTML = '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline>';
+          }
+        }, 2000);
       })
       .catch((error) => {
-        APP.showLoading(false);
         if (saveBtnTraining) {
-          saveBtnTraining.disabled = false;
+          saveBtnTraining.classList.remove('saving');
+          saveBtnTraining.classList.add('error');
+        }
+        if (saveIcon) {
+          saveIcon.innerHTML = '<line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line>';
         }
         console.error("Error saving training:", error);
         UI.showToast(error || "Error desant l'assaig", "error");
+
+        setTimeout(function () {
+          if (saveBtnTraining) {
+            saveBtnTraining.disabled = false;
+            saveBtnTraining.classList.remove('error');
+          }
+          if (saveIcon) {
+            saveIcon.innerHTML = '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline>';
+          }
+        }, 3000);
       });
   }
   
@@ -826,16 +859,16 @@ const TRAININGS = new (class TrainingSession {
           const trainingIndex = trainings.findIndex(t => t.id === trainingId);
           if (trainingIndex !== -1) {
             const training = trainings[trainingIndex];
-            if (!training.assistance) training.assistance = [];
+            if (!training.attendees) training.attendees = [];
             if (!training.rejections) training.rejections = [];
             
             // Remove member from both lists
-            training.assistance = training.assistance.filter(a => a !== memberAlias);
+            training.attendees = training.attendees.filter(a => a !== memberAlias);
             training.rejections = training.rejections.filter(r => r !== memberAlias);
             
             // Add member to the appropriate list based on new status
             if (result.status === 'confirmed') {
-              training.assistance.push(memberAlias);
+              training.attendees.push(memberAlias);
             } else if (result.status === 'not-attending') {
               training.rejections.push(memberAlias);
             }
@@ -847,7 +880,7 @@ const TRAININGS = new (class TrainingSession {
             if (card) {
               const countSpan = card.querySelector('.training-count');
               if (countSpan) {
-                countSpan.textContent = training.assistance.length + ' persones apuntades';
+                countSpan.textContent = training.attendees.length + ' persones apuntades';
               }
             }
           }
@@ -955,16 +988,16 @@ const TRAININGS = new (class TrainingSession {
           const trainingIndex = trainings.findIndex(t => t.id === trainingId);
           if (trainingIndex !== -1) {
             const training = trainings[trainingIndex];
-            if (!training.assistance) training.assistance = [];
+            if (!training.attendees) training.attendees = [];
             if (!training.rejections) training.rejections = [];
             
             // Remove user from both lists
-            training.assistance = training.assistance.filter(a => a !== userAlias);
+            training.attendees = training.attendees.filter(a => a !== userAlias);
             training.rejections = training.rejections.filter(r => r !== userAlias);
             
             // Add user to the appropriate list based on new status
             if (result.status === 'confirmed') {
-              training.assistance.push(userAlias);
+              training.attendees.push(userAlias);
             } else if (result.status === 'not-attending') {
               training.rejections.push(userAlias);
             }
@@ -976,7 +1009,7 @@ const TRAININGS = new (class TrainingSession {
             if (card) {
               const countSpan = card.querySelector('.training-count');
               if (countSpan) {
-                countSpan.textContent = training.assistance.length + ' persones apuntades';
+                countSpan.textContent = training.attendees.length + ' persones apuntades';
               }
             }
           }
@@ -1049,7 +1082,7 @@ const TRAININGS = new (class TrainingSession {
         const hasRelatedMembers = relatedMembers.length > 0;
         
         const generateAttendanceSection = (memberAlias, memberName, isRelatedMember, showName) => {
-          const isAttending = (training.assistance || []).some(function(attendee) {
+          const isAttending = (training.attendees || []).some(function(attendee) {
             return attendee === memberAlias;
           });
           const memberNote = (training.notes || {})[memberAlias];
@@ -1096,7 +1129,7 @@ const TRAININGS = new (class TrainingSession {
         
         // Helper to generate confirmation section HTML for a member
         const generateConfirmationSection = (memberId, memberAlias, memberName, isRelatedMember, showName) => {
-          const isConfirmed = (training.assistance || []).some(function(attendee) {
+          const isConfirmed = (training.attendees || []).some(function(attendee) {
             return attendee === memberAlias;
           });
           const isRejected = (training.rejections || []).some(function(rejector) {
@@ -1180,7 +1213,7 @@ const TRAININGS = new (class TrainingSession {
   <div class="training-card-info">
       <span class="training-card-name">${escapeHtml(training.name)}</span>
       <span class="training-card-date">${formattedDate}</span>
-      <span class="training-count">${training.assistance ? training.assistance.length : 0} persones apuntades</span>
+      <span class="training-count">${training.attendees ? training.attendees.length : 0} persones apuntades</span>
       ${meetingPlaceHtml}
       ${attendanceIndicatorHtml}
       ${confirmationStatusHtml}
@@ -1343,7 +1376,7 @@ const TRAININGS = new (class TrainingSession {
           </div>
       `;
   
-    API.getTrainings()
+    API.getTrainings({ onBackgroundUpdate: (trainings) => TRAININGS.renderPlanningTrainingsList(trainings) })
       .then((events) => {
         TRAININGS.renderPlanningTrainingsList(events);
       })

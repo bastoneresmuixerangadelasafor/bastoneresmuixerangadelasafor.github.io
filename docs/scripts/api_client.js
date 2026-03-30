@@ -7,7 +7,7 @@ const API = new (class GAppsApiClient {
     return token != null && token.length > 0;
   }
 
-  _performRequest({ action, method = "GET", body = null, parameters, requiresAuth = false, cache = null } = {}) {
+  _performRequest({ action, method = "GET", body = null, parameters, requiresAuth = false, cache = null, onBackgroundUpdate = null } = {}) {
     return new Promise(async (resolve, reject) => {
       if(!action) {
         return reject("No s'ha especificat cap acció.");
@@ -24,7 +24,11 @@ const API = new (class GAppsApiClient {
         const cacheKey = CACHE._getCacheKey({ cache, parameters });
         const savedData = CACHE._read({ key: cacheKey });
         if (savedData) {
-          return resolve(savedData);
+          resolve(savedData);
+          if (onBackgroundUpdate && navigator.onLine) {
+            this._revalidateInBackground({ action, method, parameters, requiresAuth, cache, onBackgroundUpdate, cachedData: savedData });
+          }
+          return;
         }
       }
 
@@ -151,8 +155,19 @@ const API = new (class GAppsApiClient {
     }
   }
 
-  _get({ action, parameters, requiresAuth, cache = null } = {}) {
-    return this._performRequest({ action, method: "GET", parameters, requiresAuth, cache });
+  _revalidateInBackground({ action, method, parameters, requiresAuth, cache, onBackgroundUpdate, cachedData }) {
+    const freshParams = { ...parameters, forceRefresh: true };
+    this._performRequest({ action, method, parameters: freshParams, requiresAuth, cache })
+      .then((freshData) => {
+        if (JSON.stringify(freshData) !== JSON.stringify(cachedData)) {
+          onBackgroundUpdate(freshData);
+        }
+      })
+      .catch(() => {});
+  }
+
+  _get({ action, parameters, requiresAuth, cache = null, onBackgroundUpdate = null } = {}) {
+    return this._performRequest({ action, method: "GET", parameters, requiresAuth, cache, onBackgroundUpdate });
   }
 
   _post({ action, body = null, parameters, requiresAuth, cache = null} = {}) {
@@ -175,8 +190,8 @@ const API = new (class GAppsApiClient {
     return Promise.resolve(DANCES);
   }
 
-  getEvents({ forceRefresh = false } = {}) {
-    return this._get({ action: "events", parameters: { forceRefresh }, requiresAuth: true, cache: 'events' });
+  getEvents({ forceRefresh = false, onBackgroundUpdate = null } = {}) {
+    return this._get({ action: "events", parameters: { forceRefresh }, requiresAuth: true, cache: 'events', onBackgroundUpdate });
   }
 
   getEventById({ eventId } = {}) {
@@ -187,8 +202,8 @@ const API = new (class GAppsApiClient {
     return this._get({ action: "nextEvent", requiresAuth: true });
   }
   
-  getTrainings({ forceRefresh = false } = {}) {
-    return this._get({ action: "trainings", parameters: { forceRefresh }, requiresAuth: true, cache: 'trainings' });
+  getTrainings({ forceRefresh = false, onBackgroundUpdate = null } = {}) {
+    return this._get({ action: "trainings", parameters: { forceRefresh }, requiresAuth: true, cache: 'trainings', onBackgroundUpdate });
   }
 
   getTrainingById({ trainingId } = {}) {
@@ -207,8 +222,8 @@ const API = new (class GAppsApiClient {
     //return this._get({ action: "dashboard/activity", requiresAuth: true });
   }
 
-  getMembers({ forceRefresh = false } = {}) {
-    return this._get({ action: "members", parameters: { forceRefresh }, requiresAuth: true, cache: 'members' });
+  getMembers({ forceRefresh = false, onBackgroundUpdate = null } = {}) {
+    return this._get({ action: "members", parameters: { forceRefresh }, requiresAuth: true, cache: 'members', onBackgroundUpdate });
   }
 
   loginWithEmailPassword({ email, password } = {}) {

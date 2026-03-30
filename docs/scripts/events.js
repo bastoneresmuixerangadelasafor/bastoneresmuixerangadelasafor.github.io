@@ -62,7 +62,7 @@ const EVENTS = new (class EventsManager {
           </div>
       `;
 
-    API.getEvents()
+    API.getEvents({ onBackgroundUpdate: (events) => EVENTS.renderPlanningEventsList(events) })
       .then(function (events) {
         EVENTS.renderPlanningEventsList(events);
       })
@@ -832,9 +832,9 @@ const EVENTS = new (class EventsManager {
       
       const memberNote = memberNotes[memberAlias] || '';
       const noteHtml = memberNote ? `<span class="event-member-note" title="${escapeHtml(memberNote)}">ℹ️ «${escapeHtml(memberNote)}»</span>` : '';
-      const isDisabled = isPastEvent || !isEventEditable;
-      const disabledAttr = isDisabled ? 'disabled' : '';
-      const disabledClass = isDisabled ? ' disabled' : '';
+      const isDisabledAttendance = isPastEvent && !isEventEditable;
+      const disabledAttr = isDisabledAttendance ? 'disabled' : '';
+      const disabledClass = isDisabledAttendance ? ' disabled' : '';
       
       return `
         <div class="event-member-item${memberNote ? ' has-note' : ''}${disabledClass}">
@@ -857,9 +857,9 @@ const EVENTS = new (class EventsManager {
       countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
     }
     
-    if (!isPastEvent && isEventEditable) {
+    if (!isPastEvent || isEventEditable) {
       attendanceList.querySelectorAll('.event-member-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', handleMemberEventAttendanceChange);
+        checkbox.addEventListener('change', function(event) { EVENTS.handleMemberEventAttendanceChange(event); });
       });
     }
     
@@ -2548,6 +2548,9 @@ ${backupHtml}
                         saveIcon.innerHTML = '<polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></polyline>';
                         setDiagramsDirty(false);
 
+                        CACHE.saveEvents({ events: null });
+                        EVENTS.refreshPlanningEvents();
+
                         // Update URL hash with event ID so refresh works
                         if (result && result.sheetName) {
                             window.location.hash = 'events/' + encodeURIComponent(result.sheetName);
@@ -2978,9 +2981,7 @@ ${backupHtml}
                         // Make training editable again
                         isTrainingManuallyUnlocked = true;
                         isTrainingEditable = true;
-                        if (typeof applyTrainingEditableState === 'function') {
-                            applyTrainingEditableState();
-                        }
+                        TRAININGS.applyTrainingEditableState();
                         
                         // Show success feedback
                         floatingLockTrainingBtn.style.background = '#43a047';
@@ -3038,9 +3039,7 @@ ${backupHtml}
                         // Make training editable again
                         isTrainingManuallyUnlocked = true;
                         isTrainingEditable = true;
-                        if (typeof applyTrainingEditableState === 'function') {
-                            applyTrainingEditableState();
-                        }
+                        TRAININGS.applyTrainingEditableState();
                         
                         // Show success feedback
                         floatingLockTrainingBtn.style.background = '#43a047';

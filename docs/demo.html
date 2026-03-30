@@ -24,7 +24,10 @@
 
         
         
+
         
+        
+
         
         <style>
         dialog {
@@ -966,9 +969,7 @@ table tbody tr:last-child td {
   display: flex;
   align-items: center;
   gap: 20px;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 16px;
 }
 
 .profile-avatar {
@@ -2426,7 +2427,7 @@ table tbody tr:last-child td {
 /* Related Members Section */
 .related-members-section {
   margin-top: 20px;
-  border-top: 1px solid var(--border-color);
+  border-top: 3px solid var(--border-color);
   padding-top: 16px;
 }
 
@@ -2454,13 +2455,14 @@ table tbody tr:last-child td {
 
 .related-member-card .profile-header {
   margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
 .related-member-card .profile-links {
   margin-top: 8px;
   margin-bottom: 0;
-  padding-top: 8px;
-  border-top: 1px solid var(--border-color);
+  padding-top: 0;
 }
 
 /* Login dialog modal styles */
@@ -4213,23 +4215,20 @@ input::placeholder {
   transition: all 0.2s;
   min-height: 40px;
   box-sizing: border-box;
-  flex-wrap: wrap;
 }
 
 .training-member-item.has-note {
   min-height: auto;
-  padding-bottom: 6px;
 }
 
 .training-member-note {
   font-size: 0.75rem;
   color: #15803d;
-  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-left: 36px;
-  flex-basis: 100%;
+  min-width: 0;
+  flex: 1;
 }
 
 .dark-mode .training-member-note {
@@ -4401,6 +4400,7 @@ input::placeholder {
   animation: checkbox-spinner 0.6s linear infinite;
   font-weight: normal;
   font-size: 0;
+  box-sizing: border-box;
 }
 
 /* Override checked state when loading */
@@ -4422,6 +4422,7 @@ input::placeholder {
   font-weight: normal;
   font-size: 0;
   color: transparent;
+  box-sizing: border-box;
 }
 
 @keyframes checkbox-spinner {
@@ -9255,7 +9256,7 @@ const API = new (class GAppsApiClient {
     return token != null && token.length > 0;
   }
 
-  _performRequest({ action, method = "GET", body = null, parameters, requiresAuth = false, cache = null } = {}) {
+  _performRequest({ action, method = "GET", body = null, parameters, requiresAuth = false, cache = null, onBackgroundUpdate = null } = {}) {
     return new Promise(async (resolve, reject) => {
       if(!action) {
         return reject("No s'ha especificat cap acció.");
@@ -9272,7 +9273,11 @@ const API = new (class GAppsApiClient {
         const cacheKey = CACHE._getCacheKey({ cache, parameters });
         const savedData = CACHE._read({ key: cacheKey });
         if (savedData) {
-          return resolve(savedData);
+          resolve(savedData);
+          if (onBackgroundUpdate && navigator.onLine) {
+            this._revalidateInBackground({ action, method, parameters, requiresAuth, cache, onBackgroundUpdate, cachedData: savedData });
+          }
+          return;
         }
       }
 
@@ -9399,8 +9404,19 @@ const API = new (class GAppsApiClient {
     }
   }
 
-  _get({ action, parameters, requiresAuth, cache = null } = {}) {
-    return this._performRequest({ action, method: "GET", parameters, requiresAuth, cache });
+  _revalidateInBackground({ action, method, parameters, requiresAuth, cache, onBackgroundUpdate, cachedData }) {
+    const freshParams = { ...parameters, forceRefresh: true };
+    this._performRequest({ action, method, parameters: freshParams, requiresAuth, cache })
+      .then((freshData) => {
+        if (JSON.stringify(freshData) !== JSON.stringify(cachedData)) {
+          onBackgroundUpdate(freshData);
+        }
+      })
+      .catch(() => {});
+  }
+
+  _get({ action, parameters, requiresAuth, cache = null, onBackgroundUpdate = null } = {}) {
+    return this._performRequest({ action, method: "GET", parameters, requiresAuth, cache, onBackgroundUpdate });
   }
 
   _post({ action, body = null, parameters, requiresAuth, cache = null} = {}) {
@@ -9423,8 +9439,8 @@ const API = new (class GAppsApiClient {
     return Promise.resolve(DANCES);
   }
 
-  getEvents({ forceRefresh = false } = {}) {
-    return this._get({ action: "events", parameters: { forceRefresh }, requiresAuth: true, cache: 'events' });
+  getEvents({ forceRefresh = false, onBackgroundUpdate = null } = {}) {
+    return this._get({ action: "events", parameters: { forceRefresh }, requiresAuth: true, cache: 'events', onBackgroundUpdate });
   }
 
   getEventById({ eventId } = {}) {
@@ -9435,8 +9451,8 @@ const API = new (class GAppsApiClient {
     return this._get({ action: "nextEvent", requiresAuth: true });
   }
   
-  getTrainings({ forceRefresh = false } = {}) {
-    return this._get({ action: "trainings", parameters: { forceRefresh }, requiresAuth: true, cache: 'trainings' });
+  getTrainings({ forceRefresh = false, onBackgroundUpdate = null } = {}) {
+    return this._get({ action: "trainings", parameters: { forceRefresh }, requiresAuth: true, cache: 'trainings', onBackgroundUpdate });
   }
 
   getTrainingById({ trainingId } = {}) {
@@ -9455,8 +9471,8 @@ const API = new (class GAppsApiClient {
     //return this._get({ action: "dashboard/activity", requiresAuth: true });
   }
 
-  getMembers({ forceRefresh = false } = {}) {
-    return this._get({ action: "members", parameters: { forceRefresh }, requiresAuth: true, cache: 'members' });
+  getMembers({ forceRefresh = false, onBackgroundUpdate = null } = {}) {
+    return this._get({ action: "members", parameters: { forceRefresh }, requiresAuth: true, cache: 'members', onBackgroundUpdate });
   }
 
   loginWithEmailPassword({ email, password } = {}) {
@@ -9571,6 +9587,8 @@ const API = new (class GAppsApiClient {
 
       this._configurePWA();
 
+      this._configureBackgroundRefresh();
+
       this.showLoading(true);
 
       this._configureSession();
@@ -9655,7 +9673,31 @@ const API = new (class GAppsApiClient {
     });
   }
 
-  
+  _configureBackgroundRefresh() {
+    this._lastHiddenAt = null;
+    const STALE_THRESHOLD_MS = 5 * 60 * 1000;
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        this._lastHiddenAt = Date.now();
+        return;
+      }
+      if (!this._lastHiddenAt || !this.isAuthenticated) return;
+      if (Date.now() - this._lastHiddenAt < STALE_THRESHOLD_MS) return;
+      this._lastHiddenAt = null;
+
+      const view = NAVIGATION.currentView;
+      if (view === "planning-training") {
+        TRAININGS.refreshPlanningTrainings();
+      } else if (view === "planning-event") {
+        EVENTS.refreshPlanningEvents();
+      } else if (view === "members") {
+        MEMBERS._refreshMembersList();
+      } else if (view === "home") {
+        HOME.loadHomeData();
+      }
+    });
+  }
 
   get isAuthenticated() {
     return !!this.currentUser;
@@ -11826,9 +11868,19 @@ function updateAuthUI() {
   }
 
   drawPositionDiagram(opts) {
-    var canvas = document.getElementById(opts.canvasId);
-    if (!canvas) return;
+    var targetEl = document.getElementById(opts.canvasId);
+    if (!targetEl) return;
+    var isImage = targetEl.tagName === "IMG";
+    var canvas;
+    if (isImage) {
+      canvas = document.createElement("canvas");
+      canvas.width = parseInt(targetEl.getAttribute("width")) || 600;
+      canvas.height = parseInt(targetEl.getAttribute("height")) || 250;
+    } else {
+      canvas = targetEl;
+    }
     var ctx = canvas.getContext("2d");
+    if (!ctx) return;
     var rows = opts.rows || 2;
     var cols = opts.cols || 2;
     var positions = opts.positions || [];
@@ -11842,6 +11894,7 @@ function updateAuthUI() {
 
     if (activeForm === 'radial') {
       this.drawRadialPositionDiagram(ctx, canvas, rows, cols, positions, diagramColors, highlightTags, inProgressTags, pendingTags);
+      if (isImage) { targetEl.src = canvas.toDataURL(); targetEl.setAttribute("width", canvas.width); targetEl.setAttribute("height", canvas.height); }
       return;
     }
 
@@ -11996,6 +12049,7 @@ function updateAuthUI() {
     ctx.textBaseline = "middle";
     ctx.fillText("PLAÇA", offsetX0 + gridWidth / 2, placaY + placaHeight / 2);
     ctx.restore();
+    if (isImage) { targetEl.src = canvas.toDataURL(); targetEl.setAttribute("width", canvas.width); targetEl.setAttribute("height", canvas.height); }
   }
 
   loadMemberPositionsData() {
@@ -12093,11 +12147,23 @@ function updateAuthUI() {
             };
             MEMBERS.drawPositionDiagram(positionDrawOpts);
 
-            var canvas = document.getElementById(canvasId);
-            if (canvas) {
-              canvas.style.cursor = "pointer";
-              canvas.addEventListener("click", function (event) {
-                MEMBERS.handlePositionClick(event, canvas, {
+            var renderedEl = document.getElementById(canvasId);
+            if (renderedEl && renderedEl.tagName === "CANVAS") {
+              try {
+                var img = new Image();
+                img.src = renderedEl.toDataURL();
+                img.id = canvasId;
+                img.setAttribute("width", renderedEl.width);
+                img.setAttribute("height", renderedEl.height);
+                img.style.cssText = "width:100%;max-width:100%;height:auto;display:block;";
+                renderedEl.parentNode.replaceChild(img, renderedEl);
+                renderedEl = img;
+              } catch (e) {}
+            }
+            if (renderedEl) {
+              renderedEl.style.cursor = "pointer";
+              renderedEl.addEventListener("click", function (event) {
+                MEMBERS.handlePositionClick(event, renderedEl, {
                   memberAlias: alias,
                   danceName: danceName,
                   rows: rows,
@@ -12136,12 +12202,14 @@ function updateAuthUI() {
     }
     
     var rect = canvas.getBoundingClientRect();
-    var scaleX = rect.width ? canvas.width / rect.width : 1;
-    var scaleY = rect.height ? canvas.height / rect.height : 1;
+    var origW = parseInt(canvas.getAttribute("width")) || canvas.width;
+    var origH = parseInt(canvas.getAttribute("height")) || canvas.height;
+    var scaleX = rect.width ? origW / rect.width : 1;
+    var scaleY = rect.height ? origH / rect.height : 1;
     var x = (event.clientX - rect.left) * scaleX;
     var y = (event.clientY - rect.top) * scaleY;
 
-    var clickedOrder = this.getClickedPositionOrder(x, y, canvas, data.rows, data.cols, data.form);
+    var clickedOrder = this.getClickedPositionOrder(x, y, { width: origW, height: origH }, data.rows, data.cols, data.form);
     if (clickedOrder === null) return;
 
     this.showPositionValueDialog(canvas, data, clickedOrder);
@@ -12418,7 +12486,12 @@ function updateAuthUI() {
     if (tbody)
       tbody.innerHTML = '<tr><td colspan="5">Carregant membres...</td></tr>';
 
-    API.getMembers()
+    API.getMembers({ onBackgroundUpdate: (members) => {
+        if (Array.isArray(members)) {
+          MEMBERS.membersData = members;
+          this._renderMembersTable();
+        }
+      }})
       .then((members) => {
         if (!Array.isArray(members)) {
           tbody.innerHTML =
@@ -12810,7 +12883,7 @@ function updateAuthUI() {
           </div>
       `;
 
-    API.getEvents()
+    API.getEvents({ onBackgroundUpdate: (events) => EVENTS.renderPlanningEventsList(events) })
       .then(function (events) {
         EVENTS.renderPlanningEventsList(events);
       })
@@ -13580,9 +13653,9 @@ function updateAuthUI() {
       
       const memberNote = memberNotes[memberAlias] || '';
       const noteHtml = memberNote ? `<span class="event-member-note" title="${escapeHtml(memberNote)}">ℹ️ «${escapeHtml(memberNote)}»</span>` : '';
-      const isDisabled = isPastEvent || !isEventEditable;
-      const disabledAttr = isDisabled ? 'disabled' : '';
-      const disabledClass = isDisabled ? ' disabled' : '';
+      const isDisabledAttendance = isPastEvent && !isEventEditable;
+      const disabledAttr = isDisabledAttendance ? 'disabled' : '';
+      const disabledClass = isDisabledAttendance ? ' disabled' : '';
       
       return `
         <div class="event-member-item${memberNote ? ' has-note' : ''}${disabledClass}">
@@ -13605,9 +13678,9 @@ function updateAuthUI() {
       countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
     }
     
-    if (!isPastEvent && isEventEditable) {
+    if (!isPastEvent || isEventEditable) {
       attendanceList.querySelectorAll('.event-member-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', handleMemberEventAttendanceChange);
+        checkbox.addEventListener('change', function(event) { EVENTS.handleMemberEventAttendanceChange(event); });
       });
     }
     
@@ -15296,6 +15369,9 @@ ${backupHtml}
                         saveIcon.innerHTML = '<polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></polyline>';
                         setDiagramsDirty(false);
 
+                        CACHE.saveEvents({ events: null });
+                        EVENTS.refreshPlanningEvents();
+
                         // Update URL hash with event ID so refresh works
                         if (result && result.sheetName) {
                             window.location.hash = 'events/' + encodeURIComponent(result.sheetName);
@@ -15726,9 +15802,7 @@ ${backupHtml}
                         // Make training editable again
                         isTrainingManuallyUnlocked = true;
                         isTrainingEditable = true;
-                        if (typeof applyTrainingEditableState === 'function') {
-                            applyTrainingEditableState();
-                        }
+                        TRAININGS.applyTrainingEditableState();
                         
                         // Show success feedback
                         floatingLockTrainingBtn.style.background = '#43a047';
@@ -15786,9 +15860,7 @@ ${backupHtml}
                         // Make training editable again
                         isTrainingManuallyUnlocked = true;
                         isTrainingEditable = true;
-                        if (typeof applyTrainingEditableState === 'function') {
-                            applyTrainingEditableState();
-                        }
+                        TRAININGS.applyTrainingEditableState();
                         
                         // Show success feedback
                         floatingLockTrainingBtn.style.background = '#43a047';
@@ -16396,6 +16468,10 @@ ${backupHtml}
         trainingDescriptionLabel.textContent = trainingDescriptionInput.value;
       }
     }
+
+    if (APP.currentTrainingData) {
+      this.displayMemberAttendanceList(APP.currentTrainingData);
+    }
   }
 
   updateTrainingPageTitle(isEditing) {
@@ -16543,7 +16619,7 @@ ${backupHtml}
       attendanceList.innerHTML = "";
   
       const trainingData = APP.currentTrainingData || {};
-      const attendCount = (trainingData.assistance || []).length;
+      const attendCount = (trainingData.attendees || []).length;
       const rejectCount = (trainingData.rejections || []).length;
       if (countSpan) {
         countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
@@ -16602,8 +16678,9 @@ ${backupHtml}
     
     // Check if training is past
     const isPastTraining = trainingData.date && new Date(trainingData.date) < new Date();
+    const isEditable = typeof checkIfTrainingIsEditable === "function" ? checkIfTrainingIsEditable() : true;
+    const isDisabledAttendance = isPastTraining && !isEditable;
     
-    // Get members list
     const members = (MEMBERS.membersData || []).filter(m => m.active);
     
     if (!members || members.length === 0) {
@@ -16612,7 +16689,7 @@ ${backupHtml}
     }
     
     // Get attendance and rejection lists from training data
-    const attendanceList_aliases = trainingData.assistance || [];
+    const attendanceList_aliases = trainingData.attendees || [];
     const rejectionList_aliases = trainingData.rejections || [];
     const memberNotes = trainingData.notes || {};
     
@@ -16634,8 +16711,8 @@ ${backupHtml}
       
       const memberNote = memberNotes[memberAlias] || '';
       const noteHtml = memberNote ? `<span class="training-member-note" title="${escapeHtml(memberNote)}">📝 «${escapeHtml(memberNote)}»</span>` : '';
-      const disabledAttr = isPastTraining ? 'disabled' : '';
-      const disabledClass = isPastTraining ? ' disabled' : '';
+      const disabledAttr = isDisabledAttendance ? 'disabled' : '';
+      const disabledClass = isDisabledAttendance ? ' disabled' : '';
       
       return `
         <div class="training-member-item${memberNote ? ' has-note' : ''}${disabledClass}">
@@ -16660,7 +16737,7 @@ ${backupHtml}
     }
     
     // Add event listeners to checkboxes (only if not past training)
-    if (!isPastTraining) {
+    if (!isDisabledAttendance) {
       attendanceList.querySelectorAll('.training-member-checkbox').forEach(checkbox => {
         checkbox.addEventListener('change', function(event) { TRAININGS.handleMemberAttendanceChange(event); });
       });
@@ -16694,23 +16771,23 @@ ${backupHtml}
         
         // Update local training data
         if (APP.currentTrainingData) {
-          const assistanceList = APP.currentTrainingData.assistance || [];
+          const attendeesList = APP.currentTrainingData.attendees || [];
           if (attending) {
-            if (!assistanceList.includes(memberAlias)) {
-              assistanceList.push(memberAlias);
+            if (!attendeesList.includes(memberAlias)) {
+              attendeesList.push(memberAlias);
             }
           } else {
-            const index = assistanceList.indexOf(memberAlias);
+            const index = attendeesList.indexOf(memberAlias);
             if (index > -1) {
-              assistanceList.splice(index, 1);
+              attendeesList.splice(index, 1);
             }
           }
-          APP.currentTrainingData.assistance = assistanceList;
+          APP.currentTrainingData.attendees = attendeesList;
           
           // Update the attendance count
           const countSpan = document.getElementById("training-attendance-count");
           if (countSpan) {
-            const attendCount = assistanceList.length;
+            const attendCount = attendeesList.length;
             const rejectCount = (APP.currentTrainingData.rejections || []).length;
             countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
           }
@@ -16733,6 +16810,7 @@ ${backupHtml}
     const trainingDatetimeInput = document.getElementById("training-datetime-input");
     const trainingDescriptionInput = document.getElementById("training-description-input");
     const saveBtnTraining = document.getElementById("floating-save-training-btn");
+    const saveIcon = saveBtnTraining ? saveBtnTraining.querySelector('.save-icon') : null;
   
     // Validate required fields
     if (!trainingDatetimeInput || !trainingDatetimeInput.value) {
@@ -16740,48 +16818,75 @@ ${backupHtml}
       return;
     }
   
-    // Determine if we're editing or creating
-    // If currentTrainingId is set, we're editing; otherwise we're creating
     const isEditing = !!APP.currentTrainingId;
     const trainingId = isEditing ? APP.currentTrainingId : trainingDatetimeInput.value;
   
-    // Prepare training data
-    // The 'date' field is the training ID (key in the system)
     const training = {
       date: trainingId,
       description: trainingDescriptionInput ? trainingDescriptionInput.value : "",
     };
+
+    if (isEditing && trainingDatetimeInput.value !== APP.currentTrainingId) {
+      training.newDate = trainingDatetimeInput.value;
+    }
   
-    // Show loading state
     if (saveBtnTraining) {
       saveBtnTraining.disabled = true;
+      saveBtnTraining.classList.add('saving');
     }
-    APP.showLoading(true);
+    if (saveIcon) {
+      saveIcon.innerHTML = '<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="32" stroke-dashoffset="32"><animate attributeName="stroke-dashoffset" values="32;0" dur="1s" repeatCount="indefinite"/></circle>';
+    }
   
-    // Call API to save training
     API.saveTraining({ training })
       .then((response) => {
-        APP.showLoading(false);
         if (saveBtnTraining) {
-          saveBtnTraining.disabled = false;
+          saveBtnTraining.classList.remove('saving');
+          saveBtnTraining.classList.add('success');
+        }
+        if (saveIcon) {
+          saveIcon.innerHTML = '<polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></polyline>';
         }
   
-        // If we reach here, the save was successful (API client would have rejected on error)
         UI.showToast(response?.message || "Assaig desat correctament", "success");
+
+        CACHE.saveTrainings({ trainings: null });
         
-        // If this was a new training, update the current ID
-        if (!isEditing && response?.trainingId) {
+        if (response?.trainingId) {
           APP.currentTrainingId = response.trainingId;
-          TRAININGS.refreshPlanningTrainings();
         }
+        TRAININGS.refreshPlanningTrainings();
+
+        setTimeout(function () {
+          if (saveBtnTraining) {
+            saveBtnTraining.disabled = false;
+            saveBtnTraining.classList.remove('success');
+          }
+          if (saveIcon) {
+            saveIcon.innerHTML = '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline>';
+          }
+        }, 2000);
       })
       .catch((error) => {
-        APP.showLoading(false);
         if (saveBtnTraining) {
-          saveBtnTraining.disabled = false;
+          saveBtnTraining.classList.remove('saving');
+          saveBtnTraining.classList.add('error');
+        }
+        if (saveIcon) {
+          saveIcon.innerHTML = '<line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line>';
         }
         console.error("Error saving training:", error);
         UI.showToast(error || "Error desant l'assaig", "error");
+
+        setTimeout(function () {
+          if (saveBtnTraining) {
+            saveBtnTraining.disabled = false;
+            saveBtnTraining.classList.remove('error');
+          }
+          if (saveIcon) {
+            saveIcon.innerHTML = '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline>';
+          }
+        }, 3000);
       });
   }
   
@@ -17038,16 +17143,16 @@ ${backupHtml}
           const trainingIndex = trainings.findIndex(t => t.id === trainingId);
           if (trainingIndex !== -1) {
             const training = trainings[trainingIndex];
-            if (!training.assistance) training.assistance = [];
+            if (!training.attendees) training.attendees = [];
             if (!training.rejections) training.rejections = [];
             
             // Remove member from both lists
-            training.assistance = training.assistance.filter(a => a !== memberAlias);
+            training.attendees = training.attendees.filter(a => a !== memberAlias);
             training.rejections = training.rejections.filter(r => r !== memberAlias);
             
             // Add member to the appropriate list based on new status
             if (result.status === 'confirmed') {
-              training.assistance.push(memberAlias);
+              training.attendees.push(memberAlias);
             } else if (result.status === 'not-attending') {
               training.rejections.push(memberAlias);
             }
@@ -17059,7 +17164,7 @@ ${backupHtml}
             if (card) {
               const countSpan = card.querySelector('.training-count');
               if (countSpan) {
-                countSpan.textContent = training.assistance.length + ' persones apuntades';
+                countSpan.textContent = training.attendees.length + ' persones apuntades';
               }
             }
           }
@@ -17167,16 +17272,16 @@ ${backupHtml}
           const trainingIndex = trainings.findIndex(t => t.id === trainingId);
           if (trainingIndex !== -1) {
             const training = trainings[trainingIndex];
-            if (!training.assistance) training.assistance = [];
+            if (!training.attendees) training.attendees = [];
             if (!training.rejections) training.rejections = [];
             
             // Remove user from both lists
-            training.assistance = training.assistance.filter(a => a !== userAlias);
+            training.attendees = training.attendees.filter(a => a !== userAlias);
             training.rejections = training.rejections.filter(r => r !== userAlias);
             
             // Add user to the appropriate list based on new status
             if (result.status === 'confirmed') {
-              training.assistance.push(userAlias);
+              training.attendees.push(userAlias);
             } else if (result.status === 'not-attending') {
               training.rejections.push(userAlias);
             }
@@ -17188,7 +17293,7 @@ ${backupHtml}
             if (card) {
               const countSpan = card.querySelector('.training-count');
               if (countSpan) {
-                countSpan.textContent = training.assistance.length + ' persones apuntades';
+                countSpan.textContent = training.attendees.length + ' persones apuntades';
               }
             }
           }
@@ -17261,7 +17366,7 @@ ${backupHtml}
         const hasRelatedMembers = relatedMembers.length > 0;
         
         const generateAttendanceSection = (memberAlias, memberName, isRelatedMember, showName) => {
-          const isAttending = (training.assistance || []).some(function(attendee) {
+          const isAttending = (training.attendees || []).some(function(attendee) {
             return attendee === memberAlias;
           });
           const memberNote = (training.notes || {})[memberAlias];
@@ -17308,7 +17413,7 @@ ${backupHtml}
         
         // Helper to generate confirmation section HTML for a member
         const generateConfirmationSection = (memberId, memberAlias, memberName, isRelatedMember, showName) => {
-          const isConfirmed = (training.assistance || []).some(function(attendee) {
+          const isConfirmed = (training.attendees || []).some(function(attendee) {
             return attendee === memberAlias;
           });
           const isRejected = (training.rejections || []).some(function(rejector) {
@@ -17392,7 +17497,7 @@ ${backupHtml}
   <div class="training-card-info">
       <span class="training-card-name">${escapeHtml(training.name)}</span>
       <span class="training-card-date">${formattedDate}</span>
-      <span class="training-count">${training.assistance ? training.assistance.length : 0} persones apuntades</span>
+      <span class="training-count">${training.attendees ? training.attendees.length : 0} persones apuntades</span>
       ${meetingPlaceHtml}
       ${attendanceIndicatorHtml}
       ${confirmationStatusHtml}
@@ -17555,7 +17660,7 @@ ${backupHtml}
           </div>
       `;
   
-    API.getTrainings()
+    API.getTrainings({ onBackgroundUpdate: (trainings) => TRAININGS.renderPlanningTrainingsList(trainings) })
       .then((events) => {
         TRAININGS.renderPlanningTrainingsList(events);
       })

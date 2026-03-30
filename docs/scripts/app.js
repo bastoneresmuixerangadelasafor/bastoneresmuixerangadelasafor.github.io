@@ -13,6 +13,8 @@ const APP = new (class AppState{
 
       this._configurePWA();
 
+      this._configureBackgroundRefresh();
+
       this.showLoading(true);
 
       this._configureSession();
@@ -97,7 +99,31 @@ const APP = new (class AppState{
     });
   }
 
-  
+  _configureBackgroundRefresh() {
+    this._lastHiddenAt = null;
+    const STALE_THRESHOLD_MS = 5 * 60 * 1000;
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        this._lastHiddenAt = Date.now();
+        return;
+      }
+      if (!this._lastHiddenAt || !this.isAuthenticated) return;
+      if (Date.now() - this._lastHiddenAt < STALE_THRESHOLD_MS) return;
+      this._lastHiddenAt = null;
+
+      const view = NAVIGATION.currentView;
+      if (view === "planning-training") {
+        TRAININGS.refreshPlanningTrainings();
+      } else if (view === "planning-event") {
+        EVENTS.refreshPlanningEvents();
+      } else if (view === "members") {
+        MEMBERS._refreshMembersList();
+      } else if (view === "home") {
+        HOME.loadHomeData();
+      }
+    });
+  }
 
   get isAuthenticated() {
     return !!this.currentUser;

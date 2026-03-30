@@ -189,7 +189,7 @@ function getTrainings_({forceRefresh} = {}) {
       const result = {
         id: k,
         date: k,
-        assistance: training.attendees || [],
+        attendees: training.attendees || [],
         rejections: training.rejections || [],
         notes: training.notes || {},
         description: training.description,
@@ -220,7 +220,7 @@ function getTrainingById_({trainingId, token}) {
     const result = {
       id: trainingId,
       date: trainingId,
-      assistance: training.attendees,
+      attendees: training.attendees || [],
       rejections: training.rejections || [],
       notes: training.notes || {},
       description: training.description
@@ -499,17 +499,22 @@ function saveTraining_({training}) {
     } else {
       // Update the description in header notes for existing column
       sheet.getRange(1, dateColumn).setNote(training.description || '');
+
+      // If the date has changed, update the column header
+      if (training.newDate && String(training.newDate) !== String(trainingId)) {
+        sheet.getRange(1, dateColumn).setValue(training.newDate);
+      }
     }
 
     // If attendance data is provided, update it
-    if (training.assistance && Array.isArray(training.assistance)) {
+    if (training.attendees && Array.isArray(training.attendees)) {
       // First clear all existing marks in this column (start from row 2, skipping header)
       for (let i = 2; i <= data.length; i++) {
         sheet.getRange(i, dateColumn).setValue('');
       }
 
       // Then add marks for attendees
-      training.assistance.forEach(function (memberName) {
+      training.attendees.forEach(function (memberName) {
         // Search for the member in the first column
         for (let i = 1; i < data.length; i++) {
           const cellName = String(data[i][0]).trim();
@@ -522,12 +527,17 @@ function saveTraining_({training}) {
     }
 
     // Invalidate cache so next read gets fresh data
-    CACHE.addTraining({ training });
+    const finalTrainingId = training.newDate || trainingId;
+    if (training.newDate && training.newDate !== trainingId) {
+      CACHE.renameTraining({ oldDate: trainingId, newDate: finalTrainingId, updates: training });
+    } else {
+      CACHE.addTraining({ training: { ...training, date: finalTrainingId } });
+    }
 
     return API.newResult_({
       result: {
         message: 'Assaig actualitzat correctament',
-        trainingId: trainingId,
+        trainingId: finalTrainingId,
       },
     });
   } catch (error) {

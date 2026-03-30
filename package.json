@@ -13,11 +13,13 @@
     "clasp_push_prod": "cd .config && clasp push && clasp deploy --deploymentId AKfycbz9PxglZL_JO524qWuvkW9O1jeOHtlXdHs4IY9xJILTvOvCQXgJttqBEjr9RHiDwntw",
     "deploy_dev": "npm run setup_dev && npm run build_dev && npm run clasp_push",
     "deploy_prod": "npm run setup_prod && npm run build_prod && npm run clasp_push_prod",
-    "ts_model": "npx tsc --project tsconfig.json && node data/generate_dances.js"
+    "ts_model": "npx tsc --project tsconfig.json && node data/generate_dances.js",
+    "generate_splash": "node data/generate_splash.js"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.1.2",
     "dotenv": "^17.2.3",
-    "dotenv-parse-variables": "^2.0.0"
+    "dotenv-parse-variables": "^2.0.0",
+    "sharp": "^0.34.5"
   }
 }

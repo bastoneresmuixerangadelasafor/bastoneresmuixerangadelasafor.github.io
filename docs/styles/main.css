@@ -937,9 +937,7 @@ table tbody tr:last-child td {
   display: flex;
   align-items: center;
   gap: 20px;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 16px;
 }
 
 .profile-avatar {
@@ -2397,7 +2395,7 @@ table tbody tr:last-child td {
 /* Related Members Section */
 .related-members-section {
   margin-top: 20px;
-  border-top: 1px solid var(--border-color);
+  border-top: 3px solid var(--border-color);
   padding-top: 16px;
 }
 
@@ -2425,13 +2423,14 @@ table tbody tr:last-child td {
 
 .related-member-card .profile-header {
   margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
 .related-member-card .profile-links {
   margin-top: 8px;
   margin-bottom: 0;
-  padding-top: 8px;
-  border-top: 1px solid var(--border-color);
+  padding-top: 0;
 }
 
 /* Login dialog modal styles */
@@ -4184,23 +4183,20 @@ input::placeholder {
   transition: all 0.2s;
   min-height: 40px;
   box-sizing: border-box;
-  flex-wrap: wrap;
 }
 
 .training-member-item.has-note {
   min-height: auto;
-  padding-bottom: 6px;
 }
 
 .training-member-note {
   font-size: 0.75rem;
   color: #15803d;
-  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-left: 36px;
-  flex-basis: 100%;
+  min-width: 0;
+  flex: 1;
 }
 
 .dark-mode .training-member-note {
@@ -4372,6 +4368,7 @@ input::placeholder {
   animation: checkbox-spinner 0.6s linear infinite;
   font-weight: normal;
   font-size: 0;
+  box-sizing: border-box;
 }
 
 /* Override checked state when loading */
@@ -4393,6 +4390,7 @@ input::placeholder {
   font-weight: normal;
   font-size: 0;
   color: transparent;
+  box-sizing: border-box;
 }
 
 @keyframes checkbox-spinner {
