@@ -1028,6 +1028,7 @@ const EVENTS = new (class EventsManager {
           }
           
           CACHE.saveEvents({ events });
+          APP.bumpLocalVersion('events');
 
           if (APP.currentEventData && APP.currentEventData.id === eventId) {
             APP.currentEventData.attendees = event.attendees;
@@ -2549,6 +2550,7 @@ ${backupHtml}
                         setDiagramsDirty(false);
 
                         CACHE.saveEvents({ events: null });
+                        APP.bumpLocalVersion('events');
                         EVENTS.refreshPlanningEvents();
 
                         // Update URL hash with event ID so refresh works

@@ -83,6 +83,7 @@ const APP = new (class AppState{
       updateAuthUI();
 
       this.showLoading(false);
+      this._startPolling(30 * 1000);
 
       NAVIGATION.goToLandingPage();
     })
@@ -94,6 +95,7 @@ const APP = new (class AppState{
       updateAuthUI();
 
       this.showLoading(false);
+      this._stopPolling();
 
       NAVIGATION.goToLandingPage();
     });
@@ -101,28 +103,79 @@ const APP = new (class AppState{
 
   _configureBackgroundRefresh() {
     this._lastHiddenAt = null;
+    this._knownVersions = null;
+    this._pollTimer = null;
     const STALE_THRESHOLD_MS = 5 * 60 * 1000;
+    const POLL_INTERVAL_MS = 30 * 1000;
 
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
         this._lastHiddenAt = Date.now();
+        this._stopPolling();
         return;
       }
+      this._startPolling(POLL_INTERVAL_MS);
       if (!this._lastHiddenAt || !this.isAuthenticated) return;
       if (Date.now() - this._lastHiddenAt < STALE_THRESHOLD_MS) return;
       this._lastHiddenAt = null;
-
-      const view = NAVIGATION.currentView;
-      if (view === "planning-training") {
-        TRAININGS.refreshPlanningTrainings();
-      } else if (view === "planning-event") {
-        EVENTS.refreshPlanningEvents();
-      } else if (view === "members") {
-        MEMBERS._refreshMembersList();
-      } else if (view === "home") {
-        HOME.loadHomeData();
-      }
+      this._pollForChanges();
     });
+  }
+
+  _startPolling(intervalMs) {
+    if (this._pollTimer) return;
+    this._pollTimer = setInterval(() => this._pollForChanges(), intervalMs);
+  }
+
+  _stopPolling() {
+    if (this._pollTimer) {
+      clearInterval(this._pollTimer);
+      this._pollTimer = null;
+    }
+  }
+
+  _pollForChanges() {
+    if (!this.isAuthenticated || !navigator.onLine) return;
+
+    API.getDataVersions()
+      .then((versions) => {
+        if (!this._knownVersions) {
+          this._knownVersions = versions;
+          return;
+        }
+
+        const changed = [];
+        if (versions.trainings !== this._knownVersions.trainings) changed.push("trainings");
+        if (versions.events !== this._knownVersions.events) changed.push("events");
+        if (versions.members !== this._knownVersions.members) changed.push("members");
+        this._knownVersions = versions;
+
+        if (changed.length === 0) return;
+
+        changed.forEach((dataType) => {
+          CACHE._write({ key: dataType, data: null });
+        });
+
+        const view = NAVIGATION.currentView;
+        if (changed.includes("trainings")) {
+          if (view === "planning-training") TRAININGS.refreshPlanningTrainings();
+          else if (view === "home") HOME.loadHomeData();
+        }
+        if (changed.includes("events")) {
+          if (view === "planning-event") EVENTS.refreshPlanningEvents();
+          else if (view === "home") HOME.loadHomeData();
+        }
+        if (changed.includes("members") && view === "members") {
+          MEMBERS._refreshMembersList();
+        }
+      })
+      .catch(() => {});
+  }
+
+  bumpLocalVersion(dataType) {
+    if (this._knownVersions) {
+      this._knownVersions[dataType] = Date.now();
+    }
   }
 
   get isAuthenticated() {

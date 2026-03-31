@@ -106,6 +106,7 @@ function saveMember_({member}) {
 		}
 
 		console.log('Member updated and persisted: ' + JSON.stringify(members[memberIndex]));
+		CACHE.bumpVersion('members');
 
 		return API.newResult_({ result: {member: members[memberIndex]} });
 	} catch (error) {
@@ -167,6 +168,7 @@ function createNewMember_(memberData) {
 		sheet.appendRow(rowData);
 
 		console.log('New member created: ' + JSON.stringify(newMember));
+		CACHE.bumpVersion('members');
 
 		return API.newResult_({ result: { member: newMember } });
 	} catch (error) {

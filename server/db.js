@@ -13,6 +13,17 @@ const CACHE = new class GAppsServerCache {
     this.cache_ = PropertiesService.getScriptProperties();
   }
 
+  getDataVersions() {
+    const raw = this.cache_.getProperty(DATA_VERSIONS);
+    return raw ? JSON.parse(raw) : { trainings: 0, events: 0, members: 0 };
+  }
+
+  bumpVersion(dataType) {
+    const versions = this.getDataVersions();
+    versions[dataType] = Date.now();
+    this.cache_.setProperty(DATA_VERSIONS, JSON.stringify(versions));
+  }
+
   getMembers() {
     const cachedMembers = this.cache_.getProperty(MEMBER_CACHE);
     if (cachedMembers) {
@@ -185,6 +196,8 @@ const CACHE = new class GAppsServerCache {
       events.push(event);
     }
 
+    this.cache_.setProperty(EVENT_CACHE, JSON.stringify(events));
+
     return events;
   }
   getTrainings() {
@@ -282,6 +295,8 @@ const CACHE = new class GAppsServerCache {
         notes: cellNotes
       };
     });
+
+    this.cache_.setProperty(TRAINING_CACHE, JSON.stringify(trainingsByDate));
 
     return trainingsByDate;
   }

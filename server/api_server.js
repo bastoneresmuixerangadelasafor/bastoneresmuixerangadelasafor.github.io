@@ -114,6 +114,10 @@ const API = class GAppsApiServer {
         const memberPositionsWorker = this.validateUserToken_({fn: getMemberPositions_, requiresAuth: true, token: e.parameter?.token});
         data = memberPositionsWorker({ memberAlias: e.parameter?.memberAlias });
         break;
+      case "dataVersions":
+        const versionsWorker = this.validateUserToken_({fn: () => API.newResult_({ result: CACHE.getDataVersions() }), requiresAuth: true, token: e.parameter?.token});
+        data = versionsWorker();
+        break;
       default:
         return API.newError_({ error: `Unknown GET action: ${action}`, status:404 });
     }

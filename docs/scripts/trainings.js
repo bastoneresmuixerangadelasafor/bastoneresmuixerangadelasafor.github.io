@@ -567,6 +567,7 @@ const TRAININGS = new (class TrainingSession {
         UI.showToast(response?.message || "Assaig desat correctament", "success");
 
         CACHE.saveTrainings({ trainings: null });
+        APP.bumpLocalVersion('trainings');
         
         if (response?.trainingId) {
           APP.currentTrainingId = response.trainingId;
@@ -874,6 +875,7 @@ const TRAININGS = new (class TrainingSession {
             }
             
             CACHE.saveTrainings({ trainings });
+            APP.bumpLocalVersion('trainings');
             
             // Update the count display
             const card = document.querySelector(`.training-card[data-training-id="${trainingId}"]`);
@@ -1003,6 +1005,7 @@ const TRAININGS = new (class TrainingSession {
             }
             
             CACHE.saveTrainings({ trainings });
+            APP.bumpLocalVersion('trainings');
             
             // Update the count display
             const card = document.querySelector(`.training-card[data-training-id="${trainingId}"]`);
@@ -1482,6 +1485,7 @@ const TRAININGS = new (class TrainingSession {
             delete trainings[trainingIndex].notes[alias];
           }
           CACHE.saveTrainings({ trainings });
+          APP.bumpLocalVersion('trainings');
         }
         
         TRAININGS.updateNoteLinkInUI(trainingId, memberId, memberAlias, note);

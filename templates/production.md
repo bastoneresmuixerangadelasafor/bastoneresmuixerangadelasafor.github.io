@@ -24,4 +24,5 @@ next_training: NEXT_TRAINING
 user_creds: users_credentials
 user_session: users_session
 session_token: session_token
+data_versions: DATA_VERSIONS
 ---

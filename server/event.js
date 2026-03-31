@@ -81,6 +81,11 @@ function saveEvent_({event}) {
   
   // Update the Llistat sheet with event name, date and meeting place
   updateEventsList_(spreadsheet, event.name, storedDatetime, storedMeetingPlace);
+
+  // Ensure event column exists in the attendance sheet
+  ensureAttendanceColumn_(spreadsheet, event.name);
+
+  CACHE.bumpVersion('events');
   
   return API.newResult_({
     result: {
@@ -123,6 +128,25 @@ function updateEventsList_(spreadsheet, eventName, isoDatetime, meetingPlace) {
     // Append new row
     listSheet.appendRow([eventName, isoDatetime, meetingPlace || '']);
   }
+}
+
+function ensureAttendanceColumn_(spreadsheet, eventName) {
+  const sheet = spreadsheet.getSheetByName(ASSISTANCE_SHEET_NAME);
+  if (!sheet) {
+    console.log('Attendance sheet not found');
+    return;
+  }
+
+  const headerRow = sheet.getDataRange().getValues()[0];
+  for (let i = 1; i < headerRow.length; i++) {
+    const cellVal = headerRow[i] instanceof Date ? dateToString_(headerRow[i]) : String(headerRow[i]).replace(/^'/, '').trim();
+    if (cellVal === String(eventName).trim()) {
+      return;
+    }
+  }
+
+  const newColumn = headerRow.length + 1;
+  sheet.getRange(1, newColumn).setValue("'" + eventName);
 }
 
 /**
@@ -533,6 +557,7 @@ function saveTraining_({training}) {
     } else {
       CACHE.addTraining({ training: { ...training, date: finalTrainingId } });
     }
+    CACHE.bumpVersion('trainings');
 
     return API.newResult_({
       result: {
@@ -615,6 +640,7 @@ function confirmTrainingAttendance_({trainingId, user}) {
 
     // Invalidate cache
     CACHE.retrieveTrainingsFromDB();
+    CACHE.bumpVersion('trainings');
 
     return API.newResult_({
       result: {
@@ -645,6 +671,7 @@ function cancelTrainingAttendance_({trainingId, user}) {
 
     // Invalidate cache
     CACHE.retrieveTrainingsFromDB();
+    CACHE.bumpVersion('trainings');
 
     return API.newResult_({
       result: {
@@ -699,6 +726,7 @@ function confirmRelatedMemberAttendance_({trainingId, memberId, memberAlias, use
 
     // Invalidate cache
     CACHE.retrieveTrainingsFromDB();
+    CACHE.bumpVersion('trainings');
 
     return API.newResult_({
       result: {
@@ -740,6 +768,7 @@ function cancelRelatedMemberAttendance_({trainingId, memberId, memberAlias, user
 
     // Invalidate cache
     CACHE.retrieveTrainingsFromDB();
+    CACHE.bumpVersion('trainings');
 
     return API.newResult_({
       result: {
@@ -777,6 +806,7 @@ function adminSetMemberAttendance_({trainingId, memberAlias, attending, user}) {
 
     // Invalidate cache
     CACHE.retrieveTrainingsFromDB();
+    CACHE.bumpVersion('trainings');
 
     return API.newResult_({
       result: {
@@ -801,6 +831,7 @@ function saveTrainingNote_({trainingId, note, user}) {
     cell.setNote(note || '');
 
     CACHE.retrieveTrainingsFromDB();
+    CACHE.bumpVersion('trainings');
 
     return API.newResult_({
       result: {
@@ -829,6 +860,7 @@ function saveRelatedMemberTrainingNote_({trainingId, memberId, memberAlias, note
     cell.setNote(note || '');
 
     CACHE.retrieveTrainingsFromDB();
+    CACHE.bumpVersion('trainings');
 
     return API.newResult_({
       result: {
@@ -862,10 +894,8 @@ function confirmEventMemberAttendance_({eventId, memberAlias, attending}) {
       }
     }
 
-    // If column doesn't exist, create it
     if (eventColumnIndex === -1) {
-      eventColumnIndex = headerRow.length;
-      sheet.getRange(1, eventColumnIndex + 1).setValue(eventId);
+      return API.newError_({ error: 'No s\'ha trobat la columna per a l\'esdeveniment' });
     }
 
     // Find the row for this member
@@ -887,6 +917,7 @@ function confirmEventMemberAttendance_({eventId, memberAlias, attending}) {
 
     // Invalidate cache
     CACHE.retrieveEventMemberAssistanceFromDB();
+    CACHE.bumpVersion('events');
 
     return API.newResult_({
       result: {

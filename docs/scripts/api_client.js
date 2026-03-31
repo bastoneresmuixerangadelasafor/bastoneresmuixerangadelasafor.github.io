@@ -190,6 +190,10 @@ const API = new (class GAppsApiClient {
     return Promise.resolve(DANCES);
   }
 
+  getDataVersions() {
+    return this._get({ action: "dataVersions", requiresAuth: true });
+  }
+
   getEvents({ forceRefresh = false, onBackgroundUpdate = null } = {}) {
     return this._get({ action: "events", parameters: { forceRefresh }, requiresAuth: true, cache: 'events', onBackgroundUpdate });
   }

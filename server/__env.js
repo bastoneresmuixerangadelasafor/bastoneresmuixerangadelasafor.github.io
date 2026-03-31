@@ -23,3 +23,4 @@ const NEXT_TRAINING = "NEXT_TRAINING";
 const USER_CREDS = "users_credentials";
 const USER_SESSION = "users_session";
 const SESSION_TOKEN = "session_token";
+const DATA_VERSIONS = "DATA_VERSIONS";
