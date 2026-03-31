@@ -257,7 +257,8 @@ const CACHE = new class GAppsServerCache {
     const headerNotes = notes[0].slice(1); // Get notes from header row
     const trainingsByDate = {};
 
-    dates.forEach((date, index) => {
+    dates.forEach((rawDate, index) => {
+      const date = rawDate instanceof Date ? dateToString_(rawDate) : String(rawDate).replace(/^'/, '');
       const attendees = [];
       const rejections = [];
       const cellNotes = {};

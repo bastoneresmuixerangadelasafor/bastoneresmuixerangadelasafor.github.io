@@ -473,9 +473,8 @@ function saveTraining_({training}) {
 
     // Find the column index that matches this training ID
     for (let i = 1; i < headerRow.length; i++) {
-      const headerDate = headerRow[i];
-      // Compare the header date with the training ID
-      if (String(headerDate) === String(trainingId)) {
+      const cellDate = headerRow[i] instanceof Date ? dateToString_(headerRow[i]) : String(headerRow[i]).replace(/^'/, '');
+      if (cellDate === String(trainingId)) {
         dateColumn = i + 1; // Sheets columns are 1-indexed
         break;
       }
@@ -492,7 +491,8 @@ function saveTraining_({training}) {
       newHeaderRow.push(trainingId);
       
       // Set the new header value and the description note
-      sheet.getRange(1, dateColumn).setValue(trainingId);
+      // Prefix with apostrophe so Sheets stores it as text, not a Date object
+      sheet.getRange(1, dateColumn).setValue("'" + trainingId);
       sheet.getRange(1, dateColumn).setNote(training.description || '');
       
       console.log("Created new training column:", dateColumn, "for date:", trainingId);
@@ -502,7 +502,7 @@ function saveTraining_({training}) {
 
       // If the date has changed, update the column header
       if (training.newDate && String(training.newDate) !== String(trainingId)) {
-        sheet.getRange(1, dateColumn).setValue(training.newDate);
+        sheet.getRange(1, dateColumn).setValue("'" + training.newDate);
       }
     }
 
@@ -573,7 +573,8 @@ function getTrainingAttendanceContext_({trainingId, user}) {
   let dateColumn = -1;
 
   for (let i = 1; i < headerRow.length; i++) {
-    if (String(headerRow[i]) === String(trainingId)) {
+    const cellDate = headerRow[i] instanceof Date ? dateToString_(headerRow[i]) : String(headerRow[i]).replace(/^'/, '');
+    if (cellDate === String(trainingId)) {
       dateColumn = i + 1; // Sheets columns are 1-indexed
       break;
     }
@@ -854,20 +855,23 @@ function confirmEventMemberAttendance_({eventId, memberAlias, attending}) {
     let eventColumnIndex = -1;
     const headerRow = data[0];
     for (let i = 1; i < headerRow.length; i++) {
-      if (headerRow[i] === eventId) {
+      const cellVal = headerRow[i] instanceof Date ? dateToString_(headerRow[i]) : String(headerRow[i]).replace(/^'/, '').trim();
+      if (cellVal === String(eventId).trim()) {
         eventColumnIndex = i;
         break;
       }
     }
 
+    // If column doesn't exist, create it
     if (eventColumnIndex === -1) {
-      return API.newError_({ error: 'No s\'ha trobat la columna per a l\'esdeveniment' });
+      eventColumnIndex = headerRow.length;
+      sheet.getRange(1, eventColumnIndex + 1).setValue(eventId);
     }
 
     // Find the row for this member
     let memberRowIndex = -1;
     for (let i = 1; i < data.length; i++) {
-      if (data[i][0] === memberAlias) {
+      if (String(data[i][0]).trim() === String(memberAlias).trim()) {
         memberRowIndex = i;
         break;
       }
