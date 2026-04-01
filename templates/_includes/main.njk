@@ -469,9 +469,17 @@
             </button>
             <div class="dance-audio-header">
                 <h2 id="dance-audio-title"></h2>
+                <div class="dance-audio-tabs" role="tablist">
+                    <button type="button" class="dance-audio-tab active" id="dance-audio-tab-songs" role="tab" aria-selected="true" aria-controls="dance-audio-panel-songs" data-tab="songs">Cançons</button>
+                    <button type="button" class="dance-audio-tab" id="dance-audio-tab-videos" role="tab" aria-selected="false" aria-controls="dance-audio-panel-videos" data-tab="videos">Vídeos</button>
+                </div>
             </div>
             <div class="dance-audio-body">
-                <div id="dance-audio-list" class="dance-audio-list">
+                <div id="dance-audio-panel-songs" class="dance-audio-panel" role="tabpanel" aria-labelledby="dance-audio-tab-songs">
+                    <div id="dance-audio-list" class="dance-audio-list"></div>
+                </div>
+                <div id="dance-audio-panel-videos" class="dance-audio-panel dance-audio-panel--hidden" role="tabpanel" aria-labelledby="dance-audio-tab-videos">
+                    <div id="dance-video-list" class="dance-audio-list"></div>
                 </div>
             </div>
         </div>

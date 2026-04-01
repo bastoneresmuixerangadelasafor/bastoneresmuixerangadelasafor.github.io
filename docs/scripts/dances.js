@@ -98,6 +98,12 @@ const DANCES = [
         "title": "La polca - A plaça",
         "artist": "-"
       }
+    ],
+    "videos": [
+      {
+        "url": "https://www.youtube.com/watch?v=craVzFsoBr0",
+        "title": "La polca - Vídeo"
+      }
     ]
   },
   {
@@ -146,6 +152,12 @@ const DANCES = [
         "fileId": "1miptCmAVlHV14bdmPYGdg37o5YaTQZoV",
         "title": "Ara i sempre - Per assajar",
         "artist": "Reina, Josep i Quim"
+      }
+    ],
+    "videos": [
+      {
+        "url": "https://www.youtube.com/watch?v=k59k8eoTvWI",
+        "title": "Ara i sempre - Vídeo"
       }
     ]
   },
@@ -248,6 +260,12 @@ const DANCES = [
         "title": "La boja - A plaça",
         "artist": "-"
       }
+    ],
+    "videos": [
+      {
+        "url": "https://www.youtube.com/watch?v=1NtSGdDefO0",
+        "title": "La boja de 8 - Vídeo"
+      }
     ]
   },
   {
@@ -333,6 +351,12 @@ const DANCES = [
         "title": "La boja - A plaça",
         "artist": "-"
       }
+    ],
+    "videos": [
+      {
+        "url": "https://www.youtube.com/watch?v=k_JYBS5HlSQ",
+        "title": "La boja de 6 - Vídeo"
+      }
     ]
   },
   {
@@ -391,7 +415,13 @@ const DANCES = [
     ],
     "minGroups": 1,
     "showInPositions": true,
-    "audios": []
+    "audios": [],
+    "videos": [
+      {
+        "url": "https://www.youtube.com/watch?v=ni0Hbde2XDc",
+        "title": "Micalet - Vídeo"
+      }
+    ]
   },
   {
     "name": "No en volem cap",
@@ -465,6 +495,12 @@ const DANCES = [
         "title": "No en volem cap - A plaça",
         "artist": "-"
       }
+    ],
+    "videos": [
+      {
+        "url": "https://www.youtube.com/watch?v=gYXeQtEt3D0",
+        "title": "No en volem cap - Vídeo"
+      }
     ]
   },
   {
@@ -528,6 +564,12 @@ const DANCES = [
         "fileId": "1XIhGj3cylFK2velpOdpWX4bW8FHx9RaT",
         "title": "Joan del riu - Per assajar",
         "artist": "Reina, Josep i Quim"
+      }
+    ],
+    "videos": [
+      {
+        "url": "https://www.youtube.com/shorts/QOpS3oI0hXQ",
+        "title": "Joan del riu - Vídeo"
       }
     ]
   },
@@ -689,7 +731,8 @@ const DANCES = [
         "title": "Joan del riu - Per assajar",
         "artist": "Reina, Josep i Quim"
       }
-    ]
+    ],
+    "videos": []
   },
   {
     "name": "Passi-ho bé",
@@ -751,6 +794,7 @@ const DANCES = [
         "title": "Passi-ho bé - A plaça",
         "artist": "-"
       }
-    ]
+    ],
+    "videos": []
   }
 ];

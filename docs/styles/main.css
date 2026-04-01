@@ -4750,8 +4750,40 @@ input::placeholder {
 }
 
 .dance-audio-header {
-  padding: 20px 20px 0 20px;
+  padding: 20px 68px 0 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dance-audio-tabs {
+  display: flex;
+  gap: 0;
+  margin-top: 12px;
+}
+
+.dance-audio-tab {
+  flex: 1;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.dance-audio-tab.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+.dance-audio-tab:hover:not(.active) {
+  color: var(--text-color);
+}
+
+.dance-audio-panel--hidden {
+  display: none;
 }
 
 .dance-audio-header h2 {
@@ -4848,6 +4880,19 @@ input::placeholder {
   color: var(--text-muted);
   padding: 40px 20px;
   font-size: 0.95rem;
+}
+
+.dance-video-yt-link {
+  display: block;
+  margin-top: 10px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.dance-video-yt-link:hover {
+  text-decoration: underline;
 }
 
 /* Training Note Link Styles */

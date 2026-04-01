@@ -72,7 +72,18 @@ function sendAccessLink_({ email }) {
       return API.newError_({ error: "Format de correu electrònic no vàlid" });
     }
 
-    const accessUrl = `${WEBSITE_URL}#home`;
+    const member = CACHE.getMembers().find(function (m) {
+      return m.email && m.email.toLowerCase() === email.toLowerCase();
+    });
+
+    if (!member) {
+      return API.newResult_({ result: { message: "Enllaç d'accés enviat al correu correctament" } });
+    }
+
+    const token = generateSessionToken_({ member });
+    saveUserSession_({ token });
+
+    const accessUrl = `${WEBSITE_URL}?token=${encodeURIComponent(token)}`;
     const subject = `Accés a ${TITLE}`;
     const htmlBody = `
     <div style="font-family: 'Segoe UI', sans-serif; background-color: #f7fafc; padding: 20px;">

@@ -2,6 +2,7 @@ import { DanceDiagram } from "./DanceDiagram.js";
 import { DanceMusic } from "./DanceMusic.js";
 import { DancePosition } from "./DancePosition.js";
 import { DanceStructure } from "./DanceStructure.js";
+import { DanceVideo } from "./DanceVideo.js";
 
 interface DanceParams {
   name: string;
@@ -11,6 +12,7 @@ interface DanceParams {
   diagram: DanceDiagram;
   positions?: DancePosition[];
   audios?: DanceMusic[];
+  videos?: DanceVideo[];
 }
 
 export class Dance {
@@ -21,6 +23,7 @@ export class Dance {
   readonly diagram: DanceDiagram;
   readonly positions: DancePosition[];
   readonly audios: DanceMusic[];
+  readonly videos: DanceVideo[];
 
   constructor({
     name,
@@ -30,6 +33,7 @@ export class Dance {
     diagram,
     positions = [],
     audios = [],
+    videos = [],
   }: DanceParams) {
     if (!name || name.trim() === "") {
       throw new Error("Name cannot be an empty string");
@@ -53,5 +57,6 @@ export class Dance {
     this.minGroups = minGroups;
     this.showInPositions = showInPositions;
     this.audios = audios;
+    this.videos = videos;
   }
 }

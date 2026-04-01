@@ -75,6 +75,13 @@ const APP = new (class AppState{
   }
 
   _configureSession() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get('token');
+    if (urlToken) {
+      CACHE.saveToken({ token: urlToken });
+      history.replaceState({}, '', window.location.pathname + window.location.hash);
+    }
+
     API.getCurrentUser()
     .then((result) => {
       this.currentUser = result.user;

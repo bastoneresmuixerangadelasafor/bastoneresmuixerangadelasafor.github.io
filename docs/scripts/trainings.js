@@ -606,13 +606,43 @@ const TRAININGS = new (class TrainingSession {
         }, 3000);
       });
   }
-  
+
+  isYouTubeUrl(url) {
+    try {
+      const hostname = new URL(url).hostname;
+      return hostname === "www.youtube.com" || hostname === "youtube.com" || hostname === "youtu.be";
+    } catch (_) {
+      return false;
+    }
+  }
+
+  toYouTubeEmbedUrl(url) {
+    try {
+      const parsed = new URL(url);
+      if (parsed.hostname === "youtu.be") {
+        return "https://www.youtube.com/embed/" + parsed.pathname.slice(1);
+      }
+      if (parsed.hostname === "www.youtube.com" || parsed.hostname === "youtube.com") {
+        if (parsed.pathname === "/watch") {
+          const videoId = parsed.searchParams.get("v");
+          if (videoId) return "https://www.youtube.com/embed/" + videoId;
+        }
+        if (parsed.pathname.startsWith("/embed/")) {
+          return url;
+        }
+        if (parsed.pathname.startsWith("/shorts/")) {
+          return "https://www.youtube.com/embed/" + parsed.pathname.replace("/shorts/", "");
+        }
+      }
+    } catch (_) {}
+    return url;
+  }
+
   openDanceAudioDialog(danceName) {
     if (!danceName || typeof DANCES === "undefined") {
       return;
     }
   
-    // Find the dance data
     const dance = DANCES.find((d) => d.name === danceName);
   
     if (!dance) {
@@ -622,96 +652,168 @@ const TRAININGS = new (class TrainingSession {
     const dialog = document.getElementById("dance-audio-dialog");
     const titleElement = document.getElementById("dance-audio-title");
     const audioListElement = document.getElementById("dance-audio-list");
+    const videoListElement = document.getElementById("dance-video-list");
   
-    if (!dialog || !titleElement || !audioListElement) {
+    if (!dialog || !titleElement || !audioListElement || !videoListElement) {
       return;
     }
   
-    // Set the title
     titleElement.textContent = danceName;
-  
-    // Clear and populate audio list
+
+    const hasSongs = dance.audios && dance.audios.length > 0;
+    const hasVideos = dance.videos && dance.videos.length > 0;
+
+    // Reset tabs to songs
+    const tabSongs = document.getElementById("dance-audio-tab-songs");
+    const tabVideos = document.getElementById("dance-audio-tab-videos");
+    const panelSongs = document.getElementById("dance-audio-panel-songs");
+    const panelVideos = document.getElementById("dance-audio-panel-videos");
+
+    // Show/hide tabs based on available content
+    tabSongs.style.display = hasSongs ? "" : "none";
+    tabVideos.style.display = hasVideos ? "" : "none";
+
+    // Activate the first available tab
+    const firstTab = hasSongs ? "songs" : hasVideos ? "videos" : "songs";
+
+    tabSongs.classList.toggle("active", firstTab === "songs");
+    tabSongs.setAttribute("aria-selected", firstTab === "songs" ? "true" : "false");
+    tabVideos.classList.toggle("active", firstTab === "videos");
+    tabVideos.setAttribute("aria-selected", firstTab === "videos" ? "true" : "false");
+    panelSongs.classList.toggle("dance-audio-panel--hidden", firstTab !== "songs");
+    panelVideos.classList.toggle("dance-audio-panel--hidden", firstTab !== "videos");
+
+    tabSongs.onclick = () => {
+      tabSongs.classList.add("active");
+      tabSongs.setAttribute("aria-selected", "true");
+      tabVideos.classList.remove("active");
+      tabVideos.setAttribute("aria-selected", "false");
+      panelSongs.classList.remove("dance-audio-panel--hidden");
+      panelVideos.classList.add("dance-audio-panel--hidden");
+    };
+    tabVideos.onclick = () => {
+      tabVideos.classList.add("active");
+      tabVideos.setAttribute("aria-selected", "true");
+      tabSongs.classList.remove("active");
+      tabSongs.setAttribute("aria-selected", "false");
+      panelVideos.classList.remove("dance-audio-panel--hidden");
+      panelSongs.classList.add("dance-audio-panel--hidden");
+    };
+
+    // Populate songs panel
     audioListElement.innerHTML = "";
-  
     if (!dance.audios || dance.audios.length === 0) {
-      audioListElement.innerHTML = '<div class="dance-audio-empty">No hi ha audios disponibles per a aquest ball.</div>';
-      UI.showDialogWithBackdrop(dialog);
-      return;
-    }
+      audioListElement.innerHTML = '<div class="dance-audio-empty">No hi ha cançons disponibles per a aquest ball.</div>';
+    } else {
+      dance.audios.forEach((audio) => {
+        const audioItem = document.createElement("div");
+        audioItem.className = "dance-audio-item";
   
-    // Create audio items
-    dance.audios.forEach((audio) => {
-      const audioItem = document.createElement("div");
-      audioItem.className = "dance-audio-item";
+        const titleDiv = document.createElement("div");
+        titleDiv.className = "dance-audio-item-title";
+        titleDiv.textContent = audio.title || "Sense títol";
   
-      const titleDiv = document.createElement("div");
-      titleDiv.className = "dance-audio-item-title";
-      titleDiv.textContent = audio.title || "Sense títol";
+        const artistDiv = document.createElement("div");
+        artistDiv.className = "dance-audio-item-artist";
+        artistDiv.textContent = "Per: " + (audio.artist || "Desconegut");
   
-      const artistDiv = document.createElement("div");
-      artistDiv.className = "dance-audio-item-artist";
-      artistDiv.textContent = "Per: " + (audio.artist || "Desconegut");
+        const playerContainer = document.createElement("div");
+        playerContainer.className = "dance-audio-player-container";
   
-      // Create a container for the player (button initially, iframe on click)
-      const playerContainer = document.createElement("div");
-      playerContainer.className = "dance-audio-player-container";
+        const playButton = document.createElement("button");
+        playButton.className = "dance-audio-play-btn";
+        playButton.type = "button";
+        playButton.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>';
+        playButton.title = "Reproduir àudio";
   
-      // Create play button
-      const playButton = document.createElement("button");
-      playButton.className = "dance-audio-play-btn";
-      playButton.type = "button";
-      playButton.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>';
-      playButton.title = "Reproduir àudio";
+        playButton.addEventListener("click", () => {
+          playButton.style.display = "none";
   
-      // Add click handler to replace button with iframe
-      playButton.addEventListener("click", () => {
-        playButton.style.display = "none";
+          const loadingDiv = document.createElement("div");
+          loadingDiv.className = "dance-audio-loading";
+          loadingDiv.innerHTML = '<div class="spinner"></div><span>Carregant àudio...</span>';
+          playerContainer.appendChild(loadingDiv);
   
-        // Show loading state
-        const loadingDiv = document.createElement("div");
-        loadingDiv.className = "dance-audio-loading";
-        loadingDiv.innerHTML = '<div class="spinner"></div><span>Carregant àudio...</span>';
-        playerContainer.appendChild(loadingDiv);
-  
-        // Request audio data from API
-        API.getAudioById({ audioId: audio.fileId })
-        .then((result) => {
-          loadingDiv.remove();
-          if (result && result.audioData) {
-            // Create audio element only on success
-            const audioElement = document.createElement("audio");
-            audioElement.controls = true;
-            audioElement.style.width = "100%";
-            audioElement.src = result.audioData;
-            audioElement.addEventListener("play", () => {
-              TRAININGS.pauseOtherAudiosInDialog(dialog, audioElement);
-            });
-            playerContainer.appendChild(audioElement);
-          } else {
+          API.getAudioById({ audioId: audio.fileId })
+          .then((result) => {
+            loadingDiv.remove();
+            if (result && result.audioData) {
+              const audioElement = document.createElement("audio");
+              audioElement.controls = true;
+              audioElement.style.width = "100%";
+              audioElement.src = result.audioData;
+              audioElement.addEventListener("play", () => {
+                TRAININGS.pauseOtherAudiosInDialog(dialog, audioElement);
+              });
+              playerContainer.appendChild(audioElement);
+            } else {
+              const errorDiv = document.createElement("div");
+              errorDiv.className = "dance-audio-error";
+              errorDiv.textContent = "No s'ha pogut carregar l'àudio";
+              playerContainer.appendChild(errorDiv);
+            }
+          })
+          .catch((error) => {
+            loadingDiv.remove();
             const errorDiv = document.createElement("div");
             errorDiv.className = "dance-audio-error";
-            errorDiv.textContent = "No s'ha pogut carregar l'àudio";
+            errorDiv.textContent = error || "Error carregant l'àudio";
             playerContainer.appendChild(errorDiv);
-          }
-        })
-        .catch((error) => {
-          loadingDiv.remove();
-          const errorDiv = document.createElement("div");
-          errorDiv.className = "dance-audio-error";
-          errorDiv.textContent = error || "Error carregant l'àudio";
-          playerContainer.appendChild(errorDiv);
+          });
         });
+  
+        playerContainer.appendChild(playButton);
+        audioItem.appendChild(titleDiv);
+        audioItem.appendChild(artistDiv);
+        audioItem.appendChild(playerContainer);
+        audioListElement.appendChild(audioItem);
       });
+    }
+
+    // Populate videos panel
+    videoListElement.innerHTML = "";
+    if (!dance.videos || dance.videos.length === 0) {
+      videoListElement.innerHTML = '<div class="dance-audio-empty">No hi ha vídeos disponibles per a aquest ball.</div>';
+    } else {
+      dance.videos.forEach((video) => {
+        const videoItem = document.createElement("div");
+        videoItem.className = "dance-audio-item";
+
+        const titleDiv = document.createElement("div");
+        titleDiv.className = "dance-audio-item-title";
+        titleDiv.textContent = video.title || "Sense títol";
+
+        const videoContainer = document.createElement("div");
+        videoContainer.className = "dance-audio-player-container";
+
+        const isLocalFile = window.location.protocol === "file:";
+
+        const iframe = document.createElement("iframe");
+        iframe.src = this.toYouTubeEmbedUrl(video.url);
+        iframe.className = "dance-audio-player";
+        iframe.allowFullscreen = true;
+        iframe.allow = "autoplay; encrypted-media";
+        iframe.setAttribute("loading", "lazy");
+        if (isLocalFile) iframe.style.display = "none";
+
+        videoContainer.appendChild(iframe);
+
+        if (this.isYouTubeUrl(video.url)) {
+          const ytLink = document.createElement("a");
+          ytLink.href = video.url;
+          ytLink.target = "_blank";
+          ytLink.rel = "noopener noreferrer";
+          ytLink.className = "dance-video-yt-link";
+          ytLink.textContent = "Mira el vídeo a YouTube";
+          if (!isLocalFile) ytLink.style.display = "none";
+          videoContainer.appendChild(ytLink);
+        }
+        videoItem.appendChild(titleDiv);
+        videoItem.appendChild(videoContainer);
+        videoListElement.appendChild(videoItem);
+      });
+    }
   
-      playerContainer.appendChild(playButton);
-  
-      audioItem.appendChild(titleDiv);
-      audioItem.appendChild(artistDiv);
-      audioItem.appendChild(playerContainer);
-      audioListElement.appendChild(audioItem);
-    });
-  
-    // Show the dialog
     UI.showDialogWithBackdrop(dialog);
   }
   

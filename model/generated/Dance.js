@@ -1,5 +1,5 @@
 export class Dance {
-    constructor({ name, minGroups, showInPositions, structure, diagram, positions = [], audios = [], }) {
+    constructor({ name, minGroups, showInPositions, structure, diagram, positions = [], audios = [], videos = [], }) {
         if (!name || name.trim() === "") {
             throw new Error("Name cannot be an empty string");
         }
@@ -22,5 +22,6 @@ export class Dance {
         this.minGroups = minGroups;
         this.showInPositions = showInPositions;
         this.audios = audios;
+        this.videos = videos;
     }
 }

@@ -1,10 +1,7 @@
 - Informació sobre cada ball:
   - Pas a pas en text
   - "Recreació"
-  - Videos
-    POLCA - https://www.youtube.com/watch?v=cD-Yu051DNY
-
-    ARA I SEMPRE - https://www.youtube.com/watch?v=LEWJDvAeLOo
+  - ~~Videos~~
 
 - ~~Separar el frontend del backend~~
 - ~~Compartir un event no editable~~
@@ -16,7 +13,7 @@
 - ~~Estandaritzar les respostes en prod i test~~
 - ~~Canviar nomenclatura de les variables a minúscula~~
 - ~~Move logic to CACHE service~~
-- User temp cache
+- ~~User temp cache~~
 - ~~Use triggers~~
 - ~~Passi-ho bé~~
 - Ramonet
@@ -27,8 +24,8 @@
 - ~~Inform of past training attendance~~
 - ~~Refresh list after creating training~~
 - ~~Allow members to confirm/decline assistance to training~~
-- Update local storage after changing assistance
-- Check training session assistance
-- Edit members: All members or individually
+- ~~Update local storage after changing assistance~~
+- ~~Check training session assistance~~
+- ~~Edit members: All members or individually~~
 
 - REFACTOR!!!!

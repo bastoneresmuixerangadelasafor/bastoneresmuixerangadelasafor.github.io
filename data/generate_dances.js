@@ -6,6 +6,7 @@ import { DanceMusic } from '../model/generated/DanceMusic.js';
 import { DancePosition } from '../model/generated/DancePosition.js';
 import { DanceStructure } from '../model/generated/DanceStructure.js';
 import { DanceStructureForm } from '../model/generated/DanceStructureForm.js';
+import { DanceVideo } from '../model/generated/DanceVideo.js';
 import { PositionType } from '../model/generated/PositionType.js';
 
 const DANCES = [
@@ -29,6 +30,9 @@ const DANCES = [
       new DanceMusic({ fileId: "1Oz7GCasuPWfVLZeHJytelv85zCw3PhOx", title: "La polca - Per assajar", artist: "Reina, Josep i Quim" }),
       new DanceMusic({ fileId: "1znGxmydFqQHy8dyjlNnFcHmfZe9wLpPn", title: "La polca - A plaça", artist: "-" }),
     ],
+    videos: [
+      new DanceVideo({ url: "https://www.youtube.com/watch?v=craVzFsoBr0", title: "La polca - Vídeo" }),
+    ],
   }),
   new Dance({
     name: "Ara i sempre",
@@ -42,6 +46,9 @@ const DANCES = [
     ],
     audios: [
       new DanceMusic({ fileId: "1miptCmAVlHV14bdmPYGdg37o5YaTQZoV", title: "Ara i sempre - Per assajar", artist: "Reina, Josep i Quim" }),
+    ],
+    videos: [
+      new DanceVideo({ url: "https://www.youtube.com/watch?v=k59k8eoTvWI", title: "Ara i sempre - Vídeo" }),
     ],
   }),
   new Dance({
@@ -64,6 +71,9 @@ const DANCES = [
       new DanceMusic({ fileId: "1IV0yshP7Xly9L-B07dqq2xCfAmCPRTkg", title: "La boja - Per assajar", artist: "Reina, Josep i Quim" }),
       new DanceMusic({ fileId: "1Qp5hcUzq25SIJPsEq6QyKvvFv4KhnR4t", title: "La boja - A plaça", artist: "-" }),
     ],
+    videos: [
+      new DanceVideo({ url: "https://www.youtube.com/watch?v=1NtSGdDefO0", title: "La boja de 8 - Vídeo" }),
+    ],
   }),
   new Dance({
     name: "La boja de 6",
@@ -83,6 +93,9 @@ const DANCES = [
       new DanceMusic({ fileId: "1IV0yshP7Xly9L-B07dqq2xCfAmCPRTkg", title: "La boja - Per assajar", artist: "Reina, Josep i Quim" }),
       new DanceMusic({ fileId: "1Qp5hcUzq25SIJPsEq6QyKvvFv4KhnR4t", title: "La boja - A plaça", artist: "-" }),
     ],
+    videos: [
+      new DanceVideo({ url: "https://www.youtube.com/watch?v=k_JYBS5HlSQ", title: "La boja de 6 - Vídeo" }),
+    ],
   }),
   // FALTA CONFIG
   new Dance({
@@ -96,7 +109,10 @@ const DANCES = [
       new DancePosition({ order: 2, tag: "4", positionType: new PositionType({ label: "ANTIHORARI" }), specifications: "Dreta/cara plaça" }),
       new DancePosition({ order: 3, tag: "2", positionType: new PositionType({ label: "HORARI" }), specifications: "Esquerre/esquena plaça" }),
       new DancePosition({ order: 4, tag: "1", positionType: new PositionType({ label: "HORARI" }), specifications: "Dreta/esquena plaça" }),
-    ]
+    ],
+    videos: [
+      new DanceVideo({ url: "https://www.youtube.com/watch?v=ni0Hbde2XDc", title: "Micalet - Vídeo" }),
+    ],
   }),
   new Dance({
     name: "No en volem cap",
@@ -115,6 +131,9 @@ const DANCES = [
       new DanceMusic({ fileId: "1DoaFbvJZLJPqB1DcrD4ZXAeYXslmFspU", title: "No en volem cap - Per assajar (sense intro)", artist: "Reina, Josep i Quim" }),
       new DanceMusic({ fileId: "1q10nIzTSyRAFZRtiPVo8r_2Ga3kiEPnM", title: "No en volem cap - A plaça", artist: "-" }),
     ],
+    videos: [
+      new DanceVideo({ url: "https://www.youtube.com/watch?v=gYXeQtEt3D0", title: "No en volem cap - Vídeo" }),
+    ],
   }),
   new Dance({
     name: "Joan del riu",
@@ -130,6 +149,9 @@ const DANCES = [
     ],
     audios: [
       new DanceMusic({ fileId: "1XIhGj3cylFK2velpOdpWX4bW8FHx9RaT", title: "Joan del riu - Per assajar", artist: "Reina, Josep i Quim" }),
+    ],
+    videos: [
+      new DanceVideo({ url: "https://www.youtube.com/shorts/QOpS3oI0hXQ", title: "Joan del riu - Vídeo" }),
     ],
   }),
   new Dance({
