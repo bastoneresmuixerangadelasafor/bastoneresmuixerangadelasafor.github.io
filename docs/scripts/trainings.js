@@ -620,15 +620,17 @@ const TRAININGS = new (class TrainingSession {
     try {
       const parsed = new URL(url);
       if (parsed.hostname === "youtu.be") {
-        return "https://www.youtube.com/embed/" + parsed.pathname.slice(1);
+        return "https://www.youtube.com/embed/" + parsed.pathname.slice(1) + "?enablejsapi=1";
       }
       if (parsed.hostname === "www.youtube.com" || parsed.hostname === "youtube.com") {
         if (parsed.pathname === "/watch") {
           const videoId = parsed.searchParams.get("v");
-          if (videoId) return "https://www.youtube.com/embed/" + videoId;
+          if (videoId) return "https://www.youtube.com/embed/" + videoId + "?enablejsapi=1";
         }
         if (parsed.pathname.startsWith("/embed/")) {
-          return url;
+          const embedUrl = new URL(url);
+          embedUrl.searchParams.set("enablejsapi", "1");
+          return embedUrl.toString();
         }
         if (parsed.pathname.startsWith("/shorts/")) {
           return "https://www.youtube.com/embed/" + parsed.pathname.replace("/shorts/", "");
@@ -824,6 +826,11 @@ const TRAININGS = new (class TrainingSession {
     audioElements.forEach((audio) => {
       audio.pause();
       audio.currentTime = 0;
+    });
+
+    const iframeElements = dialogElement.querySelectorAll("iframe");
+    iframeElements.forEach((iframe) => {
+      iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', "*");
     });
   }
 
