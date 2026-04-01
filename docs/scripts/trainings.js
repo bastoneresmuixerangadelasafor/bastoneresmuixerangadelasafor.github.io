@@ -830,7 +830,7 @@ const TRAININGS = new (class TrainingSession {
 
     const iframeElements = dialogElement.querySelectorAll("iframe");
     iframeElements.forEach((iframe) => {
-      iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', "*");
+      iframe.src = "";
     });
   }
 
