@@ -2,6 +2,44 @@
 const CACHE_VERSION = 'v' + Date.now(); // Version changes on each deployment
 const CACHE_NAME = 'bastoneres-cache-' + CACHE_VERSION;
 
+importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
+
+const swParams = new URL(self.location.href).searchParams;
+const firebaseConfigParam = swParams.get('firebase');
+if (firebaseConfigParam) {
+  try {
+    firebase.initializeApp(JSON.parse(decodeURIComponent(firebaseConfigParam)));
+    const messaging = firebase.messaging();
+    messaging.onBackgroundMessage((payload) => {
+      const title = payload.notification?.title || 'Bastoneres';
+      const body = payload.notification?.body || '';
+      self.registration.showNotification(title, {
+        body,
+        icon: '/images/android/android-launchericon-192-192.png',
+        data: { url: payload.fcmOptions?.link || '/' },
+      });
+    });
+  } catch (e) {
+    console.error('SW: Firebase init error', e);
+  }
+}
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const targetUrl = event.notification.data?.url || '/';
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      for (const client of windowClients) {
+        if (client.url === targetUrl && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      return clients.openWindow(targetUrl);
+    })
+  );
+});
+
 // Files that should always be fetched fresh (never cached)
 const ALWAYS_FRESH = [
   '/index.html',
@@ -17,6 +55,7 @@ const ALWAYS_FRESH = [
   '/scripts/trainings.js',
   '/scripts/dashboard.js',
   '/scripts/dances.js',
+  '/scripts/notifications.js',
   '/styles/main.css',
   '/styles/navbar.css'
 ];

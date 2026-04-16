@@ -452,3 +452,41 @@ body.dark-mode .theme-icon-dark {
     min-width: 160px;
   }
 }
+
+.push-bell-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  margin-right: 8px;
+}
+
+.push-bell-btn:hover {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: var(--primary-color);
+}
+
+.push-bell-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.4);
+}
+
+.push-bell-icon--filled {
+  display: none;
+}
+
+.push-bell-btn--active .push-bell-icon--outline {
+  display: none;
+}
+
+.push-bell-btn--active .push-bell-icon--filled {
+  display: inline;
+  color: var(--primary-color);
+}

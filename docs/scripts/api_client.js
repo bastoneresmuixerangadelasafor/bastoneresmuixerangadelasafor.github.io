@@ -182,6 +182,10 @@ const API = new (class GAppsApiClient {
     return this._performRequest({ action, method: "PUT", body, parameters, requiresAuth, cache });
   }
 
+  _delete({ action, body = null, parameters, requiresAuth, cache = null } = {}) {
+    return this._performRequest({ action, method: "DELETE", body, parameters, requiresAuth, cache });
+  }
+
   getCurrentUser() {
     return this._get({ action: "user", requiresAuth: true, cache: 'user' });
   }
@@ -319,5 +323,13 @@ const API = new (class GAppsApiClient {
       body: { memberAlias, danceName, positionOrder, value },
       requiresAuth: true,
     });
+  }
+
+  registerPushToken({ pushToken } = {}) {
+    return this._post({ action: "registerPushToken", body: { pushToken }, requiresAuth: true });
+  }
+
+  unregisterPushToken({ pushToken } = {}) {
+    return this._delete({ action: "registerPushToken", body: { pushToken }, requiresAuth: true });
   }
 })();

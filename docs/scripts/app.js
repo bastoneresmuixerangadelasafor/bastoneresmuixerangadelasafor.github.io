@@ -57,8 +57,15 @@ const APP = new (class AppState{
         const isLocalFile = window.location.protocol === 'file:' || window.location.origin === 'null';
         if (!isLocalFile) {
           window.addEventListener("load", () => {
+            const firebaseConfig = encodeURIComponent(JSON.stringify({
+              apiKey: FIREBASE_API_KEY,
+              authDomain: FIREBASE_AUTH_DOMAIN,
+              projectId: FIREBASE_PROJECT_ID,
+              messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
+              appId: FIREBASE_APP_ID,
+            }));
             navigator.serviceWorker
-              .register('/sw.js?v=' + Date.now())
+              .register('/sw.js?v=' + Date.now() + '&firebase=' + firebaseConfig)
               .then((registration) => {
                 console.log(
                   "ServiceWorker registration successful with scope: ",
@@ -93,6 +100,10 @@ const APP = new (class AppState{
       this._startPolling(30 * 1000);
 
       NAVIGATION.goToLandingPage();
+
+      if (typeof NOTIFICATIONS !== 'undefined') {
+        NOTIFICATIONS.initialize();
+      }
     })
     .catch((error) => {
       console.error("Auth check failed:", error);

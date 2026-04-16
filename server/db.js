@@ -480,4 +480,34 @@ const CACHE = new class GAppsServerCache {
       console.log('Error in removeExpiredSessionTokens: ' + error.toString());
     }
   }
+
+  getPushTokens() {
+    const raw = this.cache_.getProperty(PUSH_TOKENS);
+    return raw ? JSON.parse(raw) : {};
+  }
+
+  savePushToken({ userId, token }) {
+    const tokens = this.getPushTokens();
+    if (!tokens[userId]) {
+      tokens[userId] = [];
+    }
+    if (!tokens[userId].includes(token)) {
+      tokens[userId].push(token);
+    }
+    this.cache_.setProperty(PUSH_TOKENS, JSON.stringify(tokens));
+  }
+
+  removePushToken(token) {
+    const tokens = this.getPushTokens();
+    let changed = false;
+    for (const userId in tokens) {
+      const before = tokens[userId].length;
+      tokens[userId] = tokens[userId].filter(t => t !== token);
+      if (tokens[userId].length !== before) changed = true;
+      if (tokens[userId].length === 0) delete tokens[userId];
+    }
+    if (changed) {
+      this.cache_.setProperty(PUSH_TOKENS, JSON.stringify(tokens));
+    }
+  }
 }

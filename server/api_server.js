@@ -192,6 +192,14 @@ const API = class GAppsApiServer {
         const saveRelatedNoteReq = JSON.parse(e.postData?.contents);
         data = saveRelatedNoteWorker({ trainingId: saveRelatedNoteReq?.trainingId, memberId: saveRelatedNoteReq?.memberId, memberAlias: saveRelatedNoteReq?.memberAlias, note: saveRelatedNoteReq?.note, token: e.parameter?.token });
         break;
+      case "registerPushToken":
+        const registerPushWorker = this.validateUserToken_({fn: ({user}) => {
+          const req = JSON.parse(e.postData?.contents);
+          CACHE.savePushToken({ userId: user.email, token: req?.pushToken });
+          return API.newResult_({ result: { status: 'saved' } });
+        }, requiresAuth: true, token: e.parameter?.token});
+        data = registerPushWorker();
+        break;
       default:
         return API.newError_({ error: `Unknown POST action: ${action}`, status:404 });
     }
@@ -263,6 +271,14 @@ const API = class GAppsApiServer {
     const action = e.parameter?.action;
     let data;
     switch (action) {
+      case "registerPushToken":
+        const removePushWorker = this.validateUserToken_({fn: () => {
+          const req = JSON.parse(e.postData?.contents);
+          CACHE.removePushToken(req?.pushToken);
+          return API.newResult_({ result: { status: 'removed' } });
+        }, requiresAuth: true, token: e.parameter?.token});
+        data = removePushWorker();
+        break;
     }
 
     if (data == null) {

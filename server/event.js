@@ -87,6 +87,12 @@ function saveEvent_({event}) {
 
   CACHE.bumpVersion('events');
   
+  try {
+    if (isNewSheet) notifyEventCreated({ name: event.name, date: event.datetime });
+  } catch (e) {
+    console.error('Error sending event notification: ' + e.toString());
+  }
+
   return API.newResult_({
     result: {
       message: isNewSheet ? 'Actuació creada correctament' : 'Actuació actualitzada correctament',
@@ -505,6 +511,7 @@ function saveTraining_({training}) {
     }
 
     // If column doesn't exist, create it (for new trainings)
+    const isNewTraining = dateColumn === -1;
     if (dateColumn === -1) {
       // Insert a new column after the last training column
       const lastDataColumn = headerRow.length;
@@ -558,6 +565,12 @@ function saveTraining_({training}) {
       CACHE.addTraining({ training: { ...training, date: finalTrainingId } });
     }
     CACHE.bumpVersion('trainings');
+
+    try {
+      if (isNewTraining) notifyTrainingCreated({ date: finalTrainingId });
+    } catch (e) {
+      console.error('Error sending training notification: ' + e.toString());
+    }
 
     return API.newResult_({
       result: {
