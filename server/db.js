@@ -488,6 +488,12 @@ const CACHE = new class GAppsServerCache {
 
   savePushToken({ userId, token }) {
     const tokens = this.getPushTokens();
+    for (const existingUserId in tokens) {
+      if (existingUserId !== userId) {
+        tokens[existingUserId] = tokens[existingUserId].filter(t => t !== token);
+        if (tokens[existingUserId].length === 0) delete tokens[existingUserId];
+      }
+    }
     if (!tokens[userId]) {
       tokens[userId] = [];
     }

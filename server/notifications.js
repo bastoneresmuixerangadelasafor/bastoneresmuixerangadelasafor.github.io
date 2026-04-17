@@ -36,14 +36,11 @@ function sendFcmToToken_(token, notification) {
   const message = {
     message: {
       token: token,
-      notification: {
+      data: {
         title: notification.title,
         body: notification.body,
       },
       webpush: {
-        notification: {
-          icon: '/images/android/android-launchericon-192-192.png',
-        },
         fcm_options: {
           link: WEBSITE_URL,
         },
@@ -70,10 +67,13 @@ function sendFcmToToken_(token, notification) {
 
 function broadcastNotification_(notification) {
   const tokenMap = CACHE.getPushTokens();
+  const sentTokens = {};
   for (const userId in tokenMap) {
     const userTokens = tokenMap[userId];
     if (!Array.isArray(userTokens)) continue;
     userTokens.forEach(function(token) {
+      if (sentTokens[token]) return;
+      sentTokens[token] = true;
       try {
         sendFcmToToken_(token, notification);
       } catch (e) {

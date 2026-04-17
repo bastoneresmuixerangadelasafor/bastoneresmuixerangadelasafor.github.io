@@ -12,8 +12,8 @@ if (firebaseConfigParam) {
     firebase.initializeApp(JSON.parse(decodeURIComponent(firebaseConfigParam)));
     const messaging = firebase.messaging();
     messaging.onBackgroundMessage((payload) => {
-      const title = payload.notification?.title || 'Bastoneres';
-      const body = payload.notification?.body || '';
+      const title = payload.data?.title || 'Bastoneres';
+      const body = payload.data?.body || '';
       self.registration.showNotification(title, {
         body,
         icon: '/images/android/android-launchericon-192-192.png',
