@@ -136,6 +136,11 @@
     border-bottom: 1px solid var(--border-color);
   }
 
+  .navbar-brand {
+    flex: 1;
+    min-width: 0;
+  }
+
   .navbar-toggle:not(.auth-required[style*="display: none"]) {
     display: flex !important;
     align-items: center;
@@ -143,7 +148,6 @@
     order: 3;
     width: 44px;
     height: 44px;
-    margin-left: auto;
   }
 
   .navbar-toggle.auth-required {
@@ -152,6 +156,10 @@
 
   .navbar-auth {
     order: 2;
+  }
+
+  .push-bell-btn {
+    margin-right: 0;
   }
 
   /* Hide desktop user info on mobile */
@@ -482,11 +490,88 @@ body.dark-mode .theme-icon-dark {
   display: none;
 }
 
-.push-bell-btn--active .push-bell-icon--outline {
+/* Not requested: attention dot */
+.push-bell-btn--not-requested {
+  position: relative;
+}
+
+.push-bell-btn--not-requested::after {
+  content: '?';
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 14px;
+  height: 14px;
+  background: var(--primary-color);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+}
+
+/* Granted: filled bell, primary color */
+.push-bell-btn--granted .push-bell-icon--outline {
   display: none;
 }
 
-.push-bell-btn--active .push-bell-icon--filled {
+.push-bell-btn--granted .push-bell-icon--filled {
   display: inline;
   color: var(--primary-color);
+}
+
+/* Denied (unsubscribed): outline bell, primary color */
+.push-bell-btn--denied {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+/* Blocked: disabled look with diagonal line */
+.push-bell-btn--blocked {
+  color: var(--text-muted);
+  opacity: 0.5;
+  cursor: not-allowed;
+  position: relative;
+}
+
+.push-bell-btn--blocked::after {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  width: 2px;
+  height: 60%;
+  background: var(--danger-color);
+  transform: translateX(-50%) rotate(45deg);
+  border-radius: 1px;
+}
+
+.push-bell-btn--blocked:hover {
+  background: transparent;
+  border-color: var(--border-color);
+}
+
+/* Loading: spinning circle replaces bell icons */
+.push-bell-btn--loading .push-bell-icon--outline,
+.push-bell-btn--loading .push-bell-icon--filled {
+  display: none;
+}
+
+.push-bell-btn--loading::before {
+  content: '';
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-color);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: push-bell-spin 0.6s linear infinite;
+}
+
+.push-bell-btn--loading::after {
+  display: none;
+}
+
+@keyframes push-bell-spin {
+  to { transform: rotate(360deg); }
 }

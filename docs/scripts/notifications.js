@@ -24,6 +24,18 @@ const NOTIFICATIONS = new (class PushNotifications {
     localStorage.removeItem(this._localTokenKey);
   }
 
+  _setLoading(loading) {
+    const bellBtn = document.getElementById('push-bell-btn');
+    if (!bellBtn) return;
+    if (loading) {
+      bellBtn.classList.add('push-bell-btn--loading');
+      bellBtn.disabled = true;
+    } else {
+      bellBtn.classList.remove('push-bell-btn--loading');
+      bellBtn.disabled = false;
+    }
+  }
+
   async subscribeToNotifications() {
     if (!this.isSupported()) return;
 
@@ -101,16 +113,26 @@ const NOTIFICATIONS = new (class PushNotifications {
     const bellBtn = document.getElementById('push-bell-btn');
     if (bellBtn) {
       bellBtn.addEventListener('click', async () => {
-        if (Notification.permission === 'granted') {
-          await this.unsubscribe();
+        if (Notification.permission === 'denied') {
+          alert('Les notificacions estan bloquejades.\n\nPer activar-les, ves a la configuració del navegador:\n1. Toca la icona del cadenat (🔒) al costat de la barra d\'adreces\n2. Busca "Notificacions"\n3. Canvia el permís a "Permetre"\n4. Recarrega la pàgina');
+        } else if (Notification.permission === 'granted') {
+          if (confirm('Vols desactivar les notificacions push?')) {
+            this._setLoading(true);
+            await this.unsubscribe();
+            this._setLoading(false);
+          }
         } else {
+          this._setLoading(true);
           await this.requestPermissionAndSubscribe();
+          this._setLoading(false);
         }
       });
     }
 
     if (Notification.permission === 'granted' && !this.getStoredToken()) {
+      this._setLoading(true);
       await this.subscribeToNotifications();
+      this._setLoading(false);
     }
   }
 
@@ -125,21 +147,25 @@ const NOTIFICATIONS = new (class PushNotifications {
 
     const permission = Notification.permission;
 
-    if (permission === 'denied') {
-      bellBtn.style.display = 'none';
-      return;
-    }
-
     bellBtn.style.display = '';
+    bellBtn.classList.remove('push-bell-btn--granted', 'push-bell-btn--denied', 'push-bell-btn--blocked', 'push-bell-btn--not-requested');
 
-    if (permission === 'granted' && this.getStoredToken()) {
-      bellBtn.classList.add('push-bell--active');
+    if (permission === 'denied') {
+      bellBtn.classList.add('push-bell-btn--blocked');
+      bellBtn.setAttribute('aria-label', 'Notificacions bloquejades');
+      bellBtn.title = 'Notificacions bloquejades al navegador';
+    } else if (permission === 'granted' && this.getStoredToken()) {
+      bellBtn.classList.add('push-bell-btn--granted');
       bellBtn.setAttribute('aria-label', 'Desactivar notificacions');
       bellBtn.title = 'Desactivar notificacions push';
-    } else {
-      bellBtn.classList.remove('push-bell--active');
+    } else if (permission === 'granted') {
+      bellBtn.classList.add('push-bell-btn--denied');
       bellBtn.setAttribute('aria-label', 'Activar notificacions');
       bellBtn.title = 'Activar notificacions push';
+    } else {
+      bellBtn.classList.add('push-bell-btn--not-requested');
+      bellBtn.setAttribute('aria-label', 'Activar notificacions');
+      bellBtn.title = 'Toca per activar les notificacions push';
     }
   }
 })();
