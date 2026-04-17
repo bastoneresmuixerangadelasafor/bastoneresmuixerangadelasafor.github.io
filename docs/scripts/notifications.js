@@ -1,6 +1,7 @@
 const NOTIFICATIONS = new (class PushNotifications {
   constructor() {
     this._localTokenKey = 'push_token';
+    this._onMessageRegistered = false;
   }
 
   isSupported() {
@@ -77,16 +78,19 @@ const NOTIFICATIONS = new (class PushNotifications {
       this.saveStoredToken(token);
       this.updateBellState();
 
-      messaging.onMessage((payload) => {
-        const title = payload.notification?.title || 'Bastoneres';
-        const body = payload.notification?.body || '';
-        if (Notification.permission === 'granted') {
-          new Notification(title, {
-            body,
-            icon: '/images/android/android-launchericon-192-192.png',
-          });
-        }
-      });
+      if (!this._onMessageRegistered) {
+        this._onMessageRegistered = true;
+        messaging.onMessage((payload) => {
+          const title = payload.notification?.title || 'Bastoneres';
+          const body = payload.notification?.body || '';
+          if (Notification.permission === 'granted') {
+            new Notification(title, {
+              body,
+              icon: '/images/android/android-launchericon-192-192.png',
+            });
+          }
+        });
+      }
     } catch (e) {
       console.error('Error subscribing to push notifications:', e);
     }
