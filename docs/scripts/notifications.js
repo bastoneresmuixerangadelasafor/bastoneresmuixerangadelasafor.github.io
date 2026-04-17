@@ -12,6 +12,16 @@ const NOTIFICATIONS = new (class PushNotifications {
     );
   }
 
+  _isIOSSafari() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  }
+
+  _isStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches ||
+      navigator.standalone === true;
+  }
+
   getStoredToken() {
     return localStorage.getItem(this._localTokenKey);
   }
@@ -106,13 +116,17 @@ const NOTIFICATIONS = new (class PushNotifications {
   }
 
   async initialize() {
-    if (!this.isSupported()) return;
-
     this.updateBellState();
+
+    if (!this.isSupported()) return;
 
     const bellBtn = document.getElementById('push-bell-btn');
     if (bellBtn) {
       bellBtn.addEventListener('click', async () => {
+        if (this._isIOSSafari() && !this._isStandalone()) {
+          alert('Per rebre notificacions a iOS:\n\n1. Toca la icona de compartir (⬆️) a la barra de Safari\n2. Selecciona "Afegir a la pantalla d\'inici"\n3. Obri l\'app des de la pantalla d\'inici\n4. Toca la campaneta per activar les notificacions');
+          return;
+        }
         if (Notification.permission === 'denied') {
           alert('Les notificacions estan bloquejades.\n\nPer activar-les, ves a la configuració del navegador:\n1. Toca la icona del cadenat (🔒) al costat de la barra d\'adreces\n2. Busca "Notificacions"\n3. Canvia el permís a "Permetre"\n4. Recarrega la pàgina');
         } else if (Notification.permission === 'granted') {
@@ -140,7 +154,7 @@ const NOTIFICATIONS = new (class PushNotifications {
     const bellBtn = document.getElementById('push-bell-btn');
     if (!bellBtn) return;
 
-    if (!this.isSupported()) {
+    if (!this.isSupported() || !APP.isAuthenticated) {
       bellBtn.style.display = 'none';
       return;
     }
