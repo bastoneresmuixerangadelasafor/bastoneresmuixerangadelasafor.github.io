@@ -429,8 +429,7 @@ const AUTH = new (class AppAuthentication {
       APP.showLoading(false);
     };
 
-    // Clear server-side session
-    API.logoutUser()
+    NOTIFICATIONS.unsubscribe().catch(() => {}).then(() => API.logoutUser())
       .then((result) => {
         // Restore button states
         if (logoutBtn) {

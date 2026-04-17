@@ -9837,6 +9837,10 @@ const API = new (class GAppsApiClient {
       this._startPolling(30 * 1000);
 
       NAVIGATION.goToLandingPage();
+
+      if (typeof NOTIFICATIONS !== 'undefined') {
+        NOTIFICATIONS.initialize();
+      }
     })
     .catch((error) => {
       console.error("Auth check failed:", error);
@@ -9849,10 +9853,6 @@ const API = new (class GAppsApiClient {
       this._stopPolling();
 
       NAVIGATION.goToLandingPage();
-
-      if (typeof NOTIFICATIONS !== 'undefined') {
-        NOTIFICATIONS.initialize();
-      }
     });
   }
 
@@ -10950,8 +10950,7 @@ function updateAuthUI() {
       APP.showLoading(false);
     };
 
-    // Clear server-side session
-    API.logoutUser()
+    NOTIFICATIONS.unsubscribe().catch(() => {}).then(() => API.logoutUser())
       .then((result) => {
         // Restore button states
         if (logoutBtn) {

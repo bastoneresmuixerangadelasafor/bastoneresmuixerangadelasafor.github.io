@@ -25,4 +25,11 @@ user_creds: users_credentials
 user_session: users_session
 session_token: session_token
 data_versions: DATA_VERSIONS
+firebase_api_key: AIzaSyBxqQUnuIr7VmTIb31nWhjgQfadc0gwBkg
+firebase_auth_domain: muixeranga-bastoneres.firebaseapp.com
+firebase_project_id: muixeranga-bastoneres
+firebase_messaging_sender_id: 801589009119
+firebase_app_id: 1:801589009119:web:a989d8e66b0696f45e276a
+fcm_vapid_key: BLXic-fhHSXh69ntpasEXDRSCdrprqQgkRqGL2mJTn-IZXni-hId8bGbWPE33TNfEyPl8FJRH1Y8vBi_YVU6TUY
+push_tokens: PUSH_TOKENS
 ---
