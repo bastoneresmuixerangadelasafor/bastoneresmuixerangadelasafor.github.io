@@ -48,7 +48,7 @@ const NOTIFICATIONS = new (class PushNotifications {
   }
 
   async subscribeToNotifications() {
-    if (!this.isSupported()) return;
+    if (!this.isSupported() || !API.isAuthenticated()) return;
 
     try {
       const registration = await navigator.serviceWorker.ready;
@@ -139,10 +139,12 @@ const NOTIFICATIONS = new (class PushNotifications {
   async unsubscribe() {
     const token = this.getStoredToken();
     if (token) {
-      try {
-        await API.unregisterPushToken({ pushToken: token });
-      } catch (e) {
-        console.error('Error unregistering push token:', e);
+      if (API.isAuthenticated()) {
+        try {
+          await API.unregisterPushToken({ pushToken: token });
+        } catch (e) {
+          console.error('Error unregistering push token:', e);
+        }
       }
       this.clearStoredToken();
     }
@@ -177,7 +179,7 @@ const NOTIFICATIONS = new (class PushNotifications {
       });
     }
 
-    if (Notification.permission === 'granted' && !this.getStoredToken()) {
+    if (Notification.permission === 'granted' && !this.getStoredToken() && API.isAuthenticated()) {
       this._setLoading(true);
       await this.subscribeToNotifications();
       this._setLoading(false);

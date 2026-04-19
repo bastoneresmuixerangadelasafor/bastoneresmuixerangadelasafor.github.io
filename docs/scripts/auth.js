@@ -397,6 +397,9 @@ const AUTH = new (class AppAuthentication {
   }
 
   handleLogout({ message = "Has tancat la sessió", messageType = "success" } = {}) {
+    if (this._isLoggingOut) return;
+    this._isLoggingOut = true;
+
     // Show general loading screen
     APP.showLoading(true);
 
@@ -427,6 +430,7 @@ const AUTH = new (class AppAuthentication {
       NAVIGATION.navigateTo("home-guest");
       UI.showToast(message, messageType);
       APP.showLoading(false);
+      this._isLoggingOut = false;
     };
 
     NOTIFICATIONS.unsubscribe().catch(() => {}).then(() => API.logoutUser())
