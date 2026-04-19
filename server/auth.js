@@ -329,7 +329,7 @@ function getCurrentUser_({ token }) {
     // First check for email/password session
     const user = getUserFromSession_({ token });
     if (user) {
-      const userProfile = getUserProfile_({ email: user.email });
+      const userProfile = getUserProfile_({ email: user.email, forceRefresh: true });
       const displayName = userProfile.displayName || user.email.split("@")[0];
       const roles = userProfile.roles || [];
       return API.newResult_({ result: {

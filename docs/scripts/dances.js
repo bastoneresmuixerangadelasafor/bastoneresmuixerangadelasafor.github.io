@@ -796,5 +796,64 @@ const DANCES = [
       }
     ],
     "videos": []
+  },
+  {
+    "name": "La Palmera roja",
+    "structure": {
+      "rows": 2,
+      "columns": 2,
+      "forms": [
+        "grid"
+      ]
+    },
+    "diagram": {
+      "blockName": "Grup",
+      "backgroundColor": {
+        "ENTRA PRIMER": "#FFF2CC",
+        "ENTRA DESPRES": "#92D050"
+      },
+      "textColor": {
+        "ENTRA PRIMER": "#000000",
+        "ENTRA DESPRES": "#000000"
+      }
+    },
+    "positions": [
+      {
+        "order": 1,
+        "positionType": {
+          "label": "ENTRA PRIMER"
+        },
+        "specifications": "Cantó equerre/cara plaça",
+        "tag": "4"
+      },
+      {
+        "order": 2,
+        "positionType": {
+          "label": "ENTRA DESPRES"
+        },
+        "specifications": "Cantó dret/cara plaça",
+        "tag": "3"
+      },
+      {
+        "order": 3,
+        "positionType": {
+          "label": "ENTRA DESPRES"
+        },
+        "specifications": "Cantó equerre/esquena plaça",
+        "tag": "2"
+      },
+      {
+        "order": 4,
+        "positionType": {
+          "label": "ENTRA PRIMER"
+        },
+        "specifications": "Cantó dret/esquena plaça",
+        "tag": "1"
+      }
+    ],
+    "minGroups": 1,
+    "showInPositions": true,
+    "audios": [],
+    "videos": []
   }
 ];

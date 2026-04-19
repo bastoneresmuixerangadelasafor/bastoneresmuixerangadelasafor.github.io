@@ -6590,6 +6590,10 @@ body.dark-mode .person-dropdown li.selected {
   align-items: center;
 }
 
+#view-members .page-actions {
+  flex: 1;
+}
+
 .page-actions .btn {
   height: 40px;
   box-sizing: border-box;
@@ -6666,6 +6670,73 @@ body.dark-mode .person-dropdown li.selected {
 .btn-member-positions svg {
   width: 16px;
   height: 16px;
+}
+
+/* Communication dialog */
+#communication-dialog {
+  padding: 0;
+  border: none;
+  border-radius: 16px;
+  box-shadow: none;
+  min-width: min(420px, 90vw);
+  max-width: 90vw;
+  background: transparent;
+  color: #1f2937;
+  text-align: left;
+}
+
+body.dark-mode #communication-dialog {
+  background: transparent;
+  color: #e2e8f0;
+}
+
+#communication-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+#communication-dialog[open] {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+
+#communication-dialog textarea {
+  width: 100%;
+  padding: 0.7em 1em;
+  border: 1px solid #767676;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#communication-dialog textarea:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.15);
+}
+
+#communication-dialog input[type="text"] {
+  width: 100%;
+  padding: 0.7em 1em;
+  border: 1px solid #767676;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#communication-dialog input[type="text"]:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.15);
 }
 
 /* Password change dialog */
@@ -8259,6 +8330,15 @@ body.dark-mode .theme-icon-dark {
                     <button type="button" class="btn btn-primary" id="add-member-btn">
                         <span class="btn-icon">+</span> <span class="btn-label">Afegir membre</span>
                     </button>
+                    <button type="button" class="btn btn-primary" id="send-communication-btn" style="margin-left: auto;">
+                        <span class="btn-icon">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                        </span>
+                        <span class="btn-label">Comunicat</span>
+                    </button>
                 </div>
             </div>
 
@@ -8415,6 +8495,30 @@ body.dark-mode .theme-icon-dark {
         <div class="password-dialog-actions">
             <button type="button" class="btn btn-secondary" id="access-link-cancel-btn">Cancel·lar</button>
             <button type="button" class="btn btn-primary" id="access-link-send-btn">Enviar accés</button>
+        </div>
+    </dialog>
+
+    <!-- Communication Dialog -->
+    <dialog id="communication-dialog">
+        <div class="password-dialog-content">
+            <h3>Enviar comunicat</h3>
+            <div class="form-group">
+                <label for="communication-title">Títol</label>
+                <input type="text" id="communication-title" placeholder="Títol del comunicat" required>
+            </div>
+            <div class="form-group">
+                <label for="communication-message">Missatge</label>
+                <textarea id="communication-message" rows="4" placeholder="Escriu el missatge..." required></textarea>
+            </div>
+        </div>
+        <div class="password-dialog-actions">
+            <button type="button" class="btn btn-secondary" id="communication-cancel-btn">Cancel·lar</button>
+            <button type="button" class="btn btn-primary" id="communication-send-btn">
+                <span class="btn-text">Enviar</span>
+                <span class="btn-loading" style="display: none;">
+                    <span class="spinner-small"></span> Enviant...
+                </span>
+            </button>
         </div>
     </dialog>
 
@@ -9341,6 +9445,65 @@ body.dark-mode .theme-icon-dark {
       }
     ],
     "videos": []
+  },
+  {
+    "name": "La Palmera roja",
+    "structure": {
+      "rows": 2,
+      "columns": 2,
+      "forms": [
+        "grid"
+      ]
+    },
+    "diagram": {
+      "blockName": "Grup",
+      "backgroundColor": {
+        "ENTRA PRIMER": "#FFF2CC",
+        "ENTRA DESPRES": "#92D050"
+      },
+      "textColor": {
+        "ENTRA PRIMER": "#000000",
+        "ENTRA DESPRES": "#000000"
+      }
+    },
+    "positions": [
+      {
+        "order": 1,
+        "positionType": {
+          "label": "ENTRA PRIMER"
+        },
+        "specifications": "Cantó equerre/cara plaça",
+        "tag": "4"
+      },
+      {
+        "order": 2,
+        "positionType": {
+          "label": "ENTRA DESPRES"
+        },
+        "specifications": "Cantó dret/cara plaça",
+        "tag": "3"
+      },
+      {
+        "order": 3,
+        "positionType": {
+          "label": "ENTRA DESPRES"
+        },
+        "specifications": "Cantó equerre/esquena plaça",
+        "tag": "2"
+      },
+      {
+        "order": 4,
+        "positionType": {
+          "label": "ENTRA PRIMER"
+        },
+        "specifications": "Cantó dret/esquena plaça",
+        "tag": "1"
+      }
+    ],
+    "minGroups": 1,
+    "showInPositions": true,
+    "audios": [],
+    "videos": []
   }
 ];
         </script>
@@ -9810,6 +9973,10 @@ const API = new (class GAppsApiClient {
     return this._post({ action: "registerPushToken", body: { pushToken }, requiresAuth: true });
   }
 
+  sendCommunication({ title, message } = {}) {
+    return this._post({ action: "sendCommunication", body: { title, message }, requiresAuth: true });
+  }
+
   unregisterPushToken({ pushToken } = {}) {
     return this._delete({ action: "registerPushToken", body: { pushToken }, requiresAuth: true });
   }
@@ -10235,6 +10402,8 @@ function updateAuthUI() {
   if (typeof applyEditableState === "function") {
     applyEditableState();
   }
+
+  NOTIFICATIONS.updateBellState();
 }
 
 
@@ -11212,6 +11381,11 @@ function updateAuthUI() {
     const refreshMembersBtn = document.getElementById("refresh-members-btn");
     if (refreshMembersBtn) {
       refreshMembersBtn.addEventListener("click", () => this._refreshMembersList());
+    }
+
+    const sendCommunicationBtn = document.getElementById("send-communication-btn");
+    if (sendCommunicationBtn) {
+      sendCommunicationBtn.addEventListener("click", () => this._openCommunicationDialog());
     }
 
     document.addEventListener("click", (e) => {
@@ -12872,6 +13046,63 @@ function updateAuthUI() {
 
     // Initialize action bar listeners
     this._initInlineEditListeners();
+  }
+
+  _openCommunicationDialog() {
+    APP.closeAllDialogs();
+    const dialog = document.getElementById("communication-dialog");
+    if (!dialog) return;
+    document.getElementById("communication-title").value = "";
+    document.getElementById("communication-message").value = "";
+    this._setCommunicationSending(false);
+    this._initCommunicationHandlers();
+    UI.showDialogWithBackdrop(dialog);
+  }
+
+  _closeCommunicationDialog() {
+    UI.closeDialogWithBackdrop("communication-dialog");
+  }
+
+  _setCommunicationSending(sending) {
+    const sendBtn = document.getElementById("communication-send-btn");
+    if (!sendBtn) return;
+    sendBtn.querySelector(".btn-text").style.display = sending ? "none" : "";
+    sendBtn.querySelector(".btn-loading").style.display = sending ? "inline-flex" : "none";
+    sendBtn.disabled = sending;
+  }
+
+  _sendCommunication() {
+    const title = document.getElementById("communication-title").value.trim();
+    const message = document.getElementById("communication-message").value.trim();
+    if (!title || !message) {
+      UI.showToast("Omple el títol i el missatge", "error");
+      return;
+    }
+    this._setCommunicationSending(true);
+    API.sendCommunication({ title, message })
+      .then(() => {
+        this._closeCommunicationDialog();
+        UI.showToast("Comunicat enviat correctament", "success");
+      })
+      .catch((error) => {
+        this._setCommunicationSending(false);
+        UI.showToast(error || "Error enviant el comunicat", "error");
+      });
+  }
+
+  _initCommunicationHandlers() {
+    const cancelBtn = document.getElementById("communication-cancel-btn");
+    const sendBtn = document.getElementById("communication-send-btn");
+    if (cancelBtn) {
+      const newCancel = cancelBtn.cloneNode(true);
+      cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+      newCancel.addEventListener("click", () => this._closeCommunicationDialog());
+    }
+    if (sendBtn) {
+      const newSend = sendBtn.cloneNode(true);
+      sendBtn.parentNode.replaceChild(newSend, sendBtn);
+      newSend.addEventListener("click", () => this._sendCommunication());
+    }
   }
 
   _initPasswordChangeHandlers() {

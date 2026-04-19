@@ -6558,6 +6558,10 @@ body.dark-mode .person-dropdown li.selected {
   align-items: center;
 }
 
+#view-members .page-actions {
+  flex: 1;
+}
+
 .page-actions .btn {
   height: 40px;
   box-sizing: border-box;
@@ -6634,6 +6638,73 @@ body.dark-mode .person-dropdown li.selected {
 .btn-member-positions svg {
   width: 16px;
   height: 16px;
+}
+
+/* Communication dialog */
+#communication-dialog {
+  padding: 0;
+  border: none;
+  border-radius: 16px;
+  box-shadow: none;
+  min-width: min(420px, 90vw);
+  max-width: 90vw;
+  background: transparent;
+  color: #1f2937;
+  text-align: left;
+}
+
+body.dark-mode #communication-dialog {
+  background: transparent;
+  color: #e2e8f0;
+}
+
+#communication-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+#communication-dialog[open] {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+
+#communication-dialog textarea {
+  width: 100%;
+  padding: 0.7em 1em;
+  border: 1px solid #767676;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#communication-dialog textarea:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.15);
+}
+
+#communication-dialog input[type="text"] {
+  width: 100%;
+  padding: 0.7em 1em;
+  border: 1px solid #767676;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#communication-dialog input[type="text"]:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.15);
 }
 
 /* Password change dialog */

@@ -25,8 +25,9 @@ const CACHE = new class GAppsServerCache {
   }
 
   getMembers() {
+    const cachedTimestamp = this.cache_.getProperty(MEMBER_CACHE + "_TS");
     const cachedMembers = this.cache_.getProperty(MEMBER_CACHE);
-    if (cachedMembers) {
+    if (cachedMembers && cachedTimestamp && (Date.now() - parseInt(cachedTimestamp)) < 1800000) {
       return JSON.parse(cachedMembers);
     }
     return this.retrieveMembersFromDB();
@@ -112,6 +113,7 @@ const CACHE = new class GAppsServerCache {
     });
 
     this.cache_.setProperty(MEMBER_CACHE, JSON.stringify(members));
+    this.cache_.setProperty(MEMBER_CACHE + "_TS", String(Date.now()));
 
     return members;
   }

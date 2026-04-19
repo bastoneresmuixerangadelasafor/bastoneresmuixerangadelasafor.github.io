@@ -115,3 +115,33 @@ function notifyUpcomingEvent(event) {
     body: 'Recordatori: ' + name + ' és demà',
   });
 }
+
+function sendCommunication_({ title, message }) {
+  const tokenMap = CACHE.getPushTokens();
+  const tokenCount = Object.keys(tokenMap).reduce(function(count, userId) {
+    var userTokens = tokenMap[userId];
+    return count + (Array.isArray(userTokens) ? userTokens.length : 0);
+  }, 0);
+  if (tokenCount === 0) {
+    return { sent: 0, failed: 0, total: 0 };
+  }
+  var sent = 0;
+  var failed = 0;
+  var sentTokens = {};
+  for (var userId in tokenMap) {
+    var userTokens = tokenMap[userId];
+    if (!Array.isArray(userTokens)) continue;
+    userTokens.forEach(function(token) {
+      if (sentTokens[token]) return;
+      sentTokens[token] = true;
+      try {
+        sendFcmToToken_(token, { title: title, body: message });
+        sent++;
+      } catch (e) {
+        failed++;
+        console.error('Error sending communication to token: ' + e.toString());
+      }
+    });
+  }
+  return { sent: sent, failed: failed, total: sent + failed };
+}

@@ -198,6 +198,23 @@ const DANCES = [
       new DanceMusic({ fileId: "1gNplR0UF5LpWZrWv4O-zP1WbVtz6DRuu", title: "Passi-ho bé - A plaça", artist: "-" }),
     ],
   }),
+  new Dance({
+    name: "La Palmera roja",
+    structure: new DanceStructure({ rows: 2, columns: 2, forms: [new DanceStructureForm(DanceStructureForm.GRID)] }),
+    diagram: new DanceDiagram({blockName: "Grup", backgroundColor: {"ENTRA PRIMER":"#FFF2CC", "ENTRA DESPRES":"#92D050"}, textColor: {"ENTRA PRIMER":"#000000", "ENTRA DESPRES":"#000000"}}),
+    minGroups: 1,
+    showInPositions: true,
+    positions: [
+      new DancePosition({ order: 1, tag: "4", positionType: new PositionType({ label: "ENTRA PRIMER" }), specifications: "Cantó equerre/cara plaça" }),
+      new DancePosition({ order: 2, tag: "3", positionType: new PositionType({ label: "ENTRA DESPRES" }), specifications: "Cantó dret/cara plaça" }),
+      new DancePosition({ order: 3, tag: "2", positionType: new PositionType({ label: "ENTRA DESPRES" }), specifications: "Cantó equerre/esquena plaça" }),
+      new DancePosition({ order: 4, tag: "1", positionType: new PositionType({ label: "ENTRA PRIMER" }), specifications: "Cantó dret/esquena plaça" }),
+    ],
+    audios: [
+    ],
+    videos: [
+    ],
+  }),
 ];
 
 try {

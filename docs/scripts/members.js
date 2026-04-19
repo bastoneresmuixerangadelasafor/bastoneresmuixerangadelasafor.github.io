@@ -27,6 +27,11 @@ const MEMBERS = new (class AppMembers {
       refreshMembersBtn.addEventListener("click", () => this._refreshMembersList());
     }
 
+    const sendCommunicationBtn = document.getElementById("send-communication-btn");
+    if (sendCommunicationBtn) {
+      sendCommunicationBtn.addEventListener("click", () => this._openCommunicationDialog());
+    }
+
     document.addEventListener("click", (e) => {
       const positionsBtn = e.target.closest(".btn-member-positions");
       if (positionsBtn) {
@@ -1685,6 +1690,63 @@ const MEMBERS = new (class AppMembers {
 
     // Initialize action bar listeners
     this._initInlineEditListeners();
+  }
+
+  _openCommunicationDialog() {
+    APP.closeAllDialogs();
+    const dialog = document.getElementById("communication-dialog");
+    if (!dialog) return;
+    document.getElementById("communication-title").value = "";
+    document.getElementById("communication-message").value = "";
+    this._setCommunicationSending(false);
+    this._initCommunicationHandlers();
+    UI.showDialogWithBackdrop(dialog);
+  }
+
+  _closeCommunicationDialog() {
+    UI.closeDialogWithBackdrop("communication-dialog");
+  }
+
+  _setCommunicationSending(sending) {
+    const sendBtn = document.getElementById("communication-send-btn");
+    if (!sendBtn) return;
+    sendBtn.querySelector(".btn-text").style.display = sending ? "none" : "";
+    sendBtn.querySelector(".btn-loading").style.display = sending ? "inline-flex" : "none";
+    sendBtn.disabled = sending;
+  }
+
+  _sendCommunication() {
+    const title = document.getElementById("communication-title").value.trim();
+    const message = document.getElementById("communication-message").value.trim();
+    if (!title || !message) {
+      UI.showToast("Omple el títol i el missatge", "error");
+      return;
+    }
+    this._setCommunicationSending(true);
+    API.sendCommunication({ title, message })
+      .then(() => {
+        this._closeCommunicationDialog();
+        UI.showToast("Comunicat enviat correctament", "success");
+      })
+      .catch((error) => {
+        this._setCommunicationSending(false);
+        UI.showToast(error || "Error enviant el comunicat", "error");
+      });
+  }
+
+  _initCommunicationHandlers() {
+    const cancelBtn = document.getElementById("communication-cancel-btn");
+    const sendBtn = document.getElementById("communication-send-btn");
+    if (cancelBtn) {
+      const newCancel = cancelBtn.cloneNode(true);
+      cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+      newCancel.addEventListener("click", () => this._closeCommunicationDialog());
+    }
+    if (sendBtn) {
+      const newSend = sendBtn.cloneNode(true);
+      sendBtn.parentNode.replaceChild(newSend, sendBtn);
+      newSend.addEventListener("click", () => this._sendCommunication());
+    }
   }
 
   _initPasswordChangeHandlers() {

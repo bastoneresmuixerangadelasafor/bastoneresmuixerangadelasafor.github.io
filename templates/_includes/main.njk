@@ -685,6 +685,15 @@
                     <button type="button" class="btn btn-primary" id="add-member-btn">
                         <span class="btn-icon">+</span> <span class="btn-label">Afegir membre</span>
                     </button>
+                    <button type="button" class="btn btn-primary" id="send-communication-btn" style="margin-left: auto;">
+                        <span class="btn-icon">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                        </span>
+                        <span class="btn-label">Comunicat</span>
+                    </button>
                 </div>
             </div>
 
@@ -841,6 +850,30 @@
         <div class="password-dialog-actions">
             <button type="button" class="btn btn-secondary" id="access-link-cancel-btn">Cancel·lar</button>
             <button type="button" class="btn btn-primary" id="access-link-send-btn">Enviar accés</button>
+        </div>
+    </dialog>
+
+    <!-- Communication Dialog -->
+    <dialog id="communication-dialog">
+        <div class="password-dialog-content">
+            <h3>Enviar comunicat</h3>
+            <div class="form-group">
+                <label for="communication-title">Títol</label>
+                <input type="text" id="communication-title" placeholder="Títol del comunicat" required>
+            </div>
+            <div class="form-group">
+                <label for="communication-message">Missatge</label>
+                <textarea id="communication-message" rows="4" placeholder="Escriu el missatge..." required></textarea>
+            </div>
+        </div>
+        <div class="password-dialog-actions">
+            <button type="button" class="btn btn-secondary" id="communication-cancel-btn">Cancel·lar</button>
+            <button type="button" class="btn btn-primary" id="communication-send-btn">
+                <span class="btn-text">Enviar</span>
+                <span class="btn-loading" style="display: none;">
+                    <span class="spinner-small"></span> Enviant...
+                </span>
+            </button>
         </div>
     </dialog>
 

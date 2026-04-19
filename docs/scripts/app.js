@@ -413,6 +413,8 @@ function updateAuthUI() {
   if (typeof applyEditableState === "function") {
     applyEditableState();
   }
+
+  NOTIFICATIONS.updateBellState();
 }
 
 

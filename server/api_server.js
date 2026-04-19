@@ -32,8 +32,14 @@ const API = class GAppsApiServer {
       if(requiresAuth && !user){
         return API.newError_({ error: "L'operació requereix autenticació. Si us plau, inicia sessió.", status: 401 });
       }
-      if(requiresAdmin && user?.roles?.indexOf("ADMIN") === -1){
-        return API.newError_({ error: "L'operació requereix permisos d'administrador.", status: 403 });
+      if(requiresAdmin){
+        const member = CACHE.getMembers().find(function (m) {
+          return m.email && m.email.toLowerCase() === user.email.toLowerCase();
+        });
+        const freshRoles = member?.roles || [];
+        if(freshRoles.indexOf("ADMIN") === -1){
+          return API.newError_({ error: "L'operació requereix permisos d'administrador.", status: 403 });
+        }
       }
       const params = args.length > 0 ? args[0] : {};
       return fn({ ...params, user });
@@ -199,6 +205,25 @@ const API = class GAppsApiServer {
           return API.newResult_({ result: { status: 'saved' } });
         }, requiresAuth: true, token: e.parameter?.token});
         data = registerPushWorker();
+        break;
+      case "sendCommunication":
+        const sendCommWorker = this.validateUserToken_({fn: ({user}) => {
+          const req = JSON.parse(e.postData?.contents);
+          if (!req?.title || !req?.message) {
+            return API.newError_({ error: "El títol i el missatge són obligatoris.", status: 400 });
+          }
+          try {
+            const result = sendCommunication_({ title: req.title, message: req.message });
+            if (result.total === 0) {
+              return API.newError_({ error: "No hi ha cap dispositiu registrat per a rebre notificacions.", status: 404 });
+            }
+            return API.newResult_({ result: result });
+          } catch (err) {
+            console.error("Error in sendCommunication:", err);
+            return API.newError_({ error: "Error enviant el comunicat: " + err.message, status: 500 });
+          }
+        }, requiresAuth: true, requiresAdmin: true, token: e.parameter?.token});
+        data = sendCommWorker();
         break;
       default:
         return API.newError_({ error: `Unknown POST action: ${action}`, status:404 });

@@ -329,6 +329,10 @@ const API = new (class GAppsApiClient {
     return this._post({ action: "registerPushToken", body: { pushToken }, requiresAuth: true });
   }
 
+  sendCommunication({ title, message } = {}) {
+    return this._post({ action: "sendCommunication", body: { title, message }, requiresAuth: true });
+  }
+
   unregisterPushToken({ pushToken } = {}) {
     return this._delete({ action: "registerPushToken", body: { pushToken }, requiresAuth: true });
   }
