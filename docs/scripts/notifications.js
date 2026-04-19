@@ -96,6 +96,36 @@ const NOTIFICATIONS = new (class PushNotifications {
     }
   }
 
+  async _registerOnMessageHandler() {
+    if (this._onMessageRegistered) return;
+    try {
+      const firebaseConfig = {
+        apiKey: FIREBASE_API_KEY,
+        authDomain: FIREBASE_AUTH_DOMAIN,
+        projectId: FIREBASE_PROJECT_ID,
+        messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
+        appId: FIREBASE_APP_ID,
+      };
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+      const messaging = firebase.messaging();
+      this._onMessageRegistered = true;
+      messaging.onMessage((payload) => {
+        const title = payload.data?.title || 'Bastoneres';
+        const body = payload.data?.body || '';
+        if (Notification.permission === 'granted') {
+          new Notification(title, {
+            body,
+            icon: '/images/android/android-launchericon-192-192.png',
+          });
+        }
+      });
+    } catch (e) {
+      console.error('Error registering onMessage handler:', e);
+    }
+  }
+
   async requestPermissionAndSubscribe() {
     if (!this.isSupported()) return;
 
@@ -151,6 +181,8 @@ const NOTIFICATIONS = new (class PushNotifications {
       this._setLoading(true);
       await this.subscribeToNotifications();
       this._setLoading(false);
+    } else if (Notification.permission === 'granted' && this.getStoredToken()) {
+      await this._registerOnMessageHandler();
     }
   }
 
