@@ -385,18 +385,44 @@ const CACHE = new class GAppsServerCache {
     return positions;
   }
 
-  updateMemberPositionInDB({ memberAlias, danceName, positionOrder, value }) {
-    const spreadsheet = SpreadsheetApp.openById(POSITIONS_SPREADSHEET_ID);
-    const sheet = spreadsheet.getSheetByName(memberAlias);
-
-    if (!sheet) {
-      throw new Error('No s\'ha trobat la fulla de posicions per al membre: ' + memberAlias);
+  ensureMemberPositionsSheetInDB({ spreadsheet, memberAlias }) {
+    const existingSheet = spreadsheet.getSheetByName(memberAlias);
+    if (existingSheet) {
+      return existingSheet;
     }
 
-    const data = sheet.getDataRange().getValues();
+    const templateSheet = spreadsheet.getSheets().find(function (sheet) {
+      return sheet.getLastRow() >= 2 && sheet.getLastColumn() >= 2;
+    });
+
+    let memberSheet;
+    if (templateSheet) {
+      memberSheet = spreadsheet.insertSheet(memberAlias, spreadsheet.getNumSheets(), {
+        template: templateSheet,
+      });
+
+      const lastRow = memberSheet.getLastRow();
+      const lastCol = memberSheet.getLastColumn();
+      if (lastRow > 1 && lastCol > 1) {
+        memberSheet.getRange(2, 2, lastRow - 1, lastCol - 1).clearContent();
+      }
+    } else {
+      memberSheet = spreadsheet.insertSheet(memberAlias);
+    }
+
+    return memberSheet;
+  }
+
+  updateMemberPositionInDB({ memberAlias, danceName, positionOrder, value }) {
+    const spreadsheet = SpreadsheetApp.openById(POSITIONS_SPREADSHEET_ID);
+    const sheet = this.ensureMemberPositionsSheetInDB({ spreadsheet, memberAlias });
+
+    let data = sheet.getDataRange().getValues();
 
     if (!data || data.length < 2) {
-      throw new Error('No hi ha dades de posicions per al membre: ' + memberAlias);
+      sheet.getRange(1, 1, 1, 2).setValues([['Posició', danceName]]);
+      sheet.getRange(2, 1, 1, 2).setValues([[positionOrder, '']]);
+      data = sheet.getDataRange().getValues();
     }
 
     const headers = data[0];
@@ -410,7 +436,8 @@ const CACHE = new class GAppsServerCache {
     }
 
     if (danceColIndex === -1) {
-      throw new Error('No s\'ha trobat la dansa: ' + danceName);
+      danceColIndex = headers.length;
+      sheet.getRange(1, danceColIndex + 1).setValue(danceName);
     }
 
     let positionRowIndex = -1;
@@ -422,7 +449,8 @@ const CACHE = new class GAppsServerCache {
     }
 
     if (positionRowIndex === -1) {
-      throw new Error('No s\'ha trobat la posició: ' + positionOrder);
+      positionRowIndex = data.length;
+      sheet.getRange(positionRowIndex + 1, 1).setValue(positionOrder);
     }
 
     sheet.getRange(positionRowIndex + 1, danceColIndex + 1).setValue(value);

@@ -90,7 +90,7 @@ const API = new (class GAppsApiClient {
 
           if (!response.ok) {
             let errorMessage = `Error del servidor (${response.status}). Si el problema persistix, contacta a l'administrador.`;
-            if (response.status === 401) {
+            if (response.status === 401 && action !== "logout") {
               return AUTH.handleLogout({ message: "La teua sessió ha caducat. Per favor, torna a iniciar sessió." });
             }
             if (response.status === 403) {

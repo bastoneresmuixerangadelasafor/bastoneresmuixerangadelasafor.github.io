@@ -27,6 +27,12 @@ const SPLASH_SIZES = [
   { width: 1620, height: 2160 },
   { width: 1488, height: 2266 },
   { width: 1536, height: 2048 },
+  { width: 2732, height: 2048 },
+  { width: 2388, height: 1668 },
+  { width: 2360, height: 1640 },
+  { width: 2160, height: 1620 },
+  { width: 2266, height: 1488 },
+  { width: 2048, height: 1536 },
 ];
 
 async function generateSplash() {

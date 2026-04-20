@@ -972,6 +972,13 @@ table tbody tr:last-child td {
   padding-bottom: 16px;
 }
 
+.profile-avatar-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
 .profile-avatar {
   width: 100px;
   height: 100px;
@@ -984,6 +991,16 @@ table tbody tr:last-child td {
   border: none;
   padding: 0;
   margin: 0;
+}
+
+.profile-info {
+  align-self: flex-start;
+}
+
+#profile-email {
+  margin: 0;
+  text-align: center;
+  word-break: break-word;
 }
 
 .member-type-badge {
@@ -7794,10 +7811,12 @@ body.dark-mode .theme-icon-dark {
 
             <div class="card profile-card">
                 <div class="profile-header">
-                    <img id="profile-avatar" class="profile-avatar" src="" alt="Perfil">
+                    <div class="profile-avatar-block">
+                        <img id="profile-avatar" class="profile-avatar" src="" alt="Perfil">
+                        <p id="profile-email" class="text-muted"></p>
+                    </div>
                     <div class="profile-info">
                         <h2 id="profile-name"></h2>
-                        <p id="profile-email" class="text-muted"></p>
                         <p id="profile-member-type" class="member-type-badge"></p>
                     </div>
                 </div>
@@ -9734,7 +9753,7 @@ const API = new (class GAppsApiClient {
 
           if (!response.ok) {
             let errorMessage = `Error del servidor (${response.status}). Si el problema persistix, contacta a l'administrador.`;
-            if (response.status === 401) {
+            if (response.status === 401 && action !== "logout") {
               return AUTH.handleLogout({ message: "La teua sessió ha caducat. Per favor, torna a iniciar sessió." });
             }
             if (response.status === 403) {
@@ -11172,6 +11191,9 @@ function updateAuthUI() {
   }
 
   handleLogout({ message = "Has tancat la sessió", messageType = "success" } = {}) {
+    if (this._isLoggingOut) return;
+    this._isLoggingOut = true;
+
     // Show general loading screen
     APP.showLoading(true);
 
@@ -11202,6 +11224,7 @@ function updateAuthUI() {
       NAVIGATION.navigateTo("home-guest");
       UI.showToast(message, messageType);
       APP.showLoading(false);
+      this._isLoggingOut = false;
     };
 
     NOTIFICATIONS.unsubscribe().catch(() => {}).then(() => API.logoutUser())
