@@ -14654,11 +14654,11 @@ function updateAuthUI() {
             const baseCellWidth = 100;
             const baseCellHeight = 50;
             const baseCoupleGap = 8;
-            const baseCellArcGap = 50;
+            const baseCellArcGap = 100;
             const baseLabelSpace = 40;
             const baseCoupleHeight = baseCellHeight * rows + baseCoupleGap * (rows - 1);
             const minCircumference = groupCount * (baseCellWidth + baseCellArcGap);
-            const baseRadius = Math.max(minCircumference / (2 * Math.PI), 90);
+            const baseRadius = Math.max(minCircumference / (2 * Math.PI), 120);
             const maxHorizontalExtent = baseCellWidth / 2;
             const maxVerticalExtent = baseCoupleHeight / 2;
             const totalDiameter = 2 * (baseRadius + maxHorizontalExtent + baseLabelSpace + 20);
