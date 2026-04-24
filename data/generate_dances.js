@@ -171,7 +171,7 @@ const DANCES = [
     ],
   }),
   new Dance({
-    name: "La Palmera roja",
+    name: "Palmera boja",
     structure: new DanceStructure({ rows: 2, columns: 2, forms: [new DanceStructureForm(DanceStructureForm.GRID)] }),
     diagram: new DanceDiagram({blockName: "Grup", backgroundColor: {"ENTRA PRIMER":"#FFF2CC", "ENTRA DESPRES":"#92D050"}, textColor: {"ENTRA PRIMER":"#000000", "ENTRA DESPRES":"#000000"}}),
     minGroups: 1,
