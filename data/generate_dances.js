@@ -183,6 +183,7 @@ const DANCES = [
       new DancePosition({ order: 4, tag: "1", positionType: new PositionType({ label: "ENTRA PRIMER" }), specifications: "Cantó dret/esquena plaça" }),
     ],
     audios: [
+      new DanceMusic({ fileId: "1NCrAQ8Xa_VNXiKqTA7WhlvglteFRXtSY", title: "Palmera boja - A plaça", artist: "-" }),
     ],
     videos: [
     ],

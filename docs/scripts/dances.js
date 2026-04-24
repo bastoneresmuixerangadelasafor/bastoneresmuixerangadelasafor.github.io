@@ -692,7 +692,13 @@ const DANCES = [
     ],
     "minGroups": 1,
     "showInPositions": true,
-    "audios": [],
+    "audios": [
+      {
+        "fileId": "1NCrAQ8Xa_VNXiKqTA7WhlvglteFRXtSY",
+        "title": "Palmera boja - A plaça",
+        "artist": "-"
+      }
+    ],
     "videos": []
   }
 ];
