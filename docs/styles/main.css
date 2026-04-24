@@ -6960,3 +6960,12 @@ body.dark-mode .password-dialog-actions {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+dialog [class$="close-btn"],
+dialog [class*="close-btn "] {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  left: auto;
+  bottom: auto;
+}

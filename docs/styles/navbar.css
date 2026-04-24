@@ -521,10 +521,27 @@ body.dark-mode .theme-icon-dark {
   color: var(--primary-color);
 }
 
-/* Denied (unsubscribed): outline bell, primary color */
-.push-bell-btn--denied {
+/* Resubscribe (permission granted but no active token): outline bell with refresh badge */
+.push-bell-btn--resubscribe {
   color: var(--primary-color);
   border-color: var(--primary-color);
+  position: relative;
+}
+
+.push-bell-btn--resubscribe::after {
+  content: '↻';
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 14px;
+  height: 14px;
+  background: var(--primary-color);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
 }
 
 /* Blocked: disabled look with diagonal line */

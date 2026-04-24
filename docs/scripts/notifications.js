@@ -165,12 +165,16 @@ const NOTIFICATIONS = new (class PushNotifications {
         }
         if (Notification.permission === 'denied') {
           alert('Les notificacions estan bloquejades.\n\nPer activar-les, ves a la configuració del navegador:\n1. Toca la icona del cadenat (🔒) al costat de la barra d\'adreces\n2. Busca "Notificacions"\n3. Canvia el permís a "Permetre"\n4. Recarrega la pàgina');
-        } else if (Notification.permission === 'granted') {
+        } else if (Notification.permission === 'granted' && this.getStoredToken()) {
           if (confirm('Vols desactivar les notificacions push?')) {
             this._setLoading(true);
             await this.unsubscribe();
             this._setLoading(false);
           }
+        } else if (Notification.permission === 'granted') {
+          this._setLoading(true);
+          await this.subscribeToNotifications();
+          this._setLoading(false);
         } else {
           this._setLoading(true);
           await this.requestPermissionAndSubscribe();
@@ -200,7 +204,7 @@ const NOTIFICATIONS = new (class PushNotifications {
     const permission = Notification.permission;
 
     bellBtn.style.display = '';
-    bellBtn.classList.remove('push-bell-btn--granted', 'push-bell-btn--denied', 'push-bell-btn--blocked', 'push-bell-btn--not-requested');
+    bellBtn.classList.remove('push-bell-btn--granted', 'push-bell-btn--resubscribe', 'push-bell-btn--blocked', 'push-bell-btn--not-requested');
 
     if (permission === 'denied') {
       bellBtn.classList.add('push-bell-btn--blocked');
@@ -211,9 +215,9 @@ const NOTIFICATIONS = new (class PushNotifications {
       bellBtn.setAttribute('aria-label', 'Desactivar notificacions');
       bellBtn.title = 'Desactivar notificacions push';
     } else if (permission === 'granted') {
-      bellBtn.classList.add('push-bell-btn--denied');
-      bellBtn.setAttribute('aria-label', 'Activar notificacions');
-      bellBtn.title = 'Activar notificacions push';
+      bellBtn.classList.add('push-bell-btn--resubscribe');
+      bellBtn.setAttribute('aria-label', 'Reactivar notificacions');
+      bellBtn.title = 'Reactivar notificacions push';
     } else {
       bellBtn.classList.add('push-bell-btn--not-requested');
       bellBtn.setAttribute('aria-label', 'Activar notificacions');
