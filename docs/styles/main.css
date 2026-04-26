@@ -5919,6 +5919,43 @@ body.dark-mode #person-dialog {
   backdrop-filter: blur(4px);
 }
 
+.offline-banner {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 12px;
+  background: #4b5563;
+  color: #f9fafb;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.offline-banner-icon {
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+body.is-offline .offline-banner {
+  display: flex;
+}
+
+body.is-offline .navbar {
+  top: 24px;
+}
+
+body.is-offline {
+  padding-top: 24px;
+}
+
 #person-dialog[open] {
   display: flex;
   flex-direction: column;
@@ -6602,6 +6639,14 @@ body.dark-mode .person-dropdown li.selected {
   #edit-all-members-btn .btn-icon {
     margin-right: 0;
   }
+
+  #send-communication-btn .btn-label {
+    display: none;
+  }
+
+  #send-communication-btn .btn-icon {
+    margin-right: 0;
+  }
 }
 
 .members-filter-summary {
@@ -6722,6 +6767,196 @@ body.dark-mode #communication-dialog {
   outline: none;
   border-color: #1976d2;
   box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.15);
+}
+
+.communication-audience {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  width: 100%;
+}
+
+.password-dialog-content label.communication-audience-option {
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5em;
+  margin-bottom: 0;
+  cursor: pointer;
+  font-weight: normal;
+  line-height: 1.2;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.communication-audience-option input[type="radio"] {
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+  width: auto;
+  height: auto;
+}
+
+.communication-audience-option > span {
+  display: inline;
+  line-height: 1.2;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.communication-recipients-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75em;
+  margin: 0.6em 0 0.5em;
+  flex-wrap: wrap;
+}
+
+.communication-recipients-action-buttons {
+  display: flex;
+  gap: 0.4em;
+  flex-wrap: wrap;
+}
+
+.communication-recipients-action-btn {
+  background: transparent;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  padding: 0.35em 0.75em;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  font-family: inherit;
+  line-height: 1.2;
+}
+
+.communication-recipients-action-btn:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.communication-recipients-action-btn:active {
+  background: #e5e7eb;
+}
+
+body.dark-mode .communication-recipients-action-btn {
+  border-color: #4b5563;
+  color: #d1d5db;
+}
+
+body.dark-mode .communication-recipients-action-btn:hover {
+  background: #374151;
+  border-color: #6b7280;
+}
+
+.communication-recipients-count {
+  font-size: 0.8rem;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+body.dark-mode .communication-recipients-count {
+  color: #9ca3af;
+}
+
+.communication-recipients-list {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+}
+
+body.dark-mode .communication-recipients-list {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+.password-dialog-content label.communication-recipient-item {
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.55em;
+  padding: 0.3em 0.6em;
+  margin-bottom: 0;
+  cursor: pointer;
+  border-bottom: 1px solid #f3f4f6;
+  font-weight: normal;
+  font-size: 0.85rem;
+  line-height: 1.15;
+  box-sizing: border-box;
+}
+
+body.dark-mode .communication-recipient-item {
+  border-bottom-color: #374151;
+}
+
+.communication-recipient-item:last-child {
+  border-bottom: none;
+}
+
+.communication-recipient-item:hover {
+  background: #f9fafb;
+}
+
+body.dark-mode .communication-recipient-item:hover {
+  background: #111827;
+}
+
+.communication-recipient-item input[type="checkbox"] {
+  margin: 0;
+  padding: 0;
+  width: auto;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.communication-recipient-info {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 0.4em;
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.communication-recipient-name {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+  max-width: 50%;
+}
+
+.communication-recipient-sub {
+  font-size: 0.75rem;
+  color: #6b7280;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+body.dark-mode .communication-recipient-sub {
+  color: #9ca3af;
+}
+
+.communication-recipients-empty {
+  padding: 1em;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+body.dark-mode .communication-recipients-empty {
+  color: #9ca3af;
 }
 
 /* Password change dialog */

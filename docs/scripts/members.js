@@ -1698,6 +1698,13 @@ const MEMBERS = new (class AppMembers {
     if (!dialog) return;
     document.getElementById("communication-title").value = "";
     document.getElementById("communication-message").value = "";
+    const allRadio = dialog.querySelector('input[name="communication-audience"][value="all"]');
+    if (allRadio) allRadio.checked = true;
+    const searchInput = document.getElementById("communication-recipients-search");
+    if (searchInput) searchInput.value = "";
+    this._communicationSelectedIds = new Set();
+    this._renderCommunicationRecipients();
+    this._updateCommunicationAudienceVisibility();
     this._setCommunicationSending(false);
     this._initCommunicationHandlers();
     UI.showDialogWithBackdrop(dialog);
@@ -1715,6 +1722,78 @@ const MEMBERS = new (class AppMembers {
     sendBtn.disabled = sending;
   }
 
+  _getCommunicationAudience() {
+    const checked = document.querySelector('input[name="communication-audience"]:checked');
+    return checked ? checked.value : "all";
+  }
+
+  _getCommunicationCandidateMembers() {
+    return (MEMBERS.membersData || []).filter(
+      (m) => m.active !== false && m.email
+    );
+  }
+
+  _renderCommunicationRecipients() {
+    const list = document.getElementById("communication-recipients-list");
+    if (!list) return;
+    const searchInput = document.getElementById("communication-recipients-search");
+    const search = (searchInput?.value || "").toLowerCase().trim();
+    const candidates = this._getCommunicationCandidateMembers();
+    const filtered = candidates.filter((m) => {
+      if (!search) return true;
+      return (
+        (m.alias || "").toLowerCase().includes(search) ||
+        (m.name || "").toLowerCase().includes(search) ||
+        (m.email || "").toLowerCase().includes(search)
+      );
+    });
+    if (!this._communicationSelectedIds) this._communicationSelectedIds = new Set();
+    if (filtered.length === 0) {
+      list.innerHTML = '<div class="communication-recipients-empty">No hi ha membres disponibles</div>';
+    } else {
+      list.innerHTML = filtered
+        .map((m) => {
+          const id = m.email;
+          const checked = this._communicationSelectedIds.has(id) ? "checked" : "";
+          const label = m.alias || m.name || m.email;
+          const sub = m.alias && m.name ? m.name : m.email;
+          return `
+            <label class="communication-recipient-item">
+              <input type="checkbox" value="${id}" ${checked}>
+              <span class="communication-recipient-info">
+                <span class="communication-recipient-name">${label}</span>
+                <span class="communication-recipient-sub">${sub}</span>
+              </span>
+            </label>
+          `;
+        })
+        .join("");
+      list.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+        cb.addEventListener("change", (e) => {
+          const id = e.target.value;
+          if (e.target.checked) this._communicationSelectedIds.add(id);
+          else this._communicationSelectedIds.delete(id);
+          this._updateCommunicationRecipientsCount();
+        });
+      });
+    }
+    this._updateCommunicationRecipientsCount();
+  }
+
+  _updateCommunicationRecipientsCount() {
+    const countEl = document.getElementById("communication-recipients-count");
+    if (!countEl) return;
+    const n = this._communicationSelectedIds ? this._communicationSelectedIds.size : 0;
+    countEl.textContent = n === 1 ? "1 seleccionat" : `${n} seleccionats`;
+  }
+
+  _updateCommunicationAudienceVisibility() {
+    const group = document.getElementById("communication-recipients-group");
+    if (!group) return;
+    const audience = this._getCommunicationAudience();
+    group.style.display = audience === "specific" ? "" : "none";
+  }
+
   _sendCommunication() {
     const title = document.getElementById("communication-title").value.trim();
     const message = document.getElementById("communication-message").value.trim();
@@ -1722,8 +1801,17 @@ const MEMBERS = new (class AppMembers {
       UI.showToast("Omple el títol i el missatge", "error");
       return;
     }
+    const audience = this._getCommunicationAudience();
+    let recipientUserIds = null;
+    if (audience === "specific") {
+      recipientUserIds = Array.from(this._communicationSelectedIds || []);
+      if (recipientUserIds.length === 0) {
+        UI.showToast("Selecciona almenys un membre", "error");
+        return;
+      }
+    }
     this._setCommunicationSending(true);
-    API.sendCommunication({ title, message })
+    API.sendCommunication({ title, message, recipientUserIds })
       .then(() => {
         this._closeCommunicationDialog();
         UI.showToast("Comunicat enviat correctament", "success");
@@ -1746,6 +1834,38 @@ const MEMBERS = new (class AppMembers {
       const newSend = sendBtn.cloneNode(true);
       sendBtn.parentNode.replaceChild(newSend, sendBtn);
       newSend.addEventListener("click", () => this._sendCommunication());
+    }
+    document.querySelectorAll('input[name="communication-audience"]').forEach((radio) => {
+      const fresh = radio.cloneNode(true);
+      radio.parentNode.replaceChild(fresh, radio);
+      fresh.addEventListener("change", () => this._updateCommunicationAudienceVisibility());
+    });
+    const searchInput = document.getElementById("communication-recipients-search");
+    if (searchInput) {
+      const fresh = searchInput.cloneNode(true);
+      searchInput.parentNode.replaceChild(fresh, searchInput);
+      fresh.addEventListener("input", () => this._renderCommunicationRecipients());
+    }
+    const selectAllBtn = document.getElementById("communication-recipients-select-all");
+    if (selectAllBtn) {
+      const fresh = selectAllBtn.cloneNode(true);
+      selectAllBtn.parentNode.replaceChild(fresh, selectAllBtn);
+      fresh.addEventListener("click", () => {
+        if (!this._communicationSelectedIds) this._communicationSelectedIds = new Set();
+        this._getCommunicationCandidateMembers().forEach((m) => {
+          this._communicationSelectedIds.add(m.email);
+        });
+        this._renderCommunicationRecipients();
+      });
+    }
+    const clearBtn = document.getElementById("communication-recipients-clear");
+    if (clearBtn) {
+      const fresh = clearBtn.cloneNode(true);
+      clearBtn.parentNode.replaceChild(fresh, clearBtn);
+      fresh.addEventListener("click", () => {
+        this._communicationSelectedIds = new Set();
+        this._renderCommunicationRecipients();
+      });
     }
   }
 

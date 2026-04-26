@@ -213,7 +213,7 @@ const API = class GAppsApiServer {
             return API.newError_({ error: "El títol i el missatge són obligatoris.", status: 400 });
           }
           try {
-            const result = sendCommunication_({ title: req.title, message: req.message });
+            const result = sendCommunication_({ title: req.title, message: req.message, recipientUserIds: req.recipientUserIds });
             if (result.total === 0) {
               return API.newError_({ error: "No hi ha cap dispositiu registrat per a rebre notificacions.", status: 404 });
             }

@@ -867,6 +867,31 @@
                 <label for="communication-message">Missatge</label>
                 <textarea id="communication-message" rows="4" placeholder="Escriu el missatge..." required></textarea>
             </div>
+            <div class="form-group">
+                <label>Destinataris</label>
+                <div class="communication-audience">
+                    <label class="communication-audience-option">
+                        <input type="radio" name="communication-audience" value="all" checked>
+                        <span>Tots els membres</span>
+                    </label>
+                    <label class="communication-audience-option">
+                        <input type="radio" name="communication-audience" value="specific">
+                        <span>Membres concrets</span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group" id="communication-recipients-group" style="display: none;">
+                <label for="communication-recipients-search">Selecciona els membres</label>
+                <input type="text" id="communication-recipients-search" placeholder="Cerca per nom o àlies...">
+                <div class="communication-recipients-actions">
+                    <div class="communication-recipients-action-buttons">
+                        <button type="button" class="communication-recipients-action-btn" id="communication-recipients-select-all">Seleccionar tots</button>
+                        <button type="button" class="communication-recipients-action-btn" id="communication-recipients-clear">Netejar</button>
+                    </div>
+                    <span class="communication-recipients-count" id="communication-recipients-count">0 seleccionats</span>
+                </div>
+                <div class="communication-recipients-list" id="communication-recipients-list"></div>
+            </div>
         </div>
         <div class="password-dialog-actions">
             <button type="button" class="btn btn-secondary" id="communication-cancel-btn">Cancel·lar</button>

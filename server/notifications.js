@@ -116,19 +116,17 @@ function notifyUpcomingEvent(event) {
   });
 }
 
-function sendCommunication_({ title, message }) {
+function sendCommunication_({ title, message, recipientUserIds }) {
   const tokenMap = CACHE.getPushTokens();
-  const tokenCount = Object.keys(tokenMap).reduce(function(count, userId) {
-    var userTokens = tokenMap[userId];
-    return count + (Array.isArray(userTokens) ? userTokens.length : 0);
-  }, 0);
-  if (tokenCount === 0) {
-    return { sent: 0, failed: 0, total: 0 };
-  }
+  const filterIds = Array.isArray(recipientUserIds) && recipientUserIds.length > 0
+    ? recipientUserIds.map(function(id) { return String(id || '').toLowerCase(); }).filter(function(id) { return id; })
+    : null;
+  const filterSet = filterIds ? filterIds.reduce(function(acc, id) { acc[id] = true; return acc; }, {}) : null;
   var sent = 0;
   var failed = 0;
   var sentTokens = {};
   for (var userId in tokenMap) {
+    if (filterSet && !filterSet[String(userId || '').toLowerCase()]) continue;
     var userTokens = tokenMap[userId];
     if (!Array.isArray(userTokens)) continue;
     userTokens.forEach(function(token) {

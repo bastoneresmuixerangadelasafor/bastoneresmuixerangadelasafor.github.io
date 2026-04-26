@@ -5951,6 +5951,43 @@ body.dark-mode #person-dialog {
   backdrop-filter: blur(4px);
 }
 
+.offline-banner {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 12px;
+  background: #4b5563;
+  color: #f9fafb;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.offline-banner-icon {
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+body.is-offline .offline-banner {
+  display: flex;
+}
+
+body.is-offline .navbar {
+  top: 24px;
+}
+
+body.is-offline {
+  padding-top: 24px;
+}
+
 #person-dialog[open] {
   display: flex;
   flex-direction: column;
@@ -6634,6 +6671,14 @@ body.dark-mode .person-dropdown li.selected {
   #edit-all-members-btn .btn-icon {
     margin-right: 0;
   }
+
+  #send-communication-btn .btn-label {
+    display: none;
+  }
+
+  #send-communication-btn .btn-icon {
+    margin-right: 0;
+  }
 }
 
 .members-filter-summary {
@@ -6754,6 +6799,196 @@ body.dark-mode #communication-dialog {
   outline: none;
   border-color: #1976d2;
   box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.15);
+}
+
+.communication-audience {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  width: 100%;
+}
+
+.password-dialog-content label.communication-audience-option {
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5em;
+  margin-bottom: 0;
+  cursor: pointer;
+  font-weight: normal;
+  line-height: 1.2;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.communication-audience-option input[type="radio"] {
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+  width: auto;
+  height: auto;
+}
+
+.communication-audience-option > span {
+  display: inline;
+  line-height: 1.2;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.communication-recipients-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75em;
+  margin: 0.6em 0 0.5em;
+  flex-wrap: wrap;
+}
+
+.communication-recipients-action-buttons {
+  display: flex;
+  gap: 0.4em;
+  flex-wrap: wrap;
+}
+
+.communication-recipients-action-btn {
+  background: transparent;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  padding: 0.35em 0.75em;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  font-family: inherit;
+  line-height: 1.2;
+}
+
+.communication-recipients-action-btn:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.communication-recipients-action-btn:active {
+  background: #e5e7eb;
+}
+
+body.dark-mode .communication-recipients-action-btn {
+  border-color: #4b5563;
+  color: #d1d5db;
+}
+
+body.dark-mode .communication-recipients-action-btn:hover {
+  background: #374151;
+  border-color: #6b7280;
+}
+
+.communication-recipients-count {
+  font-size: 0.8rem;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+body.dark-mode .communication-recipients-count {
+  color: #9ca3af;
+}
+
+.communication-recipients-list {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+}
+
+body.dark-mode .communication-recipients-list {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+.password-dialog-content label.communication-recipient-item {
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.55em;
+  padding: 0.3em 0.6em;
+  margin-bottom: 0;
+  cursor: pointer;
+  border-bottom: 1px solid #f3f4f6;
+  font-weight: normal;
+  font-size: 0.85rem;
+  line-height: 1.15;
+  box-sizing: border-box;
+}
+
+body.dark-mode .communication-recipient-item {
+  border-bottom-color: #374151;
+}
+
+.communication-recipient-item:last-child {
+  border-bottom: none;
+}
+
+.communication-recipient-item:hover {
+  background: #f9fafb;
+}
+
+body.dark-mode .communication-recipient-item:hover {
+  background: #111827;
+}
+
+.communication-recipient-item input[type="checkbox"] {
+  margin: 0;
+  padding: 0;
+  width: auto;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.communication-recipient-info {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 0.4em;
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.communication-recipient-name {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+  max-width: 50%;
+}
+
+.communication-recipient-sub {
+  font-size: 0.75rem;
+  color: #6b7280;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+body.dark-mode .communication-recipient-sub {
+  color: #9ca3af;
+}
+
+.communication-recipients-empty {
+  padding: 1em;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+body.dark-mode .communication-recipients-empty {
+  color: #9ca3af;
 }
 
 /* Password change dialog */
@@ -6993,6 +7228,15 @@ body.dark-mode .password-dialog-actions {
   }
 }
 
+dialog [class$="close-btn"],
+dialog [class*="close-btn "] {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  left: auto;
+  bottom: auto;
+}
+
         </style>
         
     </head>
@@ -7017,6 +7261,10 @@ body.dark-mode .password-dialog-actions {
         <!-- App Container -->
 <div id="app" class="app-container" style="display: none;">
     <a href="#main-content" class="skip-link">Salta al contingut</a>
+    <div id="offline-banner" class="offline-banner" role="status" aria-live="polite">
+        <svg class="offline-banner-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path><path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+        <span>Sense connexió a Internet</span>
+    </div>
     <!-- Navigation Bar -->
 <nav id="navbar" class="navbar">
     <div class="navbar-brand">
@@ -7602,10 +7850,27 @@ body.dark-mode .theme-icon-dark {
   color: var(--primary-color);
 }
 
-/* Denied (unsubscribed): outline bell, primary color */
-.push-bell-btn--denied {
+/* Resubscribe (permission granted but no active token): outline bell with refresh badge */
+.push-bell-btn--resubscribe {
   color: var(--primary-color);
   border-color: var(--primary-color);
+  position: relative;
+}
+
+.push-bell-btn--resubscribe::after {
+  content: '↻';
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 14px;
+  height: 14px;
+  background: var(--primary-color);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
 }
 
 /* Blocked: disabled look with diagonal line */
@@ -8529,6 +8794,31 @@ body.dark-mode .theme-icon-dark {
                 <label for="communication-message">Missatge</label>
                 <textarea id="communication-message" rows="4" placeholder="Escriu el missatge..." required></textarea>
             </div>
+            <div class="form-group">
+                <label>Destinataris</label>
+                <div class="communication-audience">
+                    <label class="communication-audience-option">
+                        <input type="radio" name="communication-audience" value="all" checked>
+                        <span>Tots els membres</span>
+                    </label>
+                    <label class="communication-audience-option">
+                        <input type="radio" name="communication-audience" value="specific">
+                        <span>Membres concrets</span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group" id="communication-recipients-group" style="display: none;">
+                <label for="communication-recipients-search">Selecciona els membres</label>
+                <input type="text" id="communication-recipients-search" placeholder="Cerca per nom o àlies...">
+                <div class="communication-recipients-actions">
+                    <div class="communication-recipients-action-buttons">
+                        <button type="button" class="communication-recipients-action-btn" id="communication-recipients-select-all">Seleccionar tots</button>
+                        <button type="button" class="communication-recipients-action-btn" id="communication-recipients-clear">Netejar</button>
+                    </div>
+                    <span class="communication-recipients-count" id="communication-recipients-count">0 seleccionats</span>
+                </div>
+                <div class="communication-recipients-list" id="communication-recipients-list"></div>
+            </div>
         </div>
         <div class="password-dialog-actions">
             <button type="button" class="btn btn-secondary" id="communication-cancel-btn">Cancel·lar</button>
@@ -9360,7 +9650,13 @@ body.dark-mode .theme-icon-dark {
     ],
     "minGroups": 1,
     "showInPositions": true,
-    "audios": [],
+    "audios": [
+      {
+        "fileId": "1NCrAQ8Xa_VNXiKqTA7WhlvglteFRXtSY",
+        "title": "Palmera boja - A plaça",
+        "artist": "-"
+      }
+    ],
     "videos": []
   }
 ];
@@ -9831,8 +10127,8 @@ const API = new (class GAppsApiClient {
     return this._post({ action: "registerPushToken", body: { pushToken }, requiresAuth: true });
   }
 
-  sendCommunication({ title, message } = {}) {
-    return this._post({ action: "sendCommunication", body: { title, message }, requiresAuth: true });
+  sendCommunication({ title, message, recipientUserIds } = {}) {
+    return this._post({ action: "sendCommunication", body: { title, message, recipientUserIds }, requiresAuth: true });
   }
 
   unregisterPushToken({ pushToken } = {}) {
@@ -9861,6 +10157,8 @@ const API = new (class GAppsApiClient {
       this._configurePWA();
 
       this._configureBackgroundRefresh();
+
+      this._configureOfflineBanner();
 
       this.showLoading(true);
 
@@ -9926,6 +10224,15 @@ const API = new (class GAppsApiClient {
         }
       }
     }
+  }
+
+  _configureOfflineBanner() {
+    const updateOfflineState = () => {
+      document.body.classList.toggle("is-offline", !navigator.onLine);
+    };
+    window.addEventListener("online", updateOfflineState);
+    window.addEventListener("offline", updateOfflineState);
+    updateOfflineState();
   }
 
   _configureSession() {
@@ -12916,6 +13223,13 @@ function updateAuthUI() {
     if (!dialog) return;
     document.getElementById("communication-title").value = "";
     document.getElementById("communication-message").value = "";
+    const allRadio = dialog.querySelector('input[name="communication-audience"][value="all"]');
+    if (allRadio) allRadio.checked = true;
+    const searchInput = document.getElementById("communication-recipients-search");
+    if (searchInput) searchInput.value = "";
+    this._communicationSelectedIds = new Set();
+    this._renderCommunicationRecipients();
+    this._updateCommunicationAudienceVisibility();
     this._setCommunicationSending(false);
     this._initCommunicationHandlers();
     UI.showDialogWithBackdrop(dialog);
@@ -12933,6 +13247,78 @@ function updateAuthUI() {
     sendBtn.disabled = sending;
   }
 
+  _getCommunicationAudience() {
+    const checked = document.querySelector('input[name="communication-audience"]:checked');
+    return checked ? checked.value : "all";
+  }
+
+  _getCommunicationCandidateMembers() {
+    return (MEMBERS.membersData || []).filter(
+      (m) => m.active !== false && m.email
+    );
+  }
+
+  _renderCommunicationRecipients() {
+    const list = document.getElementById("communication-recipients-list");
+    if (!list) return;
+    const searchInput = document.getElementById("communication-recipients-search");
+    const search = (searchInput?.value || "").toLowerCase().trim();
+    const candidates = this._getCommunicationCandidateMembers();
+    const filtered = candidates.filter((m) => {
+      if (!search) return true;
+      return (
+        (m.alias || "").toLowerCase().includes(search) ||
+        (m.name || "").toLowerCase().includes(search) ||
+        (m.email || "").toLowerCase().includes(search)
+      );
+    });
+    if (!this._communicationSelectedIds) this._communicationSelectedIds = new Set();
+    if (filtered.length === 0) {
+      list.innerHTML = '<div class="communication-recipients-empty">No hi ha membres disponibles</div>';
+    } else {
+      list.innerHTML = filtered
+        .map((m) => {
+          const id = m.email;
+          const checked = this._communicationSelectedIds.has(id) ? "checked" : "";
+          const label = m.alias || m.name || m.email;
+          const sub = m.alias && m.name ? m.name : m.email;
+          return `
+            <label class="communication-recipient-item">
+              <input type="checkbox" value="${id}" ${checked}>
+              <span class="communication-recipient-info">
+                <span class="communication-recipient-name">${label}</span>
+                <span class="communication-recipient-sub">${sub}</span>
+              </span>
+            </label>
+          `;
+        })
+        .join("");
+      list.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+        cb.addEventListener("change", (e) => {
+          const id = e.target.value;
+          if (e.target.checked) this._communicationSelectedIds.add(id);
+          else this._communicationSelectedIds.delete(id);
+          this._updateCommunicationRecipientsCount();
+        });
+      });
+    }
+    this._updateCommunicationRecipientsCount();
+  }
+
+  _updateCommunicationRecipientsCount() {
+    const countEl = document.getElementById("communication-recipients-count");
+    if (!countEl) return;
+    const n = this._communicationSelectedIds ? this._communicationSelectedIds.size : 0;
+    countEl.textContent = n === 1 ? "1 seleccionat" : `${n} seleccionats`;
+  }
+
+  _updateCommunicationAudienceVisibility() {
+    const group = document.getElementById("communication-recipients-group");
+    if (!group) return;
+    const audience = this._getCommunicationAudience();
+    group.style.display = audience === "specific" ? "" : "none";
+  }
+
   _sendCommunication() {
     const title = document.getElementById("communication-title").value.trim();
     const message = document.getElementById("communication-message").value.trim();
@@ -12940,8 +13326,17 @@ function updateAuthUI() {
       UI.showToast("Omple el títol i el missatge", "error");
       return;
     }
+    const audience = this._getCommunicationAudience();
+    let recipientUserIds = null;
+    if (audience === "specific") {
+      recipientUserIds = Array.from(this._communicationSelectedIds || []);
+      if (recipientUserIds.length === 0) {
+        UI.showToast("Selecciona almenys un membre", "error");
+        return;
+      }
+    }
     this._setCommunicationSending(true);
-    API.sendCommunication({ title, message })
+    API.sendCommunication({ title, message, recipientUserIds })
       .then(() => {
         this._closeCommunicationDialog();
         UI.showToast("Comunicat enviat correctament", "success");
@@ -12964,6 +13359,38 @@ function updateAuthUI() {
       const newSend = sendBtn.cloneNode(true);
       sendBtn.parentNode.replaceChild(newSend, sendBtn);
       newSend.addEventListener("click", () => this._sendCommunication());
+    }
+    document.querySelectorAll('input[name="communication-audience"]').forEach((radio) => {
+      const fresh = radio.cloneNode(true);
+      radio.parentNode.replaceChild(fresh, radio);
+      fresh.addEventListener("change", () => this._updateCommunicationAudienceVisibility());
+    });
+    const searchInput = document.getElementById("communication-recipients-search");
+    if (searchInput) {
+      const fresh = searchInput.cloneNode(true);
+      searchInput.parentNode.replaceChild(fresh, searchInput);
+      fresh.addEventListener("input", () => this._renderCommunicationRecipients());
+    }
+    const selectAllBtn = document.getElementById("communication-recipients-select-all");
+    if (selectAllBtn) {
+      const fresh = selectAllBtn.cloneNode(true);
+      selectAllBtn.parentNode.replaceChild(fresh, selectAllBtn);
+      fresh.addEventListener("click", () => {
+        if (!this._communicationSelectedIds) this._communicationSelectedIds = new Set();
+        this._getCommunicationCandidateMembers().forEach((m) => {
+          this._communicationSelectedIds.add(m.email);
+        });
+        this._renderCommunicationRecipients();
+      });
+    }
+    const clearBtn = document.getElementById("communication-recipients-clear");
+    if (clearBtn) {
+      const fresh = clearBtn.cloneNode(true);
+      clearBtn.parentNode.replaceChild(fresh, clearBtn);
+      fresh.addEventListener("click", () => {
+        this._communicationSelectedIds = new Set();
+        this._renderCommunicationRecipients();
+      });
     }
   }
 
@@ -13407,11 +13834,11 @@ function updateAuthUI() {
               }
             } else {
               const confirmFn = isRelatedMember ?
-                `confirmEventRelatedMemberAttendance('${escapeHtml(event.id)}', '${escapeHtml(memberAlias)}')` :
-                `confirmEventAttendance('${escapeHtml(event.id)}')`;
+                `EVENTS.confirmEventRelatedMemberAttendance('${escapeHtml(event.id)}', '${escapeHtml(memberAlias)}')` :
+                `EVENTS.confirmEventAttendance('${escapeHtml(event.id)}')`;
               const rejectFn = isRelatedMember ?
-                `rejectEventRelatedMemberAttendance('${escapeHtml(event.id)}', '${escapeHtml(memberAlias)}')` :
-                `rejectEventAttendance('${escapeHtml(event.id)}')`;
+                `EVENTS.rejectEventRelatedMemberAttendance('${escapeHtml(event.id)}', '${escapeHtml(memberAlias)}')` :
+                `EVENTS.rejectEventAttendance('${escapeHtml(event.id)}')`;
 
               const noAttendingText = isRelatedMember ? 'No assistirà' : 'No assistiré';
               const noAttendingTitle = isRelatedMember ? 'No assistirà' : 'No assistiré';
@@ -13425,7 +13852,7 @@ function updateAuthUI() {
                 statusText = `✕\uFE0E ${noAttendingText}`;
                 buttonHtml = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔︎ Confirmar</button>`;
               } else {
-                buttonHtml = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕︎ ${noAttendingText}</button>`;
+                buttonHtml = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔︎ Confirmar</button><button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕︎ ${noAttendingText}</button>`;
               }
             }
 

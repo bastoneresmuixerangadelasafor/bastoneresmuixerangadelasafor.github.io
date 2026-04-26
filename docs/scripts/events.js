@@ -175,11 +175,11 @@ const EVENTS = new (class EventsManager {
               }
             } else {
               const confirmFn = isRelatedMember ?
-                `confirmEventRelatedMemberAttendance('${escapeHtml(event.id)}', '${escapeHtml(memberAlias)}')` :
-                `confirmEventAttendance('${escapeHtml(event.id)}')`;
+                `EVENTS.confirmEventRelatedMemberAttendance('${escapeHtml(event.id)}', '${escapeHtml(memberAlias)}')` :
+                `EVENTS.confirmEventAttendance('${escapeHtml(event.id)}')`;
               const rejectFn = isRelatedMember ?
-                `rejectEventRelatedMemberAttendance('${escapeHtml(event.id)}', '${escapeHtml(memberAlias)}')` :
-                `rejectEventAttendance('${escapeHtml(event.id)}')`;
+                `EVENTS.rejectEventRelatedMemberAttendance('${escapeHtml(event.id)}', '${escapeHtml(memberAlias)}')` :
+                `EVENTS.rejectEventAttendance('${escapeHtml(event.id)}')`;
 
               const noAttendingText = isRelatedMember ? 'No assistirà' : 'No assistiré';
               const noAttendingTitle = isRelatedMember ? 'No assistirà' : 'No assistiré';
@@ -193,7 +193,7 @@ const EVENTS = new (class EventsManager {
                 statusText = `✕\uFE0E ${noAttendingText}`;
                 buttonHtml = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔︎ Confirmar</button>`;
               } else {
-                buttonHtml = `<button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕︎ ${noAttendingText}</button>`;
+                buttonHtml = `<button type="button" class="btn btn-xs btn-outline-success" onclick="${confirmFn}" title="Confirmar assistència">✔︎ Confirmar</button><button type="button" class="btn btn-xs btn-outline-danger" onclick="${rejectFn}" title="${noAttendingTitle}">✕︎ ${noAttendingText}</button>`;
               }
             }
 

@@ -15,6 +15,8 @@ const APP = new (class AppState{
 
       this._configureBackgroundRefresh();
 
+      this._configureOfflineBanner();
+
       this.showLoading(true);
 
       this._configureSession();
@@ -79,6 +81,15 @@ const APP = new (class AppState{
         }
       }
     }
+  }
+
+  _configureOfflineBanner() {
+    const updateOfflineState = () => {
+      document.body.classList.toggle("is-offline", !navigator.onLine);
+    };
+    window.addEventListener("online", updateOfflineState);
+    window.addEventListener("offline", updateOfflineState);
+    updateOfflineState();
   }
 
   _configureSession() {
