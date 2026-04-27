@@ -11,13 +11,18 @@ if (firebaseConfigParam) {
   try {
     firebase.initializeApp(JSON.parse(decodeURIComponent(firebaseConfigParam)));
     const messaging = firebase.messaging();
+    const NOTIFICATION_ICON = new URL('images/android/android-launchericon-192-192.png', self.registration.scope).href;
+    const NOTIFICATION_BADGE = new URL('images/android/android-launchericon-96-96.png', self.registration.scope).href;
     messaging.onBackgroundMessage((payload) => {
       const title = payload.data?.title || 'Bastoneres';
       const body = payload.data?.body || '';
       self.registration.showNotification(title, {
         body,
-        icon: '/images/android/android-launchericon-192-192.png',
-        data: { url: payload.fcmOptions?.link || '/' },
+        icon: NOTIFICATION_ICON,
+        badge: NOTIFICATION_BADGE,
+        tag: 'bastoneres-notification',
+        renotify: true,
+        data: { url: payload.fcmOptions?.link || self.registration.scope },
       });
     });
   } catch (e) {

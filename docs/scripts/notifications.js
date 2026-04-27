@@ -13,6 +13,14 @@ const NOTIFICATIONS = new (class PushNotifications {
     );
   }
 
+  getUnsupportedReason() {
+    if (!('Notification' in window)) return 'Notification API';
+    if (!('serviceWorker' in navigator)) return 'Service Worker';
+    if (!('PushManager' in window)) return 'PushManager';
+    if (window.self !== window.top) return 'iframe';
+    return null;
+  }
+
   _isIOSSafari() {
     return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -47,8 +55,8 @@ const NOTIFICATIONS = new (class PushNotifications {
     }
   }
 
-  async subscribeToNotifications() {
-    if (!this.isSupported() || !API.isAuthenticated()) return;
+  async subscribeToNotifications({ silent = false } = {}) {
+    if (!this.isSupported() || !API.isAuthenticated()) return false;
 
     try {
       const registration = await navigator.serviceWorker.ready;
@@ -72,7 +80,12 @@ const NOTIFICATIONS = new (class PushNotifications {
         serviceWorkerRegistration: registration,
       });
 
-      if (!token) return;
+      if (!token) {
+        if (!silent) {
+          alert('No s\'ha pogut obtindre el token de notificacions.\n\nAi\u00f2 sol passar en mode inc\u00f2gnit o quan el navegador bloqueja l\'emmagatzematge. Prova en una finestra normal.');
+        }
+        return false;
+      }
 
       await API.registerPushToken({ pushToken: token });
       this.saveStoredToken(token);
@@ -86,13 +99,21 @@ const NOTIFICATIONS = new (class PushNotifications {
           if (Notification.permission === 'granted') {
             new Notification(title, {
               body,
-              icon: '/images/android/android-launchericon-192-192.png',
+              icon: new URL('images/android/android-launchericon-192-192.png', location.origin + '/').href,
+              badge: new URL('images/android/android-launchericon-96-96.png', location.origin + '/').href,
+              tag: 'bastoneres-notification',
             });
           }
         });
       }
+      return true;
     } catch (e) {
       console.error('Error subscribing to push notifications:', e);
+      if (!silent) {
+        const msg = (e && e.code) ? e.code : (e && e.message) ? e.message : String(e);
+        alert('No s\'han pogut activar les notificacions.\n\n' + msg + '\n\nSi est\u00e0s en mode inc\u00f2gnit/privat, prova en una finestra normal.');
+      }
+      return false;
     }
   }
 
@@ -117,7 +138,9 @@ const NOTIFICATIONS = new (class PushNotifications {
         if (Notification.permission === 'granted') {
           new Notification(title, {
             body,
-            icon: '/images/android/android-launchericon-192-192.png',
+            icon: new URL('images/android/android-launchericon-192-192.png', location.origin + '/').href,
+            badge: new URL('images/android/android-launchericon-96-96.png', location.origin + '/').href,
+            tag: 'bastoneres-notification',
           });
         }
       });
@@ -129,9 +152,20 @@ const NOTIFICATIONS = new (class PushNotifications {
   async requestPermissionAndSubscribe() {
     if (!this.isSupported()) return;
 
-    const permission = await Notification.requestPermission();
+    let permission;
+    try {
+      permission = await Notification.requestPermission();
+    } catch (e) {
+      console.error('Error requesting notification permission:', e);
+      alert('No s\'ha pogut sol\u00b7licitar el perm\u00eds de notificacions.\n\nAi\u00f2 pot ocorrer en mode inc\u00f2gnit/privat. Prova en una finestra normal.');
+      this.updateBellState();
+      return;
+    }
+
     if (permission === 'granted') {
       await this.subscribeToNotifications();
+    } else if (permission === 'denied') {
+      alert('El navegador ha denegat el perm\u00eds de notificacions.\n\nEn mode inc\u00f2gnit/privat sol denegar-se autom\u00e0ticament. Prova en una finestra normal o canvia el perm\u00eds des de la configuraci\u00f3 del navegador.');
     }
     this.updateBellState();
   }
@@ -154,11 +188,14 @@ const NOTIFICATIONS = new (class PushNotifications {
   async initialize() {
     this.updateBellState();
 
-    if (!this.isSupported()) return;
-
     const bellBtn = document.getElementById('push-bell-btn');
     if (bellBtn) {
       bellBtn.addEventListener('click', async () => {
+        if (!this.isSupported()) {
+          const reason = this.getUnsupportedReason();
+          alert('Aquest dispositiu o navegador no permet notificacions push.\n\nMotiu: ' + (reason || 'desconegut') + '.\n\nProva amb Chrome o Edge actualitzats. Si estàs en una finestra incògnit/privada, prova en una finestra normal.');
+          return;
+        }
         if (this._isIOSSafari() && !this._isStandalone()) {
           alert('Per rebre notificacions a iOS:\n\n1. Toca la icona de compartir (⬆️) a la barra de Safari\n2. Selecciona "Afegir a la pantalla d\'inici"\n3. Obri l\'app des de la pantalla d\'inici\n4. Toca la campaneta per activar les notificacions');
           return;
@@ -183,9 +220,14 @@ const NOTIFICATIONS = new (class PushNotifications {
       });
     }
 
+    if (!this.isSupported()) {
+      console.warn('Push notifications not supported. Reason:', this.getUnsupportedReason());
+      return;
+    }
+
     if (Notification.permission === 'granted' && !this.getStoredToken() && API.isAuthenticated()) {
       this._setLoading(true);
-      await this.subscribeToNotifications();
+      await this.subscribeToNotifications({ silent: true });
       this._setLoading(false);
     } else if (Notification.permission === 'granted' && this.getStoredToken()) {
       await this._registerOnMessageHandler();
@@ -196,8 +238,18 @@ const NOTIFICATIONS = new (class PushNotifications {
     const bellBtn = document.getElementById('push-bell-btn');
     if (!bellBtn) return;
 
-    if (!this.isSupported() || !APP.isAuthenticated) {
+    if (!APP.isAuthenticated) {
       bellBtn.style.display = 'none';
+      return;
+    }
+
+    bellBtn.style.display = '';
+    bellBtn.classList.remove('push-bell-btn--granted', 'push-bell-btn--resubscribe', 'push-bell-btn--blocked', 'push-bell-btn--not-requested');
+
+    if (!this.isSupported()) {
+      bellBtn.classList.add('push-bell-btn--blocked');
+      bellBtn.setAttribute('aria-label', 'Notificacions no disponibles');
+      bellBtn.title = 'Notificacions push no disponibles en aquest dispositiu/navegador';
       return;
     }
 
