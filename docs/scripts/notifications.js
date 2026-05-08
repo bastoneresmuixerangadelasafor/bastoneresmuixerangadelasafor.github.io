@@ -100,7 +100,7 @@ const NOTIFICATIONS = new (class PushNotifications {
             new Notification(title, {
               body,
               icon: new URL('images/android/android-launchericon-192-192.png', location.origin + '/').href,
-              badge: new URL('images/android/android-launchericon-96-96.png', location.origin + '/').href,
+              badge: new URL('images/android/notification-badge-96.png', location.origin + '/').href,
               tag: 'bastoneres-notification',
             });
           }
@@ -139,7 +139,7 @@ const NOTIFICATIONS = new (class PushNotifications {
           new Notification(title, {
             body,
             icon: new URL('images/android/android-launchericon-192-192.png', location.origin + '/').href,
-            badge: new URL('images/android/android-launchericon-96-96.png', location.origin + '/').href,
+            badge: new URL('images/android/notification-badge-96.png', location.origin + '/').href,
             tag: 'bastoneres-notification',
           });
         }

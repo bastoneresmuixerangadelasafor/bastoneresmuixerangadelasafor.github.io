@@ -461,7 +461,7 @@
   "shortcuts": [
     {
       "name": "Què hi ha de nou, doc?",
-      "short_name": "news",
+      "short_name": "novetats",
       "description": "Propers assajos i actuacions",
       "url": "/index.html",
       "icons": [{ "src": "images/screenshot_512.png", "sizes": "512x512" }]

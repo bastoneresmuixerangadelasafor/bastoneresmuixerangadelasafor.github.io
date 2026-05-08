@@ -14,7 +14,8 @@
     "deploy_dev": "npm run setup_dev && npm run build_dev && npm run clasp_push",
     "deploy_prod": "npm run setup_prod && npm run build_prod && npm run clasp_push_prod",
     "ts_model": "npx tsc --project tsconfig.json && node data/generate_dances.js",
-    "generate_splash": "node data/generate_splash.js"
+    "generate_splash": "node data/generate_splash.js",
+    "generate_notification_badge": "node data/generate_notification_badge.js"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.1.2",
