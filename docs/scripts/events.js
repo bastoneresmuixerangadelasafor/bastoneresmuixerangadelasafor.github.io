@@ -496,6 +496,10 @@ const EVENTS = new (class EventsManager {
       applyEditableState();
     }
 
+    if (typeof updateMemberPositionOverlay !== "undefined") {
+      updateMemberPositionOverlay();
+    }
+
     return true;
   }
 
@@ -645,6 +649,7 @@ const EVENTS = new (class EventsManager {
 
     if (window.currentOptions.length === 0) {
       personCombo.style.display = "none";
+      personList.classList.remove('open');
       personLoading.style.display = "block";
       personLoading.querySelector(".dialog-spinner").style.display = "none";
       personLoading.querySelector("p").textContent =
@@ -1204,6 +1209,39 @@ const EVENTS = new (class EventsManager {
         function setDiagramsDirty(isDirty) {
             diagramsIsDirty = isDirty;
             updateSaveButtonState();
+            updateMemberPositionOverlay();
+        }
+
+        function updateMemberPositionOverlay() {
+            const overlay = document.getElementById('member-position-overlay');
+            const list = document.getElementById('member-position-overlay-list');
+            if (!overlay || !list) return;
+
+            const counts = {};
+            diagrams.forEach(function (diagram) {
+                const groups = diagram.groups || [];
+                groups.forEach(function (group) {
+                    group.forEach(function (name) {
+                        if (name) {
+                            counts[name] = (counts[name] || 0) + 1;
+                        }
+                    });
+                });
+            });
+
+            const entries = Object.entries(counts).sort(function (a, b) {
+                return b[1] - a[1] || a[0].localeCompare(b[0]);
+            });
+
+            if (entries.length === 0) {
+                overlay.style.display = 'none';
+                return;
+            }
+
+            overlay.style.display = '';
+            list.innerHTML = entries.map(function (entry) {
+                return '<li><span class="member-name">' + entry[0] + '</span><span class="position-count">' + entry[1] + '</span></li>';
+            }).join('');
         }
 
         function calcDiagramLayout(canvas, groupCount, rows, cols) {
@@ -1603,12 +1641,18 @@ const EVENTS = new (class EventsManager {
         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
         </svg>
     </button>
+    <button type="button" class="magic-generated-btn" data-id="${diagram.id}" title="Generar màgicament">
+        <svg width="24" height="24" viewBox="0 0 48 48" fill="none"><path fill="#32bea6" d="M24 47.998c13.255 0 24-10.745 24-24C48 10.746 37.255 0 24 0S0 10.745 0 23.999s10.745 23.999 24 23.999"/><path fill="#3e3e3f" d="m10.91 34.26l3.702 3.702l15.427-15.427l-3.702-3.702z"/><path fill="#e2e4e5" d="m26.337 18.833l3.703 3.702l5.554-5.554l-3.703-3.702z"/><path fill="#fff" d="m26.337 18.832l1.851 1.851l5.554-5.554l-1.851-1.85z"/><path fill="#5b5c5f" d="m28.188 20.684l-1.851-1.852L10.909 34.26l1.851 1.851z"/><path fill="#fbe158" d="M18.345 14.55a.02.02 0 0 0-.018.02v.04q0 .011.012.014c1.371.187 2.38 1.194 2.569 2.564a.02.02 0 0 0 .02.017h.04a.014.014 0 0 0 .014-.011c.186-1.372 1.193-2.38 2.564-2.57a.02.02 0 0 0 .017-.02v-.04a.014.014 0 0 0-.012-.013c-1.371-.187-2.38-1.194-2.569-2.564a.02.02 0 0 0-.02-.018h-.028a.03.03 0 0 0-.028.024c-.19 1.365-1.195 2.369-2.561 2.557m13.964 10.91a.02.02 0 0 0-.018.02v.045q0 .006.006.007c1.375.184 2.386 1.192 2.575 2.565a.02.02 0 0 0 .02.017h.029c.013 0 .025-.01.027-.023c.19-1.36 1.187-2.36 2.545-2.555a.04.04 0 0 0 .034-.04v-.022a.014.014 0 0 0-.011-.014c-1.372-.186-2.38-1.194-2.57-2.564a.02.02 0 0 0-.02-.017h-.028a.03.03 0 0 0-.027.023c-.19 1.365-1.196 2.369-2.562 2.557m2.611-13.293a.01.01 0 0 0-.01.012v.017q0 .012.013.015c.8.112 1.386.703 1.493 1.505h.04c.107-.807.7-1.4 1.507-1.506v-.04c-.807-.108-1.4-.7-1.507-1.508h-.04a1.714 1.714 0 0 1-1.496 1.505"/></svg>
+    </button>
     <input type="text" class="diagram-description-input" id="desc-input-${diagram.id}" value="${description}" style="display: none;" placeholder="Descripció...">
     </div>`;
                 } else {
                     descriptionHtml = `
     <div class="diagram-description-container">
     <a href="#" class="add-description-link" data-id="${diagram.id}">+ Afegir descripció</a>
+    <button type="button" class="magic-generated-btn" data-id="${diagram.id}" title="Generar màgicament">
+        <svg width="24" height="24" viewBox="0 0 48 48" fill="none"><path fill="#32bea6" d="M24 47.998c13.255 0 24-10.745 24-24C48 10.746 37.255 0 24 0S0 10.745 0 23.999s10.745 23.999 24 23.999"/><path fill="#3e3e3f" d="m10.91 34.26l3.702 3.702l15.427-15.427l-3.702-3.702z"/><path fill="#e2e4e5" d="m26.337 18.833l3.703 3.702l5.554-5.554l-3.703-3.702z"/><path fill="#fff" d="m26.337 18.832l1.851 1.851l5.554-5.554l-1.851-1.85z"/><path fill="#5b5c5f" d="m28.188 20.684l-1.851-1.852L10.909 34.26l1.851 1.851z"/><path fill="#fbe158" d="M18.345 14.55a.02.02 0 0 0-.018.02v.04q0 .011.012.014c1.371.187 2.38 1.194 2.569 2.564a.02.02 0 0 0 .02.017h.04a.014.014 0 0 0 .014-.011c.186-1.372 1.193-2.38 2.564-2.57a.02.02 0 0 0 .017-.02v-.04a.014.014 0 0 0-.012-.013c-1.371-.187-2.38-1.194-2.569-2.564a.02.02 0 0 0-.02-.018h-.028a.03.03 0 0 0-.028.024c-.19 1.365-1.195 2.369-2.561 2.557m13.964 10.91a.02.02 0 0 0-.018.02v.045q0 .006.006.007c1.375.184 2.386 1.192 2.575 2.565a.02.02 0 0 0 .02.017h.029c.013 0 .025-.01.027-.023c.19-1.36 1.187-2.36 2.545-2.555a.04.04 0 0 0 .034-.04v-.022a.014.014 0 0 0-.011-.014c-1.372-.186-2.38-1.194-2.57-2.564a.02.02 0 0 0-.02-.017h-.028a.03.03 0 0 0-.027.023c-.19 1.365-1.196 2.369-2.562 2.557m2.611-13.293a.01.01 0 0 0-.01.012v.017q0 .012.013.015c.8.112 1.386.703 1.493 1.505h.04c.107-.807.7-1.4 1.507-1.506v-.04c-.807-.108-1.4-.7-1.507-1.508h-.04a1.714 1.714 0 0 1-1.496 1.505"/></svg>
+    </button>
     <input type="text" class="diagram-description-input" id="desc-input-${diagram.id}" value="" style="display: none;" placeholder="Descripció...">
     </div>`;
                 }
@@ -1861,6 +1905,18 @@ ${backupHtml}
             // Load dances data on initialization
             loadDancesData();
 
+            // Member position overlay toggle
+            const overlayToggleBtn = document.getElementById('member-position-overlay-toggle');
+            if (overlayToggleBtn) {
+                overlayToggleBtn.addEventListener('click', function () {
+                    const overlay = document.getElementById('member-position-overlay');
+                    if (overlay) {
+                        overlay.classList.toggle('collapsed');
+                        overlayToggleBtn.textContent = overlay.classList.contains('collapsed') ? '+' : '−';
+                    }
+                });
+            }
+
             // Event name and datetime validation - show dance selection when both filled
             const eventNameInput = document.getElementById('event-name-input');
             const eventDatetimeInput = document.getElementById('event-datetime-input');
@@ -1934,6 +1990,7 @@ ${backupHtml}
 
                 if (window.currentOptions.length === 0) {
                     personCombo.style.display = 'none';
+                    personList.classList.remove('open');
                     personLoading.style.display = 'block';
                     personLoading.querySelector('.dialog-spinner').style.display = 'none';
                     personLoading.querySelector('p').textContent = 'No hi ha membres disponibles';
@@ -2017,6 +2074,7 @@ ${backupHtml}
 
                 if (window.currentOptions.length === 0) {
                     personCombo.style.display = 'none';
+                    personList.classList.remove('open');
                     personLoading.style.display = 'block';
                     personLoading.querySelector('.dialog-spinner').style.display = 'none';
                     personLoading.querySelector('p').textContent = 'No hi ha membres disponibles';
@@ -2046,9 +2104,11 @@ ${backupHtml}
                     UI.showDialogWithBackdrop(dialog);
                 }
                 
-                // Focus and show dropdown
+                // Focus and show dropdown only if position is empty
                 personCombo.focus();
-                personList.classList.add('open');
+                if (!diagram.groups[g][squareIdx]) {
+                    personList.classList.add('open');
+                }
             }
 
             // Handle clear button click
@@ -2189,6 +2249,9 @@ ${backupHtml}
 
             // Show dropdown on focus
             personCombo.addEventListener('focus', function () {
+                if (personCombo.value && window.selectedDiagramId !== null && !window.isSelectingBackup) {
+                    return;
+                }
                 const typedValue = normalizeText(personCombo.value.trim());
                 let filteredOptions;
                 if (typedValue === '') {
@@ -2199,7 +2262,9 @@ ${backupHtml}
                     });
                 }
                 updateDropdownOptions(filteredOptions);
-                personList.classList.add('open');
+                if (filteredOptions.length > 0) {
+                    personList.classList.add('open');
+                }
             });
 
             // Hide dropdown when clicking outside
