@@ -1190,6 +1190,11 @@ const EVENTS = new (class EventsManager {
                 link.style.display = isEditable ? 'block' : 'none';
             });
 
+            const magicBtns = diagramsList.querySelectorAll('.magic-generated-btn');
+            magicBtns.forEach(function (btn) {
+                btn.style.display = isEditable ? '' : 'none';
+            });
+
             const currentUserRoles = (APP && APP.currentUser && APP.currentUser.roles) || [];
             const isAdmin = currentUserRoles.includes('ADMIN');
             const canvases = diagramsList.querySelectorAll('canvas');
@@ -2504,6 +2509,51 @@ ${backupHtml}
                         }
                         drawDiagram(diagram);
                     }
+                }
+                // Magic generated button
+                if (e.target.closest('.magic-generated-btn')) {
+                    const btn = e.target.closest('.magic-generated-btn');
+                    const diagramId = parseInt(btn.dataset.id);
+                    const diagram = diagrams.find(d => d.id === diagramId);
+                    if (!diagram) return;
+
+                    const magicDialog = document.getElementById('magic-dialog');
+                    const magicContent = magicDialog.querySelector('.magic-dialog-content');
+                    if (!magicDialog) return;
+
+                    magicContent.innerHTML = '<div class="magic-dialog-spinner"></div><p class="magic-dialog-text">Calculant</p>';
+                    UI.showDialogWithBackdrop(magicDialog);
+
+                    const attendees = (APP.currentEventData && APP.currentEventData.attendees) || [];
+                    API.calculateEventDancePositions({ danceName: diagram.danceName, attendees: attendees })
+                        .then(function (result) {
+                            var html = '<h3 class="magic-dialog-title">' + diagram.danceName + '</h3>';
+                            var orders = Object.keys(result).sort(function (a, b) { return parseInt(a) - parseInt(b); });
+                            if (orders.length === 0) {
+                                html += '<p class="magic-dialog-empty">No hi ha dades d\'actuacions anteriors</p>';
+                            } else {
+                                html += '<div class="magic-dialog-positions">';
+                                orders.forEach(function (order) {
+                                    var pos = result[order];
+                                    html += '<div class="magic-position-row">';
+                                    html += '<span class="magic-position-tag">' + pos.tag + '</span>';
+                                    html += '<div class="magic-position-members">';
+                                    pos.members.forEach(function (m) {
+                                        var cls = 'magic-member-chip';
+                                        if (m.attending) cls += ' attending';
+                                        html += '<span class="' + cls + '">' + m.name + ' <strong>' + m.count + '</strong></span>';
+                                    });
+                                    html += '</div></div>';
+                                });
+                                html += '</div>';
+                            }
+                            html += '<button type="button" class="magic-dialog-close-btn" onclick="UI.closeDialogWithBackdrop(document.getElementById(\'magic-dialog\'))">Tancar</button>';
+                            magicContent.innerHTML = html;
+                        })
+                        .catch(function (error) {
+                            magicContent.innerHTML = '<p class="magic-dialog-error">Error: ' + error + '</p>' +
+                                '<button type="button" class="magic-dialog-close-btn" onclick="UI.closeDialogWithBackdrop(document.getElementById(\'magic-dialog\'))">Tancar</button>';
+                        });
                 }
             });
 

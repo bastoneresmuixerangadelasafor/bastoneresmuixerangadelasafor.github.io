@@ -444,9 +444,91 @@ function getEventById_({eventId}) {
   }
 }
 
-/**
- * Formats the event sheet with colors and styles
- */
+function calculateEventDancePositions_({ danceName, attendees }) {
+  if (!danceName) return API.newError_({ error: 'El nom del ball és obligatori.' });
+
+  try {
+    const spreadsheet = SpreadsheetApp.openById(EVENTS_SPREADSHEET_ID);
+    const events = CACHE.getEvents();
+    const now = new Date();
+    const pastEvents = events.filter(function (ev) {
+      return ev.date && new Date(ev.date) < now;
+    });
+
+    var positionMembers = {};
+
+    pastEvents.forEach(function (ev) {
+      var sheet = spreadsheet.getSheetByName(ev.id);
+      if (!sheet) return;
+
+      var data = sheet.getDataRange().getValues();
+      var i = 0;
+
+      while (i < data.length) {
+        var row = data[i];
+        if (row[0] === 'Ball:' && row[1] === danceName) {
+          i++;
+          if (i < data.length && data[i][0] === 'Descripció:') i++;
+          if (i < data.length && (data[i][0] === 'Posició' || data[i][0] === 'Tag')) {
+            var headerRow = data[i];
+            var groupCount = headerRow.filter(function (cell, idx) {
+              return idx >= 1 && cell && String(cell).startsWith('Grup');
+            }).length;
+            i++;
+
+            var posOrder = 1;
+            while (i < data.length && data[i][0] !== 'Ball:' && data[i][0] !== '') {
+              var posRow = data[i];
+              var posTag = posRow[0] || ('Pos ' + posOrder);
+
+              if (!positionMembers[posOrder]) {
+                positionMembers[posOrder] = { tag: posTag, members: {} };
+              }
+
+              for (var g = 0; g < groupCount; g++) {
+                var member = posRow[1 + g];
+                if (member && String(member).trim().length > 0) {
+                  var memberName = String(member).trim();
+                  positionMembers[posOrder].members[memberName] = (positionMembers[posOrder].members[memberName] || 0) + 1;
+                }
+              }
+
+              posOrder++;
+              i++;
+            }
+          } else {
+            i++;
+          }
+        } else {
+          i++;
+        }
+      }
+    });
+
+    var result = {};
+    var orders = Object.keys(positionMembers);
+    orders.forEach(function (order) {
+      var pos = positionMembers[order];
+      var sorted = Object.keys(pos.members)
+        .map(function (name) { return { name: name, count: pos.members[name] }; })
+        .sort(function (a, b) { return b.count - a.count; });
+
+      if (attendees && attendees.length > 0) {
+        sorted.forEach(function (entry) {
+          entry.attending = attendees.indexOf(entry.name) !== -1;
+        });
+      }
+
+      result[order] = { tag: pos.tag, members: sorted };
+    });
+
+    return API.newResult_({ result: result });
+  } catch (error) {
+    console.log('Error calculating dance positions: ' + error.toString());
+    return API.newError_({ error: error.toString() });
+  }
+}
+
 function formatEventSheet_(sheet, event) {
   // Auto-resize columns
   const lastCol = sheet.getLastColumn();

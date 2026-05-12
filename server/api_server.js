@@ -124,6 +124,10 @@ const API = class GAppsApiServer {
         const versionsWorker = this.validateUserToken_({fn: () => API.newResult_({ result: CACHE.getDataVersions() }), requiresAuth: true, token: e.parameter?.token});
         data = versionsWorker();
         break;
+      case "calculateEventDancePositions":
+        const calcPosWorker = this.validateUserToken_({fn: calculateEventDancePositions_, requiresAuth: true, requiresAdmin: true, token: e.parameter?.token});
+        data = calcPosWorker({ danceName: e.parameter?.danceName, attendees: e.parameter?.attendees ? JSON.parse(e.parameter.attendees) : [] });
+        break;
       default:
         return API.newError_({ error: `Unknown GET action: ${action}`, status:404 });
     }

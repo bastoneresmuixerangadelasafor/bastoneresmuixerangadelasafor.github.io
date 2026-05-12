@@ -313,6 +313,10 @@ const API = new (class GAppsApiClient {
     return this._get({ action: "audio", parameters: { audioId }, requiresAuth: true, cache: 'audio' });
   }
 
+  calculateEventDancePositions({ danceName, attendees } = {}) {
+    return this._get({ action: "calculateEventDancePositions", parameters: { danceName, attendees: JSON.stringify(attendees || []) }, requiresAuth: true });
+  }
+
   getMemberPositions({ memberAlias } = {}) {
     return this._get({ action: "memberPositions", parameters: { memberAlias }, requiresAuth: true });
   }

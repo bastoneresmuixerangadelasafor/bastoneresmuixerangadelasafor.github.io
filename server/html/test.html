@@ -5664,9 +5664,7 @@ body.dark-mode .event-meeting-place-display {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 10px;
   min-width: 44px;
-  min-height: 44px;
   margin-left: auto;
   color: #a855f7;
   display: flex;
@@ -6110,6 +6108,182 @@ body.dark-mode .dialog-spinner {
   to {
     transform: rotate(360deg);
   }
+}
+
+#magic-dialog {
+  padding: 0;
+  border: none;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  min-width: 280px;
+  min-height: 280px;
+}
+
+#magic-dialog[open] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+
+#magic-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+body.dark-mode #magic-dialog {
+  background: #2d3748;
+}
+
+.magic-dialog-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3em;
+  gap: 1.5em;
+}
+
+.magic-dialog-spinner {
+  width: 80px;
+  height: 80px;
+  border: 6px solid #e0e0e0;
+  border-top-color: #32bea6;
+  border-radius: 50%;
+  animation: dialog-spin 0.9s linear infinite;
+}
+
+body.dark-mode .magic-dialog-spinner {
+  border-color: #4a5568;
+  border-top-color: #32bea6;
+}
+
+.magic-dialog-text {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+body.dark-mode .magic-dialog-text {
+  color: #e2e8f0;
+}
+
+.magic-dialog-title {
+  margin: 0 0 0.8em 0;
+  font-size: 1.2rem;
+  color: var(--primary-dark);
+  text-align: center;
+}
+
+.dark-mode .magic-dialog-title {
+  color: #e0e0e0;
+}
+
+.magic-dialog-positions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 400px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.magic-position-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.magic-position-tag {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #6b7280;
+  min-width: 80px;
+  padding-top: 4px;
+  flex-shrink: 0;
+}
+
+.dark-mode .magic-position-tag {
+  color: #9ca3af;
+}
+
+.magic-position-members {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.magic-member-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.magic-member-chip.attending {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.dark-mode .magic-member-chip {
+  background: #374151;
+  color: #d1d5db;
+}
+
+.dark-mode .magic-member-chip.attending {
+  background: #064e3b;
+  color: #6ee7b7;
+}
+
+.magic-member-chip strong {
+  font-weight: 700;
+}
+
+.magic-dialog-empty {
+  color: #6b7280;
+  font-style: italic;
+  text-align: center;
+}
+
+.magic-dialog-error {
+  color: #dc2626;
+  text-align: center;
+}
+
+.magic-dialog-close-btn {
+  margin-top: 1.2em;
+  padding: 0.5em 2em;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #374151;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.magic-dialog-close-btn:hover {
+  background: #f3f4f6;
+}
+
+.dark-mode .magic-dialog-close-btn {
+  background: #374151;
+  color: #e2e8f0;
+  border-color: #4a5568;
+}
+
+.dark-mode .magic-dialog-close-btn:hover {
+  background: #4a5568;
 }
 
 .clear-person-btn {
@@ -8698,6 +8872,13 @@ body.dark-mode .theme-icon-dark {
                     <button type="button" id="clear-person-btn" class="clear-person-btn" style="display:none;">                       Esborrar selecció</button>
                 </form>
             </dialog>
+            <!-- Dialog for magic generation -->
+            <dialog id="magic-dialog" class="admin-only">
+                <div class="magic-dialog-content">
+                    <div class="magic-dialog-spinner"></div>
+                    <p class="magic-dialog-text">Calculant</p>
+                </div>
+            </dialog>
             <!-- Floating buttons container -->
             <div class="floating-buttons-container">
                 <!-- Floating save button -->
@@ -10270,6 +10451,10 @@ const API = new (class GAppsApiClient {
 
   getAudioById({ audioId } = {}) {
     return this._get({ action: "audio", parameters: { audioId }, requiresAuth: true, cache: 'audio' });
+  }
+
+  calculateEventDancePositions({ danceName, attendees } = {}) {
+    return this._get({ action: "calculateEventDancePositions", parameters: { danceName, attendees: JSON.stringify(attendees || []) }, requiresAuth: true });
   }
 
   getMemberPositions({ memberAlias } = {}) {
@@ -14469,6 +14654,7 @@ function updateAuthUI() {
 
     if (window.currentOptions.length === 0) {
       personCombo.style.display = "none";
+      personList.classList.remove('open');
       personLoading.style.display = "block";
       personLoading.querySelector(".dialog-spinner").style.display = "none";
       personLoading.querySelector("p").textContent =
@@ -15809,6 +15995,7 @@ ${backupHtml}
 
                 if (window.currentOptions.length === 0) {
                     personCombo.style.display = 'none';
+                    personList.classList.remove('open');
                     personLoading.style.display = 'block';
                     personLoading.querySelector('.dialog-spinner').style.display = 'none';
                     personLoading.querySelector('p').textContent = 'No hi ha membres disponibles';
@@ -15892,6 +16079,7 @@ ${backupHtml}
 
                 if (window.currentOptions.length === 0) {
                     personCombo.style.display = 'none';
+                    personList.classList.remove('open');
                     personLoading.style.display = 'block';
                     personLoading.querySelector('.dialog-spinner').style.display = 'none';
                     personLoading.querySelector('p').textContent = 'No hi ha membres disponibles';
@@ -15921,9 +16109,11 @@ ${backupHtml}
                     UI.showDialogWithBackdrop(dialog);
                 }
                 
-                // Focus and show dropdown
+                // Focus and show dropdown only if position is empty
                 personCombo.focus();
-                personList.classList.add('open');
+                if (!diagram.groups[g][squareIdx]) {
+                    personList.classList.add('open');
+                }
             }
 
             // Handle clear button click
@@ -16064,6 +16254,9 @@ ${backupHtml}
 
             // Show dropdown on focus
             personCombo.addEventListener('focus', function () {
+                if (personCombo.value && window.selectedDiagramId !== null && !window.isSelectingBackup) {
+                    return;
+                }
                 const typedValue = normalizeText(personCombo.value.trim());
                 let filteredOptions;
                 if (typedValue === '') {
@@ -16074,7 +16267,9 @@ ${backupHtml}
                     });
                 }
                 updateDropdownOptions(filteredOptions);
-                personList.classList.add('open');
+                if (filteredOptions.length > 0) {
+                    personList.classList.add('open');
+                }
             });
 
             // Hide dropdown when clicking outside
@@ -16314,6 +16509,51 @@ ${backupHtml}
                         }
                         drawDiagram(diagram);
                     }
+                }
+                // Magic generated button
+                if (e.target.closest('.magic-generated-btn')) {
+                    const btn = e.target.closest('.magic-generated-btn');
+                    const diagramId = parseInt(btn.dataset.id);
+                    const diagram = diagrams.find(d => d.id === diagramId);
+                    if (!diagram) return;
+
+                    const magicDialog = document.getElementById('magic-dialog');
+                    const magicContent = magicDialog.querySelector('.magic-dialog-content');
+                    if (!magicDialog) return;
+
+                    magicContent.innerHTML = '<div class="magic-dialog-spinner"></div><p class="magic-dialog-text">Calculant</p>';
+                    UI.showDialogWithBackdrop(magicDialog);
+
+                    const attendees = (APP.currentEventData && APP.currentEventData.attendees) || [];
+                    API.calculateEventDancePositions({ danceName: diagram.danceName, attendees: attendees })
+                        .then(function (result) {
+                            var html = '<h3 class="magic-dialog-title">' + diagram.danceName + '</h3>';
+                            var orders = Object.keys(result).sort(function (a, b) { return parseInt(a) - parseInt(b); });
+                            if (orders.length === 0) {
+                                html += '<p class="magic-dialog-empty">No hi ha dades d\'actuacions anteriors</p>';
+                            } else {
+                                html += '<div class="magic-dialog-positions">';
+                                orders.forEach(function (order) {
+                                    var pos = result[order];
+                                    html += '<div class="magic-position-row">';
+                                    html += '<span class="magic-position-tag">' + pos.tag + '</span>';
+                                    html += '<div class="magic-position-members">';
+                                    pos.members.forEach(function (m) {
+                                        var cls = 'magic-member-chip';
+                                        if (m.attending) cls += ' attending';
+                                        html += '<span class="' + cls + '">' + m.name + ' <strong>' + m.count + '</strong></span>';
+                                    });
+                                    html += '</div></div>';
+                                });
+                                html += '</div>';
+                            }
+                            html += '<button type="button" class="magic-dialog-close-btn" onclick="UI.closeDialogWithBackdrop(document.getElementById(\'magic-dialog\'))">Tancar</button>';
+                            magicContent.innerHTML = html;
+                        })
+                        .catch(function (error) {
+                            magicContent.innerHTML = '<p class="magic-dialog-error">Error: ' + error + '</p>' +
+                                '<button type="button" class="magic-dialog-close-btn" onclick="UI.closeDialogWithBackdrop(document.getElementById(\'magic-dialog\'))">Tancar</button>';
+                        });
                 }
             });
 
