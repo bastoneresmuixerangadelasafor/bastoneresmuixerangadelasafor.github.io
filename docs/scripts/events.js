@@ -2547,12 +2547,12 @@ ${backupHtml}
                                 });
                                 html += '</div>';
                             }
-                            html += '<button type="button" class="magic-dialog-close-btn" onclick="UI.closeDialogWithBackdrop(document.getElementById(\'magic-dialog\'))">Tancar</button>';
-                            magicContent.innerHTML = html;
+                            var closeBtn = '<button type="button" class="magic-dialog-close-btn" onclick="UI.closeDialogWithBackdrop(document.getElementById(\'magic-dialog\'))" aria-label="Tancar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>';
+                            magicContent.innerHTML = closeBtn + html;
                         })
                         .catch(function (error) {
-                            magicContent.innerHTML = '<p class="magic-dialog-error">Error: ' + error + '</p>' +
-                                '<button type="button" class="magic-dialog-close-btn" onclick="UI.closeDialogWithBackdrop(document.getElementById(\'magic-dialog\'))">Tancar</button>';
+                            var closeBtn = '<button type="button" class="magic-dialog-close-btn" onclick="UI.closeDialogWithBackdrop(document.getElementById(\'magic-dialog\'))" aria-label="Tancar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>';
+                            magicContent.innerHTML = closeBtn + '<p class="magic-dialog-error">Error: ' + error + '</p>';
                         });
                 }
             });

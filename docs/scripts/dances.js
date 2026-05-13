@@ -648,8 +648,8 @@ const DANCES = [
     "diagram": {
       "blockName": "Grup",
       "backgroundColor": {
-        "ENTRA PRIMER": "#FFF2CC",
-        "ENTRA DESPRES": "#92D050"
+        "ENTRA DESPRES": "#FFF2CC",
+        "ENTRA PRIMER": "#92D050"
       },
       "textColor": {
         "ENTRA PRIMER": "#000000",

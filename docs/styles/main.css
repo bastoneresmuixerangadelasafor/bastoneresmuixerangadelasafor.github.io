@@ -6109,6 +6109,7 @@ body.dark-mode #magic-dialog {
 }
 
 .magic-dialog-content {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -6229,29 +6230,41 @@ body.dark-mode .magic-dialog-text {
 }
 
 .magic-dialog-close-btn {
-  margin-top: 1.2em;
-  padding: 0.5em 2em;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  background: #fff;
-  color: #374151;
-  font-size: 0.95rem;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--primary-color);
+  border: 1px solid color-mix(in srgb, var(--primary-color), #000000 18%);
   cursor: pointer;
-  transition: background 0.2s;
+  color: #ffffff;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  z-index: 10;
 }
 
 .magic-dialog-close-btn:hover {
-  background: #f3f4f6;
-}
-
-.dark-mode .magic-dialog-close-btn {
-  background: #374151;
-  color: #e2e8f0;
-  border-color: #4a5568;
+  filter: brightness(0.92);
 }
 
 .dark-mode .magic-dialog-close-btn:hover {
-  background: #4a5568;
+  filter: brightness(1.08);
+}
+
+.magic-dialog-close-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color), #ffffff 60%);
+}
+
+.magic-dialog-close-btn svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2;
 }
 
 .clear-person-btn {
