@@ -187,7 +187,7 @@ function padDataRows_(data, maxCols) {
 }
 
 function getEvents_({forceRefresh} = {}) {
-  forceRefresh = forceRefresh || false;
+  forceRefresh = forceRefresh === true || forceRefresh === "true";
 	
 	try {
 		// Reload from database if force refresh is requested	
@@ -206,7 +206,7 @@ function getEvents_({forceRefresh} = {}) {
 }
 
 function getTrainings_({forceRefresh} = {}) {
-  forceRefresh = forceRefresh || false;
+  forceRefresh = forceRefresh === true || forceRefresh === "true";
   
   try {
     // Reload from database if force refresh is requested
@@ -451,6 +451,7 @@ function calculateEventDancePositions_({ danceName, attendees }) {
     const spreadsheet = SpreadsheetApp.openById(EVENTS_SPREADSHEET_ID);
     const events = CACHE.getEvents();
     const now = new Date();
+    now.setHours(0, 0, 0, 0);
     const pastEvents = events.filter(function (ev) {
       return ev.date && new Date(ev.date) < now;
     });
@@ -648,11 +649,11 @@ function saveTraining_({training}) {
     }
     CACHE.bumpVersion('trainings');
 
-    try {
-      if (isNewTraining) notifyTrainingCreated({ date: finalTrainingId });
-    } catch (e) {
-      console.error('Error sending training notification: ' + e.toString());
-    }
+    // try {
+    //   if (isNewTraining) notifyTrainingCreated({ date: finalTrainingId });
+    // } catch (e) {
+    //   console.error('Error sending training notification: ' + e.toString());
+    // }
 
     return API.newResult_({
       result: {
@@ -732,10 +733,11 @@ function confirmTrainingAttendance_({trainingId, user}) {
     if (context.error) return context.error;
 
     context.sheet.getRange(context.userRow, context.dateColumn).setValue('SI');
+    SpreadsheetApp.flush();
 
     // Invalidate cache
-    CACHE.retrieveTrainingsFromDB();
     CACHE.bumpVersion('trainings');
+    CACHE.retrieveTrainingsFromDB();
 
     return API.newResult_({
       result: {
@@ -763,10 +765,11 @@ function cancelTrainingAttendance_({trainingId, user}) {
     if (context.error) return context.error;
 
     context.sheet.getRange(context.userRow, context.dateColumn).setValue('NO');
+    SpreadsheetApp.flush();
 
     // Invalidate cache
-    CACHE.retrieveTrainingsFromDB();
     CACHE.bumpVersion('trainings');
+    CACHE.retrieveTrainingsFromDB();
 
     return API.newResult_({
       result: {
@@ -818,10 +821,11 @@ function confirmRelatedMemberAttendance_({trainingId, memberId, memberAlias, use
     if (context.error) return context.error;
 
     context.sheet.getRange(context.userRow, context.dateColumn).setValue('SI');
+    SpreadsheetApp.flush();
 
     // Invalidate cache
-    CACHE.retrieveTrainingsFromDB();
     CACHE.bumpVersion('trainings');
+    CACHE.retrieveTrainingsFromDB();
 
     return API.newResult_({
       result: {
@@ -860,10 +864,11 @@ function cancelRelatedMemberAttendance_({trainingId, memberId, memberAlias, user
     if (context.error) return context.error;
 
     context.sheet.getRange(context.userRow, context.dateColumn).setValue('NO');
+    SpreadsheetApp.flush();
 
     // Invalidate cache
-    CACHE.retrieveTrainingsFromDB();
     CACHE.bumpVersion('trainings');
+    CACHE.retrieveTrainingsFromDB();
 
     return API.newResult_({
       result: {
@@ -898,10 +903,11 @@ function adminSetMemberAttendance_({trainingId, memberAlias, attending, user}) {
 
     const newValue = attending ? 'SI' : 'NO';
     context.sheet.getRange(context.userRow, context.dateColumn).setValue(newValue);
+    SpreadsheetApp.flush();
 
     // Invalidate cache
-    CACHE.retrieveTrainingsFromDB();
     CACHE.bumpVersion('trainings');
+    CACHE.retrieveTrainingsFromDB();
 
     return API.newResult_({
       result: {
@@ -924,9 +930,10 @@ function saveTrainingNote_({trainingId, note, user}) {
 
     const cell = context.sheet.getRange(context.userRow, context.dateColumn);
     cell.setNote(note || '');
+    SpreadsheetApp.flush();
 
-    CACHE.retrieveTrainingsFromDB();
     CACHE.bumpVersion('trainings');
+    CACHE.retrieveTrainingsFromDB();
 
     return API.newResult_({
       result: {
@@ -953,9 +960,10 @@ function saveRelatedMemberTrainingNote_({trainingId, memberId, memberAlias, note
 
     const cell = context.sheet.getRange(context.userRow, context.dateColumn);
     cell.setNote(note || '');
+    SpreadsheetApp.flush();
 
-    CACHE.retrieveTrainingsFromDB();
     CACHE.bumpVersion('trainings');
+    CACHE.retrieveTrainingsFromDB();
 
     return API.newResult_({
       result: {

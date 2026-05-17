@@ -393,7 +393,9 @@ const TRAININGS = new (class TrainingSession {
     attendanceSection.style.display = "";
     
     // Check if training is past
-    const isPastTraining = trainingData.date && new Date(trainingData.date) < new Date();
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const isPastTraining = trainingData.date && new Date(trainingData.date) < todayStart;
     const isEditable = typeof checkIfTrainingIsEditable === "function" ? checkIfTrainingIsEditable() : true;
     const isDisabledAttendance = isPastTraining && !isEditable;
     
@@ -1162,6 +1164,7 @@ const TRAININGS = new (class TrainingSession {
     }
   
     const now = new Date();
+    now.setHours(0, 0, 0, 0);
     const upcomingTrainings = [];
     const pastTrainings = [];
   
@@ -1487,9 +1490,10 @@ const TRAININGS = new (class TrainingSession {
           </div>
       `;
   
-    API.getTrainings({ onBackgroundUpdate: (trainings) => TRAININGS.renderPlanningTrainingsList(trainings) })
-      .then((events) => {
-        TRAININGS.renderPlanningTrainingsList(events);
+    CACHE.saveTrainings({ trainings: null });
+    API.getTrainings()
+      .then((trainings) => {
+        TRAININGS.renderPlanningTrainingsList(trainings);
       })
       .catch((error) => {
         console.error("Failed to load training sessions:", error);

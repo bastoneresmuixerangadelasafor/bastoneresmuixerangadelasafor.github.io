@@ -110,6 +110,7 @@ const EVENTS = new (class EventsManager {
     }
 
     const now = new Date();
+    now.setHours(0, 0, 0, 0);
     const upcomingEvents = [];
     const pastEvents = [];
 
@@ -144,6 +145,7 @@ const EVENTS = new (class EventsManager {
 
         let confirmationStatusHtml = "";
         const now = new Date();
+        now.setHours(0, 0, 0, 0);
         const eventDate = new Date(event.date);
         const isPastEvent = eventDate < now;
         const shouldShowConfirmation = !isPastEvent || event.attendees !== null;
@@ -1446,6 +1448,8 @@ const EVENTS = new (class EventsManager {
             ctx.restore();
         }
 
+        var selectedCellHighlight = null;
+
         // Draw a specific diagram
         function drawDiagram(diagram) {
             const canvas = document.getElementById('diagram-canvas-' + diagram.id);
@@ -1539,6 +1543,13 @@ const EVENTS = new (class EventsManager {
                         if (!isCurrentUserAdmin && group[i] && allAliases.includes(group[i])) {
                             const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
                             ctx.strokeStyle = primaryColor || '#6366f1';
+                            ctx.lineWidth = Math.max(4, 8 * scale);
+                            ctx.strokeRect(x, y, squareWidth, squareHeight);
+                        }
+
+                        if (selectedCellHighlight && selectedCellHighlight.diagramId === diagram.id && selectedCellHighlight.groupIdx === g && selectedCellHighlight.cellIdx === i) {
+                            var hlColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+                            ctx.strokeStyle = hlColor || '#6366f1';
                             ctx.lineWidth = Math.max(4, 8 * scale);
                             ctx.strokeRect(x, y, squareWidth, squareHeight);
                         }
@@ -2108,6 +2119,9 @@ ${backupHtml}
                 if (!dialog.open) {
                     UI.showDialogWithBackdrop(dialog);
                 }
+
+                selectedCellHighlight = { diagramId: diagram.id, groupIdx: g, cellIdx: squareIdx };
+                drawDiagram(diagram);
                 
                 // Focus and show dropdown only if position is empty
                 personCombo.focus();
@@ -2156,6 +2170,8 @@ ${backupHtml}
                             drawDiagram(diagram);
                         }
                         window.isSelectingBackup = false;
+                        selectedCellHighlight = null;
+                        drawDiagram(diagram);
                         UI.closeDialogWithBackdrop(dialog);
                     }
                     return;
@@ -2180,6 +2196,7 @@ ${backupHtml}
                         }
                         
                         setDiagramsDirty(true);
+                        selectedCellHighlight = { diagramId: diagram.id, groupIdx: window.selectedGroup, cellIdx: window.selectedSquare };
                         drawDiagram(diagram);
 
                         // If openNextBlock is true, find and open the next empty block
@@ -2203,6 +2220,8 @@ ${backupHtml}
                             }
                         }
 
+                        selectedCellHighlight = null;
+                        drawDiagram(diagram);
                         UI.closeDialogWithBackdrop(dialog);
                     }
                 }
@@ -2532,23 +2551,141 @@ ${backupHtml}
                             if (orders.length === 0) {
                                 html += '<p class="magic-dialog-empty">No hi ha dades d\'actuacions anteriors</p>';
                             } else {
-                                html += '<div class="magic-dialog-positions">';
-                                orders.forEach(function (order) {
-                                    var pos = result[order];
-                                    html += '<div class="magic-position-row">';
-                                    html += '<span class="magic-position-tag">' + pos.tag + '</span>';
-                                    html += '<div class="magic-position-members">';
-                                    pos.members.forEach(function (m) {
-                                        var cls = 'magic-member-chip';
-                                        if (m.attending) cls += ' attending';
-                                        html += '<span class="' + cls + '">' + m.name + ' <strong>' + m.count + '</strong></span>';
-                                    });
-                                    html += '</div></div>';
-                                });
-                                html += '</div>';
+                                html += '<canvas id="diagram-canvas-magic" width="800" height="400"></canvas>';
+                                html += '<div id="magic-selection-area"></div>';
+                                html += '<button type="button" id="magic-confirm-btn" class="magic-confirm-btn">Confirmar</button>';
                             }
                             var closeBtn = '<button type="button" class="magic-dialog-close-btn" onclick="UI.closeDialogWithBackdrop(document.getElementById(\'magic-dialog\'))" aria-label="Tancar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>';
                             magicContent.innerHTML = closeBtn + html;
+                            if (orders.length > 0) {
+                                var rows = diagram.rows || 2;
+                                var cols = diagram.columns || 2;
+                                var positionsPerGroup = rows * cols;
+                                var groupCount = diagram.groups.length;
+                                var magicGroups = [];
+                                for (var g = 0; g < groupCount; g++) {
+                                    var group = [];
+                                    for (var i = 0; i < positionsPerGroup; i++) group.push(null);
+                                    magicGroups.push(group);
+                                }
+                                var magicDiagram = {
+                                    id: 'magic',
+                                    groups: magicGroups,
+                                    rows: rows,
+                                    columns: cols,
+                                    positions: diagram.positions || [],
+                                    diagram: diagram.diagram || { backgroundColor: {}, textColor: {} },
+                                    forms: ['grid'],
+                                    activeForm: 'grid'
+                                };
+                                drawDiagram(magicDiagram);
+
+                                function showMagicCandidates(order, groupIdx, cellIdx) {
+                                    selectedCellHighlight = { diagramId: 'magic', groupIdx: groupIdx, cellIdx: cellIdx };
+                                    drawDiagram(magicDiagram);
+                                    var selectionArea = document.getElementById('magic-selection-area');
+                                    var posResult = result[order];
+                                    var pos = magicDiagram.positions.find(function (p) { return p.order === order; });
+                                    var dColors = magicDiagram.diagram;
+                                    var bgColor = '#808080';
+                                    if (pos && pos.positionType.label && dColors.backgroundColor && dColors.backgroundColor[pos.positionType.label]) {
+                                        bgColor = dColors.backgroundColor[pos.positionType.label];
+                                    }
+                                    var usedAliases = [];
+                                    for (var gi = 0; gi < magicDiagram.groups.length; gi++) {
+                                        for (var si = 0; si < positionsPerGroup; si++) {
+                                            if (gi === groupIdx && si === cellIdx) continue;
+                                            if (magicDiagram.groups[gi][si]) usedAliases.push(magicDiagram.groups[gi][si]);
+                                        }
+                                    }
+                                    var groupLetter = String.fromCharCode(65 + groupIdx);
+                                    var blockName = dColors.blockName || 'Grup';
+                                    var headerText = pos ? pos.tag : 'Posició ' + order;
+                                    if (magicDiagram.groups.length > 1) {
+                                        headerText += ' — ' + blockName + ' ' + groupLetter;
+                                    }
+                                    var areaHtml = '<div class="magic-selection-header">';
+                                    areaHtml += '<span class="magic-position-color" style="background:' + bgColor + '"></span>';
+                                    areaHtml += '<strong>' + headerText + '</strong>';
+                                    if (pos && pos.specifications) {
+                                        areaHtml += '<span class="magic-position-specs">' + pos.specifications + '</span>';
+                                    }
+                                    areaHtml += '</div>';
+                                    if (!posResult || !posResult.members || posResult.members.length === 0) {
+                                        areaHtml += '<p class="magic-dialog-empty">No hi ha dades per a aquesta posició</p>';
+                                        selectionArea.innerHTML = areaHtml;
+                                        return;
+                                    }
+                                    var candidates = posResult.members.filter(function (m) {
+                                        return m.attending && !usedAliases.includes(m.name);
+                                    });
+                                    if (candidates.length === 0) {
+                                        areaHtml += '<p class="magic-dialog-empty">No hi ha candidats disponibles</p>';
+                                    } else {
+                                        areaHtml += '<div class="magic-candidate-list">';
+                                        candidates.forEach(function (m, idx) {
+                                            areaHtml += '<button type="button" class="magic-candidate-btn" data-idx="' + idx + '">';
+                                            areaHtml += m.name + ' <strong>' + m.count + '</strong>';
+                                            areaHtml += '</button>';
+                                        });
+                                        areaHtml += '</div>';
+                                    }
+                                    selectionArea.innerHTML = areaHtml;
+                                    selectionArea.querySelectorAll('.magic-candidate-btn').forEach(function (btn) {
+                                        btn.addEventListener('click', function () {
+                                            var candidate = candidates[parseInt(btn.dataset.idx)];
+                                            magicDiagram.groups[groupIdx][cellIdx] = candidate.name;
+                                            for (var ni = cellIdx + 1; ni < positionsPerGroup; ni++) {
+                                                if (!magicDiagram.groups[groupIdx][ni]) {
+                                                    showMagicCandidates(ni + 1, groupIdx, ni);
+                                                    return;
+                                                }
+                                            }
+                                            selectedCellHighlight = null;
+                                            drawDiagram(magicDiagram);
+                                            selectionArea.innerHTML = '';
+                                        });
+                                    });
+                                }
+
+                                var magicCanvas = document.getElementById('diagram-canvas-magic');
+                                magicCanvas.addEventListener('click', function (e) {
+                                    var rect = magicCanvas.getBoundingClientRect();
+                                    var layout = calcDiagramLayout(magicCanvas, groupCount, rows, cols);
+                                    var scaleX = magicCanvas.width / rect.width;
+                                    var scaleY = magicCanvas.height / rect.height;
+                                    var clickX = (e.clientX - rect.left) * scaleX;
+                                    var clickY = (e.clientY - rect.top) * scaleY;
+                                    for (var g = 0; g < groupCount; g++) {
+                                        var offsetX = layout.offsetX0 + g * (layout.gridWidth + layout.spacing);
+                                        var groupAreaWidth = layout.squareWidth * cols + layout.squareSpacingX * (cols - 1);
+                                        var groupAreaHeight = layout.squareHeight * rows + layout.squareSpacingY * (rows - 1);
+                                        if (clickX >= offsetX && clickX <= offsetX + groupAreaWidth &&
+                                            clickY >= layout.offsetY && clickY <= layout.offsetY + groupAreaHeight) {
+                                            var x = clickX - offsetX;
+                                            var y = clickY - layout.offsetY;
+                                            var col = Math.floor(x / (layout.squareWidth + layout.squareSpacingX));
+                                            var row = Math.floor(y / (layout.squareHeight + layout.squareSpacingY));
+                                            if (col >= cols || row >= rows) return;
+                                            var idx = row * cols + col;
+                                            showMagicCandidates(idx + 1, g, idx);
+                                            return;
+                                        }
+                                    }
+                                });
+
+                                document.getElementById('magic-confirm-btn').addEventListener('click', function () {
+                                    for (var g = 0; g < groupCount; g++) {
+                                        for (var i = 0; i < positionsPerGroup; i++) {
+                                            diagram.groups[g][i] = magicDiagram.groups[g][i];
+                                        }
+                                    }
+                                    setDiagramsDirty(true);
+                                    selectedCellHighlight = null;
+                                    drawDiagram(diagram);
+                                    UI.closeDialogWithBackdrop(magicDialog);
+                                });
+                            }
                         })
                         .catch(function (error) {
                             var closeBtn = '<button type="button" class="magic-dialog-close-btn" onclick="UI.closeDialogWithBackdrop(document.getElementById(\'magic-dialog\'))" aria-label="Tancar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>';
@@ -2602,6 +2739,11 @@ ${backupHtml}
             // Close dialog when clicking outside or pressing Escape
             dialog.addEventListener('click', function (e) {
                 if (e.target === dialog) {
+                    selectedCellHighlight = null;
+                    if (window.selectedDiagramId !== null) {
+                        var d = diagrams.find(function (di) { return di.id === window.selectedDiagramId; });
+                        if (d) drawDiagram(d);
+                    }
                     UI.closeDialogWithBackdrop(dialog);
                 }
             });

@@ -1,5 +1,5 @@
 function getMembers_({forceRefresh}) {
-	forceRefresh = forceRefresh || false;
+	forceRefresh = forceRefresh === true || forceRefresh === "true";
 	
 	try {
 		// Reload from database if force refresh is requested	

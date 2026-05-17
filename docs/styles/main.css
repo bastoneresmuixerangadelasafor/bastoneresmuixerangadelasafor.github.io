@@ -2474,15 +2474,17 @@ table tbody tr:last-child td {
   align-items: stretch;
   justify-content: flex-start;
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  inset: 0;
+  margin: auto;
+  height: fit-content;
   z-index: 1000;
 }
 
-.login-card {
+#view-login .login-card {
   position: relative;
   width: 100%;
+  max-width: none;
+  overflow: visible;
   padding: 1.5em;
   padding-top: 3em;
 }
@@ -6163,6 +6165,89 @@ body.dark-mode .magic-dialog-text {
   width: 100%;
 }
 
+#diagram-canvas-magic {
+  display: block;
+  margin: 0 auto 16px auto;
+  max-width: 100%;
+  border-radius: 10px;
+}
+
+#magic-selection-area {
+  width: 100%;
+}
+
+.magic-selection-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.magic-position-specs {
+  margin-left: 4px;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.dark-mode .magic-position-specs {
+  color: #9ca3af;
+}
+
+.dark-mode .magic-selection-header {
+  color: #e2e8f0;
+}
+
+.magic-candidate-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.magic-candidate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+.magic-candidate-btn:hover {
+  filter: brightness(0.93);
+  transform: scale(1.04);
+}
+
+.magic-candidate-btn:active {
+  transform: scale(0.97);
+}
+
+.dark-mode .magic-candidate-btn {
+  background: #064e3b;
+  color: #6ee7b7;
+  border-color: #065f46;
+}
+
+.magic-candidate-btn strong {
+  font-weight: 700;
+}
+
+.magic-position-color {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-right: 6px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
 .magic-position-row {
   display: flex;
   align-items: flex-start;
@@ -6265,6 +6350,27 @@ body.dark-mode .magic-dialog-text {
   width: 24px;
   height: 24px;
   stroke-width: 2;
+}
+
+.magic-confirm-btn {
+  margin-top: 12px;
+  padding: 10px 32px;
+  border-radius: 12px;
+  border: none;
+  background: #32bea6;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+.magic-confirm-btn:hover {
+  filter: brightness(0.92);
+}
+
+.magic-confirm-btn:active {
+  transform: scale(0.97);
 }
 
 .clear-person-btn {
