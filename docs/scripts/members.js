@@ -7,6 +7,7 @@ const MEMBERS = new (class AppMembers {
     this.originalMemberData = null;
     this.isAddingNewMember = false;
     this.membersData = [];
+    this._saveVersion = 0;
     this.membersSortColumn = "active";
     this.membersSortDirection = "desc";
     this.membersTypeFilterValue = "";
@@ -730,7 +731,9 @@ const MEMBERS = new (class AppMembers {
           }
         });
         MEMBERS._rebuildRelatedMembers();
+        MEMBERS._saveVersion++;
         CACHE._write({ key: "members", data: MEMBERS.membersData });
+        APP.bumpLocalVersion('members');
         MEMBERS._renderMembersTable();
       })
       .catch((error) => {
@@ -864,7 +867,9 @@ const MEMBERS = new (class AppMembers {
           }
         }
         MEMBERS._rebuildRelatedMembers();
+        MEMBERS._saveVersion++;
         CACHE._write({ key: "members", data: MEMBERS.membersData });
+        APP.bumpLocalVersion('members');
         MEMBERS._renderMembersTable();
       })
       .catch((error) => {
@@ -1622,7 +1627,9 @@ const MEMBERS = new (class AppMembers {
     if (tbody)
       tbody.innerHTML = '<tr><td colspan="5">Carregant membres...</td></tr>';
 
+    const loadVersion = this._saveVersion;
     API.getMembers({ onBackgroundUpdate: (members) => {
+        if (this._saveVersion !== loadVersion) return;
         if (Array.isArray(members)) {
           MEMBERS.membersData = members;
           this._renderMembersTable();
