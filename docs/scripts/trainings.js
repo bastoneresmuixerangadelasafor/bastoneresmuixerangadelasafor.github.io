@@ -1461,12 +1461,9 @@ const TRAININGS = new (class TrainingSession {
       if (trainingDetectedDancesSection) {
         trainingDetectedDancesSection.style.display = "none";
       }
-      // Hide member attendance section when form is reset
-      const trainingMemberAttendanceSection = document.getElementById("training-member-attendance-section");
-      if (trainingMemberAttendanceSection) {
-        trainingMemberAttendanceSection.style.display = "none";
-      }
     }
+
+    TRAININGS.prepareTrainingAttendanceSection();
   
     // Update page header to "Nou assaig"
     TRAININGS.updateTrainingPageTitle(false);

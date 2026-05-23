@@ -49,6 +49,24 @@ const EVENTS = new (class EventsManager {
     if (typeof isEventEditable !== "undefined") {
       isEventEditable = true;
     }
+
+    const attendanceSection = document.getElementById("event-member-attendance-section");
+    if (attendanceSection) {
+      attendanceSection.style.display = "none";
+    }
+
+    const attendanceList = document.getElementById("event-member-attendance-list");
+    if (attendanceList) {
+      attendanceList.innerHTML = "";
+      attendanceList.classList.add("collapsed");
+    }
+
+    const attendanceToggle = document.getElementById("event-attendance-toggle");
+    if (attendanceToggle) {
+      const toggleArrow = attendanceToggle.querySelector(".toggle-arrow");
+      if (toggleArrow) toggleArrow.textContent = "▶";
+      attendanceToggle.setAttribute("aria-expanded", "false");
+    }
   }
 
   loadPlanningEventData() {
