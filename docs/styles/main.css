@@ -6238,6 +6238,55 @@ body.dark-mode .magic-dialog-text {
   font-weight: 700;
 }
 
+.magic-current-assignment {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  margin-bottom: 8px;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+.dark-mode .magic-current-assignment {
+  background: #1e3a5f;
+  color: #93c5fd;
+  border-color: #2563eb;
+}
+
+.magic-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.75rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+.magic-remove-btn:hover {
+  filter: brightness(0.85);
+  transform: scale(1.1);
+}
+
+.magic-remove-btn:active {
+  transform: scale(0.95);
+}
+
+.dark-mode .magic-remove-btn {
+  background: #dc2626;
+}
+
 .magic-position-color {
   display: inline-block;
   width: 12px;

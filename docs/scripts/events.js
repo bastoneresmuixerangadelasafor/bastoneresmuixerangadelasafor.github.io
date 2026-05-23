@@ -2611,6 +2611,13 @@ ${backupHtml}
                                         areaHtml += '<span class="magic-position-specs">' + pos.specifications + '</span>';
                                     }
                                     areaHtml += '</div>';
+                                    var currentAssigned = magicDiagram.groups[groupIdx][cellIdx];
+                                    if (currentAssigned) {
+                                        areaHtml += '<div class="magic-current-assignment">';
+                                        areaHtml += '<span>' + currentAssigned + '</span>';
+                                        areaHtml += '<button type="button" class="magic-remove-btn" title="Eliminar">✕</button>';
+                                        areaHtml += '</div>';
+                                    }
                                     if (!posResult || !posResult.members || posResult.members.length === 0) {
                                         areaHtml += '<p class="magic-dialog-empty">No hi ha dades per a aquesta posició</p>';
                                         selectionArea.innerHTML = areaHtml;
@@ -2646,6 +2653,14 @@ ${backupHtml}
                                             selectionArea.innerHTML = '';
                                         });
                                     });
+                                    var removeBtn = selectionArea.querySelector('.magic-remove-btn');
+                                    if (removeBtn) {
+                                        removeBtn.addEventListener('click', function () {
+                                            magicDiagram.groups[groupIdx][cellIdx] = null;
+                                            drawDiagram(magicDiagram);
+                                            showMagicCandidates(order, groupIdx, cellIdx);
+                                        });
+                                    }
                                 }
 
                                 var magicCanvas = document.getElementById('diagram-canvas-magic');
