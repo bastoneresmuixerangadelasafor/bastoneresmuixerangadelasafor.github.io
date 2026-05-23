@@ -715,7 +715,9 @@ function getTrainingAttendanceContext_({trainingId, user}) {
   }
 
   if (userRow === -1) {
-    return { error: API.newError_({ error: 'No s\'ha trobat el membre: ' + user.alias }) };
+    const newRowIndex = data.length + 1;
+    sheet.getRange(newRowIndex, 1).setValue(user.alias);
+    userRow = newRowIndex;
   }
 
   return { sheet, dateColumn, userRow, trainingId };
@@ -1011,7 +1013,8 @@ function confirmEventMemberAttendance_({eventId, memberAlias, attending}) {
     }
 
     if (memberRowIndex === -1) {
-      return API.newError_({ error: 'No s\'ha trobat el membre' });
+      memberRowIndex = data.length;
+      sheet.getRange(memberRowIndex + 1, 1).setValue(memberAlias);
     }
 
     // Update the attendance value
