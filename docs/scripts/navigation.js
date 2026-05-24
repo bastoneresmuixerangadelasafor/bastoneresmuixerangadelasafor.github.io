@@ -307,7 +307,15 @@ const NAVIGATION = new (class AppNavigator {
     this.currentView = route;
 
     if (route !== "404") {
-      localStorage.setItem("currentRoute", route);
+      let routeToSave = route;
+      if (route === "edit-event" && APP.eventIdToLoad) {
+        routeToSave = "events/" + encodeURIComponent(APP.eventIdToLoad);
+      } else if (route === "edit-training" && APP.trainingIdToLoad) {
+        routeToSave = "training/" + encodeURIComponent(APP.trainingIdToLoad);
+      } else if (route === "member-positions" && APP.memberPositionsAlias) {
+        routeToSave = "member-positions/" + encodeURIComponent(APP.memberPositionsAlias);
+      }
+      localStorage.setItem("currentRoute", routeToSave);
     }
 
     if (!alreadyOnRoute || APP.eventIdToLoad || APP.trainingIdToLoad) {

@@ -3161,6 +3161,7 @@ input::placeholder {
 }
 
 .event-card {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -3201,6 +3202,26 @@ input::placeholder {
   font-weight: 600;
   color: var(--primary-dark);
   word-break: break-word;
+}
+
+.event-hidden-icon {
+  position: absolute;
+  top: 18px;
+  right: 8px;
+  width: 16px;
+  height: 16px;
+  opacity: 0.45;
+  cursor: pointer;
+}
+
+.event-visible-icon {
+  position: absolute;
+  top: 18px;
+  right: 8px;
+  width: 16px;
+  height: 16px;
+  opacity: 0.35;
+  cursor: pointer;
 }
 
 .dark-mode .event-card-name {
@@ -6268,6 +6289,55 @@ body.dark-mode .magic-dialog-text {
 
 .magic-candidate-btn strong {
   font-weight: 700;
+}
+
+.magic-current-assignment {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  margin-bottom: 8px;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+.dark-mode .magic-current-assignment {
+  background: #1e3a5f;
+  color: #93c5fd;
+  border-color: #2563eb;
+}
+
+.magic-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.75rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+.magic-remove-btn:hover {
+  filter: brightness(0.85);
+  transform: scale(1.1);
+}
+
+.magic-remove-btn:active {
+  transform: scale(0.95);
+}
+
+.dark-mode .magic-remove-btn {
+  background: #dc2626;
 }
 
 .magic-position-color {
@@ -10532,6 +10602,10 @@ const API = new (class GAppsApiClient {
     return this._put({ action: "saveEvent", body: { event }, requiresAuth: true });
   }
 
+  setEventVisibility({ eventName, visible } = {}) {
+    return this._patch({ action: "setEventVisibility", body: { eventName, visible }, requiresAuth: true });
+  }
+
   saveTraining({ training } = {}) {
     return this._put({ action: "saveTraining", body: { training }, requiresAuth: true });
   }
@@ -10757,6 +10831,22 @@ const API = new (class GAppsApiClient {
       this._lastHiddenAt = null;
       this._pollForChanges();
     });
+
+    window.addEventListener("pageshow", (e) => {
+      if (!e.persisted) return;
+      const view = NAVIGATION.currentView;
+      if (view === "edit-event" && APP.currentEventId) {
+        const field = document.getElementById("event-name-input");
+        if (field && !field.value) {
+          EVENTS.loadEventData(APP.currentEventId);
+        }
+      } else if (view === "edit-training" && APP.currentTrainingId) {
+        const field = document.getElementById("training-date-input");
+        if (field && !field.value) {
+          TRAININGS.loadTrainingData(APP.currentTrainingId);
+        }
+      }
+    });
   }
 
   _startPolling(intervalMs) {
@@ -10856,6 +10946,14 @@ const API = new (class GAppsApiClient {
           EVENTS.loadEventData(APP.eventIdToLoad);
           APP.eventIdToLoad = null;
         } else {
+          const eventHash = window.location.hash.substring(1);
+          if (eventHash.startsWith("events/")) {
+            const recoveredId = decodeURIComponent(eventHash.substring(7));
+            if (recoveredId) {
+              EVENTS.loadEventData(escapeHtml(recoveredId));
+              break;
+            }
+          }
           EVENTS.resetEventsForm();
         }
         break;
@@ -10864,6 +10962,14 @@ const API = new (class GAppsApiClient {
           TRAININGS.loadTrainingData(APP.trainingIdToLoad);
           APP.trainingIdToLoad = null;
         } else {
+          const trainingHash = window.location.hash.substring(1);
+          if (trainingHash.startsWith("training/")) {
+            const recoveredId = decodeURIComponent(trainingHash.substring(9));
+            if (recoveredId) {
+              TRAININGS.loadTrainingData(escapeHtml(recoveredId));
+              break;
+            }
+          }
           TRAININGS.resetTrainingForm();
         }
         break;
@@ -11362,7 +11468,15 @@ function updateAuthUI() {
     this.currentView = route;
 
     if (route !== "404") {
-      localStorage.setItem("currentRoute", route);
+      let routeToSave = route;
+      if (route === "edit-event" && APP.eventIdToLoad) {
+        routeToSave = "events/" + encodeURIComponent(APP.eventIdToLoad);
+      } else if (route === "edit-training" && APP.trainingIdToLoad) {
+        routeToSave = "training/" + encodeURIComponent(APP.trainingIdToLoad);
+      } else if (route === "member-positions" && APP.memberPositionsAlias) {
+        routeToSave = "member-positions/" + encodeURIComponent(APP.memberPositionsAlias);
+      }
+      localStorage.setItem("currentRoute", routeToSave);
     }
 
     if (!alreadyOnRoute || APP.eventIdToLoad || APP.trainingIdToLoad) {
@@ -14180,6 +14294,24 @@ function updateAuthUI() {
     if (typeof isEventEditable !== "undefined") {
       isEventEditable = true;
     }
+
+    const attendanceSection = document.getElementById("event-member-attendance-section");
+    if (attendanceSection) {
+      attendanceSection.style.display = "none";
+    }
+
+    const attendanceList = document.getElementById("event-member-attendance-list");
+    if (attendanceList) {
+      attendanceList.innerHTML = "";
+      attendanceList.classList.add("collapsed");
+    }
+
+    const attendanceToggle = document.getElementById("event-attendance-toggle");
+    if (attendanceToggle) {
+      const toggleArrow = attendanceToggle.querySelector(".toggle-arrow");
+      if (toggleArrow) toggleArrow.textContent = "▶";
+      attendanceToggle.setAttribute("aria-expanded", "false");
+    }
   }
 
   loadPlanningEventData() {
@@ -14353,8 +14485,18 @@ function updateAuthUI() {
           });
         }
 
+        let visibilityIcon = '';
+        if (isAdmin) {
+          if (!event.visible) {
+            visibilityIcon = '<svg class="event-hidden-icon" title="No visible per als membres" onclick="event.stopPropagation(); EVENTS.makeEventVisible(\'' + escapeHtml(event.name) + '\')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+          } else {
+            visibilityIcon = '<svg class="event-visible-icon" title="Visible per als membres" onclick="event.stopPropagation(); EVENTS.makeEventHidden(\'' + escapeHtml(event.name) + '\')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+          }
+        }
+
         return `
         <div class="event-card" data-event-id="${event.id}" onclick="EVENTS.viewEvent('${escapeHtml(event.id)}')">
+        ${visibilityIcon}
         <div class="event-card-info">
         <span class="event-card-name">${event.name}</span>
         <span class="event-card-date">${formattedDate}</span>
@@ -14565,6 +14707,32 @@ function updateAuthUI() {
     if (!eventId) return;
     APP.eventIdToLoad = escapeHtml(eventId);
     window.location.hash = "events/" + encodeURIComponent(eventId);
+  }
+
+  makeEventVisible(eventName) {
+    if (!confirm("Vols fer l'actuació visible a tots els membres?")) return;
+    API.setEventVisibility({ eventName: eventName, visible: true })
+      .then(function () {
+        CACHE.saveEvents({ events: null });
+        EVENTS.loadPlanningEventData();
+      })
+      .catch(function (error) {
+        console.error('Failed to make event visible:', error);
+        alert("No s'ha pogut fer visible l'actuació");
+      });
+  }
+
+  makeEventHidden(eventName) {
+    if (!confirm("Segur que vols ocultar l'actuació?")) return;
+    API.setEventVisibility({ eventName: eventName, visible: false })
+      .then(function () {
+        CACHE.saveEvents({ events: null });
+        EVENTS.loadPlanningEventData();
+      })
+      .catch(function (error) {
+        console.error('Failed to hide event:', error);
+        alert("No s'ha pogut ocultar l'actuació");
+      });
   }
 
 
@@ -15206,6 +15374,11 @@ function updateAuthUI() {
             if (!isAdmin) {
                 isEventEditable = false;
                 return false;
+            }
+
+            if (!APP.currentEventId) {
+                isEventEditable = true;
+                return true;
             }
 
             const eventDatetimeInput = document.getElementById('event-datetime-input');
@@ -16742,6 +16915,13 @@ ${backupHtml}
                                         areaHtml += '<span class="magic-position-specs">' + pos.specifications + '</span>';
                                     }
                                     areaHtml += '</div>';
+                                    var currentAssigned = magicDiagram.groups[groupIdx][cellIdx];
+                                    if (currentAssigned) {
+                                        areaHtml += '<div class="magic-current-assignment">';
+                                        areaHtml += '<span>' + currentAssigned + '</span>';
+                                        areaHtml += '<button type="button" class="magic-remove-btn" title="Eliminar">✕</button>';
+                                        areaHtml += '</div>';
+                                    }
                                     if (!posResult || !posResult.members || posResult.members.length === 0) {
                                         areaHtml += '<p class="magic-dialog-empty">No hi ha dades per a aquesta posició</p>';
                                         selectionArea.innerHTML = areaHtml;
@@ -16777,6 +16957,14 @@ ${backupHtml}
                                             selectionArea.innerHTML = '';
                                         });
                                     });
+                                    var removeBtn = selectionArea.querySelector('.magic-remove-btn');
+                                    if (removeBtn) {
+                                        removeBtn.addEventListener('click', function () {
+                                            magicDiagram.groups[groupIdx][cellIdx] = null;
+                                            drawDiagram(magicDiagram);
+                                            showMagicCandidates(order, groupIdx, cellIdx);
+                                        });
+                                    }
                                 }
 
                                 var magicCanvas = document.getElementById('diagram-canvas-magic');
@@ -19314,12 +19502,9 @@ ${backupHtml}
       if (trainingDetectedDancesSection) {
         trainingDetectedDancesSection.style.display = "none";
       }
-      // Hide member attendance section when form is reset
-      const trainingMemberAttendanceSection = document.getElementById("training-member-attendance-section");
-      if (trainingMemberAttendanceSection) {
-        trainingMemberAttendanceSection.style.display = "none";
-      }
     }
+
+    TRAININGS.prepareTrainingAttendanceSection();
   
     // Update page header to "Nou assaig"
     TRAININGS.updateTrainingPageTitle(false);

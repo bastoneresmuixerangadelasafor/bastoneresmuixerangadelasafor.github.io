@@ -126,6 +126,10 @@ const CACHE = new class GAppsServerCache {
     return this.retrieveEventsFromDB();
   }
 
+  clearEvents() {
+    this.cache_.deleteProperty(EVENT_CACHE);
+  }
+
   getNextEvent({forceRefresh = false} = {}) {
     let nextEventDate = !forceRefresh && this.cache_.getProperty(NEXT_EVENT);
     if(!nextEventDate) {

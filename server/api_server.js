@@ -289,6 +289,11 @@ const API = class GAppsApiServer {
           value: positionRequest?.value,
         });
         break;
+      case "setEventVisibility":
+        const setVisibilityWorker = this.validateUserToken_({fn: setEventVisibility_, requiresAuth: true, requiresAdmin: true, token: e.parameter?.token});
+        const setVisibilityReq = JSON.parse(e.postData?.contents);
+        data = setVisibilityWorker({ eventName: setVisibilityReq?.eventName, visible: setVisibilityReq?.visible });
+        break;
       default:
         return API.newError_({ error: `Unknown PATCH action: ${action}`, status:404 });
     }

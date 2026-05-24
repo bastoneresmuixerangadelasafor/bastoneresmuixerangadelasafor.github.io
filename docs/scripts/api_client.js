@@ -273,6 +273,10 @@ const API = new (class GAppsApiClient {
     return this._put({ action: "saveEvent", body: { event }, requiresAuth: true });
   }
 
+  setEventVisibility({ eventName, visible } = {}) {
+    return this._patch({ action: "setEventVisibility", body: { eventName, visible }, requiresAuth: true });
+  }
+
   saveTraining({ training } = {}) {
     return this._put({ action: "saveTraining", body: { training }, requiresAuth: true });
   }

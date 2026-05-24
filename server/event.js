@@ -136,6 +136,31 @@ function updateEventsList_(spreadsheet, eventName, isoDatetime, meetingPlace) {
   }
 }
 
+function setEventVisibility_({eventName, visible}) {
+  if (!eventName) {
+    return API.newError_({ error: 'El nom de l\'actuació és obligatori' });
+  }
+
+  const spreadsheet = SpreadsheetApp.openById(EVENTS_SPREADSHEET_ID);
+  const listSheet = spreadsheet.getSheetByName(EVENTS_SHEET_NAME);
+  if (!listSheet) {
+    return API.newError_({ error: 'No s\'ha trobat el full de llistat' });
+  }
+
+  const data = listSheet.getDataRange().getValues();
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] === eventName) {
+      listSheet.getRange(i + 1, 6).setValue(visible ? true : '');
+      CACHE.clearEvents();
+      CACHE.bumpVersion('events');
+      const msg = visible ? 'Actuació visible correctament' : 'Actuació ocultada correctament';
+      return API.newResult_({ result: { message: msg } });
+    }
+  }
+
+  return API.newError_({ error: 'No s\'ha trobat l\'actuació' });
+}
+
 function ensureAttendanceColumn_(spreadsheet, eventName) {
   const sheet = spreadsheet.getSheetByName(ASSISTANCE_SHEET_NAME);
   if (!sheet) {

@@ -149,6 +149,22 @@ const APP = new (class AppState{
       this._lastHiddenAt = null;
       this._pollForChanges();
     });
+
+    window.addEventListener("pageshow", (e) => {
+      if (!e.persisted) return;
+      const view = NAVIGATION.currentView;
+      if (view === "edit-event" && APP.currentEventId) {
+        const field = document.getElementById("event-name-input");
+        if (field && !field.value) {
+          EVENTS.loadEventData(APP.currentEventId);
+        }
+      } else if (view === "edit-training" && APP.currentTrainingId) {
+        const field = document.getElementById("training-date-input");
+        if (field && !field.value) {
+          TRAININGS.loadTrainingData(APP.currentTrainingId);
+        }
+      }
+    });
   }
 
   _startPolling(intervalMs) {
@@ -248,6 +264,14 @@ const APP = new (class AppState{
           EVENTS.loadEventData(APP.eventIdToLoad);
           APP.eventIdToLoad = null;
         } else {
+          const eventHash = window.location.hash.substring(1);
+          if (eventHash.startsWith("events/")) {
+            const recoveredId = decodeURIComponent(eventHash.substring(7));
+            if (recoveredId) {
+              EVENTS.loadEventData(escapeHtml(recoveredId));
+              break;
+            }
+          }
           EVENTS.resetEventsForm();
         }
         break;
@@ -256,6 +280,14 @@ const APP = new (class AppState{
           TRAININGS.loadTrainingData(APP.trainingIdToLoad);
           APP.trainingIdToLoad = null;
         } else {
+          const trainingHash = window.location.hash.substring(1);
+          if (trainingHash.startsWith("training/")) {
+            const recoveredId = decodeURIComponent(trainingHash.substring(9));
+            if (recoveredId) {
+              TRAININGS.loadTrainingData(escapeHtml(recoveredId));
+              break;
+            }
+          }
           TRAININGS.resetTrainingForm();
         }
         break;

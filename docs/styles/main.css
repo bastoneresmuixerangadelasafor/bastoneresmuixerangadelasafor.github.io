@@ -3129,6 +3129,7 @@ input::placeholder {
 }
 
 .event-card {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -3169,6 +3170,26 @@ input::placeholder {
   font-weight: 600;
   color: var(--primary-dark);
   word-break: break-word;
+}
+
+.event-hidden-icon {
+  position: absolute;
+  top: 18px;
+  right: 8px;
+  width: 16px;
+  height: 16px;
+  opacity: 0.45;
+  cursor: pointer;
+}
+
+.event-visible-icon {
+  position: absolute;
+  top: 18px;
+  right: 8px;
+  width: 16px;
+  height: 16px;
+  opacity: 0.35;
+  cursor: pointer;
 }
 
 .dark-mode .event-card-name {
