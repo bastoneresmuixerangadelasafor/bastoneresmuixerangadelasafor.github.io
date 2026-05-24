@@ -3202,6 +3202,16 @@ input::placeholder {
   font-weight: 600;
   color: var(--primary-dark);
   word-break: break-word;
+  display: inline-flex;
+  align-items: center;
+}
+
+.event-unconfirmed-icon {
+  margin-left: 6px;
+  width: 18px;
+  height: 18px;
+  color: #e0a800;
+  flex-shrink: 0;
 }
 
 .event-hidden-icon {
@@ -11509,7 +11519,12 @@ function updateAuthUI() {
   if (!text) return "";
   const div = document.createElement("div");
   div.textContent = text;
-  return div.innerHTML.replace(/"/g, "").replace(/'/g, "");
+  return div.innerHTML;
+}
+
+function escapeJsString(text) {
+  if (!text) return "";
+  return String(text).replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, '\\"');
 }
 
         </script>
@@ -14440,11 +14455,11 @@ function updateAuthUI() {
               }
             } else {
               const confirmFn = isRelatedMember ?
-                `EVENTS.confirmEventRelatedMemberAttendance('${escapeHtml(event.id)}', '${escapeHtml(memberAlias)}')` :
-                `EVENTS.confirmEventAttendance('${escapeHtml(event.id)}')`;
+                `EVENTS.confirmEventRelatedMemberAttendance('${escapeJsString(event.id)}', '${escapeJsString(memberAlias)}')` :
+                `EVENTS.confirmEventAttendance('${escapeJsString(event.id)}')`;
               const rejectFn = isRelatedMember ?
-                `EVENTS.rejectEventRelatedMemberAttendance('${escapeHtml(event.id)}', '${escapeHtml(memberAlias)}')` :
-                `EVENTS.rejectEventAttendance('${escapeHtml(event.id)}')`;
+                `EVENTS.rejectEventRelatedMemberAttendance('${escapeJsString(event.id)}', '${escapeJsString(memberAlias)}')` :
+                `EVENTS.rejectEventAttendance('${escapeJsString(event.id)}')`;
 
               const noAttendingText = isRelatedMember ? 'No assistirà' : 'No assistiré';
               const noAttendingTitle = isRelatedMember ? 'No assistirà' : 'No assistiré';
@@ -14488,17 +14503,19 @@ function updateAuthUI() {
         let visibilityIcon = '';
         if (isAdmin) {
           if (!event.visible) {
-            visibilityIcon = '<svg class="event-hidden-icon" title="No visible per als membres" onclick="event.stopPropagation(); EVENTS.makeEventVisible(\'' + escapeHtml(event.name) + '\')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+            visibilityIcon = '<svg class="event-hidden-icon" title="No visible per als membres" onclick="event.stopPropagation(); EVENTS.makeEventVisible(\'' + escapeJsString(event.name) + '\')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
           } else {
-            visibilityIcon = '<svg class="event-visible-icon" title="Visible per als membres" onclick="event.stopPropagation(); EVENTS.makeEventHidden(\'' + escapeHtml(event.name) + '\')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+            visibilityIcon = '<svg class="event-visible-icon" title="Visible per als membres" onclick="event.stopPropagation(); EVENTS.makeEventHidden(\'' + escapeJsString(event.name) + '\')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
           }
         }
 
+        const unconfirmedIcon = !event.confirmed ? '<svg class="event-unconfirmed-icon" title="Actuació no confirmada" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.72 1.64 5.12 4.14 6.56L4 22l5.1-2.55C10.03 19.81 11 20 12 20c5.52 0 10-3.58 10-8S17.52 2 12 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><text x="12" y="14" text-anchor="middle" font-size="12" font-weight="bold" fill="currentColor" font-family="sans-serif">?</text></svg>' : '';
+
         return `
-        <div class="event-card" data-event-id="${event.id}" onclick="EVENTS.viewEvent('${escapeHtml(event.id)}')">
+        <div class="event-card" data-event-id="${escapeHtml(event.id)}" onclick="EVENTS.viewEvent('${escapeJsString(event.id)}')">
         ${visibilityIcon}
         <div class="event-card-info">
-        <span class="event-card-name">${event.name}</span>
+        <span class="event-card-name">${event.name}${unconfirmedIcon}</span>
         <span class="event-card-date">${formattedDate}</span>
         ${meetingPlaceHtml}
         ${confirmationStatusHtml}
@@ -14637,6 +14654,9 @@ function updateAuthUI() {
         }
         if (eventNameDisplay) {
           eventNameDisplay.textContent = eventData.name || "";
+          if (!eventData.confirmed) {
+            eventNameDisplay.innerHTML = escapeHtml(eventData.name || "") + '<svg class="event-unconfirmed-icon" title="Actuació no confirmada" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.72 1.64 5.12 4.14 6.56L4 22l5.1-2.55C10.03 19.81 11 20 12 20c5.52 0 10-3.58 10-8S17.52 2 12 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><text x="12" y="14" text-anchor="middle" font-size="12" font-weight="bold" fill="currentColor" font-family="sans-serif">?</text></svg>';
+          }
         }
 
         if (eventDatetimeInput && eventData.datetime) {

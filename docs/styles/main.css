@@ -3170,6 +3170,16 @@ input::placeholder {
   font-weight: 600;
   color: var(--primary-dark);
   word-break: break-word;
+  display: inline-flex;
+  align-items: center;
+}
+
+.event-unconfirmed-icon {
+  margin-left: 6px;
+  width: 18px;
+  height: 18px;
+  color: #e0a800;
+  flex-shrink: 0;
 }
 
 .event-hidden-icon {

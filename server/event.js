@@ -1006,8 +1006,20 @@ function saveRelatedMemberTrainingNote_({trainingId, memberId, memberAlias, note
   }
 }
 
-function confirmEventMemberAttendance_({eventId, memberAlias, attending}) {
+function confirmEventMemberAttendance_({eventId, memberAlias, attending, user}) {
   try {
+    const isSelf = user.alias === memberAlias;
+    const isAdmin = (user.roles || []).indexOf('ADMIN') !== -1;
+    let isRelated = false;
+    if (!isSelf && !isAdmin) {
+      const members = CACHE.getMembers();
+      const targetMember = members.find(function(m) { return m.alias === memberAlias; });
+      isRelated = targetMember && isRelatedMember_(targetMember.id, user);
+    }
+    if (!isSelf && !isRelated && !isAdmin) {
+      return API.newError_({ error: 'No tens permís per modificar l\'assistència d\'aquest membre.', status: 403 });
+    }
+
     const spreadsheet = SpreadsheetApp.openById(EVENTS_SPREADSHEET_ID);
     const sheet = spreadsheet.getSheetByName(ASSISTANCE_SHEET_NAME);
     const data = sheet.getDataRange().getValues();

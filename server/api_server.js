@@ -188,9 +188,9 @@ const API = class GAppsApiServer {
         data = adminSetAttendanceWorker({ trainingId: adminSetAttendanceReq?.trainingId, memberAlias: adminSetAttendanceReq?.memberAlias, attending: adminSetAttendanceReq?.attending });
         break;
       case "confirmEventMemberAttendance":
-        const adminSetEventAttendanceWorker = this.validateUserToken_({fn: confirmEventMemberAttendance_, requiresAuth: true, requiresAdmin: true, token: e.parameter?.token});
-        const adminSetEventAttendanceReq = JSON.parse(e.postData?.contents);
-        data = adminSetEventAttendanceWorker({ eventId: adminSetEventAttendanceReq?.eventId, memberAlias: adminSetEventAttendanceReq?.memberAlias, attending: adminSetEventAttendanceReq?.attending });
+        const setEventAttendanceWorker = this.validateUserToken_({fn: confirmEventMemberAttendance_, requiresAuth: true, token: e.parameter?.token});
+        const setEventAttendanceReq = JSON.parse(e.postData?.contents);
+        data = setEventAttendanceWorker({ eventId: setEventAttendanceReq?.eventId, memberAlias: setEventAttendanceReq?.memberAlias, attending: setEventAttendanceReq?.attending });
         break;
       case "saveTrainingNote":
         const saveNoteWorker = this.validateUserToken_({fn: saveTrainingNote_, requiresAuth: true, token: e.parameter?.token});
