@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2019",
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "lib": ["ES2019"],
     "outDir": "./model/generated",
     "rootDir": "./model",

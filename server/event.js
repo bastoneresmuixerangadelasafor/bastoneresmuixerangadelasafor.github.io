@@ -297,8 +297,26 @@ function getEventById_({eventId}) {
     const sheet = spreadsheet.getSheetByName(eventId);
     
     if (!sheet) {
-      console.log('Event sheet not found: ' + eventId);
-      return API.newError_({ error: 'Event sheet not found: ' + eventId });
+      console.log('Event sheet not found, creating: ' + eventId);
+      sheet = spreadsheet.insertSheet(eventId);
+
+      var events = CACHE.getEvents();
+      var matchedEvent = events.find(function(ev) { return ev.id === eventId || ev.name === eventId; });
+      var bareEventName = matchedEvent ? matchedEvent.name : eventId;
+      var bareDate = matchedEvent && matchedEvent.date ? "'" + matchedEvent.date : '';
+      var bareMeetingPlace = matchedEvent ? (matchedEvent.meetingPlace || '') : '';
+
+      var bareData = [
+        ['Actuació:', bareEventName],
+        ['Data:', bareDate],
+        ['Lloc de trobada:', bareMeetingPlace],
+        ['', '']
+      ];
+      sheet.getRange(1, 1, bareData.length, 2).setValues(bareData);
+
+      sheet.getRange('A1:B1').setFontWeight('bold').setBackground('#e8f5e9');
+      sheet.getRange('A2:B2').setFontWeight('bold').setBackground('#e8f5e9');
+      sheet.getRange('A3:B3').setFontWeight('bold').setBackground('#e8f5e9');
     }
     
     const data = sheet.getDataRange().getValues();

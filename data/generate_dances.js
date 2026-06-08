@@ -97,7 +97,26 @@ const DANCES = [
       new DanceVideo({ url: "https://www.youtube.com/watch?v=k_JYBS5HlSQ", title: "La boja de 6 - Vídeo" }),
     ],
   }),
-  // FALTA CONFIG
+  new Dance({
+    name: "La boja de 4",
+    structure: new DanceStructure({ rows: 2, columns: 3, forms: [new DanceStructureForm(DanceStructureForm.GRID)] }),
+    diagram: new DanceDiagram({blockName: "Grup", backgroundColor: {"CARLOTETA":"#FFF2CC", "CORRER":"#92D050"}, textColor: {"CARLOTETA":"#000000", "CORRER":"#000000"}}),
+    minGroups: 1,
+    showInPositions: true,
+    positions: [
+      new DancePosition({ order: 1, tag: "4", positionType: new PositionType({ label: "CORRER" }), specifications: "Cantó dret/cara plaça" }),
+      new DancePosition({ order: 4, tag: "3", positionType: new PositionType({ label: "CARLOTETA" }), specifications: "Cantó equerre/cara plaça" }),
+      new DancePosition({ order: 5, tag: "2", positionType: new PositionType({ label: "CARLOTETA" }), specifications: "Cantó equerre/esquena plaça" }),
+      new DancePosition({ order: 6, tag: "1", positionType: new PositionType({ label: "CORRER" }), specifications: "Cantó dret/esquena plaça" }),
+    ],
+    audios: [
+      new DanceMusic({ fileId: "1IV0yshP7Xly9L-B07dqq2xCfAmCPRTkg", title: "La boja - Per assajar", artist: "Reina, Josep i Quim" }),
+      new DanceMusic({ fileId: "1Qp5hcUzq25SIJPsEq6QyKvvFv4KhnR4t", title: "La boja - A plaça", artist: "-" }),
+    ],
+    videos: [
+      new DanceVideo({ url: "https://www.youtube.com/watch?v=k_JYBS5HlSQ", title: "La boja de 6 - Vídeo" }),
+    ],
+  }),
   new Dance({
     name: "Micalet",
     structure: new DanceStructure({ rows: 2, columns: 2, forms: [new DanceStructureForm(DanceStructureForm.GRID)] }),

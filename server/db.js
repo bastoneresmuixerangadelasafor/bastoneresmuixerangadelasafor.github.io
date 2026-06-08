@@ -24,11 +24,13 @@ const CACHE = new class GAppsServerCache {
     this.cache_.setProperty(DATA_VERSIONS, JSON.stringify(versions));
   }
 
-  getMembers() {
-    const cachedTimestamp = this.cache_.getProperty(MEMBER_CACHE + "_TS");
-    const cachedMembers = this.cache_.getProperty(MEMBER_CACHE);
-    if (cachedMembers && cachedTimestamp && (Date.now() - parseInt(cachedTimestamp)) < 1800000) {
-      return JSON.parse(cachedMembers);
+  getMembers({ forceRefresh } = {}) {
+    if (!forceRefresh) {
+      const cachedTimestamp = this.cache_.getProperty(MEMBER_CACHE + "_TS");
+      const cachedMembers = this.cache_.getProperty(MEMBER_CACHE);
+      if (cachedMembers && cachedTimestamp && (Date.now() - parseInt(cachedTimestamp)) < 1800000) {
+        return JSON.parse(cachedMembers);
+      }
     }
     return this.retrieveMembersFromDB();
   }

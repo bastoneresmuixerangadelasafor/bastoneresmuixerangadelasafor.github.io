@@ -27,7 +27,7 @@ function loginWithEmailPassword_({ email, password }) {
     }
 
     // Find matching member from MEMBERS
-    const member = CACHE.getMembers().find(function (m) {
+    const member = CACHE.getMembers({ forceRefresh: true }).find(function (m) {
       return m.email && m.email.toLowerCase() === email.toLowerCase();
     });
 
@@ -373,7 +373,8 @@ function getUserProfile_({ email, forceRefresh } = {}) {
   }
 
   // Find matching member from MEMBERS by email
-  const member = CACHE.getMembers().find(function (m) {
+  const members = CACHE.getMembers({ forceRefresh });
+  const member = members.find(function (m) {
     return m.email && m.email.toLowerCase() === email.toLowerCase();
   });
 
@@ -383,7 +384,7 @@ function getUserProfile_({ email, forceRefresh } = {}) {
 
   // Create a map of ID to member for resolving relations
   const memberMap = {};
-  CACHE.getMembers().forEach(function (m) {
+  members.forEach(function (m) {
     memberMap[m.id] = m;
   });
 

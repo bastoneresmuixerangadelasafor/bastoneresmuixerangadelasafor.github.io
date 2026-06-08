@@ -360,6 +360,81 @@ const DANCES = [
     ]
   },
   {
+    "name": "La boja de 4",
+    "structure": {
+      "rows": 2,
+      "columns": 3,
+      "forms": [
+        "grid"
+      ]
+    },
+    "diagram": {
+      "blockName": "Grup",
+      "backgroundColor": {
+        "CARLOTETA": "#FFF2CC",
+        "CORRER": "#92D050"
+      },
+      "textColor": {
+        "CARLOTETA": "#000000",
+        "CORRER": "#000000"
+      }
+    },
+    "positions": [
+      {
+        "order": 1,
+        "positionType": {
+          "label": "CORRER"
+        },
+        "specifications": "Cantó dret/cara plaça",
+        "tag": "4"
+      },
+      {
+        "order": 4,
+        "positionType": {
+          "label": "CARLOTETA"
+        },
+        "specifications": "Cantó equerre/cara plaça",
+        "tag": "3"
+      },
+      {
+        "order": 5,
+        "positionType": {
+          "label": "CARLOTETA"
+        },
+        "specifications": "Cantó equerre/esquena plaça",
+        "tag": "2"
+      },
+      {
+        "order": 6,
+        "positionType": {
+          "label": "CORRER"
+        },
+        "specifications": "Cantó dret/esquena plaça",
+        "tag": "1"
+      }
+    ],
+    "minGroups": 1,
+    "showInPositions": true,
+    "audios": [
+      {
+        "fileId": "1IV0yshP7Xly9L-B07dqq2xCfAmCPRTkg",
+        "title": "La boja - Per assajar",
+        "artist": "Reina, Josep i Quim"
+      },
+      {
+        "fileId": "1Qp5hcUzq25SIJPsEq6QyKvvFv4KhnR4t",
+        "title": "La boja - A plaça",
+        "artist": "-"
+      }
+    ],
+    "videos": [
+      {
+        "url": "https://www.youtube.com/watch?v=k_JYBS5HlSQ",
+        "title": "La boja de 6 - Vídeo"
+      }
+    ]
+  },
+  {
     "name": "Micalet",
     "structure": {
       "rows": 2,
