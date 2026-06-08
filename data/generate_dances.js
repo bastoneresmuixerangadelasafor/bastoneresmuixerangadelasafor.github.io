@@ -99,7 +99,7 @@ const DANCES = [
   }),
   new Dance({
     name: "La boja de 4",
-    structure: new DanceStructure({ rows: 2, columns: 3, forms: [new DanceStructureForm(DanceStructureForm.GRID)] }),
+    structure: new DanceStructure({ rows: 2, columns: 2, forms: [new DanceStructureForm(DanceStructureForm.GRID)] }),
     diagram: new DanceDiagram({blockName: "Grup", backgroundColor: {"CARLOTETA":"#FFF2CC", "CORRER":"#92D050"}, textColor: {"CARLOTETA":"#000000", "CORRER":"#000000"}}),
     minGroups: 1,
     showInPositions: true,

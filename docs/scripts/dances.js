@@ -363,7 +363,7 @@ const DANCES = [
     "name": "La boja de 4",
     "structure": {
       "rows": 2,
-      "columns": 3,
+      "columns": 2,
       "forms": [
         "grid"
       ]
