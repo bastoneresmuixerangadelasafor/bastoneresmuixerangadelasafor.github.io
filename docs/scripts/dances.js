@@ -385,7 +385,7 @@ const DANCES = [
         "positionType": {
           "label": "CORRER"
         },
-        "specifications": "Cantó dret/cara plaça",
+        "specifications": "Cantó equerre/cara plaça",
         "tag": "4"
       },
       {
@@ -393,7 +393,7 @@ const DANCES = [
         "positionType": {
           "label": "CARLOTETA"
         },
-        "specifications": "Cantó equerre/cara plaça",
+        "specifications": "Cantó dret/cara plaça",
         "tag": "3"
       },
       {

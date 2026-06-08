@@ -104,8 +104,8 @@ const DANCES = [
     minGroups: 1,
     showInPositions: true,
     positions: [
-      new DancePosition({ order: 1, tag: "4", positionType: new PositionType({ label: "CORRER" }), specifications: "Cantó dret/cara plaça" }),
-      new DancePosition({ order: 2, tag: "3", positionType: new PositionType({ label: "CARLOTETA" }), specifications: "Cantó equerre/cara plaça" }),
+      new DancePosition({ order: 1, tag: "4", positionType: new PositionType({ label: "CORRER" }), specifications: "Cantó equerre/cara plaça" }),
+      new DancePosition({ order: 2, tag: "3", positionType: new PositionType({ label: "CARLOTETA" }), specifications: "Cantó dret/cara plaça" }),
       new DancePosition({ order: 3, tag: "2", positionType: new PositionType({ label: "CARLOTETA" }), specifications: "Cantó equerre/esquena plaça" }),
       new DancePosition({ order: 4, tag: "1", positionType: new PositionType({ label: "CORRER" }), specifications: "Cantó dret/esquena plaça" }),
     ],
