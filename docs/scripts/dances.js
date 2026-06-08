@@ -389,7 +389,7 @@ const DANCES = [
         "tag": "4"
       },
       {
-        "order": 4,
+        "order": 2,
         "positionType": {
           "label": "CARLOTETA"
         },
@@ -397,7 +397,7 @@ const DANCES = [
         "tag": "3"
       },
       {
-        "order": 5,
+        "order": 3,
         "positionType": {
           "label": "CARLOTETA"
         },
@@ -405,7 +405,7 @@ const DANCES = [
         "tag": "2"
       },
       {
-        "order": 6,
+        "order": 4,
         "positionType": {
           "label": "CORRER"
         },
@@ -427,12 +427,7 @@ const DANCES = [
         "artist": "-"
       }
     ],
-    "videos": [
-      {
-        "url": "https://www.youtube.com/watch?v=k_JYBS5HlSQ",
-        "title": "La boja de 6 - Vídeo"
-      }
-    ]
+    "videos": []
   },
   {
     "name": "Micalet",
