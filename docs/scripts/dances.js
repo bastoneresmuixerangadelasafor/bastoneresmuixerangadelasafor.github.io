@@ -770,5 +770,96 @@ const DANCES = [
       }
     ],
     "videos": []
+  },
+  {
+    "name": "De 2 a 4",
+    "structure": {
+      "rows": 2,
+      "columns": 4,
+      "forms": [
+        "grid"
+      ]
+    },
+    "diagram": {
+      "blockName": "Grup",
+      "backgroundColor": {
+        "ABC": "#FFF2CC",
+        "ESTATUA": "#92D050"
+      },
+      "textColor": {
+        "ABC": "#000000",
+        "ESTATUA": "#000000"
+      }
+    },
+    "positions": [
+      {
+        "order": 1,
+        "positionType": {
+          "label": "ESTATUA"
+        },
+        "specifications": "Cantó equerre/cara plaça",
+        "tag": "5"
+      },
+      {
+        "order": 2,
+        "positionType": {
+          "label": "ABC"
+        },
+        "specifications": "Mig equerre/cara plaça",
+        "tag": "6"
+      },
+      {
+        "order": 3,
+        "positionType": {
+          "label": "ESTATUA"
+        },
+        "specifications": "Mig dret/cara plaça",
+        "tag": "7"
+      },
+      {
+        "order": 4,
+        "positionType": {
+          "label": "ABC"
+        },
+        "specifications": "Cantó dret/cara plaça",
+        "tag": "8"
+      },
+      {
+        "order": 5,
+        "positionType": {
+          "label": "ABC"
+        },
+        "specifications": "Cantó equerre/esquena plaça",
+        "tag": "4"
+      },
+      {
+        "order": 6,
+        "positionType": {
+          "label": "ESTATUA"
+        },
+        "specifications": "Mig esquerre/esquena plaça",
+        "tag": "3"
+      },
+      {
+        "order": 7,
+        "positionType": {
+          "label": "ABC"
+        },
+        "specifications": "Mig dret/esquena plaça",
+        "tag": "2"
+      },
+      {
+        "order": 8,
+        "positionType": {
+          "label": "ESTATUA"
+        },
+        "specifications": "Cantó dret/esquena plaça",
+        "tag": "1"
+      }
+    ],
+    "minGroups": 1,
+    "showInPositions": true,
+    "audios": [],
+    "videos": []
   }
 ];

@@ -205,6 +205,27 @@ const DANCES = [
     videos: [
     ],
   }),
+  new Dance({
+    name: "De 2 a 4",
+    structure: new DanceStructure({ rows: 2, columns: 4, forms: [new DanceStructureForm(DanceStructureForm.GRID)] }),
+    diagram: new DanceDiagram({blockName: "Grup", backgroundColor: {"ABC":"#FFF2CC", "ESTATUA":"#92D050"}, textColor: {"ABC":"#000000", "ESTATUA":"#000000"}}),
+    minGroups: 1,
+    showInPositions: true,
+    positions: [
+      new DancePosition({ order: 1, tag: "5", positionType: new PositionType({ label: "ESTATUA" }), specifications: "Cantó equerre/cara plaça" }),
+      new DancePosition({ order: 2, tag: "6", positionType: new PositionType({ label: "ABC" }), specifications: "Mig equerre/cara plaça" }),
+      new DancePosition({ order: 3, tag: "7", positionType: new PositionType({ label: "ESTATUA" }), specifications: "Mig dret/cara plaça" }),
+      new DancePosition({ order: 4, tag: "8", positionType: new PositionType({ label: "ABC" }), specifications: "Cantó dret/cara plaça" }),
+      new DancePosition({ order: 5, tag: "4", positionType: new PositionType({ label: "ABC" }), specifications: "Cantó equerre/esquena plaça" }),
+      new DancePosition({ order: 6, tag: "3", positionType: new PositionType({ label: "ESTATUA" }), specifications: "Mig esquerre/esquena plaça" }),
+      new DancePosition({ order: 7, tag: "2", positionType: new PositionType({ label: "ABC" }), specifications: "Mig dret/esquena plaça" }),
+      new DancePosition({ order: 8, tag: "1", positionType: new PositionType({ label: "ESTATUA" }), specifications: "Cantó dret/esquena plaça" }),
+    ],
+    audios: [
+    ],
+    videos: [
+    ],
+  }),
 ];
 
 try {

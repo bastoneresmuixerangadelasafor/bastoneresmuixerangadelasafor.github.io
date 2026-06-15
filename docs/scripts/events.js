@@ -1794,7 +1794,9 @@ ${backupHtml}
             const personCombo = document.getElementById('person-combo');
             const personList = document.getElementById('person-list');
             const personLoading = document.getElementById('person-loading');
-            const danceChips = document.getElementById('dance-chips');
+            const danceCombo = document.getElementById('dance-combo');
+            const danceDropdown = document.getElementById('dance-dropdown');
+            const addDanceBtn = document.getElementById('add-dance-btn');
             const clearPersonBtn = document.getElementById('clear-person-btn');
             const diagramsList = document.getElementById('diagrams-list');
             // Use window variables for selection state to share with javascript.html handlers
@@ -1804,29 +1806,85 @@ ${backupHtml}
             window.currentOptions = [];
             window.isSelectingBackup = false;
 
-            // Load dances from server and populate chips
+            let allDances = [];
+            let selectedDanceName = '';
+
             function loadDancesData() {
                 API.getDances()
                     .then(function (dances) {
                         if (Array.isArray(dances) && dances.length > 0) {
-                            danceChips.innerHTML = '';
-                            dances.forEach(function (dance) {
-                                const chip = document.createElement('button');
-                                chip.type = 'button';
-                                chip.className = 'dance-chip';
-                                chip.dataset.name = dance.name;
-                                chip.textContent = dance.name;
-                                chip.addEventListener('click', function () {
-                                    addDanceFromChip(dance.name);
-                                });
-                                danceChips.appendChild(chip);
-                            });
+                            allDances = dances;
                         }
                     })
                     .catch(function (error) {
                         console.error('Error loading dances:', error);
-                        danceChips.innerHTML = '<span class="dance-chips-loading">Error carregant balls</span>';
                     });
+            }
+
+            function renderDanceDropdown(filter) {
+                if (!danceDropdown) return;
+                const query = (filter || '').toLowerCase();
+                const filtered = query
+                    ? allDances.filter(d => d.name.toLowerCase().includes(query))
+                    : allDances;
+                danceDropdown.innerHTML = '';
+                if (filtered.length === 0) {
+                    if (query && allDances.length > 0) {
+                        const li = document.createElement('li');
+                        li.textContent = 'Cap resultat';
+                        li.className = 'dance-dropdown-empty';
+                        danceDropdown.appendChild(li);
+                        danceDropdown.style.display = 'block';
+                    } else {
+                        danceDropdown.style.display = 'none';
+                    }
+                    return;
+                }
+                filtered.forEach(function (dance) {
+                    const li = document.createElement('li');
+                    li.textContent = dance.name;
+                    li.dataset.value = dance.name;
+                    li.addEventListener('mousedown', function (e) {
+                        e.preventDefault();
+                        selectDance(dance.name);
+                    });
+                    danceDropdown.appendChild(li);
+                });
+                danceDropdown.style.display = 'block';
+            }
+
+            function selectDance(name) {
+                selectedDanceName = name;
+                if (danceCombo) danceCombo.value = name;
+                if (danceDropdown) danceDropdown.style.display = 'none';
+                if (addDanceBtn) addDanceBtn.disabled = false;
+            }
+
+            if (danceCombo) {
+                danceCombo.addEventListener('input', function () {
+                    selectedDanceName = '';
+                    addDanceBtn.disabled = true;
+                    renderDanceDropdown(danceCombo.value);
+                });
+                danceCombo.addEventListener('focus', function () {
+                    renderDanceDropdown(danceCombo.value);
+                });
+                danceCombo.addEventListener('blur', function () {
+                    setTimeout(function () {
+                        if (danceDropdown) danceDropdown.style.display = 'none';
+                    }, 150);
+                });
+            }
+
+            if (addDanceBtn) {
+                addDanceBtn.addEventListener('click', function () {
+                    if (selectedDanceName) {
+                        addDanceFromChip(selectedDanceName);
+                        selectedDanceName = '';
+                        if (danceCombo) danceCombo.value = '';
+                        addDanceBtn.disabled = true;
+                    }
+                });
             }
 
             // Add new diagram from chip click

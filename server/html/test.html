@@ -6636,53 +6636,58 @@ body.dark-mode .person-dropdown li.selected {
   padding-top: 0.5em;
 }
 
-.dance-chips {
+.dance-selector-control {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
+}
+
+.dance-combo-wrapper {
+  position: relative;
   flex: 1;
 }
 
-.dance-chips-loading {
-  color: #4b5563;
-  font-size: 0.95rem;
-  padding: 0.5em 0;
-}
-
-.dance-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0.5em 1.2em;
+.dance-combo {
+  width: 100%;
+  padding: 0.5em 0.8em;
   border-radius: 8px;
-  border: none;
-  background: #1976d2;
-  color: #fff;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  user-select: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #767676;
+  font-size: 1rem;
+  box-sizing: border-box;
 }
 
-.dance-chip::before {
-  content: "+";
-  font-size: 1.1em;
-  font-weight: bold;
-}
-
-.dance-chip:hover {
-  background: #1565c0;
-}
-
-.dance-chip:focus {
+.dance-combo:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.3);
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.15);
 }
 
-.dance-chip:active {
-  transform: scale(0.97);
+.dance-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.dance-dropdown li {
+  padding: 0.5em 0.8em;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.dance-dropdown li:hover {
+  background: #e3f2fd;
 }
 
 @media (max-width: 480px) {
@@ -6691,7 +6696,7 @@ body.dark-mode .person-dropdown li.selected {
     align-items: flex-start;
   }
 
-  .dance-chips {
+  .dance-selector-control {
     width: 100%;
   }
 }
@@ -9028,8 +9033,12 @@ body.dark-mode .theme-icon-dark {
                     <span id="event-meeting-place-display" class="event-meeting-place-display"></span>
                 </div>
                 <div class="dance-selector-row admin-only" id="dance-selector-section" style="display: none;">
-                    <div id="dance-chips" class="dance-chips admin-only">
-                        <span class="dance-chips-loading">Carregant balls...</span>
+                    <div class="dance-selector-control">
+                        <div class="dance-combo-wrapper">
+                            <input type="text" id="dance-combo" class="dance-combo" placeholder="Cerca un ball..." autocomplete="off">
+                            <ul id="dance-dropdown" class="dance-dropdown"></ul>
+                        </div>
+                        <button type="button" id="add-dance-btn" class="main-btn" disabled>+ Afegir ball</button>
                     </div>
                 </div>
             </div>
@@ -9857,6 +9866,76 @@ body.dark-mode .theme-icon-dark {
         "title": "La boja de 6 - Vídeo"
       }
     ]
+  },
+  {
+    "name": "La boja de 4",
+    "structure": {
+      "rows": 2,
+      "columns": 2,
+      "forms": [
+        "grid"
+      ]
+    },
+    "diagram": {
+      "blockName": "Grup",
+      "backgroundColor": {
+        "CARLOTETA": "#FFF2CC",
+        "CORRER": "#92D050"
+      },
+      "textColor": {
+        "CARLOTETA": "#000000",
+        "CORRER": "#000000"
+      }
+    },
+    "positions": [
+      {
+        "order": 1,
+        "positionType": {
+          "label": "CORRER"
+        },
+        "specifications": "Cantó equerre/cara plaça",
+        "tag": "4"
+      },
+      {
+        "order": 2,
+        "positionType": {
+          "label": "CARLOTETA"
+        },
+        "specifications": "Cantó dret/cara plaça",
+        "tag": "3"
+      },
+      {
+        "order": 3,
+        "positionType": {
+          "label": "CARLOTETA"
+        },
+        "specifications": "Cantó equerre/esquena plaça",
+        "tag": "2"
+      },
+      {
+        "order": 4,
+        "positionType": {
+          "label": "CORRER"
+        },
+        "specifications": "Cantó dret/esquena plaça",
+        "tag": "1"
+      }
+    ],
+    "minGroups": 1,
+    "showInPositions": true,
+    "audios": [
+      {
+        "fileId": "1IV0yshP7Xly9L-B07dqq2xCfAmCPRTkg",
+        "title": "La boja - Per assajar",
+        "artist": "Reina, Josep i Quim"
+      },
+      {
+        "fileId": "1Qp5hcUzq25SIJPsEq6QyKvvFv4KhnR4t",
+        "title": "La boja - A plaça",
+        "artist": "-"
+      }
+    ],
+    "videos": []
   },
   {
     "name": "Micalet",
@@ -16054,7 +16133,9 @@ ${backupHtml}
             const personCombo = document.getElementById('person-combo');
             const personList = document.getElementById('person-list');
             const personLoading = document.getElementById('person-loading');
-            const danceChips = document.getElementById('dance-chips');
+            const danceCombo = document.getElementById('dance-combo');
+            const danceDropdown = document.getElementById('dance-dropdown');
+            const addDanceBtn = document.getElementById('add-dance-btn');
             const clearPersonBtn = document.getElementById('clear-person-btn');
             const diagramsList = document.getElementById('diagrams-list');
             // Use window variables for selection state to share with javascript.html handlers
@@ -16064,29 +16145,77 @@ ${backupHtml}
             window.currentOptions = [];
             window.isSelectingBackup = false;
 
-            // Load dances from server and populate chips
+            let allDances = [];
+            let selectedDanceName = '';
+
             function loadDancesData() {
                 API.getDances()
                     .then(function (dances) {
                         if (Array.isArray(dances) && dances.length > 0) {
-                            danceChips.innerHTML = '';
-                            dances.forEach(function (dance) {
-                                const chip = document.createElement('button');
-                                chip.type = 'button';
-                                chip.className = 'dance-chip';
-                                chip.dataset.name = dance.name;
-                                chip.textContent = dance.name;
-                                chip.addEventListener('click', function () {
-                                    addDanceFromChip(dance.name);
-                                });
-                                danceChips.appendChild(chip);
-                            });
+                            allDances = dances;
                         }
                     })
                     .catch(function (error) {
                         console.error('Error loading dances:', error);
-                        danceChips.innerHTML = '<span class="dance-chips-loading">Error carregant balls</span>';
                     });
+            }
+
+            function renderDanceDropdown(filter) {
+                if (!danceDropdown) return;
+                const query = (filter || '').toLowerCase();
+                const filtered = query
+                    ? allDances.filter(d => d.name.toLowerCase().includes(query))
+                    : allDances;
+                danceDropdown.innerHTML = '';
+                if (filtered.length === 0) {
+                    danceDropdown.style.display = 'none';
+                    return;
+                }
+                filtered.forEach(function (dance) {
+                    const li = document.createElement('li');
+                    li.textContent = dance.name;
+                    li.dataset.value = dance.name;
+                    li.addEventListener('mousedown', function (e) {
+                        e.preventDefault();
+                        selectDance(dance.name);
+                    });
+                    danceDropdown.appendChild(li);
+                });
+                danceDropdown.style.display = '';
+            }
+
+            function selectDance(name) {
+                selectedDanceName = name;
+                if (danceCombo) danceCombo.value = name;
+                if (danceDropdown) danceDropdown.style.display = 'none';
+                if (addDanceBtn) addDanceBtn.disabled = false;
+            }
+
+            if (danceCombo) {
+                danceCombo.addEventListener('input', function () {
+                    selectedDanceName = '';
+                    addDanceBtn.disabled = true;
+                    renderDanceDropdown(danceCombo.value);
+                });
+                danceCombo.addEventListener('focus', function () {
+                    renderDanceDropdown(danceCombo.value);
+                });
+                danceCombo.addEventListener('blur', function () {
+                    setTimeout(function () {
+                        if (danceDropdown) danceDropdown.style.display = 'none';
+                    }, 150);
+                });
+            }
+
+            if (addDanceBtn) {
+                addDanceBtn.addEventListener('click', function () {
+                    if (selectedDanceName) {
+                        addDanceFromChip(selectedDanceName);
+                        selectedDanceName = '';
+                        if (danceCombo) danceCombo.value = '';
+                        addDanceBtn.disabled = true;
+                    }
+                });
             }
 
             // Add new diagram from chip click

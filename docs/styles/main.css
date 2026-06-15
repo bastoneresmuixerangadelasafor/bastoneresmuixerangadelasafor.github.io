@@ -6604,53 +6604,68 @@ body.dark-mode .person-dropdown li.selected {
   padding-top: 0.5em;
 }
 
-.dance-chips {
+.dance-selector-control {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
+}
+
+.dance-combo-wrapper {
+  position: relative;
   flex: 1;
 }
 
-.dance-chips-loading {
-  color: #4b5563;
-  font-size: 0.95rem;
-  padding: 0.5em 0;
-}
-
-.dance-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0.5em 1.2em;
+.dance-combo {
+  width: 100%;
+  padding: 0.5em 0.8em;
   border-radius: 8px;
-  border: none;
-  background: #1976d2;
-  color: #fff;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  user-select: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #767676;
+  font-size: 1rem;
+  box-sizing: border-box;
 }
 
-.dance-chip::before {
-  content: "+";
-  font-size: 1.1em;
-  font-weight: bold;
-}
-
-.dance-chip:hover {
-  background: #1565c0;
-}
-
-.dance-chip:focus {
+.dance-combo:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.3);
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.15);
 }
 
-.dance-chip:active {
-  transform: scale(0.97);
+.dance-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.dance-dropdown li {
+  padding: 0.5em 0.8em;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.dance-dropdown li:hover {
+  background: #e3f2fd;
+}
+
+.dance-dropdown-empty {
+  color: #6b7280;
+  font-style: italic;
+  cursor: default;
+}
+
+.dance-dropdown-empty:hover {
+  background: transparent;
 }
 
 @media (max-width: 480px) {
@@ -6659,7 +6674,7 @@ body.dark-mode .person-dropdown li.selected {
     align-items: flex-start;
   }
 
-  .dance-chips {
+  .dance-selector-control {
     width: 100%;
   }
 }

@@ -737,8 +737,12 @@
                     <span id="event-meeting-place-display" class="event-meeting-place-display"></span>
                 </div>
                 <div class="dance-selector-row admin-only" id="dance-selector-section" style="display: none;">
-                    <div id="dance-chips" class="dance-chips admin-only">
-                        <span class="dance-chips-loading">Carregant balls...</span>
+                    <div class="dance-selector-control">
+                        <div class="dance-combo-wrapper">
+                            <input type="text" id="dance-combo" class="dance-combo" placeholder="Cerca un ball..." autocomplete="off">
+                            <ul id="dance-dropdown" class="dance-dropdown"></ul>
+                        </div>
+                        <button type="button" id="add-dance-btn" class="main-btn" disabled>+ Afegir ball</button>
                     </div>
                 </div>
             </div>
