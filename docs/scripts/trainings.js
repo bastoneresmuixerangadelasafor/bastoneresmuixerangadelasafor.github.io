@@ -490,26 +490,39 @@ const TRAININGS = new (class TrainingSession {
         // Update local training data
         if (APP.currentTrainingData) {
           const attendeesList = APP.currentTrainingData.attendees || [];
+          const rejectionsList = APP.currentTrainingData.rejections || [];
           if (attending) {
             if (!attendeesList.includes(memberAlias)) {
               attendeesList.push(memberAlias);
             }
+            const rejIdx = rejectionsList.indexOf(memberAlias);
+            if (rejIdx > -1) {
+              rejectionsList.splice(rejIdx, 1);
+            }
           } else {
-            const index = attendeesList.indexOf(memberAlias);
-            if (index > -1) {
-              attendeesList.splice(index, 1);
+            const attIdx = attendeesList.indexOf(memberAlias);
+            if (attIdx > -1) {
+              attendeesList.splice(attIdx, 1);
+            }
+            if (!rejectionsList.includes(memberAlias)) {
+              rejectionsList.push(memberAlias);
             }
           }
           APP.currentTrainingData.attendees = attendeesList;
+          APP.currentTrainingData.rejections = rejectionsList;
           
           // Update the attendance count
           const countSpan = document.getElementById("training-attendance-count");
           if (countSpan) {
             const attendCount = attendeesList.length;
-            const rejectCount = (APP.currentTrainingData.rejections || []).length;
+            const rejectCount = rejectionsList.length;
             countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
           }
         }
+
+        CACHE.saveTrainings({ trainings: null });
+        APP.bumpLocalVersion('trainings');
+        APP.trainingAttendanceModified = true;
       })
       .catch(function(error) {
         console.error('Error updating attendance:', error);
@@ -1487,8 +1500,10 @@ const TRAININGS = new (class TrainingSession {
           </div>
       `;
   
+    const forceRefresh = APP.trainingAttendanceModified || false;
+    APP.trainingAttendanceModified = false;
     CACHE.saveTrainings({ trainings: null });
-    API.getTrainings()
+    API.getTrainings({ forceRefresh })
       .then((trainings) => {
         TRAININGS.renderPlanningTrainingsList(trainings);
       })

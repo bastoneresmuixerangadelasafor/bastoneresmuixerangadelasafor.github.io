@@ -802,6 +802,13 @@ const EVENTS = new (class EventsManager {
         attendanceToggle.setAttribute("aria-expanded", "false");
       }
       attendanceList.innerHTML = "";
+
+      const countSpan = document.getElementById("event-attendance-count");
+      if (countSpan && APP.currentEventData) {
+        const attendCount = (APP.currentEventData.attendees || []).length;
+        const rejectCount = (APP.currentEventData.rejections || []).length;
+        countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
+      }
     } else {
       attendanceSection.style.display = "none";
     }
@@ -954,22 +961,31 @@ const EVENTS = new (class EventsManager {
         
         if (APP.currentEventData) {
           const attendeesList = APP.currentEventData.attendees || [];
+          const rejectionsList = APP.currentEventData.rejections || [];
           if (attending) {
             if (!attendeesList.includes(memberAlias)) {
               attendeesList.push(memberAlias);
             }
+            const rejIdx = rejectionsList.indexOf(memberAlias);
+            if (rejIdx > -1) {
+              rejectionsList.splice(rejIdx, 1);
+            }
           } else {
-            const index = attendeesList.indexOf(memberAlias);
-            if (index > -1) {
-              attendeesList.splice(index, 1);
+            const attIdx = attendeesList.indexOf(memberAlias);
+            if (attIdx > -1) {
+              attendeesList.splice(attIdx, 1);
+            }
+            if (!rejectionsList.includes(memberAlias)) {
+              rejectionsList.push(memberAlias);
             }
           }
           APP.currentEventData.attendees = attendeesList;
+          APP.currentEventData.rejections = rejectionsList;
 
           const countSpan = document.getElementById("event-attendance-count");
           if (countSpan) {
             const attendCount = attendeesList.length;
-            const rejectCount = (APP.currentEventData.rejections || []).length;
+            const rejectCount = rejectionsList.length;
             countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
           }
         }

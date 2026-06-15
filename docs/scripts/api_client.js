@@ -215,7 +215,7 @@ const API = new (class GAppsApiClient {
   }
 
   getTrainingById({ trainingId } = {}) {
-    return this._get({ action: "training", parameters: { trainingId }, requiresAuth: true });
+    return this._get({ action: "training", parameters: { trainingId, _t: Date.now() }, requiresAuth: true });
   }
 
   getNextTraining() {
