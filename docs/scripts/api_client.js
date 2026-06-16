@@ -344,4 +344,8 @@ const API = new (class GAppsApiClient {
   unregisterPushToken({ pushToken } = {}) {
     return this._delete({ action: "registerPushToken", body: { pushToken }, requiresAuth: true });
   }
+
+  checkFormAttendance({ spreadsheetId, eventId } = {}) {
+    return this._get({ action: "checkFormAttendance", parameters: { spreadsheetId, eventId }, requiresAuth: true });
+  }
 })();

@@ -1129,6 +1129,79 @@ const EVENTS = new (class EventsManager {
         }
       });
   }
+
+  openCheckAttendanceDialog() {
+    const dialog = document.getElementById('check-attendance-dialog');
+    if (dialog) {
+      document.getElementById('check-attendance-sheet-input').value = '';
+      document.getElementById('check-attendance-results').style.display = 'none';
+      document.getElementById('check-attendance-results').innerHTML = '';
+      dialog.showModal();
+    }
+  }
+
+  closeCheckAttendanceDialog() {
+    const dialog = document.getElementById('check-attendance-dialog');
+    if (dialog) dialog.close();
+  }
+
+  checkFormAttendance() {
+    const input = document.getElementById('check-attendance-sheet-input');
+    const submitBtn = document.getElementById('check-attendance-submit-btn');
+    const resultsContainer = document.getElementById('check-attendance-results');
+    const spreadsheetId = (input.value || '').trim();
+
+    if (!spreadsheetId) {
+      UI.showToast('Cal indicar l\'identificador de la fulla de respostes', 'error');
+      return;
+    }
+
+    const btnText = submitBtn.querySelector('.btn-text');
+    const btnLoading = submitBtn.querySelector('.btn-loading');
+    btnText.style.display = 'none';
+    btnLoading.style.display = 'inline-flex';
+    submitBtn.disabled = true;
+
+    const eventId = APP.currentEventId || (APP.currentEventData ? APP.currentEventData.name : null);
+
+    API.checkFormAttendance({ spreadsheetId, eventId })
+      .then(function(matches) {
+        resultsContainer.style.display = 'block';
+        if (!matches || matches.length === 0) {
+          resultsContainer.innerHTML = '<p class="check-attendance-empty">No s\'han trobat respostes amb "Ball de bastons".</p>';
+          return;
+        }
+
+        let html = '<h3>Resultats (' + matches.length + ')</h3><ul class="check-attendance-list">';
+        matches.forEach(function(match) {
+          let icon = match.matched ? '✓' : '?';
+          let cls = match.matched ? 'matched' : 'unmatched';
+          if (match.attendanceMismatch) {
+            icon = '⚠';
+            cls = 'mismatch';
+          }
+          const memberInfo = match.matched ? ' → ' + escapeHtml(match.memberAlias || match.memberName) : ' (sense coincidència)';
+          let mismatchInfo = '';
+          if (match.attendanceMismatch === 'form_yes_app_no') {
+            mismatchInfo = '<span class="check-attendance-mismatch">Formulari: Sí · App: No confirmat</span>';
+          } else if (match.attendanceMismatch === 'form_no_app_yes') {
+            mismatchInfo = '<span class="check-attendance-mismatch">Formulari: No · App: Confirmat</span>';
+          }
+          html += '<li class="check-attendance-item ' + cls + '"><span class="check-attendance-icon">' + icon + '</span><span class="check-attendance-name">' + escapeHtml(match.formName) + '</span><span class="check-attendance-member">' + memberInfo + '</span>' + mismatchInfo + '</li>';
+        });
+        html += '</ul>';
+        resultsContainer.innerHTML = html;
+      })
+      .catch(function(error) {
+        resultsContainer.style.display = 'block';
+        resultsContainer.innerHTML = '<p class="check-attendance-error">' + escapeHtml(error) + '</p>';
+      })
+      .finally(function() {
+        btnText.style.display = 'inline';
+        btnLoading.style.display = 'none';
+        submitBtn.disabled = false;
+      });
+  }
 })();
         var diagrams = [];
         var diagramIdCounter = 0;
@@ -1806,6 +1879,19 @@ ${backupHtml}
         }
         // Handle canvas click
         document.addEventListener('DOMContentLoaded', function () {
+            const checkAttendanceBtn = document.getElementById('check-attendance-btn');
+            if (checkAttendanceBtn) {
+                checkAttendanceBtn.addEventListener('click', function () { EVENTS.openCheckAttendanceDialog(); });
+            }
+            const checkAttendanceCloseBtn = document.getElementById('check-attendance-close-btn');
+            if (checkAttendanceCloseBtn) {
+                checkAttendanceCloseBtn.addEventListener('click', function () { EVENTS.closeCheckAttendanceDialog(); });
+            }
+            const checkAttendanceSubmitBtn = document.getElementById('check-attendance-submit-btn');
+            if (checkAttendanceSubmitBtn) {
+                checkAttendanceSubmitBtn.addEventListener('click', function () { EVENTS.checkFormAttendance(); });
+            }
+
             const dialog = document.getElementById('person-dialog');
             const personCombo = document.getElementById('person-combo');
             const personList = document.getElementById('person-list');

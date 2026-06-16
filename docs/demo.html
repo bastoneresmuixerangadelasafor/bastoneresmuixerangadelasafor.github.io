@@ -707,6 +707,34 @@
         </div>
     </dialog>
 
+    <!-- Check Attendance Dialog -->
+    <dialog id="check-attendance-dialog" class="check-attendance-dialog admin-only">
+        <div class="check-attendance-card">
+            <button type="button" class="check-attendance-close-btn" id="check-attendance-close-btn" aria-label="Tancar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="check-attendance-header">
+                <h2>Comprovar assistència</h2>
+            </div>
+            <div class="check-attendance-body">
+                <div class="check-attendance-field">
+                    <input type="text" id="check-attendance-sheet-input" placeholder="Fulla de respostes" autocomplete="off">
+                </div>
+                <button type="button" class="btn btn-primary" id="check-attendance-submit-btn">
+                    <span class="btn-text">Comprovar</span>
+                    <span class="btn-loading" style="display: none;">
+                        <span class="spinner-small"></span> Comprovant...
+                    </span>
+                </button>
+            </div>
+            <div class="check-attendance-results" id="check-attendance-results" style="display: none;">
+            </div>
+        </div>
+    </dialog>
+
 <div id="view-events" class="view" data-view="edit-event" style="display: none;">
         <div class="container">
             <div class="page-header">
@@ -735,6 +763,16 @@
                     <h2 id="event-name-display" class="event-name-display"></h2>
                     <span id="event-date-display" class="event-date-display"></span>
                     <span id="event-meeting-place-display" class="event-meeting-place-display"></span>
+                </div>
+                <div class="event-check-attendance-row admin-only">
+                    <button type="button" class="main-btn" id="check-attendance-btn">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        Comprovar assistència
+                    </button>
                 </div>
                 <div class="dance-selector-row admin-only" id="dance-selector-section" style="display: none;">
                     <div class="dance-selector-control">

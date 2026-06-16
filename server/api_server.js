@@ -128,6 +128,10 @@ const API = class GAppsApiServer {
         const calcPosWorker = this.validateUserToken_({fn: calculateEventDancePositions_, requiresAuth: true, requiresAdmin: true, token: e.parameter?.token});
         data = calcPosWorker({ danceName: e.parameter?.danceName, attendees: e.parameter?.attendees ? JSON.parse(e.parameter.attendees) : [] });
         break;
+      case "checkFormAttendance":
+        const checkFormWorker = this.validateUserToken_({fn: checkFormAttendance_, requiresAuth: true, requiresAdmin: true, token: e.parameter?.token});
+        data = checkFormWorker({ spreadsheetId: e.parameter?.spreadsheetId, eventId: e.parameter?.eventId });
+        break;
       default:
         return API.newError_({ error: `Unknown GET action: ${action}`, status:404 });
     }

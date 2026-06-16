@@ -6690,6 +6690,16 @@ body.dark-mode .person-dropdown li.selected {
   background: #e3f2fd;
 }
 
+.dance-dropdown-empty {
+  color: #6b7280;
+  font-style: italic;
+  cursor: default;
+}
+
+.dance-dropdown-empty:hover {
+  background: transparent;
+}
+
 @media (max-width: 480px) {
   .dance-selector-row {
     flex-direction: column;
@@ -7766,6 +7776,183 @@ dialog [class*="close-btn "] {
   right: 12px;
   left: auto;
   bottom: auto;
+}
+
+#check-attendance-dialog {
+  padding: 0;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  max-width: 480px;
+  width: 90vw;
+  background: var(--card-bg);
+  color: var(--text-color);
+  overflow: visible;
+}
+
+#check-attendance-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+#check-attendance-dialog[open] {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+
+.check-attendance-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+  padding: 20px;
+}
+
+.check-attendance-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--primary-color);
+  border: 1px solid color-mix(in srgb, var(--primary-color), #000000 18%);
+  color: #ffffff;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  z-index: 1001;
+}
+
+.check-attendance-close-btn:hover {
+  filter: brightness(0.92);
+}
+
+.check-attendance-header h2 {
+  margin: 0 0 16px 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.check-attendance-body {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.check-attendance-field {
+  flex: 1;
+}
+
+.check-attendance-field input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-size: 0.95rem;
+}
+
+.check-attendance-results {
+  margin-top: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.check-attendance-results h3 {
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.check-attendance-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.check-attendance-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--bg-color);
+  font-size: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.check-attendance-item.matched {
+  border-left: 3px solid #43a047;
+}
+
+.check-attendance-item.unmatched {
+  border-left: 3px solid #f57c00;
+}
+
+.check-attendance-item.mismatch {
+  border-left: 3px solid #d32f2f;
+}
+
+.check-attendance-icon {
+  font-weight: bold;
+  min-width: 20px;
+  text-align: center;
+}
+
+.check-attendance-item.matched .check-attendance-icon {
+  color: #43a047;
+}
+
+.check-attendance-item.unmatched .check-attendance-icon {
+  color: #f57c00;
+}
+
+.check-attendance-item.mismatch .check-attendance-icon {
+  color: #d32f2f;
+}
+
+.check-attendance-name {
+  font-weight: 500;
+}
+
+.check-attendance-member {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.check-attendance-empty,
+.check-attendance-error {
+  padding: 12px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.check-attendance-error {
+  color: #d32f2f;
+}
+
+.check-attendance-mismatch {
+  display: block;
+  width: 100%;
+  font-size: 0.8rem;
+  color: #d32f2f;
+  margin-top: 2px;
 }
 
         </style>
@@ -9003,6 +9190,34 @@ body.dark-mode .theme-icon-dark {
         </div>
     </dialog>
 
+    <!-- Check Attendance Dialog -->
+    <dialog id="check-attendance-dialog" class="check-attendance-dialog admin-only">
+        <div class="check-attendance-card">
+            <button type="button" class="check-attendance-close-btn" id="check-attendance-close-btn" aria-label="Tancar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="check-attendance-header">
+                <h2>Comprovar assistència</h2>
+            </div>
+            <div class="check-attendance-body">
+                <div class="check-attendance-field">
+                    <input type="text" id="check-attendance-sheet-input" placeholder="Fulla de respostes" autocomplete="off">
+                </div>
+                <button type="button" class="btn btn-primary" id="check-attendance-submit-btn">
+                    <span class="btn-text">Comprovar</span>
+                    <span class="btn-loading" style="display: none;">
+                        <span class="spinner-small"></span> Comprovant...
+                    </span>
+                </button>
+            </div>
+            <div class="check-attendance-results" id="check-attendance-results" style="display: none;">
+            </div>
+        </div>
+    </dialog>
+
 <div id="view-events" class="view" data-view="edit-event" style="display: none;">
         <div class="container">
             <div class="page-header">
@@ -9031,6 +9246,16 @@ body.dark-mode .theme-icon-dark {
                     <h2 id="event-name-display" class="event-name-display"></h2>
                     <span id="event-date-display" class="event-date-display"></span>
                     <span id="event-meeting-place-display" class="event-meeting-place-display"></span>
+                </div>
+                <div class="event-check-attendance-row admin-only">
+                    <button type="button" class="main-btn" id="check-attendance-btn">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        Comprovar assistència
+                    </button>
                 </div>
                 <div class="dance-selector-row admin-only" id="dance-selector-section" style="display: none;">
                     <div class="dance-selector-control">
@@ -10278,6 +10503,97 @@ body.dark-mode .theme-icon-dark {
       }
     ],
     "videos": []
+  },
+  {
+    "name": "De 2 a 4",
+    "structure": {
+      "rows": 2,
+      "columns": 4,
+      "forms": [
+        "grid"
+      ]
+    },
+    "diagram": {
+      "blockName": "Grup",
+      "backgroundColor": {
+        "ABC": "#FFF2CC",
+        "ESTATUA": "#92D050"
+      },
+      "textColor": {
+        "ABC": "#000000",
+        "ESTATUA": "#000000"
+      }
+    },
+    "positions": [
+      {
+        "order": 1,
+        "positionType": {
+          "label": "ESTATUA"
+        },
+        "specifications": "Cantó equerre/cara plaça",
+        "tag": "5"
+      },
+      {
+        "order": 2,
+        "positionType": {
+          "label": "ABC"
+        },
+        "specifications": "Mig equerre/cara plaça",
+        "tag": "6"
+      },
+      {
+        "order": 3,
+        "positionType": {
+          "label": "ESTATUA"
+        },
+        "specifications": "Mig dret/cara plaça",
+        "tag": "7"
+      },
+      {
+        "order": 4,
+        "positionType": {
+          "label": "ABC"
+        },
+        "specifications": "Cantó dret/cara plaça",
+        "tag": "8"
+      },
+      {
+        "order": 5,
+        "positionType": {
+          "label": "ABC"
+        },
+        "specifications": "Cantó equerre/esquena plaça",
+        "tag": "4"
+      },
+      {
+        "order": 6,
+        "positionType": {
+          "label": "ESTATUA"
+        },
+        "specifications": "Mig esquerre/esquena plaça",
+        "tag": "3"
+      },
+      {
+        "order": 7,
+        "positionType": {
+          "label": "ABC"
+        },
+        "specifications": "Mig dret/esquena plaça",
+        "tag": "2"
+      },
+      {
+        "order": 8,
+        "positionType": {
+          "label": "ESTATUA"
+        },
+        "specifications": "Cantó dret/esquena plaça",
+        "tag": "1"
+      }
+    ],
+    "minGroups": 1,
+    "showInPositions": true,
+    "audios": [],
+    "videos": []
   }
 ];
         </script>
@@ -10633,7 +10949,7 @@ const API = new (class GAppsApiClient {
   }
 
   getTrainingById({ trainingId } = {}) {
-    return this._get({ action: "training", parameters: { trainingId }, requiresAuth: true });
+    return this._get({ action: "training", parameters: { trainingId, _t: Date.now() }, requiresAuth: true });
   }
 
   getNextTraining() {
@@ -10761,6 +11077,10 @@ const API = new (class GAppsApiClient {
 
   unregisterPushToken({ pushToken } = {}) {
     return this._delete({ action: "registerPushToken", body: { pushToken }, requiresAuth: true });
+  }
+
+  checkFormAttendance({ spreadsheetId, eventId } = {}) {
+    return this._get({ action: "checkFormAttendance", parameters: { spreadsheetId, eventId }, requiresAuth: true });
   }
 })();
 
@@ -15141,6 +15461,13 @@ function escapeJsString(text) {
         attendanceToggle.setAttribute("aria-expanded", "false");
       }
       attendanceList.innerHTML = "";
+
+      const countSpan = document.getElementById("event-attendance-count");
+      if (countSpan && APP.currentEventData) {
+        const attendCount = (APP.currentEventData.attendees || []).length;
+        const rejectCount = (APP.currentEventData.rejections || []).length;
+        countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
+      }
     } else {
       attendanceSection.style.display = "none";
     }
@@ -15293,22 +15620,31 @@ function escapeJsString(text) {
         
         if (APP.currentEventData) {
           const attendeesList = APP.currentEventData.attendees || [];
+          const rejectionsList = APP.currentEventData.rejections || [];
           if (attending) {
             if (!attendeesList.includes(memberAlias)) {
               attendeesList.push(memberAlias);
             }
+            const rejIdx = rejectionsList.indexOf(memberAlias);
+            if (rejIdx > -1) {
+              rejectionsList.splice(rejIdx, 1);
+            }
           } else {
-            const index = attendeesList.indexOf(memberAlias);
-            if (index > -1) {
-              attendeesList.splice(index, 1);
+            const attIdx = attendeesList.indexOf(memberAlias);
+            if (attIdx > -1) {
+              attendeesList.splice(attIdx, 1);
+            }
+            if (!rejectionsList.includes(memberAlias)) {
+              rejectionsList.push(memberAlias);
             }
           }
           APP.currentEventData.attendees = attendeesList;
+          APP.currentEventData.rejections = rejectionsList;
 
           const countSpan = document.getElementById("event-attendance-count");
           if (countSpan) {
             const attendCount = attendeesList.length;
-            const rejectCount = (APP.currentEventData.rejections || []).length;
+            const rejectCount = rejectionsList.length;
             countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
           }
         }
@@ -15450,6 +15786,79 @@ function escapeJsString(text) {
         if (buttonsContainer && originalButtonsHtml) {
           buttonsContainer.innerHTML = originalButtonsHtml;
         }
+      });
+  }
+
+  openCheckAttendanceDialog() {
+    const dialog = document.getElementById('check-attendance-dialog');
+    if (dialog) {
+      document.getElementById('check-attendance-sheet-input').value = '';
+      document.getElementById('check-attendance-results').style.display = 'none';
+      document.getElementById('check-attendance-results').innerHTML = '';
+      dialog.showModal();
+    }
+  }
+
+  closeCheckAttendanceDialog() {
+    const dialog = document.getElementById('check-attendance-dialog');
+    if (dialog) dialog.close();
+  }
+
+  checkFormAttendance() {
+    const input = document.getElementById('check-attendance-sheet-input');
+    const submitBtn = document.getElementById('check-attendance-submit-btn');
+    const resultsContainer = document.getElementById('check-attendance-results');
+    const spreadsheetId = (input.value || '').trim();
+
+    if (!spreadsheetId) {
+      UI.showToast('Cal indicar l\'identificador de la fulla de respostes', 'error');
+      return;
+    }
+
+    const btnText = submitBtn.querySelector('.btn-text');
+    const btnLoading = submitBtn.querySelector('.btn-loading');
+    btnText.style.display = 'none';
+    btnLoading.style.display = 'inline-flex';
+    submitBtn.disabled = true;
+
+    const eventId = APP.currentEventId || (APP.currentEventData ? APP.currentEventData.name : null);
+
+    API.checkFormAttendance({ spreadsheetId, eventId })
+      .then(function(matches) {
+        resultsContainer.style.display = 'block';
+        if (!matches || matches.length === 0) {
+          resultsContainer.innerHTML = '<p class="check-attendance-empty">No s\'han trobat respostes amb "Ball de bastons".</p>';
+          return;
+        }
+
+        let html = '<h3>Resultats (' + matches.length + ')</h3><ul class="check-attendance-list">';
+        matches.forEach(function(match) {
+          let icon = match.matched ? '✓' : '?';
+          let cls = match.matched ? 'matched' : 'unmatched';
+          if (match.attendanceMismatch) {
+            icon = '⚠';
+            cls = 'mismatch';
+          }
+          const memberInfo = match.matched ? ' → ' + escapeHtml(match.memberAlias || match.memberName) : ' (sense coincidència)';
+          let mismatchInfo = '';
+          if (match.attendanceMismatch === 'form_yes_app_no') {
+            mismatchInfo = '<span class="check-attendance-mismatch">Formulari: Sí · App: No confirmat</span>';
+          } else if (match.attendanceMismatch === 'form_no_app_yes') {
+            mismatchInfo = '<span class="check-attendance-mismatch">Formulari: No · App: Confirmat</span>';
+          }
+          html += '<li class="check-attendance-item ' + cls + '"><span class="check-attendance-icon">' + icon + '</span><span class="check-attendance-name">' + escapeHtml(match.formName) + '</span><span class="check-attendance-member">' + memberInfo + '</span>' + mismatchInfo + '</li>';
+        });
+        html += '</ul>';
+        resultsContainer.innerHTML = html;
+      })
+      .catch(function(error) {
+        resultsContainer.style.display = 'block';
+        resultsContainer.innerHTML = '<p class="check-attendance-error">' + escapeHtml(error) + '</p>';
+      })
+      .finally(function() {
+        btnText.style.display = 'inline';
+        btnLoading.style.display = 'none';
+        submitBtn.disabled = false;
       });
   }
 })();
@@ -16129,6 +16538,19 @@ ${backupHtml}
         }
         // Handle canvas click
         document.addEventListener('DOMContentLoaded', function () {
+            const checkAttendanceBtn = document.getElementById('check-attendance-btn');
+            if (checkAttendanceBtn) {
+                checkAttendanceBtn.addEventListener('click', function () { EVENTS.openCheckAttendanceDialog(); });
+            }
+            const checkAttendanceCloseBtn = document.getElementById('check-attendance-close-btn');
+            if (checkAttendanceCloseBtn) {
+                checkAttendanceCloseBtn.addEventListener('click', function () { EVENTS.closeCheckAttendanceDialog(); });
+            }
+            const checkAttendanceSubmitBtn = document.getElementById('check-attendance-submit-btn');
+            if (checkAttendanceSubmitBtn) {
+                checkAttendanceSubmitBtn.addEventListener('click', function () { EVENTS.checkFormAttendance(); });
+            }
+
             const dialog = document.getElementById('person-dialog');
             const personCombo = document.getElementById('person-combo');
             const personList = document.getElementById('person-list');
@@ -16168,7 +16590,15 @@ ${backupHtml}
                     : allDances;
                 danceDropdown.innerHTML = '';
                 if (filtered.length === 0) {
-                    danceDropdown.style.display = 'none';
+                    if (query && allDances.length > 0) {
+                        const li = document.createElement('li');
+                        li.textContent = 'Cap resultat';
+                        li.className = 'dance-dropdown-empty';
+                        danceDropdown.appendChild(li);
+                        danceDropdown.style.display = 'block';
+                    } else {
+                        danceDropdown.style.display = 'none';
+                    }
                     return;
                 }
                 filtered.forEach(function (dance) {
@@ -16181,7 +16611,7 @@ ${backupHtml}
                     });
                     danceDropdown.appendChild(li);
                 });
-                danceDropdown.style.display = '';
+                danceDropdown.style.display = 'block';
             }
 
             function selectDance(name) {
@@ -18680,26 +19110,39 @@ ${backupHtml}
         // Update local training data
         if (APP.currentTrainingData) {
           const attendeesList = APP.currentTrainingData.attendees || [];
+          const rejectionsList = APP.currentTrainingData.rejections || [];
           if (attending) {
             if (!attendeesList.includes(memberAlias)) {
               attendeesList.push(memberAlias);
             }
+            const rejIdx = rejectionsList.indexOf(memberAlias);
+            if (rejIdx > -1) {
+              rejectionsList.splice(rejIdx, 1);
+            }
           } else {
-            const index = attendeesList.indexOf(memberAlias);
-            if (index > -1) {
-              attendeesList.splice(index, 1);
+            const attIdx = attendeesList.indexOf(memberAlias);
+            if (attIdx > -1) {
+              attendeesList.splice(attIdx, 1);
+            }
+            if (!rejectionsList.includes(memberAlias)) {
+              rejectionsList.push(memberAlias);
             }
           }
           APP.currentTrainingData.attendees = attendeesList;
+          APP.currentTrainingData.rejections = rejectionsList;
           
           // Update the attendance count
           const countSpan = document.getElementById("training-attendance-count");
           if (countSpan) {
             const attendCount = attendeesList.length;
-            const rejectCount = (APP.currentTrainingData.rejections || []).length;
+            const rejectCount = rejectionsList.length;
             countSpan.textContent = `${attendCount} SI / ${rejectCount} NO`;
           }
         }
+
+        CACHE.saveTrainings({ trainings: null });
+        APP.bumpLocalVersion('trainings');
+        APP.trainingAttendanceModified = true;
       })
       .catch(function(error) {
         console.error('Error updating attendance:', error);
@@ -19677,8 +20120,10 @@ ${backupHtml}
           </div>
       `;
   
+    const forceRefresh = APP.trainingAttendanceModified || false;
+    APP.trainingAttendanceModified = false;
     CACHE.saveTrainings({ trainings: null });
-    API.getTrainings()
+    API.getTrainings({ forceRefresh })
       .then((trainings) => {
         TRAININGS.renderPlanningTrainingsList(trainings);
       })

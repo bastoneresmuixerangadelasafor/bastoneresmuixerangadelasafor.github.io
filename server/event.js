@@ -1093,3 +1093,88 @@ function confirmEventMemberAttendance_({eventId, memberAlias, attending, user}) 
     return API.newError_({ error: 'Error actualitzant l\'assistència: ' + error.toString() });
   }
 }
+
+function checkFormAttendance_({spreadsheetId, eventId}) {
+  if (!spreadsheetId) {
+    return API.newError_({ error: 'Cal indicar l\'identificador de la fulla de respostes.', status: 400 });
+  }
+
+  try {
+    const spreadsheet = SpreadsheetApp.openById(spreadsheetId);
+    const sheet = spreadsheet.getSheets()[0];
+    const data = sheet.getDataRange().getValues();
+
+    if (data.length < 2) {
+      return API.newResult_({ result: [] });
+    }
+
+    const headers = data[0].map(function(h) { return String(h).toLowerCase().trim(); });
+    const nameColIndex = headers.indexOf('nom');
+    const attendanceColIndex = 2;
+    const participatesColIndex = headers.findIndex(function(h) { return h.indexOf('en què participes') !== -1; });
+
+    if (nameColIndex === -1 || participatesColIndex === -1) {
+      return API.newError_({ error: 'No s\'han trobat les columnes "Nom" o "En què participes?" a la fulla.', status: 400 });
+    }
+
+    var eventAttendees = [];
+    if (eventId && eventId !== 'null' && eventId !== 'undefined') {
+      const allEventAssistance = CACHE.retrieveEventMemberAssistanceFromDB();
+      console.log('checkFormAttendance: eventId=' + eventId + ', keys=' + JSON.stringify(Object.keys(allEventAssistance)));
+      const eventAssistance = allEventAssistance[eventId] || allEventAssistance[String(eventId).replace(/^'/, '').trim()] || { attendees: [], rejections: [] };
+      eventAttendees = eventAssistance.attendees || [];
+      console.log('checkFormAttendance: eventAttendees=' + JSON.stringify(eventAttendees));
+    }
+
+    const members = CACHE.getMembers();
+    const matches = [];
+
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      const participates = String(row[participatesColIndex] || '').toLowerCase();
+      if (participates.indexOf('ball de bastons') === -1) continue;
+
+      const formName = String(row[nameColIndex] || '').trim();
+      if (!formName) continue;
+
+      const formAttendance = String(row[attendanceColIndex] || '').trim().toLowerCase();
+      const formSaysYes = formAttendance.length > 0 && formAttendance !== 'no';
+
+      console.log('checkFormAttendance row ' + i + ': name=' + formName + ', attendance="' + formAttendance + '", formSaysYes=' + formSaysYes);
+
+      const formNameLower = formName.toLowerCase();
+      const matchedMember = members.find(function(m) {
+        const memberName = (m.name || '').toLowerCase();
+        const memberAlias = (m.alias || '').toLowerCase();
+        return memberName === formNameLower || memberAlias === formNameLower ||
+               memberName.indexOf(formNameLower) !== -1 || formNameLower.indexOf(memberName) !== -1 ||
+               (memberAlias && (memberAlias.indexOf(formNameLower) !== -1 || formNameLower.indexOf(memberAlias) !== -1));
+      });
+
+      var attendanceMismatch = null;
+      if (matchedMember && eventId) {
+        const memberAlias = matchedMember.alias || '';
+        const confirmedInApp = eventAttendees.indexOf(memberAlias) !== -1;
+        if (formSaysYes && !confirmedInApp) {
+          attendanceMismatch = 'form_yes_app_no';
+        } else if (!formSaysYes && confirmedInApp) {
+          attendanceMismatch = 'form_no_app_yes';
+        }
+      }
+
+      matches.push({
+        formName: formName,
+        memberAlias: matchedMember ? matchedMember.alias : null,
+        memberName: matchedMember ? matchedMember.name : null,
+        matched: !!matchedMember,
+        formAttendance: formSaysYes ? 'yes' : 'no',
+        attendanceMismatch: attendanceMismatch,
+      });
+    }
+
+    return API.newResult_({ result: matches });
+  } catch (error) {
+    console.error('Error checking form attendance:', error.toString());
+    return API.newError_({ error: 'Error llegint la fulla de respostes: ' + error.toString() });
+  }
+}
