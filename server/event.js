@@ -324,6 +324,11 @@ function getEventById_({eventId}) {
     
     // Parse header info
     const eventName = data[0][1] || '';
+
+    let attendanceListId = '';
+    if (data[0][2] === 'Llistat:' && data[0][3]) {
+      attendanceListId = String(data[0][3]).replace(/^'/, '').trim();
+    }
     // Date may be stored as Date object or string (possibly with apostrophe prefix)
     let eventDate = '';
     if (data[1][1]) {
@@ -475,6 +480,7 @@ function getEventById_({eventId}) {
         name: eventName,
         datetime: eventDate,
         meetingPlace: eventMeetingPlace,
+        attendanceListId: attendanceListId,
         diagrams: diagrams,
         attendees: eventAssistance.attendees,
         rejections: eventAssistance.rejections,
@@ -1126,7 +1132,7 @@ function checkFormAttendance_({spreadsheetId, eventId}) {
       console.log('checkFormAttendance: eventAttendees=' + JSON.stringify(eventAttendees));
     }
 
-    const members = CACHE.getMembers();
+    const members = CACHE.getMembers().filter(function(m) { return m.active !== false; });
     const matches = [];
 
     for (let i = 1; i < data.length; i++) {
@@ -1142,13 +1148,13 @@ function checkFormAttendance_({spreadsheetId, eventId}) {
 
       console.log('checkFormAttendance row ' + i + ': name=' + formName + ', attendance="' + formAttendance + '", formSaysYes=' + formSaysYes);
 
-      const formNameLower = formName.toLowerCase();
+      const formNameNorm = formName.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
       const matchedMember = members.find(function(m) {
-        const memberName = (m.name || '').toLowerCase();
-        const memberAlias = (m.alias || '').toLowerCase();
-        return memberName === formNameLower || memberAlias === formNameLower ||
-               memberName.indexOf(formNameLower) !== -1 || formNameLower.indexOf(memberName) !== -1 ||
-               (memberAlias && (memberAlias.indexOf(formNameLower) !== -1 || formNameLower.indexOf(memberAlias) !== -1));
+        const memberName = (m.name || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        const memberAlias = (m.alias || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        return memberName === formNameNorm || memberAlias === formNameNorm ||
+               memberName.indexOf(formNameNorm) !== -1 || formNameNorm.indexOf(memberName) !== -1 ||
+               (memberAlias && (memberAlias.indexOf(formNameNorm) !== -1 || formNameNorm.indexOf(memberAlias) !== -1));
       });
 
       var attendanceMismatch = null;

@@ -1133,10 +1133,14 @@ const EVENTS = new (class EventsManager {
   openCheckAttendanceDialog() {
     const dialog = document.getElementById('check-attendance-dialog');
     if (dialog) {
-      document.getElementById('check-attendance-sheet-input').value = '';
+      const prefillId = APP.currentEventData ? (APP.currentEventData.attendanceListId || '') : '';
+      document.getElementById('check-attendance-sheet-input').value = prefillId;
       document.getElementById('check-attendance-results').style.display = 'none';
       document.getElementById('check-attendance-results').innerHTML = '';
       dialog.showModal();
+      if (prefillId) {
+        this.checkFormAttendance();
+      }
     }
   }
 
