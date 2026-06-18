@@ -1130,6 +1130,7 @@ function checkFormAttendance_({spreadsheetId, eventId}) {
     const nameColIndex = headers.indexOf('nom');
     const attendanceColIndex = 2;
     const participatesColIndex = headers.findIndex(function(h) { return h.indexOf('en què participes') !== -1; });
+    const relatedNamesColIndex = headers.findIndex(function(h) { return h.indexOf('apunta') !== -1 && h.indexOf('nom') !== -1; });
 
     if (nameColIndex === -1 || participatesColIndex === -1) {
       return API.newError_({ error: 'No s\'han trobat les columnes "Nom" o "En què participes?" a la fulla.', status: 400 });
@@ -1147,20 +1148,11 @@ function checkFormAttendance_({spreadsheetId, eventId}) {
     const members = CACHE.getMembers().filter(function(m) { return m.active !== false; });
     const matches = [];
 
-    for (let i = 1; i < data.length; i++) {
-      const row = data[i];
-      const participates = String(row[participatesColIndex] || '').toLowerCase();
-      if (participates.indexOf('ball de bastons') === -1) continue;
+    function buildMatch_(rawName, formSaysYes) {
+      const cleanName = String(rawName || '').trim();
+      if (!cleanName) return null;
 
-      const formName = String(row[nameColIndex] || '').trim();
-      if (!formName) continue;
-
-      const formAttendance = String(row[attendanceColIndex] || '').trim().toLowerCase();
-      const formSaysYes = formAttendance.length > 0 && formAttendance !== 'no';
-
-      console.log('checkFormAttendance row ' + i + ': name=' + formName + ', attendance="' + formAttendance + '", formSaysYes=' + formSaysYes);
-
-      const formNameNorm = formName.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const formNameNorm = cleanName.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
       const matchedMember = members.find(function(m) {
         const memberName = (m.name || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
         const memberAlias = (m.alias || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -1180,14 +1172,46 @@ function checkFormAttendance_({spreadsheetId, eventId}) {
         }
       }
 
-      matches.push({
-        formName: formName,
+      return {
+        formName: cleanName,
         memberAlias: matchedMember ? matchedMember.alias : null,
         memberName: matchedMember ? matchedMember.name : null,
         matched: !!matchedMember,
         formAttendance: formSaysYes ? 'yes' : 'no',
         attendanceMismatch: attendanceMismatch,
-      });
+      };
+    }
+
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      const participates = String(row[participatesColIndex] || '').toLowerCase();
+      if (participates.indexOf('ball de bastons') === -1) continue;
+
+      const formName = String(row[nameColIndex] || '').trim();
+      if (!formName) continue;
+
+      const formAttendance = String(row[attendanceColIndex] || '').trim().toLowerCase();
+      const formSaysYes = formAttendance.length > 0 && formAttendance !== 'no';
+
+      console.log('checkFormAttendance row ' + i + ': name=' + formName + ', attendance="' + formAttendance + '", formSaysYes=' + formSaysYes);
+
+      const mainMatch = buildMatch_(formName, formSaysYes);
+      if (mainMatch) matches.push(mainMatch);
+
+      if (relatedNamesColIndex !== -1 && row[relatedNamesColIndex]) {
+        const relatedNames = String(row[relatedNamesColIndex])
+          .split(/\s*,\s*|\s*;\s*|\s*\/\s*|\s+i\s+|\s+y\s+|\s*&\s*|\n/i)
+          .map(function(n) { return n.trim(); })
+          .filter(function(n) { return n.length > 0; });
+
+        relatedNames.forEach(function(relatedName) {
+          const relatedMatch = buildMatch_(relatedName, formSaysYes);
+          if (relatedMatch) {
+            relatedMatch.relatedTo = formName;
+            matches.push(relatedMatch);
+          }
+        });
+      }
     }
 
     return API.newResult_({ result: matches });

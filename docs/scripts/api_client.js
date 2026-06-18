@@ -346,6 +346,6 @@ const API = new (class GAppsApiClient {
   }
 
   checkFormAttendance({ spreadsheetId, eventId } = {}) {
-    return this._get({ action: "checkFormAttendance", parameters: { spreadsheetId, eventId }, requiresAuth: true });
+    return this._get({ action: "checkFormAttendance", parameters: { spreadsheetId, eventId, _t: Date.now() }, requiresAuth: true });
   }
 })();

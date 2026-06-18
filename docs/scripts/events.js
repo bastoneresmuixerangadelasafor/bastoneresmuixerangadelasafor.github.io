@@ -1185,13 +1185,14 @@ const EVENTS = new (class EventsManager {
             cls = 'mismatch';
           }
           const memberInfo = match.matched ? ' → ' + escapeHtml(match.memberAlias || match.memberName) : ' (sense coincidència)';
+          const relatedInfo = match.relatedTo ? '<span class="check-attendance-related">(via ' + escapeHtml(match.relatedTo) + ')</span>' : '';
           let mismatchInfo = '';
           if (match.attendanceMismatch === 'form_yes_app_no') {
             mismatchInfo = '<span class="check-attendance-mismatch">Formulari: Sí · App: No confirmat</span>';
           } else if (match.attendanceMismatch === 'form_no_app_yes') {
             mismatchInfo = '<span class="check-attendance-mismatch">Formulari: No · App: Confirmat</span>';
           }
-          html += '<li class="check-attendance-item ' + cls + '"><span class="check-attendance-icon">' + icon + '</span><span class="check-attendance-name">' + escapeHtml(match.formName) + '</span><span class="check-attendance-member">' + memberInfo + '</span>' + mismatchInfo + '</li>';
+          html += '<li class="check-attendance-item ' + cls + '"><span class="check-attendance-icon">' + icon + '</span><span class="check-attendance-name">' + escapeHtml(match.formName) + '</span>' + relatedInfo + '<span class="check-attendance-member">' + memberInfo + '</span>' + mismatchInfo + '</li>';
         });
         html += '</ul>';
         resultsContainer.innerHTML = html;
