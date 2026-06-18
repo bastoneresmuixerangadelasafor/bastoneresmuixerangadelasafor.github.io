@@ -1153,13 +1153,20 @@ function checkFormAttendance_({spreadsheetId, eventId}) {
       if (!cleanName) return null;
 
       const formNameNorm = cleanName.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
-      const matchedMember = members.find(function(m) {
+      const exactMatchedMember = members.find(function(m) {
         const memberName = (m.name || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
         const memberAlias = (m.alias || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
-        return memberName === formNameNorm || memberAlias === formNameNorm ||
-               memberName.indexOf(formNameNorm) !== -1 || formNameNorm.indexOf(memberName) !== -1 ||
+        return memberName === formNameNorm || memberAlias === formNameNorm;
+      });
+
+      const partialMatchedMember = members.find(function(m) {
+        const memberName = (m.name || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        const memberAlias = (m.alias || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        return memberName.indexOf(formNameNorm) !== -1 || formNameNorm.indexOf(memberName) !== -1 ||
                (memberAlias && (memberAlias.indexOf(formNameNorm) !== -1 || formNameNorm.indexOf(memberAlias) !== -1));
       });
+
+      const matchedMember = exactMatchedMember || partialMatchedMember;
 
       var attendanceMismatch = null;
       if (matchedMember && eventId) {
