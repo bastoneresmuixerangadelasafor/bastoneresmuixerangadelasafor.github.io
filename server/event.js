@@ -9,11 +9,19 @@ function saveEvent_({event}) {
   // Check if sheet already exists
   let sheet = spreadsheet.getSheetByName(sheetName);
   const isNewSheet = !sheet;
-  
+
+  let attendanceListId = event.attendanceListId || '';
+
   if (isNewSheet) {
     // Create new sheet
     sheet = spreadsheet.insertSheet(sheetName);
   } else {
+    if (!attendanceListId) {
+      const existingHeader = sheet.getRange(1, 3, 1, 2).getValues()[0];
+      if (existingHeader[0] === 'Llistat:' && existingHeader[1]) {
+        attendanceListId = String(existingHeader[1]).replace(/^'/, '').trim();
+      }
+    }
     // Clear existing content
     sheet.clear();
   }
@@ -25,7 +33,11 @@ function saveEvent_({event}) {
   // Store datetime with apostrophe prefix to force plain text in Google Sheets
   const storedDatetime = event.datetime ? "'" + event.datetime : '';
   const storedMeetingPlace = event.meetingPlace || '';
-  data.push(['Actuació:', event.name]);
+  const actuacioRow = ['Actuació:', event.name];
+  if (attendanceListId) {
+    actuacioRow.push('Llistat:', "'" + attendanceListId);
+  }
+  data.push(actuacioRow);
   data.push(['Data:', storedDatetime]);
   data.push(['Lloc de trobada:', storedMeetingPlace]);
   data.push([]); // Empty row

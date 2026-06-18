@@ -1255,6 +1255,7 @@ const EVENTS = new (class EventsManager {
             const danceSelectorSection = document.getElementById('dance-selector-section');
             const floatingSaveBtn = document.getElementById('floating-save-btn');
             const floatingLockBtn = document.getElementById('floating-lock-btn');
+            const checkAttendanceRow = document.querySelector('.event-check-attendance-row');
 
             if (isEditable) {
                 if (eventNameInput) {
@@ -1302,6 +1303,10 @@ const EVENTS = new (class EventsManager {
                     danceSelectorSection.style.display = 'none';
                 }
                 danceSelectorSection.style.pointerEvents = isEditable ? 'auto' : 'none';
+            }
+
+            if (checkAttendanceRow) {
+                checkAttendanceRow.style.display = isEditable ? '' : 'none';
             }
 
             if (floatingSaveBtn) {

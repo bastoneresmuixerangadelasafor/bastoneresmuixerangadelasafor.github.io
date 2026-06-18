@@ -9347,10 +9347,10 @@ body.dark-mode .theme-icon-dark {
                 </button>
             </div>
             <!-- Member position count overlay -->
-            <div id="member-position-overlay" class="member-position-overlay" style="display: none;">
+            <div id="member-position-overlay" class="member-position-overlay collapsed" style="display: none;">
                 <div class="member-position-overlay-header">
                     <span>Posicions</span>
-                    <button type="button" id="member-position-overlay-toggle" class="member-position-overlay-toggle" aria-label="Minimitzar">−</button>
+                    <button type="button" id="member-position-overlay-toggle" class="member-position-overlay-toggle" aria-label="Minimitzar">+</button>
                 </div>
                 <ul id="member-position-overlay-list" class="member-position-overlay-list"></ul>
             </div>
@@ -15797,6 +15797,9 @@ function escapeJsString(text) {
       document.getElementById('check-attendance-results').style.display = 'none';
       document.getElementById('check-attendance-results').innerHTML = '';
       dialog.showModal();
+      if (prefillId) {
+        this.checkFormAttendance();
+      }
     }
   }
 
@@ -15911,6 +15914,7 @@ function escapeJsString(text) {
             const danceSelectorSection = document.getElementById('dance-selector-section');
             const floatingSaveBtn = document.getElementById('floating-save-btn');
             const floatingLockBtn = document.getElementById('floating-lock-btn');
+            const checkAttendanceRow = document.querySelector('.event-check-attendance-row');
 
             if (isEditable) {
                 if (eventNameInput) {
@@ -15958,6 +15962,10 @@ function escapeJsString(text) {
                     danceSelectorSection.style.display = 'none';
                 }
                 danceSelectorSection.style.pointerEvents = isEditable ? 'auto' : 'none';
+            }
+
+            if (checkAttendanceRow) {
+                checkAttendanceRow.style.display = isEditable ? '' : 'none';
             }
 
             if (floatingSaveBtn) {
