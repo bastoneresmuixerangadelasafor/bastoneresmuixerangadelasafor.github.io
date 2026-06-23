@@ -1566,11 +1566,13 @@ const EVENTS = new (class EventsManager {
                         const x = cellCenterX - rl.cellWidth / 2;
                         const y = cellCenterY - rl.cellHeight / 2;
 
-                        // Check if member is not attending
+                        // Check if member is not attending or not yet confirmed
                         const rejections = (APP.currentEventData && APP.currentEventData.rejections) || [];
+                        const attendees = (APP.currentEventData && APP.currentEventData.attendees) || [];
                         const isRejected = group[i] && rejections.includes(group[i]);
+                        const isNotConfirmed = group[i] && !isRejected && !attendees.includes(group[i]);
 
-                        ctx.fillStyle = isRejected ? '#dc3545' : getCellBgColor(row, col);
+                        ctx.fillStyle = isRejected ? '#dc3545' : (isNotConfirmed ? '#f0ad4e' : getCellBgColor(row, col));
                         ctx.fillRect(x, y, rl.cellWidth, rl.cellHeight);
                         ctx.strokeStyle = '#fff';
                         ctx.lineWidth = Math.max(2, 4 * rl.scale);
@@ -1584,12 +1586,12 @@ const EVENTS = new (class EventsManager {
                         }
 
                         if (group[i]) {
-                            ctx.fillStyle = isRejected ? '#ffffff' : getCellTxtColor(row, col);
+                            ctx.fillStyle = (isRejected || isNotConfirmed) ? '#ffffff' : getCellTxtColor(row, col);
                             const nameFontSize = Math.max(10, Math.round(18 * rl.scale));
                             ctx.font = 'bold ' + nameFontSize + 'px sans-serif';
                             ctx.textAlign = 'center';
                             ctx.textBaseline = 'middle';
-                            const displayName = isRejected ? '⚠️ ' + group[i] : group[i];
+                            const displayName = isRejected ? '⚠️ ' + group[i] : (isNotConfirmed ? '❓ ' + group[i] : group[i]);
                             ctx.fillText(displayName, cellCenterX, cellCenterY);
                         }
                     }
@@ -1686,11 +1688,13 @@ const EVENTS = new (class EventsManager {
                         const x = offsetX + col * (squareWidth + squareSpacingX);
                         const y = offsetY + row * (squareHeight + squareSpacingY);
                         
-                        // Check if member is not attending
+                        // Check if member is not attending or not yet confirmed
                         const rejections = (APP.currentEventData && APP.currentEventData.rejections) || [];
+                        const attendees = (APP.currentEventData && APP.currentEventData.attendees) || [];
                         const isRejected = group[i] && rejections.includes(group[i]);
+                        const isNotConfirmed = group[i] && !isRejected && !attendees.includes(group[i]);
                         
-                        ctx.fillStyle = isRejected ? '#dc3545' : getCellBackgroundColor(row, col);
+                        ctx.fillStyle = isRejected ? '#dc3545' : (isNotConfirmed ? '#f0ad4e' : getCellBackgroundColor(row, col));
                         ctx.fillRect(x, y, squareWidth, squareHeight);
                         ctx.strokeStyle = '#fff';
                         ctx.lineWidth = Math.max(2, 4 * scale);
@@ -1718,12 +1722,12 @@ const EVENTS = new (class EventsManager {
                         }
 
                         if (group[i]) {
-                            ctx.fillStyle = isRejected ? '#ffffff' : getCellTextColor(row, col);
+                            ctx.fillStyle = (isRejected || isNotConfirmed) ? '#ffffff' : getCellTextColor(row, col);
                             const nameFontSize = Math.max(10, Math.round(20 * scale));
                             ctx.font = 'bold ' + nameFontSize + 'px sans-serif';
                             ctx.textAlign = 'center';
                             ctx.textBaseline = 'middle';
-                            const displayName = isRejected ? '⚠️ ' + group[i] : group[i];
+                            const displayName = isRejected ? '⚠️ ' + group[i] : (isNotConfirmed ? '❓ ' + group[i] : group[i]);
                             ctx.fillText(displayName, x + squareWidth / 2, y + squareHeight / 2);
                         }
                     }
@@ -1846,11 +1850,13 @@ const EVENTS = new (class EventsManager {
             let backupHtml = '';
             if (backup.length > 0) {
                 const rejections = (APP.currentEventData && APP.currentEventData.rejections) || [];
+                const attendees = (APP.currentEventData && APP.currentEventData.attendees) || [];
                 backupHtml = '<div class="backup-members-list">';
                 backup.forEach(function (memberAlias) {
                     const isRejected = rejections.includes(memberAlias);
-                    const chipStyle = isRejected ? 'background-color: #dc3545; border-color: #dc3545; color: white;' : '';
-                    const warningIcon = isRejected ? '⚠️ ' : '';
+                    const isNotConfirmed = !isRejected && !attendees.includes(memberAlias);
+                    const chipStyle = isRejected ? 'background-color: #dc3545; border-color: #dc3545; color: white;' : (isNotConfirmed ? 'background-color: #f0ad4e; border-color: #f0ad4e; color: white;' : '');
+                    const warningIcon = isRejected ? '⚠️ ' : (isNotConfirmed ? '❓ ' : '');
                     backupHtml += `<span class="backup-member-chip" style="${chipStyle}">${warningIcon}${memberAlias}`;
                     if (isAdmin) {
                         backupHtml += `<button type="button" class="remove-backup-btn" data-diagram-id="${diagram.id}" data-member="${memberAlias}" title="Eliminar">×</button>`;
