@@ -485,7 +485,7 @@ const TRAININGS = new (class TrainingSession {
       .then(function(response) {
         // Update visual state
         customCheckbox.classList.remove('loading', 'empty', 'attending', 'rejected');
-        customCheckbox.classList.add(attending ? 'attending' : 'empty');
+        customCheckbox.classList.add(attending ? 'attending' : 'rejected');
         
         // Update local training data
         if (APP.currentTrainingData) {

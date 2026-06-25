@@ -613,6 +613,24 @@ const EVENTS = new (class EventsManager {
       const clickX = (e.clientX - rect.left) * scaleX;
       const clickY = (e.clientY - rect.top) * scaleY;
 
+      if (diagram._groupRemoveAreas) {
+        for (let ai = 0; ai < diagram._groupRemoveAreas.length; ai++) {
+          const area = diagram._groupRemoveAreas[ai];
+          const dx = clickX - area.cx;
+          const dy = clickY - area.cy;
+          if (Math.sqrt(dx * dx + dy * dy) <= area.r + 4) {
+            const groupLetter = String.fromCharCode(65 + area.g);
+            const blockName = (diagram.diagram && diagram.diagram.blockName) || 'grup';
+            if (confirm('Segur que vols eliminar ' + blockName + ' ' + groupLetter + '?')) {
+              diagram.groups.splice(area.g, 1);
+              setDiagramsDirty(true);
+              drawDiagram(diagram);
+            }
+            return;
+          }
+        }
+      }
+
       const forms = diagram.forms || ['grid'];
       const activeForm = diagram.activeForm || forms[0];
       if (activeForm === 'radial') {
@@ -957,7 +975,7 @@ const EVENTS = new (class EventsManager {
     API.confirmEventMemberAttendance({ eventId, memberAlias, attending })
       .then(function(response) {
         customCheckbox.classList.remove('loading', 'empty', 'attending', 'rejected');
-        customCheckbox.classList.add(attending ? 'attending' : 'empty');
+        customCheckbox.classList.add(attending ? 'attending' : 'rejected');
         
         if (APP.currentEventData) {
           const attendeesList = APP.currentEventData.attendees || [];
@@ -1501,7 +1519,26 @@ const EVENTS = new (class EventsManager {
             };
         }
 
-        function drawRadialDiagram(ctx, canvas, groups, rows, cols, positions, diagramColors, groupCount) {
+        function drawGroupRemoveButton(ctx, cx, cy, radius, scale) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = '#dc3545';
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = Math.max(1.5, 2 * scale);
+            ctx.lineCap = 'round';
+            const arm = radius * 0.45;
+            ctx.beginPath();
+            ctx.moveTo(cx - arm, cy - arm);
+            ctx.lineTo(cx + arm, cy + arm);
+            ctx.moveTo(cx + arm, cy - arm);
+            ctx.lineTo(cx - arm, cy + arm);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawRadialDiagram(ctx, canvas, groups, rows, cols, positions, diagramColors, groupCount, removeAreas, isAdminDraw) {
             const rl = calcRadialDiagramLayout(canvas, groupCount, rows, cols);
             if (canvas.height !== Math.round(rl.requiredHeight)) {
                 canvas.height = Math.round(rl.requiredHeight);
@@ -1555,6 +1592,14 @@ const EVENTS = new (class EventsManager {
                     const blockName = diagramColors.blockName || '';
                     const groupLabel = blockName ? blockName + ' ' + groupLetter : groupLetter;
                     ctx.fillText(groupLabel, labelX, labelY);
+                    if (isAdminDraw && removeAreas) {
+                        const labelTextWidth = ctx.measureText(groupLabel).width;
+                        const removeBtnRadius = Math.max(8, Math.round(10 * rl.scale));
+                        const removeBtnCX = labelX + labelTextWidth / 2 + removeBtnRadius + 6 * rl.scale;
+                        const removeBtnCY = labelY;
+                        drawGroupRemoveButton(ctx, removeBtnCX, removeBtnCY, removeBtnRadius, rl.scale);
+                        removeAreas.push({ g: g, cx: removeBtnCX, cy: removeBtnCY, r: removeBtnRadius });
+                    }
                     ctx.restore();
                 }
 
@@ -1627,10 +1672,12 @@ const EVENTS = new (class EventsManager {
             const diagramColors = diagram.diagram || { backgroundColor: {}, textColor: {} };
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const groupCount = groups.length;
+            const isCurrentUserAdminDraw = ((APP && APP.currentUser && APP.currentUser.roles) || []).includes('ADMIN');
+            diagram._groupRemoveAreas = [];
             const forms = diagram.forms || ['grid'];
             const activeForm = diagram.activeForm || forms[0];
             if (activeForm === 'radial') {
-                drawRadialDiagram(ctx, canvas, groups, rows, cols, positions, diagramColors, groupCount);
+                drawRadialDiagram(ctx, canvas, groups, rows, cols, positions, diagramColors, groupCount, diagram._groupRemoveAreas, isCurrentUserAdminDraw);
                 return;
             }
 
@@ -1680,6 +1727,14 @@ const EVENTS = new (class EventsManager {
                     const blockName = diagramColors.blockName || '';
                     const groupLabel = blockName ? blockName + ' ' + groupLetter : groupLetter;
                     ctx.fillText(groupLabel, offsetX + gridWidth / 2, offsetY - 10 * scale);
+                    if (isCurrentUserAdminDraw) {
+                        const labelTextWidth = ctx.measureText(groupLabel).width;
+                        const removeBtnRadius = Math.max(8, Math.round(11 * scale));
+                        const removeBtnCX = offsetX + gridWidth / 2 + labelTextWidth / 2 + removeBtnRadius + 6 * scale;
+                        const removeBtnCY = offsetY - 10 * scale - groupLabelFontSize * 0.55;
+                        drawGroupRemoveButton(ctx, removeBtnCX, removeBtnCY, removeBtnRadius, scale);
+                        diagram._groupRemoveAreas.push({ g: g, cx: removeBtnCX, cy: removeBtnCY, r: removeBtnRadius });
+                    }
                     ctx.restore();
                 }
                 for (let row = 0; row < rows; row++) {
@@ -2077,6 +2132,24 @@ ${backupHtml}
                     const scaleY = canvas.height / rect.height;
                     const clickX = (e.clientX - rect.left) * scaleX;
                     const clickY = (e.clientY - rect.top) * scaleY;
+
+                    if (diagram._groupRemoveAreas) {
+                        for (let ai = 0; ai < diagram._groupRemoveAreas.length; ai++) {
+                            const area = diagram._groupRemoveAreas[ai];
+                            const dx = clickX - area.cx;
+                            const dy = clickY - area.cy;
+                            if (Math.sqrt(dx * dx + dy * dy) <= area.r + 4) {
+                                const groupLetter = String.fromCharCode(65 + area.g);
+                                const blockName = (diagram.diagram && diagram.diagram.blockName) || 'grup';
+                                if (confirm('Segur que vols eliminar ' + blockName + ' ' + groupLetter + '?')) {
+                                    diagram.groups.splice(area.g, 1);
+                                    setDiagramsDirty(true);
+                                    drawDiagram(diagram);
+                                }
+                                return;
+                            }
+                        }
+                    }
 
                     const forms = diagram.forms || ['grid'];
                     const activeForm = diagram.activeForm || forms[0];
