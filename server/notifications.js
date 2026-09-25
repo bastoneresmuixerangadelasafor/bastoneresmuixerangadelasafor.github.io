@@ -122,12 +122,12 @@ function sendCommunication_({ title, message, recipientUserIds }) {
     ? recipientUserIds.map(function(id) { return String(id || '').toLowerCase(); }).filter(function(id) { return id; })
     : null;
   const filterSet = filterIds ? filterIds.reduce(function(acc, id) { acc[id] = true; return acc; }, {}) : null;
-  var sent = 0;
-  var failed = 0;
-  var sentTokens = {};
-  for (var userId in tokenMap) {
+  let sent = 0;
+  let failed = 0;
+  const sentTokens = {};
+  for (const userId in tokenMap) {
     if (filterSet && !filterSet[String(userId || '').toLowerCase()]) continue;
-    var userTokens = tokenMap[userId];
+    const userTokens = tokenMap[userId];
     if (!Array.isArray(userTokens)) continue;
     userTokens.forEach(function(token) {
       if (sentTokens[token]) return;

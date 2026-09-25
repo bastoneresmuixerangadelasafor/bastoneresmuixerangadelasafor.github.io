@@ -9,7 +9,7 @@ function html_(filename) {
 }
 
 function isDevMode_() {
-  var url = ScriptApp.getService().getUrl();
+  const url = ScriptApp.getService().getUrl();
   return url.indexOf('/dev') !== -1;
 }
 

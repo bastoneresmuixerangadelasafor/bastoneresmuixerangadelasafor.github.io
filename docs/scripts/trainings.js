@@ -1108,7 +1108,7 @@ const TRAININGS = new (class TrainingSession {
         UI.showToast(result.message || "Estat actualitzat", "success");
   
         // Update local training data
-        var userAlias = APP.currentUser ? APP.currentUser.alias : null;
+        const userAlias = APP.currentUser ? APP.currentUser.alias : null;
         if (userAlias) {
           const trainings = CACHE.getTrainings() || [];
           const trainingIndex = trainings.findIndex(t => t.id === trainingId);
@@ -1524,10 +1524,10 @@ const TRAININGS = new (class TrainingSession {
   }
 
   openTrainingNoteDialog(trainingId, memberId, memberAlias, memberName) {
-    var dialog = document.getElementById('training-note-dialog');
-    var noteInput = document.getElementById('training-note-input');
-    var memberNameSpan = document.getElementById('training-note-member-name');
-    var charCount = document.getElementById('training-note-char-current');
+    const dialog = document.getElementById('training-note-dialog');
+    const noteInput = document.getElementById('training-note-input');
+    const memberNameSpan = document.getElementById('training-note-member-name');
+    const charCount = document.getElementById('training-note-char-current');
     
     if (!dialog || !noteInput) return;
     
@@ -1538,10 +1538,10 @@ const TRAININGS = new (class TrainingSession {
       memberNameSpan.style.display = memberName ? '' : 'none';
     }
     
-    var trainings = CACHE.getTrainings() || [];
-    var training = trainings.find(function(t) { return t.id === trainingId; });
-    var alias = memberAlias || (APP.currentUser ? APP.currentUser.alias : '');
-    var existingNote = training && training.notes ? (training.notes[alias] || '') : '';
+    const trainings = CACHE.getTrainings() || [];
+    const training = trainings.find(function(t) { return t.id === trainingId; });
+    const alias = memberAlias || (APP.currentUser ? APP.currentUser.alias : '');
+    const existingNote = training && training.notes ? (training.notes[alias] || '') : '';
     
     noteInput.value = existingNote;
     if (charCount) charCount.textContent = existingNote.length;
@@ -1555,7 +1555,7 @@ const TRAININGS = new (class TrainingSession {
   }
   
   closeTrainingNoteDialog() {
-    var dialog = document.getElementById('training-note-dialog');
+    const dialog = document.getElementById('training-note-dialog');
     if (dialog && dialog.open) {
       UI.closeDialogWithBackdrop(dialog);
     }
@@ -1563,18 +1563,18 @@ const TRAININGS = new (class TrainingSession {
   }
   
   saveTrainingNote() {
-    var noteInput = document.getElementById('training-note-input');
-    var saveBtn = document.getElementById('training-note-save-btn');
-    var btnText = saveBtn ? saveBtn.querySelector('.btn-text') : null;
-    var btnLoading = saveBtn ? saveBtn.querySelector('.btn-loading') : null;
+    const noteInput = document.getElementById('training-note-input');
+    const saveBtn = document.getElementById('training-note-save-btn');
+    const btnText = saveBtn ? saveBtn.querySelector('.btn-text') : null;
+    const btnLoading = saveBtn ? saveBtn.querySelector('.btn-loading') : null;
     
     if (!noteInput) return;
     
-    var note = noteInput.value.trim();
-    var state = trainingNoteDialogState;
-    var trainingId = state.trainingId;
-    var memberId = state.memberId;
-    var memberAlias = state.memberAlias;
+    const note = noteInput.value.trim();
+    const state = trainingNoteDialogState;
+    const trainingId = state.trainingId;
+    const memberId = state.memberId;
+    const memberAlias = state.memberAlias;
     
     if (!trainingId) {
       UI.showToast('Error: no s\'ha pogut identificar l\'assaig', 'error');
@@ -1585,7 +1585,7 @@ const TRAININGS = new (class TrainingSession {
     if (btnText) btnText.style.display = 'none';
     if (btnLoading) btnLoading.style.display = 'inline';
     
-    var apiCall;
+    let apiCall;
     if (memberId && memberAlias) {
       apiCall = API.saveRelatedMemberTrainingNote({ trainingId, memberId, memberAlias, note });
     } else {
@@ -1599,9 +1599,9 @@ const TRAININGS = new (class TrainingSession {
         if (btnLoading) btnLoading.style.display = 'none';
         UI.showToast(result.message || 'Nota desada', 'success');
         
-        var alias = memberAlias || (APP.currentUser ? APP.currentUser.alias : '');
-        var trainings = CACHE.getTrainings() || [];
-        var trainingIndex = trainings.findIndex(function(t) { return t.id === trainingId; });
+        const alias = memberAlias || (APP.currentUser ? APP.currentUser.alias : '');
+        const trainings = CACHE.getTrainings() || [];
+        const trainingIndex = trainings.findIndex(function(t) { return t.id === trainingId; });
         if (trainingIndex !== -1) {
           if (!trainings[trainingIndex].notes) trainings[trainingIndex].notes = {};
           if (note) {
@@ -1625,7 +1625,7 @@ const TRAININGS = new (class TrainingSession {
   }
   
   updateNoteLinkInUI(trainingId, memberId, note) {
-    var section;
+    let section;
     if (memberId) {
       section = document.querySelector(`.training-confirmation-section[data-training-id="${trainingId}"][data-member-id="${memberId}"]`);
     } else {
@@ -1634,7 +1634,7 @@ const TRAININGS = new (class TrainingSession {
     
     if (!section) return;
     
-    var existingLink = section.querySelector('.training-note-link');
+    const existingLink = section.querySelector('.training-note-link');
     if (existingLink) {
       if (note) {
         existingLink.className = 'training-note-link has-note';
@@ -1649,10 +1649,10 @@ const TRAININGS = new (class TrainingSession {
   }
   
   initializeTrainingNoteDialogListeners() {
-    var closeBtn = document.getElementById('training-note-close-btn');
-    var cancelBtn = document.getElementById('training-note-cancel-btn');
-    var saveBtn = document.getElementById('training-note-save-btn');
-    var self = this;
+    const closeBtn = document.getElementById('training-note-close-btn');
+    const cancelBtn = document.getElementById('training-note-cancel-btn');
+    const saveBtn = document.getElementById('training-note-save-btn');
+    const self = this;
     
     if (closeBtn && !closeBtn.dataset.initialized) {
       closeBtn.addEventListener('click', function() { self.closeTrainingNoteDialog(); });
@@ -1673,7 +1673,7 @@ const TRAININGS = new (class TrainingSession {
 
 
 
-var trainingNoteDialogState = {
+let trainingNoteDialogState = {
   trainingId: null,
   memberId: null,
   memberAlias: null,

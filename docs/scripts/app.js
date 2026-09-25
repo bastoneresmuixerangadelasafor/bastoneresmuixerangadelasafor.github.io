@@ -118,7 +118,7 @@ const APP = new (class AppState{
     })
     .catch((error) => {
       console.error("Auth check failed:", error);
-      APP.user = null;
+      APP.currentUser = null;
 
       initializeEventListeners();
       updateAuthUI();

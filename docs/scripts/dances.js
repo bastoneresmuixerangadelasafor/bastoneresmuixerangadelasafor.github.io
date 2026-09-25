@@ -764,6 +764,11 @@ const DANCES = [
     "showInPositions": true,
     "audios": [
       {
+        "fileId": "19u99PDq2Qol4ziqnEb4nEIMTbQKUTNE5",
+        "title": "Palmera boja - Per assajar",
+        "artist": "Nando"
+      },
+      {
         "fileId": "1NCrAQ8Xa_VNXiKqTA7WhlvglteFRXtSY",
         "title": "Palmera boja - A plaça",
         "artist": "-"

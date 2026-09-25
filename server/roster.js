@@ -106,6 +106,7 @@ function saveMember_({member}) {
 		}
 
 		console.log('Member updated and persisted: ' + JSON.stringify(members[memberIndex]));
+		CACHE.retrieveMembersFromDB();
 		CACHE.bumpVersion('members');
 
 		return API.newResult_({ result: {member: members[memberIndex]} });

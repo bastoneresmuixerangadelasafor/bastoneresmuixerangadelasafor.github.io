@@ -197,7 +197,7 @@ const MEMBERS = new (class AppMembers {
 
     // Sort
     filtered.sort((a, b) => {
-      var valA, valB;
+      let valA, valB;
       switch (this.membersSortColumn) {
         case "active":
           valA = a.active !== false ? 1 : 0;
@@ -1009,10 +1009,10 @@ const MEMBERS = new (class AppMembers {
   }
 
   drawPositionDiagram(opts) {
-    var targetEl = document.getElementById(opts.canvasId);
+    const targetEl = document.getElementById(opts.canvasId);
     if (!targetEl) return;
-    var isImage = targetEl.tagName === "IMG";
-    var canvas;
+    const isImage = targetEl.tagName === "IMG";
+    let canvas;
     if (isImage) {
       canvas = document.createElement("canvas");
       canvas.width = parseInt(targetEl.getAttribute("width")) || 600;
@@ -1020,16 +1020,16 @@ const MEMBERS = new (class AppMembers {
     } else {
       canvas = targetEl;
     }
-    var ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    var rows = opts.rows || 2;
-    var cols = opts.cols || 2;
-    var positions = opts.positions || [];
-    var diagramColors = opts.diagramColors || { backgroundColor: {}, textColor: {} };
-    var highlightTags = opts.highlightTags || [];
-    var inProgressTags = opts.inProgressTags || [];
-    var pendingTags = opts.pendingTags || [];
-    var activeForm = opts.form || 'grid';
+    const rows = opts.rows || 2;
+    const cols = opts.cols || 2;
+    const positions = opts.positions || [];
+    const diagramColors = opts.diagramColors || { backgroundColor: {}, textColor: {} };
+    const highlightTags = opts.highlightTags || [];
+    const inProgressTags = opts.inProgressTags || [];
+    const pendingTags = opts.pendingTags || [];
+    const activeForm = opts.form || 'grid';
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -1039,48 +1039,48 @@ const MEMBERS = new (class AppMembers {
       return;
     }
 
-    var layout = calcDiagramLayout(canvas, 1, rows, cols);
-    var squareWidth = layout.squareWidth;
-    var squareHeight = layout.squareHeight;
-    var squareSpacingX = layout.squareSpacingX;
-    var squareSpacingY = layout.squareSpacingY;
-    var gridWidth = layout.gridWidth;
-    var gridHeight = layout.gridHeight;
-    var offsetX0 = layout.offsetX0;
-    var offsetY = layout.offsetY;
-    var scale = layout.scale;
+    const layout = calcDiagramLayout(canvas, 1, rows, cols);
+    const squareWidth = layout.squareWidth;
+    const squareHeight = layout.squareHeight;
+    const squareSpacingX = layout.squareSpacingX;
+    const squareSpacingY = layout.squareSpacingY;
+    const gridWidth = layout.gridWidth;
+    const gridHeight = layout.gridHeight;
+    const offsetX0 = layout.offsetX0;
+    const offsetY = layout.offsetY;
+    const scale = layout.scale;
 
-    var placaHeight = Math.max(25, 40 * scale);
-    var placaY = offsetY + gridHeight + 60 * scale;
-    var requiredHeight = placaY + placaHeight + 15;
+    const placaHeight = Math.max(25, 40 * scale);
+    const placaY = offsetY + gridHeight + 60 * scale;
+    const requiredHeight = placaY + placaHeight + 15;
     if (canvas.height !== Math.round(requiredHeight)) {
       canvas.height = Math.round(requiredHeight);
     }
 
-    var primaryColor = getComputedStyle(document.documentElement).getPropertyValue("--primary-color").trim() || "#6366f1";
+    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue("--primary-color").trim() || "#6366f1";
 
-    for (var row = 0; row < rows; row++) {
-      for (var col = 0; col < cols; col++) {
-        var order = row * cols + col + 1;
-        var pos = positions.find(function (p) { return p.order === order; });
-        var tag = pos ? pos.tag : "";
-        var label = pos && pos.positionType ? pos.positionType.label : "";
-        var isHighlighted = highlightTags.indexOf(tag) !== -1;
-        var isInProgress = inProgressTags.indexOf(tag) !== -1;
-        var isPending = pendingTags.indexOf(tag) !== -1;
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const order = row * cols + col + 1;
+        const pos = positions.find(function (p) { return p.order === order; });
+        const tag = pos ? pos.tag : "";
+        const label = pos && pos.positionType ? pos.positionType.label : "";
+        const isHighlighted = highlightTags.indexOf(tag) !== -1;
+        const isInProgress = inProgressTags.indexOf(tag) !== -1;
+        const isPending = pendingTags.indexOf(tag) !== -1;
 
-        var bgColor = "#808080";
+        let bgColor = "#808080";
         if (label && diagramColors.backgroundColor && diagramColors.backgroundColor[label]) {
           bgColor = diagramColors.backgroundColor[label];
         }
 
-        var textColor = "#FFFFFF";
+        let textColor = "#FFFFFF";
         if (label && diagramColors.textColor && diagramColors.textColor[label]) {
           textColor = diagramColors.textColor[label];
         }
 
-        var x = offsetX0 + col * (squareWidth + squareSpacingX);
-        var y = offsetY + row * (squareHeight + squareSpacingY);
+        const x = offsetX0 + col * (squareWidth + squareSpacingX);
+        const y = offsetY + row * (squareHeight + squareSpacingY);
 
         if (!isHighlighted && !isInProgress && !isPending) {
           ctx.globalAlpha = 0.3;
@@ -1100,16 +1100,16 @@ const MEMBERS = new (class AppMembers {
           ctx.lineWidth = Math.max(3, 6 * scale);
           ctx.strokeRect(x, y, squareWidth, squareHeight);
 
-          var cx = x + squareWidth / 2;
-          var cy = y + squareHeight / 2;
-          var r = Math.min(squareWidth, squareHeight) * 0.32;
+          const cx = x + squareWidth / 2;
+          const cy = y + squareHeight / 2;
+          const r = Math.min(squareWidth, squareHeight) * 0.32;
 
           ctx.save();
           ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
           ctx.shadowBlur = 6 * scale;
           ctx.shadowOffsetY = 2 * scale;
 
-          var outerRing = ctx.createLinearGradient(cx, cy - r, cx, cy + r);
+          const outerRing = ctx.createLinearGradient(cx, cy - r, cx, cy + r);
           outerRing.addColorStop(0, "#C9A84C");
           outerRing.addColorStop(0.5, "#F5D77A");
           outerRing.addColorStop(1, "#A67C2E");
@@ -1120,8 +1120,8 @@ const MEMBERS = new (class AppMembers {
 
           ctx.shadowColor = "transparent";
 
-          var innerR = r * 0.78;
-          var innerGrad = ctx.createLinearGradient(cx, cy - innerR, cx, cy + innerR);
+          const innerR = r * 0.78;
+          const innerGrad = ctx.createLinearGradient(cx, cy - innerR, cx, cy + innerR);
           innerGrad.addColorStop(0, "#FFE8A0");
           innerGrad.addColorStop(0.35, "#FFD54F");
           innerGrad.addColorStop(0.65, "#FFCA28");
@@ -1137,7 +1137,7 @@ const MEMBERS = new (class AppMembers {
           ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
           ctx.stroke();
 
-          var ts = r * 0.48;
+          const ts = r * 0.48;
           ctx.strokeStyle = "#6D4C00";
           ctx.lineWidth = Math.max(2.5, 4.5 * scale);
           ctx.lineCap = "round";
@@ -1151,8 +1151,8 @@ const MEMBERS = new (class AppMembers {
           ctx.restore();
         }
         if (isInProgress && !isPending) {
-          var iconS = Math.min(squareWidth, squareHeight) * 0.6;
-          var fontSize = Math.round(iconS);
+          const iconS = Math.min(squareWidth, squareHeight) * 0.6;
+          const fontSize = Math.round(iconS);
 
           ctx.save();
           ctx.font = fontSize + "px sans-serif";
@@ -1163,9 +1163,9 @@ const MEMBERS = new (class AppMembers {
         }
 
         if (isPending) {
-          var pendingCx = x + squareWidth / 2;
-          var pendingCy = y + squareHeight / 2;
-          var pendingIconSize = Math.round(Math.min(squareWidth, squareHeight) * 0.58);
+          const pendingCx = x + squareWidth / 2;
+          const pendingCy = y + squareHeight / 2;
+          const pendingIconSize = Math.round(Math.min(squareWidth, squareHeight) * 0.58);
 
           ctx.save();
           ctx.font = pendingIconSize + "px sans-serif";
@@ -1183,7 +1183,7 @@ const MEMBERS = new (class AppMembers {
     ctx.lineWidth = Math.max(1, 2 * scale);
     ctx.fillRect(offsetX0, placaY, gridWidth, placaHeight);
     ctx.strokeRect(offsetX0, placaY, gridWidth, placaHeight);
-    var placaFontSize = Math.max(12, Math.round(20 * scale));
+    const placaFontSize = Math.max(12, Math.round(20 * scale));
     ctx.fillStyle = "#000";
     ctx.font = "bold " + placaFontSize + "px sans-serif";
     ctx.textAlign = "center";
@@ -1211,7 +1211,7 @@ const MEMBERS = new (class AppMembers {
       return;
     }
 
-    var titleEl = document.querySelector("#view-member-positions .page-header h1");
+    const titleEl = document.querySelector("#view-member-positions .page-header h1");
     if (titleEl) {
       titleEl.textContent = alias === APP.currentUser?.alias ? "Les meues posicions" : "Posicions de " + alias;
     }
@@ -1220,44 +1220,44 @@ const MEMBERS = new (class AppMembers {
       .then(function (positions) {
         if (loading) loading.style.display = "none";
 
-        var positionCardId = 0;
+        let positionCardId = 0;
 
         DANCES.filter(function (dance) { return dance.showInPositions === true; }).forEach(function (dance) {
           try {
-            var danceName = dance.name;
-            var memberEntries = positions[danceName] || {};
-            var dancePositions = Array.isArray(dance.positions) ? dance.positions : [];
-            var memberTags = dancePositions.filter(function (pos) {
+            const danceName = dance.name;
+            const memberEntries = positions[danceName] || {};
+            const dancePositions = Array.isArray(dance.positions) ? dance.positions : [];
+            const memberTags = dancePositions.filter(function (pos) {
               return pos && pos.order != null && String(memberEntries[pos.order]).toUpperCase() === MEMBERS.POSITION_OK;
             }).map(function (pos) { return pos.tag; });
-            var inProgressTags = dancePositions.filter(function (pos) {
+            const inProgressTags = dancePositions.filter(function (pos) {
               return pos && pos.order != null && String(memberEntries[pos.order]).toUpperCase() === MEMBERS.POSITION_IN_PROGRESS;
             }).map(function (pos) { return pos.tag; });
-            var diagramColors = dance.diagram || { backgroundColor: {}, textColor: {} };
-            var rows = dance.structure ? dance.structure.rows : 2;
-            var cols = dance.structure ? dance.structure.columns : 2;
+            const diagramColors = dance.diagram || { backgroundColor: {}, textColor: {} };
+            const rows = dance.structure ? dance.structure.rows : 2;
+            const cols = dance.structure ? dance.structure.columns : 2;
 
-            var cardId = positionCardId++;
-            var canvasId = "position-canvas-" + cardId;
+            const cardId = positionCardId++;
+            const canvasId = "position-canvas-" + cardId;
 
-            var legendHtml = "";
-            var seenLabels = {};
+            let legendHtml = "";
+            const seenLabels = {};
             dancePositions.forEach(function (pos) {
               if (!pos || !pos.positionType || !pos.positionType.label) return;
-              var positionLabel = pos.positionType.label;
+              const positionLabel = pos.positionType.label;
               if (seenLabels[positionLabel]) return;
               seenLabels[positionLabel] = true;
-              var color = (diagramColors.backgroundColor && diagramColors.backgroundColor[positionLabel]) || "#808080";
+              const color = (diagramColors.backgroundColor && diagramColors.backgroundColor[positionLabel]) || "#808080";
               legendHtml += '<div class="diagram-legend-item">' +
                 '<span class="legend-color-box" style="background: ' + color + ';"></span>' +
                 '<span>' + positionLabel + '</span>' +
                 '</div>';
             });
-            var showLegend = Object.keys(seenLabels).length > 1;
+            const showLegend = Object.keys(seenLabels).length > 1;
 
-            var forms = dance.structure && dance.structure.forms ? dance.structure.forms : ['grid'];
+            const forms = dance.structure && dance.structure.forms ? dance.structure.forms : ['grid'];
 
-            var card = document.createElement("div");
+            const card = document.createElement("div");
             card.className = "position-card";
             card.innerHTML =
               '<div class="diagram-header">' +
@@ -1276,7 +1276,7 @@ const MEMBERS = new (class AppMembers {
 
             list.appendChild(card);
 
-            var positionDrawOpts = {
+            const positionDrawOpts = {
               canvasId: canvasId,
               rows: rows,
               cols: cols,
@@ -1288,10 +1288,10 @@ const MEMBERS = new (class AppMembers {
             };
             MEMBERS.drawPositionDiagram(positionDrawOpts);
 
-            var renderedEl = document.getElementById(canvasId);
+            let renderedEl = document.getElementById(canvasId);
             if (renderedEl && renderedEl.tagName === "CANVAS") {
               try {
-                var img = new Image();
+                const img = new Image();
                 img.src = renderedEl.toDataURL();
                 img.id = canvasId;
                 img.setAttribute("width", renderedEl.width);
@@ -1335,29 +1335,29 @@ const MEMBERS = new (class AppMembers {
   }
 
   handlePositionClick(event, canvas, data) {
-    var dialog = document.getElementById("position-value-dialog");
+    const dialog = document.getElementById("position-value-dialog");
     
     // Don't handle click if dialog is currently open
     if (dialog && dialog.open) {
       return;
     }
     
-    var rect = canvas.getBoundingClientRect();
-    var origW = parseInt(canvas.getAttribute("width")) || canvas.width;
-    var origH = parseInt(canvas.getAttribute("height")) || canvas.height;
-    var scaleX = rect.width ? origW / rect.width : 1;
-    var scaleY = rect.height ? origH / rect.height : 1;
-    var x = (event.clientX - rect.left) * scaleX;
-    var y = (event.clientY - rect.top) * scaleY;
+    const rect = canvas.getBoundingClientRect();
+    const origW = parseInt(canvas.getAttribute("width")) || canvas.width;
+    const origH = parseInt(canvas.getAttribute("height")) || canvas.height;
+    const scaleX = rect.width ? origW / rect.width : 1;
+    const scaleY = rect.height ? origH / rect.height : 1;
+    const x = (event.clientX - rect.left) * scaleX;
+    const y = (event.clientY - rect.top) * scaleY;
 
-    var clickedOrder = this.getClickedPositionOrder(x, y, { width: origW, height: origH }, data.rows, data.cols, data.form);
+    const clickedOrder = this.getClickedPositionOrder(x, y, { width: origW, height: origH }, data.rows, data.cols, data.form);
     if (clickedOrder === null) return;
 
     this.showPositionValueDialog(canvas, data, clickedOrder);
   }
 
   showPositionValueDialog(canvas, data, clickedOrder) {
-    var dialog = document.getElementById("position-value-dialog");
+    const dialog = document.getElementById("position-value-dialog");
     if (!dialog) return;
     
     // If dialog is already open, close it first and wait
@@ -1369,28 +1369,28 @@ const MEMBERS = new (class AppMembers {
       return;
     }
 
-    var optionButtons = dialog.querySelectorAll(".position-value-option");
+    let optionButtons = dialog.querySelectorAll(".position-value-option");
     
     // Remove any existing listeners by cloning and replacing buttons
     optionButtons.forEach(function(btn) {
-      var newBtn = btn.cloneNode(true);
+      const newBtn = btn.cloneNode(true);
       btn.parentNode.replaceChild(newBtn, btn);
     });
     
     // Get the new buttons after cloning
     optionButtons = dialog.querySelectorAll(".position-value-option");
 
-    var currentValue = String(data.memberEntries[clickedOrder] || "").toUpperCase();
+    const currentValue = String(data.memberEntries[clickedOrder] || "").toUpperCase();
 
     optionButtons.forEach(function(btn) {
-      var optionValue = String(btn.getAttribute("data-value") || "").toUpperCase();
-      var isSelected = optionValue === currentValue;
+      const optionValue = String(btn.getAttribute("data-value") || "").toUpperCase();
+      const isSelected = optionValue === currentValue;
       btn.classList.toggle("is-selected", isSelected);
       btn.setAttribute("aria-pressed", isSelected ? "true" : "false");
     });
     
-    var clickHandler = function(event) {
-      var selectedValue = this.getAttribute("data-value");
+    const clickHandler = function(event) {
+      const selectedValue = this.getAttribute("data-value");
       UI.closeDialogWithBackdrop(dialog);
       
       MEMBERS.updatePositionValue(canvas, data, clickedOrder, selectedValue);
@@ -1404,17 +1404,17 @@ const MEMBERS = new (class AppMembers {
   }
 
   updatePositionValue(canvas, data, clickedOrder, newValue) {
-    var clickedPosition = data.positions.find(function (pos) {
+    const clickedPosition = data.positions.find(function (pos) {
       return pos.order === clickedOrder;
     });
-    var pendingTags = clickedPosition && clickedPosition.tag ? [clickedPosition.tag] : [];
+    const pendingTags = clickedPosition && clickedPosition.tag ? [clickedPosition.tag] : [];
 
     function redrawPosition(pending) {
-      var memberTags = data.positions.filter(function (pos) {
+      const memberTags = data.positions.filter(function (pos) {
         return String(data.memberEntries[pos.order]).toUpperCase() === MEMBERS.POSITION_OK;
       }).map(function (pos) { return pos.tag; });
 
-      var inProgressTags = data.positions.filter(function (pos) {
+      const inProgressTags = data.positions.filter(function (pos) {
         return String(data.memberEntries[pos.order]).toUpperCase() === MEMBERS.POSITION_IN_PROGRESS;
       }).map(function (pos) { return pos.tag; });
 
@@ -1918,16 +1918,16 @@ const MEMBERS = new (class AppMembers {
   }
 
   getClickedPositionOrderRadial(x, y, canvas, rows, cols) {
-    var rl = this.calcRadialPositionLayout(canvas, rows, cols);
+    const rl = this.calcRadialPositionLayout(canvas, rows, cols);
 
-    for (var row = 0; row < rows; row++) {
-      for (var col = 0; col < cols; col++) {
-        var order = row * cols + col + 1;
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const order = row * cols + col + 1;
 
-        var cellCenterX = rl.centerX;
-        var cellCenterY = rl.centerY - rl.coupleHeight / 2 + row * (rl.cellHeight + rl.coupleGap) + rl.cellHeight / 2;
-        var cellX = cellCenterX - rl.cellWidth / 2;
-        var cellY = cellCenterY - rl.cellHeight / 2;
+        const cellCenterX = rl.centerX;
+        const cellCenterY = rl.centerY - rl.coupleHeight / 2 + row * (rl.cellHeight + rl.coupleGap) + rl.cellHeight / 2;
+        const cellX = cellCenterX - rl.cellWidth / 2;
+        const cellY = cellCenterY - rl.cellHeight / 2;
 
         if (x >= cellX && x <= cellX + rl.cellWidth && y >= cellY && y <= cellY + rl.cellHeight) {
           return order;
@@ -1939,20 +1939,20 @@ const MEMBERS = new (class AppMembers {
   }
 
   getClickedPositionOrderGrid(x, y, canvas, rows, cols) {
-    var layout = calcDiagramLayout(canvas, 1, rows, cols);
-    var squareWidth = layout.squareWidth;
-    var squareHeight = layout.squareHeight;
-    var squareSpacingX = layout.squareSpacingX;
-    var squareSpacingY = layout.squareSpacingY;
-    var offsetX0 = layout.offsetX0;
-    var offsetY = layout.offsetY;
+    const layout = calcDiagramLayout(canvas, 1, rows, cols);
+    const squareWidth = layout.squareWidth;
+    const squareHeight = layout.squareHeight;
+    const squareSpacingX = layout.squareSpacingX;
+    const squareSpacingY = layout.squareSpacingY;
+    const offsetX0 = layout.offsetX0;
+    const offsetY = layout.offsetY;
 
-    for (var row = 0; row < rows; row++) {
-      for (var col = 0; col < cols; col++) {
-        var order = row * cols + col + 1;
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const order = row * cols + col + 1;
 
-        var cellX = offsetX0 + col * (squareWidth + squareSpacingX);
-        var cellY = offsetY + row * (squareHeight + squareSpacingY);
+        const cellX = offsetX0 + col * (squareWidth + squareSpacingX);
+        const cellY = offsetY + row * (squareHeight + squareSpacingY);
 
         if (x >= cellX && x <= cellX + squareWidth && y >= cellY && y <= cellY + squareHeight) {
           return order;
@@ -1965,36 +1965,36 @@ const MEMBERS = new (class AppMembers {
 
   drawRadialPositionDiagram(ctx, canvas, rows, cols, positions, diagramColors, highlightTags, inProgressTags, pendingTags) {
     pendingTags = pendingTags || [];
-    var rl = this.calcRadialPositionLayout(canvas, rows, cols);
+    const rl = this.calcRadialPositionLayout(canvas, rows, cols);
     if (canvas.height !== Math.round(rl.requiredHeight)) {
       canvas.height = Math.round(rl.requiredHeight);
     }
 
-    var primaryColor = getComputedStyle(document.documentElement).getPropertyValue("--primary-color").trim() || "#6366f1";
+    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue("--primary-color").trim() || "#6366f1";
 
-    for (var row = 0; row < rows; row++) {
-      for (var col = 0; col < cols; col++) {
-        var order = row * cols + col + 1;
-        var pos = positions.find(function (p) { return p.order === order; });
-        var tag = pos ? pos.tag : "";
-        var label = pos && pos.positionType ? pos.positionType.label : "";
-        var isHighlighted = highlightTags.indexOf(tag) !== -1;
-        var isInProgress = inProgressTags.indexOf(tag) !== -1;
-        var isPending = pendingTags.indexOf(tag) !== -1;
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const order = row * cols + col + 1;
+        const pos = positions.find(function (p) { return p.order === order; });
+        const tag = pos ? pos.tag : "";
+        const label = pos && pos.positionType ? pos.positionType.label : "";
+        const isHighlighted = highlightTags.indexOf(tag) !== -1;
+        const isInProgress = inProgressTags.indexOf(tag) !== -1;
+        const isPending = pendingTags.indexOf(tag) !== -1;
 
-        var bgColor = "#808080";
+        let bgColor = "#808080";
         if (label && diagramColors.backgroundColor && diagramColors.backgroundColor[label]) {
           bgColor = diagramColors.backgroundColor[label];
         }
-        var textColor = "#FFFFFF";
+        let textColor = "#FFFFFF";
         if (label && diagramColors.textColor && diagramColors.textColor[label]) {
           textColor = diagramColors.textColor[label];
         }
 
-        var cellCenterX = rl.centerX;
-        var cellCenterY = rl.centerY - rl.coupleHeight / 2 + row * (rl.cellHeight + rl.coupleGap) + rl.cellHeight / 2;
-        var x = cellCenterX - rl.cellWidth / 2;
-        var y = cellCenterY - rl.cellHeight / 2;
+        const cellCenterX = rl.centerX;
+        const cellCenterY = rl.centerY - rl.coupleHeight / 2 + row * (rl.cellHeight + rl.coupleGap) + rl.cellHeight / 2;
+        const x = cellCenterX - rl.cellWidth / 2;
+        const y = cellCenterY - rl.cellHeight / 2;
 
         if (!isHighlighted && !isInProgress && !isPending) {
           ctx.globalAlpha = 0.3;
@@ -2013,16 +2013,16 @@ const MEMBERS = new (class AppMembers {
           ctx.lineWidth = Math.max(3, 6 * rl.scale);
           ctx.strokeRect(x, y, rl.cellWidth, rl.cellHeight);
 
-          var cx = x + rl.cellWidth / 2;
-          var cy = y + rl.cellHeight / 2;
-          var r = Math.min(rl.cellWidth, rl.cellHeight) * 0.32;
+          const cx = x + rl.cellWidth / 2;
+          const cy = y + rl.cellHeight / 2;
+          const r = Math.min(rl.cellWidth, rl.cellHeight) * 0.32;
 
           ctx.save();
           ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
           ctx.shadowBlur = 6 * rl.scale;
           ctx.shadowOffsetY = 2 * rl.scale;
 
-          var outerRing = ctx.createLinearGradient(cx, cy - r, cx, cy + r);
+          const outerRing = ctx.createLinearGradient(cx, cy - r, cx, cy + r);
           outerRing.addColorStop(0, "#C9A84C");
           outerRing.addColorStop(0.5, "#F5D77A");
           outerRing.addColorStop(1, "#A67C2E");
@@ -2033,8 +2033,8 @@ const MEMBERS = new (class AppMembers {
 
           ctx.shadowColor = "transparent";
 
-          var innerR = r * 0.78;
-          var innerGrad = ctx.createLinearGradient(cx, cy - innerR, cx, cy + innerR);
+          const innerR = r * 0.78;
+          const innerGrad = ctx.createLinearGradient(cx, cy - innerR, cx, cy + innerR);
           innerGrad.addColorStop(0, "#FFE8A0");
           innerGrad.addColorStop(0.35, "#FFD54F");
           innerGrad.addColorStop(0.65, "#FFCA28");
@@ -2050,7 +2050,7 @@ const MEMBERS = new (class AppMembers {
           ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
           ctx.stroke();
 
-          var ts = r * 0.48;
+          const ts = r * 0.48;
           ctx.strokeStyle = "#6D4C00";
           ctx.lineWidth = Math.max(2.5, 4.5 * rl.scale);
           ctx.lineCap = "round";
@@ -2064,8 +2064,8 @@ const MEMBERS = new (class AppMembers {
           ctx.restore();
         }
         if (isInProgress && !isPending) {
-          var iconS = Math.min(rl.cellWidth, rl.cellHeight) * 0.6;
-          var fontSize = Math.round(iconS);
+          const iconS = Math.min(rl.cellWidth, rl.cellHeight) * 0.6;
+          const fontSize = Math.round(iconS);
           ctx.save();
           ctx.font = fontSize + "px sans-serif";
           ctx.textAlign = "center";
@@ -2075,9 +2075,9 @@ const MEMBERS = new (class AppMembers {
         }
 
         if (isPending) {
-          var pendingCx = x + rl.cellWidth / 2;
-          var pendingCy = y + rl.cellHeight / 2;
-          var pendingIconSize = Math.round(Math.min(rl.cellWidth, rl.cellHeight) * 0.58);
+          const pendingCx = x + rl.cellWidth / 2;
+          const pendingCy = y + rl.cellHeight / 2;
+          const pendingIconSize = Math.round(Math.min(rl.cellWidth, rl.cellHeight) * 0.58);
 
           ctx.save();
           ctx.font = pendingIconSize + "px sans-serif";
@@ -2095,7 +2095,7 @@ const MEMBERS = new (class AppMembers {
     ctx.lineWidth = Math.max(1, 2 * rl.scale);
     ctx.fillRect(rl.placaX, rl.placaY, rl.placaWidth, rl.placaHeight);
     ctx.strokeRect(rl.placaX, rl.placaY, rl.placaWidth, rl.placaHeight);
-    var placaFontSize = Math.max(12, Math.round(20 * rl.scale));
+    const placaFontSize = Math.max(12, Math.round(20 * rl.scale));
     ctx.fillStyle = "#000";
     ctx.font = "bold " + placaFontSize + "px sans-serif";
     ctx.textAlign = "center";
@@ -2105,23 +2105,23 @@ const MEMBERS = new (class AppMembers {
   }
 
   calcRadialPositionLayout(canvas, rows, cols) {
-    var baseCellWidth = 100;
-    var baseCellHeight = 50;
-    var baseCoupleGap = 8;
-    var baseCoupleHeight = baseCellHeight * rows + baseCoupleGap * (rows - 1);
-    var availableWidth = canvas.width - 40;
-    var scale = Math.min(1, availableWidth / (baseCellWidth + 40));
-    var cellWidth = baseCellWidth * scale;
-    var cellHeight = baseCellHeight * scale;
-    var coupleGap = baseCoupleGap * scale;
-    var coupleHeight = cellHeight * rows + coupleGap * (rows - 1);
-    var centerX = canvas.width / 2;
-    var centerY = 20 + coupleHeight / 2;
-    var placaHeight = Math.max(25, 40 * scale);
-    var placaY = centerY + coupleHeight / 2 + 60 * scale;
-    var placaWidth = cellWidth;
-    var placaX = centerX - placaWidth / 2;
-    var requiredHeight = placaY + placaHeight + 15;
+    const baseCellWidth = 100;
+    const baseCellHeight = 50;
+    const baseCoupleGap = 8;
+    const baseCoupleHeight = baseCellHeight * rows + baseCoupleGap * (rows - 1);
+    const availableWidth = canvas.width - 40;
+    const scale = Math.min(1, availableWidth / (baseCellWidth + 40));
+    const cellWidth = baseCellWidth * scale;
+    const cellHeight = baseCellHeight * scale;
+    const coupleGap = baseCoupleGap * scale;
+    const coupleHeight = cellHeight * rows + coupleGap * (rows - 1);
+    const centerX = canvas.width / 2;
+    const centerY = 20 + coupleHeight / 2;
+    const placaHeight = Math.max(25, 40 * scale);
+    const placaY = centerY + coupleHeight / 2 + 60 * scale;
+    const placaWidth = cellWidth;
+    const placaX = centerX - placaWidth / 2;
+    const requiredHeight = placaY + placaHeight + 15;
     return {
       cellWidth: cellWidth, cellHeight: cellHeight, coupleGap: coupleGap, coupleHeight: coupleHeight,
       centerX: centerX, centerY: centerY,

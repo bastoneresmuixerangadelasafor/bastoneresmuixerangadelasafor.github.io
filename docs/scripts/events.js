@@ -896,7 +896,7 @@ const EVENTS = new (class EventsManager {
     attendanceSection.style.display = "";
     
     const isPastEvent = eventData.date && new Date(eventData.date) < new Date();
-    const members = (MEMBERS.membersData || []).filter(m => m.active);
+    const members = (MEMBERS.membersData || []).filter(m => isPastEvent || m.active);
     
     if (!members || members.length === 0) {
       attendanceList.innerHTML = '<div class="event-member-attendance-loading">Sense membres disponibles</div>';
@@ -1226,13 +1226,13 @@ const EVENTS = new (class EventsManager {
       });
   }
 })();
-        var diagrams = [];
-        var diagramIdCounter = 0;
-        var diagramsIsDirty = false;
-        var isEventEditable = true;
-        var isEventManuallyUnlocked = false;
-        var isTrainingEditable = true;
-        var isTrainingManuallyUnlocked = false;
+        let diagrams = [];
+        let diagramIdCounter = 0;
+        let diagramsIsDirty = false;
+        let isEventEditable = true;
+        let isEventManuallyUnlocked = false;
+        let isTrainingEditable = true;
+        let isTrainingManuallyUnlocked = false;
 
         
 
@@ -1658,10 +1658,11 @@ const EVENTS = new (class EventsManager {
             ctx.restore();
         }
 
-        var selectedCellHighlight = null;
+        let selectedCellHighlight = null;
 
         // Draw a specific diagram
-        function drawDiagram(diagram) {
+        function drawDiagram(diagram, options) {
+            const hideAdminControls = !!(options && options.hideAdminControls);
             const canvas = document.getElementById('diagram-canvas-' + diagram.id);
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
@@ -1672,7 +1673,7 @@ const EVENTS = new (class EventsManager {
             const diagramColors = diagram.diagram || { backgroundColor: {}, textColor: {} };
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const groupCount = groups.length;
-            const isCurrentUserAdminDraw = ((APP && APP.currentUser && APP.currentUser.roles) || []).includes('ADMIN');
+            const isCurrentUserAdminDraw = !hideAdminControls && ((APP && APP.currentUser && APP.currentUser.roles) || []).includes('ADMIN');
             diagram._groupRemoveAreas = [];
             const forms = diagram.forms || ['grid'];
             const activeForm = diagram.activeForm || forms[0];
@@ -1770,7 +1771,7 @@ const EVENTS = new (class EventsManager {
                         }
 
                         if (selectedCellHighlight && selectedCellHighlight.diagramId === diagram.id && selectedCellHighlight.groupIdx === g && selectedCellHighlight.cellIdx === i) {
-                            var hlColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+                            const hlColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
                             ctx.strokeStyle = hlColor || '#6366f1';
                             ctx.lineWidth = Math.max(4, 8 * scale);
                             ctx.strokeRect(x, y, squareWidth, squareHeight);
@@ -2859,8 +2860,8 @@ ${backupHtml}
                     const attendees = (APP.currentEventData && APP.currentEventData.attendees) || [];
                     API.calculateEventDancePositions({ danceName: diagram.danceName, attendees: attendees })
                         .then(function (result) {
-                            var html = '<h3 class="magic-dialog-title">' + diagram.danceName + '</h3>';
-                            var orders = Object.keys(result).sort(function (a, b) { return parseInt(a) - parseInt(b); });
+                            let html = '<h3 class="magic-dialog-title">' + diagram.danceName + '</h3>';
+                            const orders = Object.keys(result).sort(function (a, b) { return parseInt(a) - parseInt(b); });
                             if (orders.length === 0) {
                                 html += '<p class="magic-dialog-empty">No hi ha dades d\'actuacions anteriors</p>';
                             } else {
@@ -2868,20 +2869,20 @@ ${backupHtml}
                                 html += '<div id="magic-selection-area"></div>';
                                 html += '<button type="button" id="magic-confirm-btn" class="magic-confirm-btn">Confirmar</button>';
                             }
-                            var closeBtn = '<button type="button" class="magic-dialog-close-btn" onclick="UI.closeDialogWithBackdrop(document.getElementById(\'magic-dialog\'))" aria-label="Tancar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>';
+                            const closeBtn = '<button type="button" class="magic-dialog-close-btn" onclick="UI.closeDialogWithBackdrop(document.getElementById(\'magic-dialog\'))" aria-label="Tancar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>';
                             magicContent.innerHTML = closeBtn + html;
                             if (orders.length > 0) {
-                                var rows = diagram.rows || 2;
-                                var cols = diagram.columns || 2;
-                                var positionsPerGroup = rows * cols;
-                                var groupCount = diagram.groups.length;
-                                var magicGroups = [];
-                                for (var g = 0; g < groupCount; g++) {
-                                    var group = [];
-                                    for (var i = 0; i < positionsPerGroup; i++) group.push(null);
+                                const rows = diagram.rows || 2;
+                                const cols = diagram.columns || 2;
+                                const positionsPerGroup = rows * cols;
+                                const groupCount = diagram.groups.length;
+                                const magicGroups = [];
+                                for (let g = 0; g < groupCount; g++) {
+                                    const group = [];
+                                    for (let i = 0; i < positionsPerGroup; i++) group.push(null);
                                     magicGroups.push(group);
                                 }
-                                var magicDiagram = {
+                                const magicDiagram = {
                                     id: 'magic',
                                     groups: magicGroups,
                                     rows: rows,
@@ -2896,35 +2897,35 @@ ${backupHtml}
                                 function showMagicCandidates(order, groupIdx, cellIdx) {
                                     selectedCellHighlight = { diagramId: 'magic', groupIdx: groupIdx, cellIdx: cellIdx };
                                     drawDiagram(magicDiagram);
-                                    var selectionArea = document.getElementById('magic-selection-area');
-                                    var posResult = result[order];
-                                    var pos = magicDiagram.positions.find(function (p) { return p.order === order; });
-                                    var dColors = magicDiagram.diagram;
-                                    var bgColor = '#808080';
+                                    const selectionArea = document.getElementById('magic-selection-area');
+                                    const posResult = result[order];
+                                    const pos = magicDiagram.positions.find(function (p) { return p.order === order; });
+                                    const dColors = magicDiagram.diagram;
+                                    let bgColor = '#808080';
                                     if (pos && pos.positionType.label && dColors.backgroundColor && dColors.backgroundColor[pos.positionType.label]) {
                                         bgColor = dColors.backgroundColor[pos.positionType.label];
                                     }
-                                    var usedAliases = [];
-                                    for (var gi = 0; gi < magicDiagram.groups.length; gi++) {
-                                        for (var si = 0; si < positionsPerGroup; si++) {
+                                    const usedAliases = [];
+                                    for (let gi = 0; gi < magicDiagram.groups.length; gi++) {
+                                        for (let si = 0; si < positionsPerGroup; si++) {
                                             if (gi === groupIdx && si === cellIdx) continue;
                                             if (magicDiagram.groups[gi][si]) usedAliases.push(magicDiagram.groups[gi][si]);
                                         }
                                     }
-                                    var groupLetter = String.fromCharCode(65 + groupIdx);
-                                    var blockName = dColors.blockName || 'Grup';
-                                    var headerText = pos ? pos.tag : 'Posició ' + order;
+                                    const groupLetter = String.fromCharCode(65 + groupIdx);
+                                    const blockName = dColors.blockName || 'Grup';
+                                    let headerText = pos ? pos.tag : 'Posició ' + order;
                                     if (magicDiagram.groups.length > 1) {
                                         headerText += ' — ' + blockName + ' ' + groupLetter;
                                     }
-                                    var areaHtml = '<div class="magic-selection-header">';
+                                    let areaHtml = '<div class="magic-selection-header">';
                                     areaHtml += '<span class="magic-position-color" style="background:' + bgColor + '"></span>';
                                     areaHtml += '<strong>' + headerText + '</strong>';
                                     if (pos && pos.specifications) {
                                         areaHtml += '<span class="magic-position-specs">' + pos.specifications + '</span>';
                                     }
                                     areaHtml += '</div>';
-                                    var currentAssigned = magicDiagram.groups[groupIdx][cellIdx];
+                                    const currentAssigned = magicDiagram.groups[groupIdx][cellIdx];
                                     if (currentAssigned) {
                                         areaHtml += '<div class="magic-current-assignment">';
                                         areaHtml += '<span>' + currentAssigned + '</span>';
@@ -2936,7 +2937,7 @@ ${backupHtml}
                                         selectionArea.innerHTML = areaHtml;
                                         return;
                                     }
-                                    var candidates = posResult.members.filter(function (m) {
+                                    const candidates = posResult.members.filter(function (m) {
                                         return m.attending && !usedAliases.includes(m.name);
                                     });
                                     if (candidates.length === 0) {
@@ -2953,9 +2954,9 @@ ${backupHtml}
                                     selectionArea.innerHTML = areaHtml;
                                     selectionArea.querySelectorAll('.magic-candidate-btn').forEach(function (btn) {
                                         btn.addEventListener('click', function () {
-                                            var candidate = candidates[parseInt(btn.dataset.idx)];
+                                            const candidate = candidates[parseInt(btn.dataset.idx)];
                                             magicDiagram.groups[groupIdx][cellIdx] = candidate.name;
-                                            for (var ni = cellIdx + 1; ni < positionsPerGroup; ni++) {
+                                            for (let ni = cellIdx + 1; ni < positionsPerGroup; ni++) {
                                                 if (!magicDiagram.groups[groupIdx][ni]) {
                                                     showMagicCandidates(ni + 1, groupIdx, ni);
                                                     return;
@@ -2966,7 +2967,7 @@ ${backupHtml}
                                             selectionArea.innerHTML = '';
                                         });
                                     });
-                                    var removeBtn = selectionArea.querySelector('.magic-remove-btn');
+                                    const removeBtn = selectionArea.querySelector('.magic-remove-btn');
                                     if (removeBtn) {
                                         removeBtn.addEventListener('click', function () {
                                             magicDiagram.groups[groupIdx][cellIdx] = null;
@@ -2976,26 +2977,26 @@ ${backupHtml}
                                     }
                                 }
 
-                                var magicCanvas = document.getElementById('diagram-canvas-magic');
+                                const magicCanvas = document.getElementById('diagram-canvas-magic');
                                 magicCanvas.addEventListener('click', function (e) {
-                                    var rect = magicCanvas.getBoundingClientRect();
-                                    var layout = calcDiagramLayout(magicCanvas, groupCount, rows, cols);
-                                    var scaleX = magicCanvas.width / rect.width;
-                                    var scaleY = magicCanvas.height / rect.height;
-                                    var clickX = (e.clientX - rect.left) * scaleX;
-                                    var clickY = (e.clientY - rect.top) * scaleY;
-                                    for (var g = 0; g < groupCount; g++) {
-                                        var offsetX = layout.offsetX0 + g * (layout.gridWidth + layout.spacing);
-                                        var groupAreaWidth = layout.squareWidth * cols + layout.squareSpacingX * (cols - 1);
-                                        var groupAreaHeight = layout.squareHeight * rows + layout.squareSpacingY * (rows - 1);
+                                    const rect = magicCanvas.getBoundingClientRect();
+                                    const layout = calcDiagramLayout(magicCanvas, groupCount, rows, cols);
+                                    const scaleX = magicCanvas.width / rect.width;
+                                    const scaleY = magicCanvas.height / rect.height;
+                                    const clickX = (e.clientX - rect.left) * scaleX;
+                                    const clickY = (e.clientY - rect.top) * scaleY;
+                                    for (let g = 0; g < groupCount; g++) {
+                                        const offsetX = layout.offsetX0 + g * (layout.gridWidth + layout.spacing);
+                                        const groupAreaWidth = layout.squareWidth * cols + layout.squareSpacingX * (cols - 1);
+                                        const groupAreaHeight = layout.squareHeight * rows + layout.squareSpacingY * (rows - 1);
                                         if (clickX >= offsetX && clickX <= offsetX + groupAreaWidth &&
                                             clickY >= layout.offsetY && clickY <= layout.offsetY + groupAreaHeight) {
-                                            var x = clickX - offsetX;
-                                            var y = clickY - layout.offsetY;
-                                            var col = Math.floor(x / (layout.squareWidth + layout.squareSpacingX));
-                                            var row = Math.floor(y / (layout.squareHeight + layout.squareSpacingY));
+                                            const x = clickX - offsetX;
+                                            const y = clickY - layout.offsetY;
+                                            const col = Math.floor(x / (layout.squareWidth + layout.squareSpacingX));
+                                            const row = Math.floor(y / (layout.squareHeight + layout.squareSpacingY));
                                             if (col >= cols || row >= rows) return;
-                                            var idx = row * cols + col;
+                                            const idx = row * cols + col;
                                             showMagicCandidates(idx + 1, g, idx);
                                             return;
                                         }
@@ -3003,8 +3004,8 @@ ${backupHtml}
                                 });
 
                                 document.getElementById('magic-confirm-btn').addEventListener('click', function () {
-                                    for (var g = 0; g < groupCount; g++) {
-                                        for (var i = 0; i < positionsPerGroup; i++) {
+                                    for (let g = 0; g < groupCount; g++) {
+                                        for (let i = 0; i < positionsPerGroup; i++) {
                                             diagram.groups[g][i] = magicDiagram.groups[g][i];
                                         }
                                     }
@@ -3016,7 +3017,7 @@ ${backupHtml}
                             }
                         })
                         .catch(function (error) {
-                            var closeBtn = '<button type="button" class="magic-dialog-close-btn" onclick="UI.closeDialogWithBackdrop(document.getElementById(\'magic-dialog\'))" aria-label="Tancar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>';
+                            const closeBtn = '<button type="button" class="magic-dialog-close-btn" onclick="UI.closeDialogWithBackdrop(document.getElementById(\'magic-dialog\'))" aria-label="Tancar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>';
                             magicContent.innerHTML = closeBtn + '<p class="magic-dialog-error">Error: ' + error + '</p>';
                         });
                 }
@@ -3069,7 +3070,7 @@ ${backupHtml}
                 if (e.target === dialog) {
                     selectedCellHighlight = null;
                     if (window.selectedDiagramId !== null) {
-                        var d = diagrams.find(function (di) { return di.id === window.selectedDiagramId; });
+                        const d = diagrams.find(function (di) { return di.id === window.selectedDiagramId; });
                         if (d) drawDiagram(d);
                     }
                     UI.closeDialogWithBackdrop(dialog);
@@ -3195,6 +3196,8 @@ ${backupHtml}
                     diagrams.forEach(function (diagram, index) {
                         const canvas = document.getElementById('diagram-canvas-' + diagram.id);
                         if (!canvas) return;
+
+                        drawDiagram(diagram, { hideAdminControls: true });
 
                         // Extract legend items (unique labels only)
                         const positions = diagram.positions || [];
@@ -3350,6 +3353,11 @@ ${backupHtml}
                             const file = new File([blob], fileName, { type: 'image/png' });
                             files.push(file);
                         }, 'image/png');
+                    });
+
+                    // Restore on-screen diagrams with admin controls
+                    diagrams.forEach(function (diagram) {
+                        drawDiagram(diagram);
                     });
 
                     // Wait for all files to be created

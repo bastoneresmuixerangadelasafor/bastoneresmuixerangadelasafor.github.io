@@ -9683,9 +9683,9 @@ body.dark-mode .theme-icon-dark {
   </div>
 </div>
 <script>
-  var audio = document.getElementById("audioPlayer");
-  var slider = document.getElementById("playbackRateSlider");
-  var label = document.getElementById("playbackRateValue");
+  const audio = document.getElementById("audioPlayer");
+  const slider = document.getElementById("playbackRateSlider");
+  const label = document.getElementById("playbackRateValue");
 
   audio.playbackRate = 1;
 
@@ -9706,7 +9706,7 @@ body.dark-mode .theme-icon-dark {
     
     <!-- Toast Notifications -->
 <div id="toast-container" class="toast-container"></div>
-<div>
+</div>
 
         
         <script>
@@ -10497,6 +10497,11 @@ body.dark-mode .theme-icon-dark {
     "showInPositions": true,
     "audios": [
       {
+        "fileId": "19u99PDq2Qol4ziqnEb4nEIMTbQKUTNE5",
+        "title": "Palmera boja - Per assajar",
+        "artist": "Nando"
+      },
+      {
         "fileId": "1NCrAQ8Xa_VNXiKqTA7WhlvglteFRXtSY",
         "title": "Palmera boja - A plaça",
         "artist": "-"
@@ -10629,7 +10634,7 @@ const DATA_VERSIONS = "DATA_VERSIONS"
 const FIREBASE_API_KEY = "AIzaSyBFFEKNVFY7rVRr2I6QbdoPKYZMSKARXZo"
 const FIREBASE_AUTH_DOMAIN = "muixeranga-bastoneres-test.firebaseapp.com"
 const FIREBASE_PROJECT_ID = "muixeranga-bastoneres-test"
-const FIREBASE_MESSAGING_SENDER_ID = 781217597112
+const FIREBASE_MESSAGING_SENDER_ID = "781217597112"
 const FIREBASE_APP_ID = "1:781217597112:web:8bd5fca7b37a3b4ff9964d"
 const FCM_VAPID_KEY = "BOD95S_AceAtX7xg_5t53h-xtTIMySMS-lUrg3eEf3Rkg_wDoTkMQrDO50xBz17Wd0W8eH1QY0XbYwRLuSBPPDk"
 const PUSH_TOKENS = "PUSH_TOKENS"
@@ -11209,7 +11214,7 @@ const API = new (class GAppsApiClient {
     })
     .catch((error) => {
       console.error("Auth check failed:", error);
-      APP.user = null;
+      APP.currentUser = null;
 
       initializeEventListeners();
       updateAuthUI();
@@ -12715,7 +12720,7 @@ function escapeJsString(text) {
 
     // Sort
     filtered.sort((a, b) => {
-      var valA, valB;
+      let valA, valB;
       switch (this.membersSortColumn) {
         case "active":
           valA = a.active !== false ? 1 : 0;
@@ -13527,10 +13532,10 @@ function escapeJsString(text) {
   }
 
   drawPositionDiagram(opts) {
-    var targetEl = document.getElementById(opts.canvasId);
+    const targetEl = document.getElementById(opts.canvasId);
     if (!targetEl) return;
-    var isImage = targetEl.tagName === "IMG";
-    var canvas;
+    const isImage = targetEl.tagName === "IMG";
+    let canvas;
     if (isImage) {
       canvas = document.createElement("canvas");
       canvas.width = parseInt(targetEl.getAttribute("width")) || 600;
@@ -13538,16 +13543,16 @@ function escapeJsString(text) {
     } else {
       canvas = targetEl;
     }
-    var ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    var rows = opts.rows || 2;
-    var cols = opts.cols || 2;
-    var positions = opts.positions || [];
-    var diagramColors = opts.diagramColors || { backgroundColor: {}, textColor: {} };
-    var highlightTags = opts.highlightTags || [];
-    var inProgressTags = opts.inProgressTags || [];
-    var pendingTags = opts.pendingTags || [];
-    var activeForm = opts.form || 'grid';
+    const rows = opts.rows || 2;
+    const cols = opts.cols || 2;
+    const positions = opts.positions || [];
+    const diagramColors = opts.diagramColors || { backgroundColor: {}, textColor: {} };
+    const highlightTags = opts.highlightTags || [];
+    const inProgressTags = opts.inProgressTags || [];
+    const pendingTags = opts.pendingTags || [];
+    const activeForm = opts.form || 'grid';
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -13557,48 +13562,48 @@ function escapeJsString(text) {
       return;
     }
 
-    var layout = calcDiagramLayout(canvas, 1, rows, cols);
-    var squareWidth = layout.squareWidth;
-    var squareHeight = layout.squareHeight;
-    var squareSpacingX = layout.squareSpacingX;
-    var squareSpacingY = layout.squareSpacingY;
-    var gridWidth = layout.gridWidth;
-    var gridHeight = layout.gridHeight;
-    var offsetX0 = layout.offsetX0;
-    var offsetY = layout.offsetY;
-    var scale = layout.scale;
+    const layout = calcDiagramLayout(canvas, 1, rows, cols);
+    const squareWidth = layout.squareWidth;
+    const squareHeight = layout.squareHeight;
+    const squareSpacingX = layout.squareSpacingX;
+    const squareSpacingY = layout.squareSpacingY;
+    const gridWidth = layout.gridWidth;
+    const gridHeight = layout.gridHeight;
+    const offsetX0 = layout.offsetX0;
+    const offsetY = layout.offsetY;
+    const scale = layout.scale;
 
-    var placaHeight = Math.max(25, 40 * scale);
-    var placaY = offsetY + gridHeight + 60 * scale;
-    var requiredHeight = placaY + placaHeight + 15;
+    const placaHeight = Math.max(25, 40 * scale);
+    const placaY = offsetY + gridHeight + 60 * scale;
+    const requiredHeight = placaY + placaHeight + 15;
     if (canvas.height !== Math.round(requiredHeight)) {
       canvas.height = Math.round(requiredHeight);
     }
 
-    var primaryColor = getComputedStyle(document.documentElement).getPropertyValue("--primary-color").trim() || "#6366f1";
+    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue("--primary-color").trim() || "#6366f1";
 
-    for (var row = 0; row < rows; row++) {
-      for (var col = 0; col < cols; col++) {
-        var order = row * cols + col + 1;
-        var pos = positions.find(function (p) { return p.order === order; });
-        var tag = pos ? pos.tag : "";
-        var label = pos && pos.positionType ? pos.positionType.label : "";
-        var isHighlighted = highlightTags.indexOf(tag) !== -1;
-        var isInProgress = inProgressTags.indexOf(tag) !== -1;
-        var isPending = pendingTags.indexOf(tag) !== -1;
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const order = row * cols + col + 1;
+        const pos = positions.find(function (p) { return p.order === order; });
+        const tag = pos ? pos.tag : "";
+        const label = pos && pos.positionType ? pos.positionType.label : "";
+        const isHighlighted = highlightTags.indexOf(tag) !== -1;
+        const isInProgress = inProgressTags.indexOf(tag) !== -1;
+        const isPending = pendingTags.indexOf(tag) !== -1;
 
-        var bgColor = "#808080";
+        let bgColor = "#808080";
         if (label && diagramColors.backgroundColor && diagramColors.backgroundColor[label]) {
           bgColor = diagramColors.backgroundColor[label];
         }
 
-        var textColor = "#FFFFFF";
+        let textColor = "#FFFFFF";
         if (label && diagramColors.textColor && diagramColors.textColor[label]) {
           textColor = diagramColors.textColor[label];
         }
 
-        var x = offsetX0 + col * (squareWidth + squareSpacingX);
-        var y = offsetY + row * (squareHeight + squareSpacingY);
+        const x = offsetX0 + col * (squareWidth + squareSpacingX);
+        const y = offsetY + row * (squareHeight + squareSpacingY);
 
         if (!isHighlighted && !isInProgress && !isPending) {
           ctx.globalAlpha = 0.3;
@@ -13618,16 +13623,16 @@ function escapeJsString(text) {
           ctx.lineWidth = Math.max(3, 6 * scale);
           ctx.strokeRect(x, y, squareWidth, squareHeight);
 
-          var cx = x + squareWidth / 2;
-          var cy = y + squareHeight / 2;
-          var r = Math.min(squareWidth, squareHeight) * 0.32;
+          const cx = x + squareWidth / 2;
+          const cy = y + squareHeight / 2;
+          const r = Math.min(squareWidth, squareHeight) * 0.32;
 
           ctx.save();
           ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
           ctx.shadowBlur = 6 * scale;
           ctx.shadowOffsetY = 2 * scale;
 
-          var outerRing = ctx.createLinearGradient(cx, cy - r, cx, cy + r);
+          const outerRing = ctx.createLinearGradient(cx, cy - r, cx, cy + r);
           outerRing.addColorStop(0, "#C9A84C");
           outerRing.addColorStop(0.5, "#F5D77A");
           outerRing.addColorStop(1, "#A67C2E");
@@ -13638,8 +13643,8 @@ function escapeJsString(text) {
 
           ctx.shadowColor = "transparent";
 
-          var innerR = r * 0.78;
-          var innerGrad = ctx.createLinearGradient(cx, cy - innerR, cx, cy + innerR);
+          const innerR = r * 0.78;
+          const innerGrad = ctx.createLinearGradient(cx, cy - innerR, cx, cy + innerR);
           innerGrad.addColorStop(0, "#FFE8A0");
           innerGrad.addColorStop(0.35, "#FFD54F");
           innerGrad.addColorStop(0.65, "#FFCA28");
@@ -13655,7 +13660,7 @@ function escapeJsString(text) {
           ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
           ctx.stroke();
 
-          var ts = r * 0.48;
+          const ts = r * 0.48;
           ctx.strokeStyle = "#6D4C00";
           ctx.lineWidth = Math.max(2.5, 4.5 * scale);
           ctx.lineCap = "round";
@@ -13669,8 +13674,8 @@ function escapeJsString(text) {
           ctx.restore();
         }
         if (isInProgress && !isPending) {
-          var iconS = Math.min(squareWidth, squareHeight) * 0.6;
-          var fontSize = Math.round(iconS);
+          const iconS = Math.min(squareWidth, squareHeight) * 0.6;
+          const fontSize = Math.round(iconS);
 
           ctx.save();
           ctx.font = fontSize + "px sans-serif";
@@ -13681,9 +13686,9 @@ function escapeJsString(text) {
         }
 
         if (isPending) {
-          var pendingCx = x + squareWidth / 2;
-          var pendingCy = y + squareHeight / 2;
-          var pendingIconSize = Math.round(Math.min(squareWidth, squareHeight) * 0.58);
+          const pendingCx = x + squareWidth / 2;
+          const pendingCy = y + squareHeight / 2;
+          const pendingIconSize = Math.round(Math.min(squareWidth, squareHeight) * 0.58);
 
           ctx.save();
           ctx.font = pendingIconSize + "px sans-serif";
@@ -13701,7 +13706,7 @@ function escapeJsString(text) {
     ctx.lineWidth = Math.max(1, 2 * scale);
     ctx.fillRect(offsetX0, placaY, gridWidth, placaHeight);
     ctx.strokeRect(offsetX0, placaY, gridWidth, placaHeight);
-    var placaFontSize = Math.max(12, Math.round(20 * scale));
+    const placaFontSize = Math.max(12, Math.round(20 * scale));
     ctx.fillStyle = "#000";
     ctx.font = "bold " + placaFontSize + "px sans-serif";
     ctx.textAlign = "center";
@@ -13729,7 +13734,7 @@ function escapeJsString(text) {
       return;
     }
 
-    var titleEl = document.querySelector("#view-member-positions .page-header h1");
+    const titleEl = document.querySelector("#view-member-positions .page-header h1");
     if (titleEl) {
       titleEl.textContent = alias === APP.currentUser?.alias ? "Les meues posicions" : "Posicions de " + alias;
     }
@@ -13738,44 +13743,44 @@ function escapeJsString(text) {
       .then(function (positions) {
         if (loading) loading.style.display = "none";
 
-        var positionCardId = 0;
+        let positionCardId = 0;
 
         DANCES.filter(function (dance) { return dance.showInPositions === true; }).forEach(function (dance) {
           try {
-            var danceName = dance.name;
-            var memberEntries = positions[danceName] || {};
-            var dancePositions = Array.isArray(dance.positions) ? dance.positions : [];
-            var memberTags = dancePositions.filter(function (pos) {
+            const danceName = dance.name;
+            const memberEntries = positions[danceName] || {};
+            const dancePositions = Array.isArray(dance.positions) ? dance.positions : [];
+            const memberTags = dancePositions.filter(function (pos) {
               return pos && pos.order != null && String(memberEntries[pos.order]).toUpperCase() === MEMBERS.POSITION_OK;
             }).map(function (pos) { return pos.tag; });
-            var inProgressTags = dancePositions.filter(function (pos) {
+            const inProgressTags = dancePositions.filter(function (pos) {
               return pos && pos.order != null && String(memberEntries[pos.order]).toUpperCase() === MEMBERS.POSITION_IN_PROGRESS;
             }).map(function (pos) { return pos.tag; });
-            var diagramColors = dance.diagram || { backgroundColor: {}, textColor: {} };
-            var rows = dance.structure ? dance.structure.rows : 2;
-            var cols = dance.structure ? dance.structure.columns : 2;
+            const diagramColors = dance.diagram || { backgroundColor: {}, textColor: {} };
+            const rows = dance.structure ? dance.structure.rows : 2;
+            const cols = dance.structure ? dance.structure.columns : 2;
 
-            var cardId = positionCardId++;
-            var canvasId = "position-canvas-" + cardId;
+            const cardId = positionCardId++;
+            const canvasId = "position-canvas-" + cardId;
 
-            var legendHtml = "";
-            var seenLabels = {};
+            let legendHtml = "";
+            const seenLabels = {};
             dancePositions.forEach(function (pos) {
               if (!pos || !pos.positionType || !pos.positionType.label) return;
-              var positionLabel = pos.positionType.label;
+              const positionLabel = pos.positionType.label;
               if (seenLabels[positionLabel]) return;
               seenLabels[positionLabel] = true;
-              var color = (diagramColors.backgroundColor && diagramColors.backgroundColor[positionLabel]) || "#808080";
+              const color = (diagramColors.backgroundColor && diagramColors.backgroundColor[positionLabel]) || "#808080";
               legendHtml += '<div class="diagram-legend-item">' +
                 '<span class="legend-color-box" style="background: ' + color + ';"></span>' +
                 '<span>' + positionLabel + '</span>' +
                 '</div>';
             });
-            var showLegend = Object.keys(seenLabels).length > 1;
+            const showLegend = Object.keys(seenLabels).length > 1;
 
-            var forms = dance.structure && dance.structure.forms ? dance.structure.forms : ['grid'];
+            const forms = dance.structure && dance.structure.forms ? dance.structure.forms : ['grid'];
 
-            var card = document.createElement("div");
+            const card = document.createElement("div");
             card.className = "position-card";
             card.innerHTML =
               '<div class="diagram-header">' +
@@ -13794,7 +13799,7 @@ function escapeJsString(text) {
 
             list.appendChild(card);
 
-            var positionDrawOpts = {
+            const positionDrawOpts = {
               canvasId: canvasId,
               rows: rows,
               cols: cols,
@@ -13806,10 +13811,10 @@ function escapeJsString(text) {
             };
             MEMBERS.drawPositionDiagram(positionDrawOpts);
 
-            var renderedEl = document.getElementById(canvasId);
+            let renderedEl = document.getElementById(canvasId);
             if (renderedEl && renderedEl.tagName === "CANVAS") {
               try {
-                var img = new Image();
+                const img = new Image();
                 img.src = renderedEl.toDataURL();
                 img.id = canvasId;
                 img.setAttribute("width", renderedEl.width);
@@ -13853,29 +13858,29 @@ function escapeJsString(text) {
   }
 
   handlePositionClick(event, canvas, data) {
-    var dialog = document.getElementById("position-value-dialog");
+    const dialog = document.getElementById("position-value-dialog");
     
     // Don't handle click if dialog is currently open
     if (dialog && dialog.open) {
       return;
     }
     
-    var rect = canvas.getBoundingClientRect();
-    var origW = parseInt(canvas.getAttribute("width")) || canvas.width;
-    var origH = parseInt(canvas.getAttribute("height")) || canvas.height;
-    var scaleX = rect.width ? origW / rect.width : 1;
-    var scaleY = rect.height ? origH / rect.height : 1;
-    var x = (event.clientX - rect.left) * scaleX;
-    var y = (event.clientY - rect.top) * scaleY;
+    const rect = canvas.getBoundingClientRect();
+    const origW = parseInt(canvas.getAttribute("width")) || canvas.width;
+    const origH = parseInt(canvas.getAttribute("height")) || canvas.height;
+    const scaleX = rect.width ? origW / rect.width : 1;
+    const scaleY = rect.height ? origH / rect.height : 1;
+    const x = (event.clientX - rect.left) * scaleX;
+    const y = (event.clientY - rect.top) * scaleY;
 
-    var clickedOrder = this.getClickedPositionOrder(x, y, { width: origW, height: origH }, data.rows, data.cols, data.form);
+    const clickedOrder = this.getClickedPositionOrder(x, y, { width: origW, height: origH }, data.rows, data.cols, data.form);
     if (clickedOrder === null) return;
 
     this.showPositionValueDialog(canvas, data, clickedOrder);
   }
 
   showPositionValueDialog(canvas, data, clickedOrder) {
-    var dialog = document.getElementById("position-value-dialog");
+    const dialog = document.getElementById("position-value-dialog");
     if (!dialog) return;
     
     // If dialog is already open, close it first and wait
@@ -13887,28 +13892,28 @@ function escapeJsString(text) {
       return;
     }
 
-    var optionButtons = dialog.querySelectorAll(".position-value-option");
+    let optionButtons = dialog.querySelectorAll(".position-value-option");
     
     // Remove any existing listeners by cloning and replacing buttons
     optionButtons.forEach(function(btn) {
-      var newBtn = btn.cloneNode(true);
+      const newBtn = btn.cloneNode(true);
       btn.parentNode.replaceChild(newBtn, btn);
     });
     
     // Get the new buttons after cloning
     optionButtons = dialog.querySelectorAll(".position-value-option");
 
-    var currentValue = String(data.memberEntries[clickedOrder] || "").toUpperCase();
+    const currentValue = String(data.memberEntries[clickedOrder] || "").toUpperCase();
 
     optionButtons.forEach(function(btn) {
-      var optionValue = String(btn.getAttribute("data-value") || "").toUpperCase();
-      var isSelected = optionValue === currentValue;
+      const optionValue = String(btn.getAttribute("data-value") || "").toUpperCase();
+      const isSelected = optionValue === currentValue;
       btn.classList.toggle("is-selected", isSelected);
       btn.setAttribute("aria-pressed", isSelected ? "true" : "false");
     });
     
-    var clickHandler = function(event) {
-      var selectedValue = this.getAttribute("data-value");
+    const clickHandler = function(event) {
+      const selectedValue = this.getAttribute("data-value");
       UI.closeDialogWithBackdrop(dialog);
       
       MEMBERS.updatePositionValue(canvas, data, clickedOrder, selectedValue);
@@ -13922,17 +13927,17 @@ function escapeJsString(text) {
   }
 
   updatePositionValue(canvas, data, clickedOrder, newValue) {
-    var clickedPosition = data.positions.find(function (pos) {
+    const clickedPosition = data.positions.find(function (pos) {
       return pos.order === clickedOrder;
     });
-    var pendingTags = clickedPosition && clickedPosition.tag ? [clickedPosition.tag] : [];
+    const pendingTags = clickedPosition && clickedPosition.tag ? [clickedPosition.tag] : [];
 
     function redrawPosition(pending) {
-      var memberTags = data.positions.filter(function (pos) {
+      const memberTags = data.positions.filter(function (pos) {
         return String(data.memberEntries[pos.order]).toUpperCase() === MEMBERS.POSITION_OK;
       }).map(function (pos) { return pos.tag; });
 
-      var inProgressTags = data.positions.filter(function (pos) {
+      const inProgressTags = data.positions.filter(function (pos) {
         return String(data.memberEntries[pos.order]).toUpperCase() === MEMBERS.POSITION_IN_PROGRESS;
       }).map(function (pos) { return pos.tag; });
 
@@ -14436,16 +14441,16 @@ function escapeJsString(text) {
   }
 
   getClickedPositionOrderRadial(x, y, canvas, rows, cols) {
-    var rl = this.calcRadialPositionLayout(canvas, rows, cols);
+    const rl = this.calcRadialPositionLayout(canvas, rows, cols);
 
-    for (var row = 0; row < rows; row++) {
-      for (var col = 0; col < cols; col++) {
-        var order = row * cols + col + 1;
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const order = row * cols + col + 1;
 
-        var cellCenterX = rl.centerX;
-        var cellCenterY = rl.centerY - rl.coupleHeight / 2 + row * (rl.cellHeight + rl.coupleGap) + rl.cellHeight / 2;
-        var cellX = cellCenterX - rl.cellWidth / 2;
-        var cellY = cellCenterY - rl.cellHeight / 2;
+        const cellCenterX = rl.centerX;
+        const cellCenterY = rl.centerY - rl.coupleHeight / 2 + row * (rl.cellHeight + rl.coupleGap) + rl.cellHeight / 2;
+        const cellX = cellCenterX - rl.cellWidth / 2;
+        const cellY = cellCenterY - rl.cellHeight / 2;
 
         if (x >= cellX && x <= cellX + rl.cellWidth && y >= cellY && y <= cellY + rl.cellHeight) {
           return order;
@@ -14457,20 +14462,20 @@ function escapeJsString(text) {
   }
 
   getClickedPositionOrderGrid(x, y, canvas, rows, cols) {
-    var layout = calcDiagramLayout(canvas, 1, rows, cols);
-    var squareWidth = layout.squareWidth;
-    var squareHeight = layout.squareHeight;
-    var squareSpacingX = layout.squareSpacingX;
-    var squareSpacingY = layout.squareSpacingY;
-    var offsetX0 = layout.offsetX0;
-    var offsetY = layout.offsetY;
+    const layout = calcDiagramLayout(canvas, 1, rows, cols);
+    const squareWidth = layout.squareWidth;
+    const squareHeight = layout.squareHeight;
+    const squareSpacingX = layout.squareSpacingX;
+    const squareSpacingY = layout.squareSpacingY;
+    const offsetX0 = layout.offsetX0;
+    const offsetY = layout.offsetY;
 
-    for (var row = 0; row < rows; row++) {
-      for (var col = 0; col < cols; col++) {
-        var order = row * cols + col + 1;
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const order = row * cols + col + 1;
 
-        var cellX = offsetX0 + col * (squareWidth + squareSpacingX);
-        var cellY = offsetY + row * (squareHeight + squareSpacingY);
+        const cellX = offsetX0 + col * (squareWidth + squareSpacingX);
+        const cellY = offsetY + row * (squareHeight + squareSpacingY);
 
         if (x >= cellX && x <= cellX + squareWidth && y >= cellY && y <= cellY + squareHeight) {
           return order;
@@ -14483,36 +14488,36 @@ function escapeJsString(text) {
 
   drawRadialPositionDiagram(ctx, canvas, rows, cols, positions, diagramColors, highlightTags, inProgressTags, pendingTags) {
     pendingTags = pendingTags || [];
-    var rl = this.calcRadialPositionLayout(canvas, rows, cols);
+    const rl = this.calcRadialPositionLayout(canvas, rows, cols);
     if (canvas.height !== Math.round(rl.requiredHeight)) {
       canvas.height = Math.round(rl.requiredHeight);
     }
 
-    var primaryColor = getComputedStyle(document.documentElement).getPropertyValue("--primary-color").trim() || "#6366f1";
+    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue("--primary-color").trim() || "#6366f1";
 
-    for (var row = 0; row < rows; row++) {
-      for (var col = 0; col < cols; col++) {
-        var order = row * cols + col + 1;
-        var pos = positions.find(function (p) { return p.order === order; });
-        var tag = pos ? pos.tag : "";
-        var label = pos && pos.positionType ? pos.positionType.label : "";
-        var isHighlighted = highlightTags.indexOf(tag) !== -1;
-        var isInProgress = inProgressTags.indexOf(tag) !== -1;
-        var isPending = pendingTags.indexOf(tag) !== -1;
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const order = row * cols + col + 1;
+        const pos = positions.find(function (p) { return p.order === order; });
+        const tag = pos ? pos.tag : "";
+        const label = pos && pos.positionType ? pos.positionType.label : "";
+        const isHighlighted = highlightTags.indexOf(tag) !== -1;
+        const isInProgress = inProgressTags.indexOf(tag) !== -1;
+        const isPending = pendingTags.indexOf(tag) !== -1;
 
-        var bgColor = "#808080";
+        let bgColor = "#808080";
         if (label && diagramColors.backgroundColor && diagramColors.backgroundColor[label]) {
           bgColor = diagramColors.backgroundColor[label];
         }
-        var textColor = "#FFFFFF";
+        let textColor = "#FFFFFF";
         if (label && diagramColors.textColor && diagramColors.textColor[label]) {
           textColor = diagramColors.textColor[label];
         }
 
-        var cellCenterX = rl.centerX;
-        var cellCenterY = rl.centerY - rl.coupleHeight / 2 + row * (rl.cellHeight + rl.coupleGap) + rl.cellHeight / 2;
-        var x = cellCenterX - rl.cellWidth / 2;
-        var y = cellCenterY - rl.cellHeight / 2;
+        const cellCenterX = rl.centerX;
+        const cellCenterY = rl.centerY - rl.coupleHeight / 2 + row * (rl.cellHeight + rl.coupleGap) + rl.cellHeight / 2;
+        const x = cellCenterX - rl.cellWidth / 2;
+        const y = cellCenterY - rl.cellHeight / 2;
 
         if (!isHighlighted && !isInProgress && !isPending) {
           ctx.globalAlpha = 0.3;
@@ -14531,16 +14536,16 @@ function escapeJsString(text) {
           ctx.lineWidth = Math.max(3, 6 * rl.scale);
           ctx.strokeRect(x, y, rl.cellWidth, rl.cellHeight);
 
-          var cx = x + rl.cellWidth / 2;
-          var cy = y + rl.cellHeight / 2;
-          var r = Math.min(rl.cellWidth, rl.cellHeight) * 0.32;
+          const cx = x + rl.cellWidth / 2;
+          const cy = y + rl.cellHeight / 2;
+          const r = Math.min(rl.cellWidth, rl.cellHeight) * 0.32;
 
           ctx.save();
           ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
           ctx.shadowBlur = 6 * rl.scale;
           ctx.shadowOffsetY = 2 * rl.scale;
 
-          var outerRing = ctx.createLinearGradient(cx, cy - r, cx, cy + r);
+          const outerRing = ctx.createLinearGradient(cx, cy - r, cx, cy + r);
           outerRing.addColorStop(0, "#C9A84C");
           outerRing.addColorStop(0.5, "#F5D77A");
           outerRing.addColorStop(1, "#A67C2E");
@@ -14551,8 +14556,8 @@ function escapeJsString(text) {
 
           ctx.shadowColor = "transparent";
 
-          var innerR = r * 0.78;
-          var innerGrad = ctx.createLinearGradient(cx, cy - innerR, cx, cy + innerR);
+          const innerR = r * 0.78;
+          const innerGrad = ctx.createLinearGradient(cx, cy - innerR, cx, cy + innerR);
           innerGrad.addColorStop(0, "#FFE8A0");
           innerGrad.addColorStop(0.35, "#FFD54F");
           innerGrad.addColorStop(0.65, "#FFCA28");
@@ -14568,7 +14573,7 @@ function escapeJsString(text) {
           ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
           ctx.stroke();
 
-          var ts = r * 0.48;
+          const ts = r * 0.48;
           ctx.strokeStyle = "#6D4C00";
           ctx.lineWidth = Math.max(2.5, 4.5 * rl.scale);
           ctx.lineCap = "round";
@@ -14582,8 +14587,8 @@ function escapeJsString(text) {
           ctx.restore();
         }
         if (isInProgress && !isPending) {
-          var iconS = Math.min(rl.cellWidth, rl.cellHeight) * 0.6;
-          var fontSize = Math.round(iconS);
+          const iconS = Math.min(rl.cellWidth, rl.cellHeight) * 0.6;
+          const fontSize = Math.round(iconS);
           ctx.save();
           ctx.font = fontSize + "px sans-serif";
           ctx.textAlign = "center";
@@ -14593,9 +14598,9 @@ function escapeJsString(text) {
         }
 
         if (isPending) {
-          var pendingCx = x + rl.cellWidth / 2;
-          var pendingCy = y + rl.cellHeight / 2;
-          var pendingIconSize = Math.round(Math.min(rl.cellWidth, rl.cellHeight) * 0.58);
+          const pendingCx = x + rl.cellWidth / 2;
+          const pendingCy = y + rl.cellHeight / 2;
+          const pendingIconSize = Math.round(Math.min(rl.cellWidth, rl.cellHeight) * 0.58);
 
           ctx.save();
           ctx.font = pendingIconSize + "px sans-serif";
@@ -14613,7 +14618,7 @@ function escapeJsString(text) {
     ctx.lineWidth = Math.max(1, 2 * rl.scale);
     ctx.fillRect(rl.placaX, rl.placaY, rl.placaWidth, rl.placaHeight);
     ctx.strokeRect(rl.placaX, rl.placaY, rl.placaWidth, rl.placaHeight);
-    var placaFontSize = Math.max(12, Math.round(20 * rl.scale));
+    const placaFontSize = Math.max(12, Math.round(20 * rl.scale));
     ctx.fillStyle = "#000";
     ctx.font = "bold " + placaFontSize + "px sans-serif";
     ctx.textAlign = "center";
@@ -14623,23 +14628,23 @@ function escapeJsString(text) {
   }
 
   calcRadialPositionLayout(canvas, rows, cols) {
-    var baseCellWidth = 100;
-    var baseCellHeight = 50;
-    var baseCoupleGap = 8;
-    var baseCoupleHeight = baseCellHeight * rows + baseCoupleGap * (rows - 1);
-    var availableWidth = canvas.width - 40;
-    var scale = Math.min(1, availableWidth / (baseCellWidth + 40));
-    var cellWidth = baseCellWidth * scale;
-    var cellHeight = baseCellHeight * scale;
-    var coupleGap = baseCoupleGap * scale;
-    var coupleHeight = cellHeight * rows + coupleGap * (rows - 1);
-    var centerX = canvas.width / 2;
-    var centerY = 20 + coupleHeight / 2;
-    var placaHeight = Math.max(25, 40 * scale);
-    var placaY = centerY + coupleHeight / 2 + 60 * scale;
-    var placaWidth = cellWidth;
-    var placaX = centerX - placaWidth / 2;
-    var requiredHeight = placaY + placaHeight + 15;
+    const baseCellWidth = 100;
+    const baseCellHeight = 50;
+    const baseCoupleGap = 8;
+    const baseCoupleHeight = baseCellHeight * rows + baseCoupleGap * (rows - 1);
+    const availableWidth = canvas.width - 40;
+    const scale = Math.min(1, availableWidth / (baseCellWidth + 40));
+    const cellWidth = baseCellWidth * scale;
+    const cellHeight = baseCellHeight * scale;
+    const coupleGap = baseCoupleGap * scale;
+    const coupleHeight = cellHeight * rows + coupleGap * (rows - 1);
+    const centerX = canvas.width / 2;
+    const centerY = 20 + coupleHeight / 2;
+    const placaHeight = Math.max(25, 40 * scale);
+    const placaY = centerY + coupleHeight / 2 + 60 * scale;
+    const placaWidth = cellWidth;
+    const placaX = centerX - placaWidth / 2;
+    const requiredHeight = placaY + placaHeight + 15;
     return {
       cellWidth: cellWidth, cellHeight: cellHeight, coupleGap: coupleGap, coupleHeight: coupleHeight,
       centerX: centerX, centerY: centerY,
@@ -15272,6 +15277,24 @@ function escapeJsString(text) {
       const clickX = (e.clientX - rect.left) * scaleX;
       const clickY = (e.clientY - rect.top) * scaleY;
 
+      if (diagram._groupRemoveAreas) {
+        for (let ai = 0; ai < diagram._groupRemoveAreas.length; ai++) {
+          const area = diagram._groupRemoveAreas[ai];
+          const dx = clickX - area.cx;
+          const dy = clickY - area.cy;
+          if (Math.sqrt(dx * dx + dy * dy) <= area.r + 4) {
+            const groupLetter = String.fromCharCode(65 + area.g);
+            const blockName = (diagram.diagram && diagram.diagram.blockName) || 'grup';
+            if (confirm('Segur que vols eliminar ' + blockName + ' ' + groupLetter + '?')) {
+              diagram.groups.splice(area.g, 1);
+              setDiagramsDirty(true);
+              drawDiagram(diagram);
+            }
+            return;
+          }
+        }
+      }
+
       const forms = diagram.forms || ['grid'];
       const activeForm = diagram.activeForm || forms[0];
       if (activeForm === 'radial') {
@@ -15537,7 +15560,7 @@ function escapeJsString(text) {
     attendanceSection.style.display = "";
     
     const isPastEvent = eventData.date && new Date(eventData.date) < new Date();
-    const members = (MEMBERS.membersData || []).filter(m => m.active);
+    const members = (MEMBERS.membersData || []).filter(m => isPastEvent || m.active);
     
     if (!members || members.length === 0) {
       attendanceList.innerHTML = '<div class="event-member-attendance-loading">Sense membres disponibles</div>';
@@ -15616,7 +15639,7 @@ function escapeJsString(text) {
     API.confirmEventMemberAttendance({ eventId, memberAlias, attending })
       .then(function(response) {
         customCheckbox.classList.remove('loading', 'empty', 'attending', 'rejected');
-        customCheckbox.classList.add(attending ? 'attending' : 'empty');
+        customCheckbox.classList.add(attending ? 'attending' : 'rejected');
         
         if (APP.currentEventData) {
           const attendeesList = APP.currentEventData.attendees || [];
@@ -15867,13 +15890,13 @@ function escapeJsString(text) {
       });
   }
 })();
-        var diagrams = [];
-        var diagramIdCounter = 0;
-        var diagramsIsDirty = false;
-        var isEventEditable = true;
-        var isEventManuallyUnlocked = false;
-        var isTrainingEditable = true;
-        var isTrainingManuallyUnlocked = false;
+        let diagrams = [];
+        let diagramIdCounter = 0;
+        let diagramsIsDirty = false;
+        let isEventEditable = true;
+        let isEventManuallyUnlocked = false;
+        let isTrainingEditable = true;
+        let isTrainingManuallyUnlocked = false;
 
         
 
@@ -16160,7 +16183,26 @@ function escapeJsString(text) {
             };
         }
 
-        function drawRadialDiagram(ctx, canvas, groups, rows, cols, positions, diagramColors, groupCount) {
+        function drawGroupRemoveButton(ctx, cx, cy, radius, scale) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = '#dc3545';
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = Math.max(1.5, 2 * scale);
+            ctx.lineCap = 'round';
+            const arm = radius * 0.45;
+            ctx.beginPath();
+            ctx.moveTo(cx - arm, cy - arm);
+            ctx.lineTo(cx + arm, cy + arm);
+            ctx.moveTo(cx + arm, cy - arm);
+            ctx.lineTo(cx - arm, cy + arm);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawRadialDiagram(ctx, canvas, groups, rows, cols, positions, diagramColors, groupCount, removeAreas, isAdminDraw) {
             const rl = calcRadialDiagramLayout(canvas, groupCount, rows, cols);
             if (canvas.height !== Math.round(rl.requiredHeight)) {
                 canvas.height = Math.round(rl.requiredHeight);
@@ -16214,6 +16256,14 @@ function escapeJsString(text) {
                     const blockName = diagramColors.blockName || '';
                     const groupLabel = blockName ? blockName + ' ' + groupLetter : groupLetter;
                     ctx.fillText(groupLabel, labelX, labelY);
+                    if (isAdminDraw && removeAreas) {
+                        const labelTextWidth = ctx.measureText(groupLabel).width;
+                        const removeBtnRadius = Math.max(8, Math.round(10 * rl.scale));
+                        const removeBtnCX = labelX + labelTextWidth / 2 + removeBtnRadius + 6 * rl.scale;
+                        const removeBtnCY = labelY;
+                        drawGroupRemoveButton(ctx, removeBtnCX, removeBtnCY, removeBtnRadius, rl.scale);
+                        removeAreas.push({ g: g, cx: removeBtnCX, cy: removeBtnCY, r: removeBtnRadius });
+                    }
                     ctx.restore();
                 }
 
@@ -16225,11 +16275,13 @@ function escapeJsString(text) {
                         const x = cellCenterX - rl.cellWidth / 2;
                         const y = cellCenterY - rl.cellHeight / 2;
 
-                        // Check if member is not attending
+                        // Check if member is not attending or not yet confirmed
                         const rejections = (APP.currentEventData && APP.currentEventData.rejections) || [];
+                        const attendees = (APP.currentEventData && APP.currentEventData.attendees) || [];
                         const isRejected = group[i] && rejections.includes(group[i]);
+                        const isNotConfirmed = group[i] && !isRejected && !attendees.includes(group[i]);
 
-                        ctx.fillStyle = isRejected ? '#dc3545' : getCellBgColor(row, col);
+                        ctx.fillStyle = isRejected ? '#dc3545' : (isNotConfirmed ? '#f0ad4e' : getCellBgColor(row, col));
                         ctx.fillRect(x, y, rl.cellWidth, rl.cellHeight);
                         ctx.strokeStyle = '#fff';
                         ctx.lineWidth = Math.max(2, 4 * rl.scale);
@@ -16243,12 +16295,12 @@ function escapeJsString(text) {
                         }
 
                         if (group[i]) {
-                            ctx.fillStyle = isRejected ? '#ffffff' : getCellTxtColor(row, col);
+                            ctx.fillStyle = (isRejected || isNotConfirmed) ? '#ffffff' : getCellTxtColor(row, col);
                             const nameFontSize = Math.max(10, Math.round(18 * rl.scale));
                             ctx.font = 'bold ' + nameFontSize + 'px sans-serif';
                             ctx.textAlign = 'center';
                             ctx.textBaseline = 'middle';
-                            const displayName = isRejected ? '⚠️ ' + group[i] : group[i];
+                            const displayName = isRejected ? '⚠️ ' + group[i] : (isNotConfirmed ? '❓ ' + group[i] : group[i]);
                             ctx.fillText(displayName, cellCenterX, cellCenterY);
                         }
                     }
@@ -16270,10 +16322,11 @@ function escapeJsString(text) {
             ctx.restore();
         }
 
-        var selectedCellHighlight = null;
+        let selectedCellHighlight = null;
 
         // Draw a specific diagram
-        function drawDiagram(diagram) {
+        function drawDiagram(diagram, options) {
+            const hideAdminControls = !!(options && options.hideAdminControls);
             const canvas = document.getElementById('diagram-canvas-' + diagram.id);
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
@@ -16284,10 +16337,12 @@ function escapeJsString(text) {
             const diagramColors = diagram.diagram || { backgroundColor: {}, textColor: {} };
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const groupCount = groups.length;
+            const isCurrentUserAdminDraw = !hideAdminControls && ((APP && APP.currentUser && APP.currentUser.roles) || []).includes('ADMIN');
+            diagram._groupRemoveAreas = [];
             const forms = diagram.forms || ['grid'];
             const activeForm = diagram.activeForm || forms[0];
             if (activeForm === 'radial') {
-                drawRadialDiagram(ctx, canvas, groups, rows, cols, positions, diagramColors, groupCount);
+                drawRadialDiagram(ctx, canvas, groups, rows, cols, positions, diagramColors, groupCount, diagram._groupRemoveAreas, isCurrentUserAdminDraw);
                 return;
             }
 
@@ -16337,6 +16392,14 @@ function escapeJsString(text) {
                     const blockName = diagramColors.blockName || '';
                     const groupLabel = blockName ? blockName + ' ' + groupLetter : groupLetter;
                     ctx.fillText(groupLabel, offsetX + gridWidth / 2, offsetY - 10 * scale);
+                    if (isCurrentUserAdminDraw) {
+                        const labelTextWidth = ctx.measureText(groupLabel).width;
+                        const removeBtnRadius = Math.max(8, Math.round(11 * scale));
+                        const removeBtnCX = offsetX + gridWidth / 2 + labelTextWidth / 2 + removeBtnRadius + 6 * scale;
+                        const removeBtnCY = offsetY - 10 * scale - groupLabelFontSize * 0.55;
+                        drawGroupRemoveButton(ctx, removeBtnCX, removeBtnCY, removeBtnRadius, scale);
+                        diagram._groupRemoveAreas.push({ g: g, cx: removeBtnCX, cy: removeBtnCY, r: removeBtnRadius });
+                    }
                     ctx.restore();
                 }
                 for (let row = 0; row < rows; row++) {
@@ -16345,11 +16408,13 @@ function escapeJsString(text) {
                         const x = offsetX + col * (squareWidth + squareSpacingX);
                         const y = offsetY + row * (squareHeight + squareSpacingY);
                         
-                        // Check if member is not attending
+                        // Check if member is not attending or not yet confirmed
                         const rejections = (APP.currentEventData && APP.currentEventData.rejections) || [];
+                        const attendees = (APP.currentEventData && APP.currentEventData.attendees) || [];
                         const isRejected = group[i] && rejections.includes(group[i]);
+                        const isNotConfirmed = group[i] && !isRejected && !attendees.includes(group[i]);
                         
-                        ctx.fillStyle = isRejected ? '#dc3545' : getCellBackgroundColor(row, col);
+                        ctx.fillStyle = isRejected ? '#dc3545' : (isNotConfirmed ? '#f0ad4e' : getCellBackgroundColor(row, col));
                         ctx.fillRect(x, y, squareWidth, squareHeight);
                         ctx.strokeStyle = '#fff';
                         ctx.lineWidth = Math.max(2, 4 * scale);
@@ -16370,19 +16435,19 @@ function escapeJsString(text) {
                         }
 
                         if (selectedCellHighlight && selectedCellHighlight.diagramId === diagram.id && selectedCellHighlight.groupIdx === g && selectedCellHighlight.cellIdx === i) {
-                            var hlColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+                            const hlColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
                             ctx.strokeStyle = hlColor || '#6366f1';
                             ctx.lineWidth = Math.max(4, 8 * scale);
                             ctx.strokeRect(x, y, squareWidth, squareHeight);
                         }
 
                         if (group[i]) {
-                            ctx.fillStyle = isRejected ? '#ffffff' : getCellTextColor(row, col);
+                            ctx.fillStyle = (isRejected || isNotConfirmed) ? '#ffffff' : getCellTextColor(row, col);
                             const nameFontSize = Math.max(10, Math.round(20 * scale));
                             ctx.font = 'bold ' + nameFontSize + 'px sans-serif';
                             ctx.textAlign = 'center';
                             ctx.textBaseline = 'middle';
-                            const displayName = isRejected ? '⚠️ ' + group[i] : group[i];
+                            const displayName = isRejected ? '⚠️ ' + group[i] : (isNotConfirmed ? '❓ ' + group[i] : group[i]);
                             ctx.fillText(displayName, x + squareWidth / 2, y + squareHeight / 2);
                         }
                     }
@@ -16479,19 +16544,19 @@ function escapeJsString(text) {
         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
         </svg>
     </button>
+    <input type="text" class="diagram-description-input" id="desc-input-${diagram.id}" value="${description}" style="display: none;" placeholder="Descripció...">
     <button type="button" class="magic-generated-btn" data-id="${diagram.id}" title="Generar màgicament">
         <svg width="24" height="24" viewBox="0 0 48 48" fill="none"><path fill="#32bea6" d="M24 47.998c13.255 0 24-10.745 24-24C48 10.746 37.255 0 24 0S0 10.745 0 23.999s10.745 23.999 24 23.999"/><path fill="#3e3e3f" d="m10.91 34.26l3.702 3.702l15.427-15.427l-3.702-3.702z"/><path fill="#e2e4e5" d="m26.337 18.833l3.703 3.702l5.554-5.554l-3.703-3.702z"/><path fill="#fff" d="m26.337 18.832l1.851 1.851l5.554-5.554l-1.851-1.85z"/><path fill="#5b5c5f" d="m28.188 20.684l-1.851-1.852L10.909 34.26l1.851 1.851z"/><path fill="#fbe158" d="M18.345 14.55a.02.02 0 0 0-.018.02v.04q0 .011.012.014c1.371.187 2.38 1.194 2.569 2.564a.02.02 0 0 0 .02.017h.04a.014.014 0 0 0 .014-.011c.186-1.372 1.193-2.38 2.564-2.57a.02.02 0 0 0 .017-.02v-.04a.014.014 0 0 0-.012-.013c-1.371-.187-2.38-1.194-2.569-2.564a.02.02 0 0 0-.02-.018h-.028a.03.03 0 0 0-.028.024c-.19 1.365-1.195 2.369-2.561 2.557m13.964 10.91a.02.02 0 0 0-.018.02v.045q0 .006.006.007c1.375.184 2.386 1.192 2.575 2.565a.02.02 0 0 0 .02.017h.029c.013 0 .025-.01.027-.023c.19-1.36 1.187-2.36 2.545-2.555a.04.04 0 0 0 .034-.04v-.022a.014.014 0 0 0-.011-.014c-1.372-.186-2.38-1.194-2.57-2.564a.02.02 0 0 0-.02-.017h-.028a.03.03 0 0 0-.027.023c-.19 1.365-1.196 2.369-2.562 2.557m2.611-13.293a.01.01 0 0 0-.01.012v.017q0 .012.013.015c.8.112 1.386.703 1.493 1.505h.04c.107-.807.7-1.4 1.507-1.506v-.04c-.807-.108-1.4-.7-1.507-1.508h-.04a1.714 1.714 0 0 1-1.496 1.505"/></svg>
     </button>
-    <input type="text" class="diagram-description-input" id="desc-input-${diagram.id}" value="${description}" style="display: none;" placeholder="Descripció...">
     </div>`;
                 } else {
                     descriptionHtml = `
     <div class="diagram-description-container">
     <a href="#" class="add-description-link" data-id="${diagram.id}">+ Afegir descripció</a>
+    <input type="text" class="diagram-description-input" id="desc-input-${diagram.id}" value="" style="display: none;" placeholder="Descripció...">
     <button type="button" class="magic-generated-btn" data-id="${diagram.id}" title="Generar màgicament">
         <svg width="24" height="24" viewBox="0 0 48 48" fill="none"><path fill="#32bea6" d="M24 47.998c13.255 0 24-10.745 24-24C48 10.746 37.255 0 24 0S0 10.745 0 23.999s10.745 23.999 24 23.999"/><path fill="#3e3e3f" d="m10.91 34.26l3.702 3.702l15.427-15.427l-3.702-3.702z"/><path fill="#e2e4e5" d="m26.337 18.833l3.703 3.702l5.554-5.554l-3.703-3.702z"/><path fill="#fff" d="m26.337 18.832l1.851 1.851l5.554-5.554l-1.851-1.85z"/><path fill="#5b5c5f" d="m28.188 20.684l-1.851-1.852L10.909 34.26l1.851 1.851z"/><path fill="#fbe158" d="M18.345 14.55a.02.02 0 0 0-.018.02v.04q0 .011.012.014c1.371.187 2.38 1.194 2.569 2.564a.02.02 0 0 0 .02.017h.04a.014.014 0 0 0 .014-.011c.186-1.372 1.193-2.38 2.564-2.57a.02.02 0 0 0 .017-.02v-.04a.014.014 0 0 0-.012-.013c-1.371-.187-2.38-1.194-2.569-2.564a.02.02 0 0 0-.02-.018h-.028a.03.03 0 0 0-.028.024c-.19 1.365-1.195 2.369-2.561 2.557m13.964 10.91a.02.02 0 0 0-.018.02v.045q0 .006.006.007c1.375.184 2.386 1.192 2.575 2.565a.02.02 0 0 0 .02.017h.029c.013 0 .025-.01.027-.023c.19-1.36 1.187-2.36 2.545-2.555a.04.04 0 0 0 .034-.04v-.022a.014.014 0 0 0-.011-.014c-1.372-.186-2.38-1.194-2.57-2.564a.02.02 0 0 0-.02-.017h-.028a.03.03 0 0 0-.027.023c-.19 1.365-1.196 2.369-2.562 2.557m2.611-13.293a.01.01 0 0 0-.01.012v.017q0 .012.013.015c.8.112 1.386.703 1.493 1.505h.04c.107-.807.7-1.4 1.507-1.506v-.04c-.807-.108-1.4-.7-1.507-1.508h-.04a1.714 1.714 0 0 1-1.496 1.505"/></svg>
     </button>
-    <input type="text" class="diagram-description-input" id="desc-input-${diagram.id}" value="" style="display: none;" placeholder="Descripció...">
     </div>`;
                 }
             } else {
@@ -16505,11 +16570,13 @@ function escapeJsString(text) {
             let backupHtml = '';
             if (backup.length > 0) {
                 const rejections = (APP.currentEventData && APP.currentEventData.rejections) || [];
+                const attendees = (APP.currentEventData && APP.currentEventData.attendees) || [];
                 backupHtml = '<div class="backup-members-list">';
                 backup.forEach(function (memberAlias) {
                     const isRejected = rejections.includes(memberAlias);
-                    const chipStyle = isRejected ? 'background-color: #dc3545; border-color: #dc3545; color: white;' : '';
-                    const warningIcon = isRejected ? '⚠️ ' : '';
+                    const isNotConfirmed = !isRejected && !attendees.includes(memberAlias);
+                    const chipStyle = isRejected ? 'background-color: #dc3545; border-color: #dc3545; color: white;' : (isNotConfirmed ? 'background-color: #f0ad4e; border-color: #f0ad4e; color: white;' : '');
+                    const warningIcon = isRejected ? '⚠️ ' : (isNotConfirmed ? '❓ ' : '');
                     backupHtml += `<span class="backup-member-chip" style="${chipStyle}">${warningIcon}${memberAlias}`;
                     if (isAdmin) {
                         backupHtml += `<button type="button" class="remove-backup-btn" data-diagram-id="${diagram.id}" data-member="${memberAlias}" title="Eliminar">×</button>`;
@@ -16730,6 +16797,24 @@ ${backupHtml}
                     const scaleY = canvas.height / rect.height;
                     const clickX = (e.clientX - rect.left) * scaleX;
                     const clickY = (e.clientY - rect.top) * scaleY;
+
+                    if (diagram._groupRemoveAreas) {
+                        for (let ai = 0; ai < diagram._groupRemoveAreas.length; ai++) {
+                            const area = diagram._groupRemoveAreas[ai];
+                            const dx = clickX - area.cx;
+                            const dy = clickY - area.cy;
+                            if (Math.sqrt(dx * dx + dy * dy) <= area.r + 4) {
+                                const groupLetter = String.fromCharCode(65 + area.g);
+                                const blockName = (diagram.diagram && diagram.diagram.blockName) || 'grup';
+                                if (confirm('Segur que vols eliminar ' + blockName + ' ' + groupLetter + '?')) {
+                                    diagram.groups.splice(area.g, 1);
+                                    setDiagramsDirty(true);
+                                    drawDiagram(diagram);
+                                }
+                                return;
+                            }
+                        }
+                    }
 
                     const forms = diagram.forms || ['grid'];
                     const activeForm = diagram.activeForm || forms[0];
@@ -17439,8 +17524,8 @@ ${backupHtml}
                     const attendees = (APP.currentEventData && APP.currentEventData.attendees) || [];
                     API.calculateEventDancePositions({ danceName: diagram.danceName, attendees: attendees })
                         .then(function (result) {
-                            var html = '<h3 class="magic-dialog-title">' + diagram.danceName + '</h3>';
-                            var orders = Object.keys(result).sort(function (a, b) { return parseInt(a) - parseInt(b); });
+                            let html = '<h3 class="magic-dialog-title">' + diagram.danceName + '</h3>';
+                            const orders = Object.keys(result).sort(function (a, b) { return parseInt(a) - parseInt(b); });
                             if (orders.length === 0) {
                                 html += '<p class="magic-dialog-empty">No hi ha dades d\'actuacions anteriors</p>';
                             } else {
@@ -17448,20 +17533,20 @@ ${backupHtml}
                                 html += '<div id="magic-selection-area"></div>';
                                 html += '<button type="button" id="magic-confirm-btn" class="magic-confirm-btn">Confirmar</button>';
                             }
-                            var closeBtn = '<button type="button" class="magic-dialog-close-btn" onclick="UI.closeDialogWithBackdrop(document.getElementById(\'magic-dialog\'))" aria-label="Tancar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>';
+                            const closeBtn = '<button type="button" class="magic-dialog-close-btn" onclick="UI.closeDialogWithBackdrop(document.getElementById(\'magic-dialog\'))" aria-label="Tancar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>';
                             magicContent.innerHTML = closeBtn + html;
                             if (orders.length > 0) {
-                                var rows = diagram.rows || 2;
-                                var cols = diagram.columns || 2;
-                                var positionsPerGroup = rows * cols;
-                                var groupCount = diagram.groups.length;
-                                var magicGroups = [];
-                                for (var g = 0; g < groupCount; g++) {
-                                    var group = [];
-                                    for (var i = 0; i < positionsPerGroup; i++) group.push(null);
+                                const rows = diagram.rows || 2;
+                                const cols = diagram.columns || 2;
+                                const positionsPerGroup = rows * cols;
+                                const groupCount = diagram.groups.length;
+                                const magicGroups = [];
+                                for (let g = 0; g < groupCount; g++) {
+                                    const group = [];
+                                    for (let i = 0; i < positionsPerGroup; i++) group.push(null);
                                     magicGroups.push(group);
                                 }
-                                var magicDiagram = {
+                                const magicDiagram = {
                                     id: 'magic',
                                     groups: magicGroups,
                                     rows: rows,
@@ -17476,35 +17561,35 @@ ${backupHtml}
                                 function showMagicCandidates(order, groupIdx, cellIdx) {
                                     selectedCellHighlight = { diagramId: 'magic', groupIdx: groupIdx, cellIdx: cellIdx };
                                     drawDiagram(magicDiagram);
-                                    var selectionArea = document.getElementById('magic-selection-area');
-                                    var posResult = result[order];
-                                    var pos = magicDiagram.positions.find(function (p) { return p.order === order; });
-                                    var dColors = magicDiagram.diagram;
-                                    var bgColor = '#808080';
+                                    const selectionArea = document.getElementById('magic-selection-area');
+                                    const posResult = result[order];
+                                    const pos = magicDiagram.positions.find(function (p) { return p.order === order; });
+                                    const dColors = magicDiagram.diagram;
+                                    let bgColor = '#808080';
                                     if (pos && pos.positionType.label && dColors.backgroundColor && dColors.backgroundColor[pos.positionType.label]) {
                                         bgColor = dColors.backgroundColor[pos.positionType.label];
                                     }
-                                    var usedAliases = [];
-                                    for (var gi = 0; gi < magicDiagram.groups.length; gi++) {
-                                        for (var si = 0; si < positionsPerGroup; si++) {
+                                    const usedAliases = [];
+                                    for (let gi = 0; gi < magicDiagram.groups.length; gi++) {
+                                        for (let si = 0; si < positionsPerGroup; si++) {
                                             if (gi === groupIdx && si === cellIdx) continue;
                                             if (magicDiagram.groups[gi][si]) usedAliases.push(magicDiagram.groups[gi][si]);
                                         }
                                     }
-                                    var groupLetter = String.fromCharCode(65 + groupIdx);
-                                    var blockName = dColors.blockName || 'Grup';
-                                    var headerText = pos ? pos.tag : 'Posició ' + order;
+                                    const groupLetter = String.fromCharCode(65 + groupIdx);
+                                    const blockName = dColors.blockName || 'Grup';
+                                    let headerText = pos ? pos.tag : 'Posició ' + order;
                                     if (magicDiagram.groups.length > 1) {
                                         headerText += ' — ' + blockName + ' ' + groupLetter;
                                     }
-                                    var areaHtml = '<div class="magic-selection-header">';
+                                    let areaHtml = '<div class="magic-selection-header">';
                                     areaHtml += '<span class="magic-position-color" style="background:' + bgColor + '"></span>';
                                     areaHtml += '<strong>' + headerText + '</strong>';
                                     if (pos && pos.specifications) {
                                         areaHtml += '<span class="magic-position-specs">' + pos.specifications + '</span>';
                                     }
                                     areaHtml += '</div>';
-                                    var currentAssigned = magicDiagram.groups[groupIdx][cellIdx];
+                                    const currentAssigned = magicDiagram.groups[groupIdx][cellIdx];
                                     if (currentAssigned) {
                                         areaHtml += '<div class="magic-current-assignment">';
                                         areaHtml += '<span>' + currentAssigned + '</span>';
@@ -17516,7 +17601,7 @@ ${backupHtml}
                                         selectionArea.innerHTML = areaHtml;
                                         return;
                                     }
-                                    var candidates = posResult.members.filter(function (m) {
+                                    const candidates = posResult.members.filter(function (m) {
                                         return m.attending && !usedAliases.includes(m.name);
                                     });
                                     if (candidates.length === 0) {
@@ -17533,9 +17618,9 @@ ${backupHtml}
                                     selectionArea.innerHTML = areaHtml;
                                     selectionArea.querySelectorAll('.magic-candidate-btn').forEach(function (btn) {
                                         btn.addEventListener('click', function () {
-                                            var candidate = candidates[parseInt(btn.dataset.idx)];
+                                            const candidate = candidates[parseInt(btn.dataset.idx)];
                                             magicDiagram.groups[groupIdx][cellIdx] = candidate.name;
-                                            for (var ni = cellIdx + 1; ni < positionsPerGroup; ni++) {
+                                            for (let ni = cellIdx + 1; ni < positionsPerGroup; ni++) {
                                                 if (!magicDiagram.groups[groupIdx][ni]) {
                                                     showMagicCandidates(ni + 1, groupIdx, ni);
                                                     return;
@@ -17546,7 +17631,7 @@ ${backupHtml}
                                             selectionArea.innerHTML = '';
                                         });
                                     });
-                                    var removeBtn = selectionArea.querySelector('.magic-remove-btn');
+                                    const removeBtn = selectionArea.querySelector('.magic-remove-btn');
                                     if (removeBtn) {
                                         removeBtn.addEventListener('click', function () {
                                             magicDiagram.groups[groupIdx][cellIdx] = null;
@@ -17556,26 +17641,26 @@ ${backupHtml}
                                     }
                                 }
 
-                                var magicCanvas = document.getElementById('diagram-canvas-magic');
+                                const magicCanvas = document.getElementById('diagram-canvas-magic');
                                 magicCanvas.addEventListener('click', function (e) {
-                                    var rect = magicCanvas.getBoundingClientRect();
-                                    var layout = calcDiagramLayout(magicCanvas, groupCount, rows, cols);
-                                    var scaleX = magicCanvas.width / rect.width;
-                                    var scaleY = magicCanvas.height / rect.height;
-                                    var clickX = (e.clientX - rect.left) * scaleX;
-                                    var clickY = (e.clientY - rect.top) * scaleY;
-                                    for (var g = 0; g < groupCount; g++) {
-                                        var offsetX = layout.offsetX0 + g * (layout.gridWidth + layout.spacing);
-                                        var groupAreaWidth = layout.squareWidth * cols + layout.squareSpacingX * (cols - 1);
-                                        var groupAreaHeight = layout.squareHeight * rows + layout.squareSpacingY * (rows - 1);
+                                    const rect = magicCanvas.getBoundingClientRect();
+                                    const layout = calcDiagramLayout(magicCanvas, groupCount, rows, cols);
+                                    const scaleX = magicCanvas.width / rect.width;
+                                    const scaleY = magicCanvas.height / rect.height;
+                                    const clickX = (e.clientX - rect.left) * scaleX;
+                                    const clickY = (e.clientY - rect.top) * scaleY;
+                                    for (let g = 0; g < groupCount; g++) {
+                                        const offsetX = layout.offsetX0 + g * (layout.gridWidth + layout.spacing);
+                                        const groupAreaWidth = layout.squareWidth * cols + layout.squareSpacingX * (cols - 1);
+                                        const groupAreaHeight = layout.squareHeight * rows + layout.squareSpacingY * (rows - 1);
                                         if (clickX >= offsetX && clickX <= offsetX + groupAreaWidth &&
                                             clickY >= layout.offsetY && clickY <= layout.offsetY + groupAreaHeight) {
-                                            var x = clickX - offsetX;
-                                            var y = clickY - layout.offsetY;
-                                            var col = Math.floor(x / (layout.squareWidth + layout.squareSpacingX));
-                                            var row = Math.floor(y / (layout.squareHeight + layout.squareSpacingY));
+                                            const x = clickX - offsetX;
+                                            const y = clickY - layout.offsetY;
+                                            const col = Math.floor(x / (layout.squareWidth + layout.squareSpacingX));
+                                            const row = Math.floor(y / (layout.squareHeight + layout.squareSpacingY));
                                             if (col >= cols || row >= rows) return;
-                                            var idx = row * cols + col;
+                                            const idx = row * cols + col;
                                             showMagicCandidates(idx + 1, g, idx);
                                             return;
                                         }
@@ -17583,8 +17668,8 @@ ${backupHtml}
                                 });
 
                                 document.getElementById('magic-confirm-btn').addEventListener('click', function () {
-                                    for (var g = 0; g < groupCount; g++) {
-                                        for (var i = 0; i < positionsPerGroup; i++) {
+                                    for (let g = 0; g < groupCount; g++) {
+                                        for (let i = 0; i < positionsPerGroup; i++) {
                                             diagram.groups[g][i] = magicDiagram.groups[g][i];
                                         }
                                     }
@@ -17596,7 +17681,7 @@ ${backupHtml}
                             }
                         })
                         .catch(function (error) {
-                            var closeBtn = '<button type="button" class="magic-dialog-close-btn" onclick="UI.closeDialogWithBackdrop(document.getElementById(\'magic-dialog\'))" aria-label="Tancar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>';
+                            const closeBtn = '<button type="button" class="magic-dialog-close-btn" onclick="UI.closeDialogWithBackdrop(document.getElementById(\'magic-dialog\'))" aria-label="Tancar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>';
                             magicContent.innerHTML = closeBtn + '<p class="magic-dialog-error">Error: ' + error + '</p>';
                         });
                 }
@@ -17649,7 +17734,7 @@ ${backupHtml}
                 if (e.target === dialog) {
                     selectedCellHighlight = null;
                     if (window.selectedDiagramId !== null) {
-                        var d = diagrams.find(function (di) { return di.id === window.selectedDiagramId; });
+                        const d = diagrams.find(function (di) { return di.id === window.selectedDiagramId; });
                         if (d) drawDiagram(d);
                     }
                     UI.closeDialogWithBackdrop(dialog);
@@ -17775,6 +17860,8 @@ ${backupHtml}
                     diagrams.forEach(function (diagram, index) {
                         const canvas = document.getElementById('diagram-canvas-' + diagram.id);
                         if (!canvas) return;
+
+                        drawDiagram(diagram, { hideAdminControls: true });
 
                         // Extract legend items (unique labels only)
                         const positions = diagram.positions || [];
@@ -17930,6 +18017,11 @@ ${backupHtml}
                             const file = new File([blob], fileName, { type: 'image/png' });
                             files.push(file);
                         }, 'image/png');
+                    });
+
+                    // Restore on-screen diagrams with admin controls
+                    diagrams.forEach(function (diagram) {
+                        drawDiagram(diagram);
                     });
 
                     // Wait for all files to be created
@@ -19115,7 +19207,7 @@ ${backupHtml}
       .then(function(response) {
         // Update visual state
         customCheckbox.classList.remove('loading', 'empty', 'attending', 'rejected');
-        customCheckbox.classList.add(attending ? 'attending' : 'empty');
+        customCheckbox.classList.add(attending ? 'attending' : 'rejected');
         
         // Update local training data
         if (APP.currentTrainingData) {
@@ -19738,7 +19830,7 @@ ${backupHtml}
         UI.showToast(result.message || "Estat actualitzat", "success");
   
         // Update local training data
-        var userAlias = APP.currentUser ? APP.currentUser.alias : null;
+        const userAlias = APP.currentUser ? APP.currentUser.alias : null;
         if (userAlias) {
           const trainings = CACHE.getTrainings() || [];
           const trainingIndex = trainings.findIndex(t => t.id === trainingId);
@@ -20154,10 +20246,10 @@ ${backupHtml}
   }
 
   openTrainingNoteDialog(trainingId, memberId, memberAlias, memberName) {
-    var dialog = document.getElementById('training-note-dialog');
-    var noteInput = document.getElementById('training-note-input');
-    var memberNameSpan = document.getElementById('training-note-member-name');
-    var charCount = document.getElementById('training-note-char-current');
+    const dialog = document.getElementById('training-note-dialog');
+    const noteInput = document.getElementById('training-note-input');
+    const memberNameSpan = document.getElementById('training-note-member-name');
+    const charCount = document.getElementById('training-note-char-current');
     
     if (!dialog || !noteInput) return;
     
@@ -20168,10 +20260,10 @@ ${backupHtml}
       memberNameSpan.style.display = memberName ? '' : 'none';
     }
     
-    var trainings = CACHE.getTrainings() || [];
-    var training = trainings.find(function(t) { return t.id === trainingId; });
-    var alias = memberAlias || (APP.currentUser ? APP.currentUser.alias : '');
-    var existingNote = training && training.notes ? (training.notes[alias] || '') : '';
+    const trainings = CACHE.getTrainings() || [];
+    const training = trainings.find(function(t) { return t.id === trainingId; });
+    const alias = memberAlias || (APP.currentUser ? APP.currentUser.alias : '');
+    const existingNote = training && training.notes ? (training.notes[alias] || '') : '';
     
     noteInput.value = existingNote;
     if (charCount) charCount.textContent = existingNote.length;
@@ -20185,7 +20277,7 @@ ${backupHtml}
   }
   
   closeTrainingNoteDialog() {
-    var dialog = document.getElementById('training-note-dialog');
+    const dialog = document.getElementById('training-note-dialog');
     if (dialog && dialog.open) {
       UI.closeDialogWithBackdrop(dialog);
     }
@@ -20193,18 +20285,18 @@ ${backupHtml}
   }
   
   saveTrainingNote() {
-    var noteInput = document.getElementById('training-note-input');
-    var saveBtn = document.getElementById('training-note-save-btn');
-    var btnText = saveBtn ? saveBtn.querySelector('.btn-text') : null;
-    var btnLoading = saveBtn ? saveBtn.querySelector('.btn-loading') : null;
+    const noteInput = document.getElementById('training-note-input');
+    const saveBtn = document.getElementById('training-note-save-btn');
+    const btnText = saveBtn ? saveBtn.querySelector('.btn-text') : null;
+    const btnLoading = saveBtn ? saveBtn.querySelector('.btn-loading') : null;
     
     if (!noteInput) return;
     
-    var note = noteInput.value.trim();
-    var state = trainingNoteDialogState;
-    var trainingId = state.trainingId;
-    var memberId = state.memberId;
-    var memberAlias = state.memberAlias;
+    const note = noteInput.value.trim();
+    const state = trainingNoteDialogState;
+    const trainingId = state.trainingId;
+    const memberId = state.memberId;
+    const memberAlias = state.memberAlias;
     
     if (!trainingId) {
       UI.showToast('Error: no s\'ha pogut identificar l\'assaig', 'error');
@@ -20215,7 +20307,7 @@ ${backupHtml}
     if (btnText) btnText.style.display = 'none';
     if (btnLoading) btnLoading.style.display = 'inline';
     
-    var apiCall;
+    let apiCall;
     if (memberId && memberAlias) {
       apiCall = API.saveRelatedMemberTrainingNote({ trainingId, memberId, memberAlias, note });
     } else {
@@ -20229,9 +20321,9 @@ ${backupHtml}
         if (btnLoading) btnLoading.style.display = 'none';
         UI.showToast(result.message || 'Nota desada', 'success');
         
-        var alias = memberAlias || (APP.currentUser ? APP.currentUser.alias : '');
-        var trainings = CACHE.getTrainings() || [];
-        var trainingIndex = trainings.findIndex(function(t) { return t.id === trainingId; });
+        const alias = memberAlias || (APP.currentUser ? APP.currentUser.alias : '');
+        const trainings = CACHE.getTrainings() || [];
+        const trainingIndex = trainings.findIndex(function(t) { return t.id === trainingId; });
         if (trainingIndex !== -1) {
           if (!trainings[trainingIndex].notes) trainings[trainingIndex].notes = {};
           if (note) {
@@ -20255,7 +20347,7 @@ ${backupHtml}
   }
   
   updateNoteLinkInUI(trainingId, memberId, note) {
-    var section;
+    let section;
     if (memberId) {
       section = document.querySelector(`.training-confirmation-section[data-training-id="${trainingId}"][data-member-id="${memberId}"]`);
     } else {
@@ -20264,7 +20356,7 @@ ${backupHtml}
     
     if (!section) return;
     
-    var existingLink = section.querySelector('.training-note-link');
+    const existingLink = section.querySelector('.training-note-link');
     if (existingLink) {
       if (note) {
         existingLink.className = 'training-note-link has-note';
@@ -20279,10 +20371,10 @@ ${backupHtml}
   }
   
   initializeTrainingNoteDialogListeners() {
-    var closeBtn = document.getElementById('training-note-close-btn');
-    var cancelBtn = document.getElementById('training-note-cancel-btn');
-    var saveBtn = document.getElementById('training-note-save-btn');
-    var self = this;
+    const closeBtn = document.getElementById('training-note-close-btn');
+    const cancelBtn = document.getElementById('training-note-cancel-btn');
+    const saveBtn = document.getElementById('training-note-save-btn');
+    const self = this;
     
     if (closeBtn && !closeBtn.dataset.initialized) {
       closeBtn.addEventListener('click', function() { self.closeTrainingNoteDialog(); });
@@ -20303,7 +20395,7 @@ ${backupHtml}
 
 
 
-var trainingNoteDialogState = {
+let trainingNoteDialogState = {
   trainingId: null,
   memberId: null,
   memberAlias: null,
@@ -20430,7 +20522,7 @@ function formatRelativeTime(timestamp) {
     }
 
     const btnObserver = new MutationObserver(function (mutations) {
-      var shouldInit = false;
+      let shouldInit = false;
       mutations.forEach(function (mutation) {
         if (mutation.addedNodes.length > 0) {
           shouldInit = true;
@@ -20453,7 +20545,7 @@ function formatRelativeTime(timestamp) {
             if (node.matches && node.matches("input, select, textarea")) {
               this._setCustomValidationMessages(node);
             }
-            var childInputs =
+            const childInputs =
               node.querySelectorAll &&
               node.querySelectorAll("input, select, textarea");
             if (childInputs) {
@@ -20490,7 +20582,7 @@ function formatRelativeTime(timestamp) {
   }
 
   _initValidationMessages() {
-    var inputs = document.querySelectorAll("input, select, textarea");
+    const inputs = document.querySelectorAll("input, select, textarea");
     inputs.forEach(this._setCustomValidationMessages.bind(this));
   }
 

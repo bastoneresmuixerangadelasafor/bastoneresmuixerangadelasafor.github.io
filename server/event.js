@@ -97,6 +97,7 @@ function saveEvent_({event}) {
   // Ensure event column exists in the attendance sheet
   ensureAttendanceColumn_(spreadsheet, event.name);
 
+  CACHE.clearEvents();
   CACHE.bumpVersion('events');
   
   try {
@@ -312,13 +313,13 @@ function getEventById_({eventId}) {
       console.log('Event sheet not found, creating: ' + eventId);
       sheet = spreadsheet.insertSheet(eventId);
 
-      var events = CACHE.getEvents();
-      var matchedEvent = events.find(function(ev) { return ev.id === eventId || ev.name === eventId; });
-      var bareEventName = matchedEvent ? matchedEvent.name : eventId;
-      var bareDate = matchedEvent && matchedEvent.date ? "'" + matchedEvent.date : '';
-      var bareMeetingPlace = matchedEvent ? (matchedEvent.meetingPlace || '') : '';
+      const events = CACHE.getEvents();
+      const matchedEvent = events.find(function(ev) { return ev.id === eventId || ev.name === eventId; });
+      const bareEventName = matchedEvent ? matchedEvent.name : eventId;
+      const bareDate = matchedEvent && matchedEvent.date ? "'" + matchedEvent.date : '';
+      const bareMeetingPlace = matchedEvent ? (matchedEvent.meetingPlace || '') : '';
 
-      var bareData = [
+      const bareData = [
         ['Actuació:', bareEventName],
         ['Data:', bareDate],
         ['Lloc de trobada:', bareMeetingPlace],
@@ -517,40 +518,40 @@ function calculateEventDancePositions_({ danceName, attendees }) {
       return ev.date && new Date(ev.date) < now;
     });
 
-    var positionMembers = {};
+    const positionMembers = {};
 
     pastEvents.forEach(function (ev) {
-      var sheet = spreadsheet.getSheetByName(ev.id);
+      const sheet = spreadsheet.getSheetByName(ev.id);
       if (!sheet) return;
 
-      var data = sheet.getDataRange().getValues();
-      var i = 0;
+      const data = sheet.getDataRange().getValues();
+      let i = 0;
 
       while (i < data.length) {
-        var row = data[i];
+        const row = data[i];
         if (row[0] === 'Ball:' && row[1] === danceName) {
           i++;
           if (i < data.length && data[i][0] === 'Descripció:') i++;
           if (i < data.length && (data[i][0] === 'Posició' || data[i][0] === 'Tag')) {
-            var headerRow = data[i];
-            var groupCount = headerRow.filter(function (cell, idx) {
+            const headerRow = data[i];
+            const groupCount = headerRow.filter(function (cell, idx) {
               return idx >= 1 && cell && String(cell).startsWith('Grup');
             }).length;
             i++;
 
-            var posOrder = 1;
+            let posOrder = 1;
             while (i < data.length && data[i][0] !== 'Ball:' && data[i][0] !== '') {
-              var posRow = data[i];
-              var posTag = posRow[0] || ('Pos ' + posOrder);
+              const posRow = data[i];
+              const posTag = posRow[0] || ('Pos ' + posOrder);
 
               if (!positionMembers[posOrder]) {
                 positionMembers[posOrder] = { tag: posTag, members: {} };
               }
 
-              for (var g = 0; g < groupCount; g++) {
-                var member = posRow[1 + g];
+              for (let g = 0; g < groupCount; g++) {
+                const member = posRow[1 + g];
                 if (member && String(member).trim().length > 0) {
-                  var memberName = String(member).trim();
+                  const memberName = String(member).trim();
                   positionMembers[posOrder].members[memberName] = (positionMembers[posOrder].members[memberName] || 0) + 1;
                 }
               }
@@ -567,11 +568,11 @@ function calculateEventDancePositions_({ danceName, attendees }) {
       }
     });
 
-    var result = {};
-    var orders = Object.keys(positionMembers);
+    const result = {};
+    const orders = Object.keys(positionMembers);
     orders.forEach(function (order) {
-      var pos = positionMembers[order];
-      var sorted = Object.keys(pos.members)
+      const pos = positionMembers[order];
+      const sorted = Object.keys(pos.members)
         .map(function (name) { return { name: name, count: pos.members[name] }; })
         .sort(function (a, b) { return b.count - a.count; });
 
@@ -681,24 +682,21 @@ function saveTraining_({training}) {
       }
     }
 
-    // If attendance data is provided, update it
     if (training.attendees && Array.isArray(training.attendees)) {
-      // First clear all existing marks in this column (start from row 2, skipping header)
-      for (let i = 2; i <= data.length; i++) {
-        sheet.getRange(i, dateColumn).setValue('');
+      const attendeeNames = {};
+      training.attendees.forEach(function (memberName) {
+        attendeeNames[String(memberName).trim()] = true;
+      });
+
+      const columnValues = [];
+      for (let i = 1; i < data.length; i++) {
+        const cellName = String(data[i][0]).trim();
+        columnValues.push([attendeeNames[cellName] ? 'SI' : '']);
       }
 
-      // Then add marks for attendees
-      training.attendees.forEach(function (memberName) {
-        // Search for the member in the first column
-        for (let i = 1; i < data.length; i++) {
-          const cellName = String(data[i][0]).trim();
-          if (cellName === String(memberName).trim()) {
-            sheet.getRange(i + 1, dateColumn).setValue('SI');
-            break;
-          }
-        }
-      });
+      if (columnValues.length > 0) {
+        sheet.getRange(2, dateColumn, columnValues.length, 1).setValues(columnValues);
+      }
     }
 
     // Invalidate cache so next read gets fresh data
@@ -1136,7 +1134,7 @@ function checkFormAttendance_({spreadsheetId, eventId}) {
       return API.newError_({ error: 'No s\'han trobat les columnes "Nom" o "En què participes?" a la fulla.', status: 400 });
     }
 
-    var eventAttendees = [];
+    let eventAttendees = [];
     if (eventId && eventId !== 'null' && eventId !== 'undefined') {
       const allEventAssistance = CACHE.retrieveEventMemberAssistanceFromDB();
       console.log('checkFormAttendance: eventId=' + eventId + ', keys=' + JSON.stringify(Object.keys(allEventAssistance)));
@@ -1168,7 +1166,7 @@ function checkFormAttendance_({spreadsheetId, eventId}) {
 
       const matchedMember = exactMatchedMember || partialMatchedMember;
 
-      var attendanceMismatch = null;
+      let attendanceMismatch = null;
       if (matchedMember && eventId) {
         const memberAlias = matchedMember.alias || '';
         const confirmedInApp = eventAttendees.indexOf(memberAlias) !== -1;

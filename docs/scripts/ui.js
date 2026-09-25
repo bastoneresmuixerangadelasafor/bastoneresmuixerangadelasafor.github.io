@@ -17,7 +17,7 @@ const UI = new (class AppUIManager {
     }
 
     const btnObserver = new MutationObserver(function (mutations) {
-      var shouldInit = false;
+      let shouldInit = false;
       mutations.forEach(function (mutation) {
         if (mutation.addedNodes.length > 0) {
           shouldInit = true;
@@ -40,7 +40,7 @@ const UI = new (class AppUIManager {
             if (node.matches && node.matches("input, select, textarea")) {
               this._setCustomValidationMessages(node);
             }
-            var childInputs =
+            const childInputs =
               node.querySelectorAll &&
               node.querySelectorAll("input, select, textarea");
             if (childInputs) {
@@ -77,7 +77,7 @@ const UI = new (class AppUIManager {
   }
 
   _initValidationMessages() {
-    var inputs = document.querySelectorAll("input, select, textarea");
+    const inputs = document.querySelectorAll("input, select, textarea");
     inputs.forEach(this._setCustomValidationMessages.bind(this));
   }
 
