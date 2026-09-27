@@ -1385,6 +1385,12 @@ const EVENTS = new (class EventsManager {
                 canvas.style.cursor = (isEditable && isAdmin) ? 'pointer' : 'default';
                 canvas.style.pointerEvents = (isEditable && isAdmin) ? 'auto' : 'none';
             });
+
+            if (Array.isArray(diagrams)) {
+                diagrams.forEach(function (diagram) {
+                    drawDiagram(diagram);
+                });
+            }
         }
 
         function updateSaveButtonState() {
@@ -1673,7 +1679,7 @@ const EVENTS = new (class EventsManager {
             const diagramColors = diagram.diagram || { backgroundColor: {}, textColor: {} };
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const groupCount = groups.length;
-            const isCurrentUserAdminDraw = !hideAdminControls && ((APP && APP.currentUser && APP.currentUser.roles) || []).includes('ADMIN');
+            const isCurrentUserAdminDraw = !hideAdminControls && isEventEditable && ((APP && APP.currentUser && APP.currentUser.roles) || []).includes('ADMIN');
             diagram._groupRemoveAreas = [];
             const forms = diagram.forms || ['grid'];
             const activeForm = diagram.activeForm || forms[0];
