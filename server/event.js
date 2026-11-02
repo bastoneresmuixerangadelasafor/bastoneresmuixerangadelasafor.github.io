@@ -1115,11 +1115,20 @@ function checkFormAttendance_({spreadsheetId, eventId}) {
     return API.newError_({ error: 'Cal indicar l\'identificador de la fulla de respostes.', status: 400 });
   }
 
+  let data;
   try {
     const spreadsheet = SpreadsheetApp.openById(spreadsheetId);
     const sheet = spreadsheet.getSheets()[0];
-    const data = sheet.getDataRange().getValues();
+    data = sheet.getDataRange().getValues();
+  } catch (error) {
+    console.error('Error opening attendance response spreadsheet:', error.toString());
+    if (/Illegal spreadsheet id or key/i.test(error.toString())) {
+      return API.newError_({ error: 'L\'identificador de la fulla de respostes no és vàlid. Obri la fulla en Google Sheets i copia només el text de l\'adreça que apareix entre /d/ i /edit, no l\'adreça completa.', status: 400 });
+    }
+    return API.newError_({ error: 'No s\'ha pogut obrir la fulla de respostes. Comprova que l\'identificador siga correcte i que el compte de Google que executa el servidor tinga permisos de lectura sobre la fulla.' });
+  }
 
+  try {
     if (data.length < 2) {
       return API.newResult_({ result: [] });
     }

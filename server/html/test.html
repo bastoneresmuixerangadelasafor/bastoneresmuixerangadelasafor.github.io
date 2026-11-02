@@ -10634,7 +10634,7 @@ const DATA_VERSIONS = "DATA_VERSIONS"
 const FIREBASE_API_KEY = "AIzaSyBFFEKNVFY7rVRr2I6QbdoPKYZMSKARXZo"
 const FIREBASE_AUTH_DOMAIN = "muixeranga-bastoneres-test.firebaseapp.com"
 const FIREBASE_PROJECT_ID = "muixeranga-bastoneres-test"
-const FIREBASE_MESSAGING_SENDER_ID = "781217597112"
+const FIREBASE_MESSAGING_SENDER_ID = 781217597112
 const FIREBASE_APP_ID = "1:781217597112:web:8bd5fca7b37a3b4ff9964d"
 const FCM_VAPID_KEY = "BOD95S_AceAtX7xg_5t53h-xtTIMySMS-lUrg3eEf3Rkg_wDoTkMQrDO50xBz17Wd0W8eH1QY0XbYwRLuSBPPDk"
 const PUSH_TOKENS = "PUSH_TOKENS"
@@ -10857,7 +10857,7 @@ const API = new (class GAppsApiClient {
           const data = await response.json();
           returnResult(data);
         } catch (error) {
-          this._handleRequestError(error).then(resolve).catch(reject);
+          this._handleRequestError(error).then(returnResult).catch(reject);
         }
       }
     });
@@ -15852,8 +15852,11 @@ function escapeJsString(text) {
 
     API.checkFormAttendance({ spreadsheetId, eventId })
       .then(function(matches) {
+        if (!Array.isArray(matches)) {
+          throw new Error('La resposta del servidor no conté una llista de resultats d\'assistència vàlida. Torna a intentar-ho i, si el problema persistix, contacta amb l\'administrador.');
+        }
         resultsContainer.style.display = 'block';
-        if (!matches || matches.length === 0) {
+        if (matches.length === 0) {
           resultsContainer.innerHTML = '<p class="check-attendance-empty">No s\'han trobat respostes amb "Ball de bastons".</p>';
           return;
         }
@@ -15881,7 +15884,7 @@ function escapeJsString(text) {
       })
       .catch(function(error) {
         resultsContainer.style.display = 'block';
-        resultsContainer.innerHTML = '<p class="check-attendance-error">' + escapeHtml(error) + '</p>';
+        resultsContainer.innerHTML = '<p class="check-attendance-error">' + escapeHtml(error.message || error) + '</p>';
       })
       .finally(function() {
         btnText.style.display = 'inline';
@@ -16049,6 +16052,12 @@ function escapeJsString(text) {
                 canvas.style.cursor = (isEditable && isAdmin) ? 'pointer' : 'default';
                 canvas.style.pointerEvents = (isEditable && isAdmin) ? 'auto' : 'none';
             });
+
+            if (Array.isArray(diagrams)) {
+                diagrams.forEach(function (diagram) {
+                    drawDiagram(diagram);
+                });
+            }
         }
 
         function updateSaveButtonState() {
@@ -16337,7 +16346,7 @@ function escapeJsString(text) {
             const diagramColors = diagram.diagram || { backgroundColor: {}, textColor: {} };
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const groupCount = groups.length;
-            const isCurrentUserAdminDraw = !hideAdminControls && ((APP && APP.currentUser && APP.currentUser.roles) || []).includes('ADMIN');
+            const isCurrentUserAdminDraw = !hideAdminControls && isEventEditable && ((APP && APP.currentUser && APP.currentUser.roles) || []).includes('ADMIN');
             diagram._groupRemoveAreas = [];
             const forms = diagram.forms || ['grid'];
             const activeForm = diagram.activeForm || forms[0];

@@ -118,7 +118,7 @@ const API = new (class GAppsApiClient {
           const data = await response.json();
           returnResult(data);
         } catch (error) {
-          this._handleRequestError(error).then(resolve).catch(reject);
+          this._handleRequestError(error).then(returnResult).catch(reject);
         }
       }
     });
