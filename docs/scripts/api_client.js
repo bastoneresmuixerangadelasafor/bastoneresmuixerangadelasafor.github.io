@@ -54,7 +54,13 @@ const API = new (class GAppsApiClient {
               return AUTH.handleLogout({ message: "La teua sessió ha caducat. Per favor, torna a iniciar sessió.", messageType: "error" });
             }
           }
-          reject(errorMessage);
+          if (action === 'checkFormAttendance' && typeof data?.technicalDetails === 'string' && data.technicalDetails) {
+            const error = new Error(errorMessage);
+            error.technicalDetails = data.technicalDetails;
+            reject(error);
+          } else {
+            reject(errorMessage);
+          }
         }
       };
 

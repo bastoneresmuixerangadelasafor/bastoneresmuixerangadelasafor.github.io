@@ -1221,6 +1221,9 @@ const EVENTS = new (class EventsManager {
       .catch(function(error) {
         resultsContainer.style.display = 'block';
         resultsContainer.innerHTML = '<p class="check-attendance-error">' + escapeHtml(error.message || error) + '</p>';
+        if (typeof error.technicalDetails === 'string' && error.technicalDetails) {
+          resultsContainer.innerHTML += '<details class="check-attendance-error-details"><summary>Detalls tècnics</summary><pre>' + escapeHtml(error.technicalDetails) + '</pre></details>';
+        }
       })
       .finally(function() {
         btnText.style.display = 'inline';

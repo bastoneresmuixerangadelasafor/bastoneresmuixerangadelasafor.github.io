@@ -7947,6 +7947,21 @@ dialog [class*="close-btn "] {
   color: #d32f2f;
 }
 
+.check-attendance-error-details {
+  padding: 0 12px 12px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.check-attendance-error-details summary {
+  cursor: pointer;
+}
+
+.check-attendance-error-details pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .check-attendance-mismatch {
   display: block;
   width: 100%;
@@ -10793,7 +10808,13 @@ const API = new (class GAppsApiClient {
               return AUTH.handleLogout({ message: "La teua sessió ha caducat. Per favor, torna a iniciar sessió.", messageType: "error" });
             }
           }
-          reject(errorMessage);
+          if (action === 'checkFormAttendance' && typeof data?.technicalDetails === 'string' && data.technicalDetails) {
+            const error = new Error(errorMessage);
+            error.technicalDetails = data.technicalDetails;
+            reject(error);
+          } else {
+            reject(errorMessage);
+          }
         }
       };
 
@@ -15885,6 +15906,9 @@ function escapeJsString(text) {
       .catch(function(error) {
         resultsContainer.style.display = 'block';
         resultsContainer.innerHTML = '<p class="check-attendance-error">' + escapeHtml(error.message || error) + '</p>';
+        if (typeof error.technicalDetails === 'string' && error.technicalDetails) {
+          resultsContainer.innerHTML += '<details class="check-attendance-error-details"><summary>Detalls tècnics</summary><pre>' + escapeHtml(error.technicalDetails) + '</pre></details>';
+        }
       })
       .finally(function() {
         btnText.style.display = 'inline';

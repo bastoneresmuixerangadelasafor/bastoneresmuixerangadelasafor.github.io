@@ -5,6 +5,7 @@ import vm from 'node:vm';
 
 const clientSource = readFileSync(new URL('../docs/scripts/api_client.js', import.meta.url), 'utf8');
 const serverSource = readFileSync(new URL('../server/event.js', import.meta.url), 'utf8');
+const apiServerSource = readFileSync(new URL('../server/api_server.js', import.meta.url), 'utf8');
 const eventsSource = readFileSync(new URL('../docs/scripts/events.js', import.meta.url), 'utf8');
 const quietConsole = { log() {}, error() {} };
 
@@ -25,13 +26,12 @@ function createClient(overrides = {}) {
 
 function checkSpreadsheet(openById) {
   const context = vm.createContext({
-    API: {
-      newError_: ({ error, status = 500 }) => ({ success: false, status, error }),
-      newResult_: ({ result }) => ({ success: true, status: 200, result }),
-    },
+    CacheService: { getScriptCache: () => ({}) },
+    PropertiesService: { getScriptProperties: () => ({}), getUserProperties: () => ({}) },
     SpreadsheetApp: { openById },
     console: quietConsole,
   });
+  vm.runInContext(apiServerSource, context);
   vm.runInContext(serverSource, context);
   return vm.runInContext("checkFormAttendance_({ spreadsheetId: 'sheet-id' })", context);
 }
@@ -44,10 +44,12 @@ test('inaccessible spreadsheets explain the server account permissions', async (
   assert.match(response.error, /identificador/);
   assert.match(response.error, /compte de Google que executa el servidor/);
   assert.match(response.error, /permisos de lectura/);
+  assert.equal(response.technicalDetails, 'Error: You do not have permission to access the requested document.');
   const client = createClient({
     fetch: async () => ({ ok: true, json: async () => response }),
   });
-  await assert.rejects(client.checkFormAttendance({ spreadsheetId: 'sheet-id' }), error => error === response.error);
+  await assert.rejects(client.checkFormAttendance({ spreadsheetId: 'sheet-id' }), error =>
+    error.message === response.error && error.technicalDetails === response.technicalDetails);
 });
 
 test('invalid spreadsheet IDs show copying instructions even when validation is deferred', () => {
@@ -64,6 +66,7 @@ test('invalid spreadsheet IDs show copying instructions even when validation is 
     assert.match(response.error, /identificador.*no és vàlid/);
     assert.match(response.error, /entre \/d\/ i \/edit/);
     assert.doesNotMatch(response.error, /Exception|Illegal spreadsheet/);
+    assert.equal(response.technicalDetails, invalidIdError.toString());
   }
 });
 
@@ -82,7 +85,8 @@ test('embedded requests preserve spreadsheet errors', async () => {
     },
   };
   const client = createClient({ google: { script: { run: runner } } });
-  await assert.rejects(client.checkFormAttendance({ spreadsheetId: 'sheet-id' }), error => error === response.error);
+  await assert.rejects(client.checkFormAttendance({ spreadsheetId: 'sheet-id' }), error =>
+    error.message === response.error && error.technicalDetails === response.technicalDetails);
 });
 
 test('invalid JSON rejects descriptively instead of resolving an error object', async () => {
@@ -158,6 +162,27 @@ test('attendance dialog safely displays the original error and restores the butt
   assert.match(html, /check-attendance-error/);
   assert.match(html, /Comprova els permisos &lt;sheet&gt;/);
   assert.doesNotMatch(html, /TypeError/);
+  assert.doesNotMatch(html, /<details/);
+});
+
+test('spreadsheet errors reach the dialog with collapsed and escaped technical details', async () => {
+  const originalError = new Error('Exception: Illegal spreadsheet id or key: <script>alert(1)</script>');
+  const response = checkSpreadsheet(() => { throw originalError; });
+  const client = createClient({
+    fetch: async () => ({ ok: true, json: async () => JSON.parse(JSON.stringify(response)) }),
+  });
+  const html = await renderAttendance(() => client.checkFormAttendance({ spreadsheetId: 'invalid' }));
+  assert.match(html, /identificador.*no és vàlid/);
+  assert.match(html, /<details class="check-attendance-error-details"><summary>Detalls tècnics<\/summary><pre>/);
+  assert.match(html, /Error: Exception: Illegal spreadsheet id or key: &lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+  assert.doesNotMatch(html, /<script>|<details[^>]*\bopen\b/);
+});
+
+test('legacy API errors keep their string rejection format', async () => {
+  const client = createClient({
+    fetch: async () => ({ ok: true, json: async () => ({ success: false, error: 'Legacy error' }) }),
+  });
+  await assert.rejects(client.checkFormAttendance(), error => error === 'Legacy error');
 });
 
 test('attendance dialog rejects malformed results descriptively', async () => {

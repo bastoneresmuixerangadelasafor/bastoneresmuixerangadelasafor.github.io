@@ -1121,11 +1121,12 @@ function checkFormAttendance_({spreadsheetId, eventId}) {
     const sheet = spreadsheet.getSheets()[0];
     data = sheet.getDataRange().getValues();
   } catch (error) {
-    console.error('Error opening attendance response spreadsheet:', error.toString());
-    if (/Illegal spreadsheet id or key/i.test(error.toString())) {
-      return API.newError_({ error: 'L\'identificador de la fulla de respostes no és vàlid. Obri la fulla en Google Sheets i copia només el text de l\'adreça que apareix entre /d/ i /edit, no l\'adreça completa.', status: 400 });
+    const technicalDetails = error.toString();
+    console.error('Error opening attendance response spreadsheet:', technicalDetails);
+    if (/Illegal spreadsheet id or key/i.test(technicalDetails)) {
+      return API.newError_({ error: 'L\'identificador de la fulla de respostes no és vàlid. Obri la fulla en Google Sheets i copia només el text de l\'adreça que apareix entre /d/ i /edit, no l\'adreça completa.', status: 400, technicalDetails });
     }
-    return API.newError_({ error: 'No s\'ha pogut obrir la fulla de respostes. Comprova que l\'identificador siga correcte i que el compte de Google que executa el servidor tinga permisos de lectura sobre la fulla.' });
+    return API.newError_({ error: 'No s\'ha pogut obrir la fulla de respostes. Comprova que l\'identificador siga correcte i que el compte de Google que executa el servidor tinga permisos de lectura sobre la fulla.', technicalDetails });
   }
 
   try {

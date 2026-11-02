@@ -20,8 +20,8 @@ const API = class GAppsApiServer {
     return { success: true, status: 200, result };
   }
 
-  static newError_({ error, status = 500 }) {
-    return { success: false, status, error };
+  static newError_({ error, status = 500, technicalDetails }) {
+    return { success: false, status, error, ...(technicalDetails ? { technicalDetails } : {}) };
   }
 
   static validateUserToken_({fn, token, requiresAuth = false, requiresAdmin = false}) {
