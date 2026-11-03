@@ -10893,19 +10893,13 @@ const API = new (class GAppsApiClient {
       error instanceof TypeError &&
       error.message === "Failed to fetch"
     ) {
-      try {
-        // Use no-cors to avoid CORS issues with the check. We just want to see if we can reach the internet.
-        await fetch("favicon.ico", { mode: "no-cors" });
-        // If this succeeds, the user has internet, but the API server is unreachable or there's a CORS/Firewall issue.
-        return {success: false, error:
-          "No s'ha pogut connectar al servidor de l'aplicació. Pot ser que estiga temporalment fora de servei o que un tallafoc estiga bloquejant la connexió.",
-        };
-      } catch (e) {
-        // If this fails, the user likely has no internet connection at all.
-        return {success: false, error:
-          "No s'ha pogut connectar a Internet. Comprova la teua xarxa i torna a intentar-ho.",
-        };
-      }
+      return {
+        success: false,
+        error: navigator.onLine
+          ? "El navegador no ha pogut obtindre una resposta del servidor. Pot ser un problema de xarxa, un bloqueig del navegador (CORS) o de la configuració d'accés al desplegament de Google Apps Script. Sense esta resposta no es pot determinar la causa exacta de l'error. Torna a intentar-ho i, si el problema persistix, contacta amb l'administrador perquè revise el desplegament i els registres d'execució."
+          : "No tens connexió a Internet. Comprova la teua xarxa i torna a intentar-ho.",
+        technicalDetails: error.toString(),
+      };
     } else {
       console.error("Error no controlat a l'API:", error);
       return {

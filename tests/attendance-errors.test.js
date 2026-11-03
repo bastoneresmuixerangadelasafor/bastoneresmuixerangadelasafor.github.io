@@ -41,7 +41,7 @@ test('inaccessible spreadsheets explain the server account permissions', async (
     throw new Error('You do not have permission to access the requested document.');
   });
   assert.equal(response.success, false);
-  assert.match(response.error, /identificador/);
+  assert.equal(response.status, 403);
   assert.match(response.error, /compte de Google que executa el servidor/);
   assert.match(response.error, /permisos de lectura/);
   assert.equal(response.technicalDetails, 'Error: You do not have permission to access the requested document.');
@@ -50,6 +50,36 @@ test('inaccessible spreadsheets explain the server account permissions', async (
   });
   await assert.rejects(client.checkFormAttendance({ spreadsheetId: 'sheet-id' }), error =>
     error.message === response.error && error.technicalDetails === response.technicalDetails);
+});
+
+test('permission errors show sharing instructions in the UI and retain the original details', async () => {
+  for (const message of [
+    'No tienes permiso para acceder al documento solicitado',
+    'You do not have permission to access the requested document.',
+    'No tens permís per accedir al document sol·licitat',
+  ]) {
+    const originalError = new Error(message);
+    const fail = () => { throw originalError; };
+    for (const openById of [
+      fail,
+      () => ({ getSheets: () => [{ getDataRange: () => ({ getValues: fail }) }] }),
+    ]) {
+      const response = checkSpreadsheet(openById);
+      assert.equal(response.status, 403);
+      assert.match(response.error, /prem "Comparteix"/);
+      assert.match(response.error, /accés de lector/);
+      assert.match(response.error, /compte personal no dona accés al servidor/);
+      assert.equal(response.technicalDetails, originalError.toString());
+      const client = createClient({
+        fetch: async () => ({ ok: true, json: async () => response }),
+      });
+      const html = await renderAttendance(() => client.checkFormAttendance({ spreadsheetId: 'sheet-id' }));
+      assert.match(html, /compte de Google que executa el servidor/);
+      assert.match(html, /Comparteix/);
+      assert.match(html, /<summary>Detalls tècnics<\/summary>/);
+      assert.ok(html.includes(originalError.toString()));
+    }
+  }
 });
 
 test('invalid spreadsheet IDs show copying instructions even when validation is deferred', () => {
@@ -99,11 +129,46 @@ test('invalid JSON rejects descriptively instead of resolving an error object', 
   await assert.rejects(client.checkFormAttendance(), error => typeof error === 'string' && error.includes('resposta del servidor'));
 });
 
-test('network failures reject descriptively', async () => {
+test('fetch failures retain technical details without diagnosing spreadsheet permissions', async () => {
+  let requests = 0;
+  const client = createClient({
+    fetch: async () => {
+      requests++;
+      throw new TypeError('Failed to fetch');
+    },
+  });
+  await assert.rejects(client.checkFormAttendance(), error =>
+    error.message.includes('CORS') &&
+    error.message.includes('no es pot determinar la causa exacta') &&
+    error.technicalDetails === 'TypeError: Failed to fetch');
+  assert.equal(requests, 1);
+  const html = await renderAttendance(() => client.checkFormAttendance());
+  assert.match(html, /El navegador no ha pogut obtindre una resposta del servidor/);
+  assert.match(html, /registres d'execució/);
+  assert.match(html, /<summary>Detalls tècnics<\/summary><pre>TypeError: Failed to fetch<\/pre>/);
+  assert.doesNotMatch(html, /<details[^>]*\bopen\b/);
+});
+
+test('fetch failures report offline state when connectivity is lost during the request', async () => {
+  const navigator = { onLine: true };
+  const client = createClient({
+    navigator,
+    fetch: async () => {
+      navigator.onLine = false;
+      throw new TypeError('Failed to fetch');
+    },
+  });
+  await assert.rejects(client.checkFormAttendance(), error =>
+    error.message.includes('No tens connexió a Internet') &&
+    error.technicalDetails === 'TypeError: Failed to fetch');
+});
+
+test('other actions keep string rejections for fetch failures', async () => {
   const client = createClient({
     fetch: async () => { throw new TypeError('Failed to fetch'); },
   });
-  await assert.rejects(client.checkFormAttendance(), error => typeof error === 'string' && error.includes('connectar a Internet'));
+  await assert.rejects(client._get({ action: 'events' }), error =>
+    typeof error === 'string' && error.includes('resposta del servidor'));
 });
 
 test('empty spreadsheets still return an empty result list', () => {
