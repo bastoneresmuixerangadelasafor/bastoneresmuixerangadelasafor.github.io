@@ -1188,8 +1188,11 @@ const EVENTS = new (class EventsManager {
 
     API.checkFormAttendance({ spreadsheetId, eventId })
       .then(function(matches) {
+        if (!Array.isArray(matches)) {
+          throw new Error('La resposta del servidor no conté una llista de resultats d\'assistència vàlida. Torna a intentar-ho i, si el problema persistix, contacta amb l\'administrador.');
+        }
         resultsContainer.style.display = 'block';
-        if (!matches || matches.length === 0) {
+        if (matches.length === 0) {
           resultsContainer.innerHTML = '<p class="check-attendance-empty">No s\'han trobat respostes amb "Ball de bastons".</p>';
           return;
         }
@@ -1217,7 +1220,10 @@ const EVENTS = new (class EventsManager {
       })
       .catch(function(error) {
         resultsContainer.style.display = 'block';
-        resultsContainer.innerHTML = '<p class="check-attendance-error">' + escapeHtml(error) + '</p>';
+        resultsContainer.innerHTML = '<p class="check-attendance-error">' + escapeHtml(error.message || error) + '</p>';
+        if (typeof error.technicalDetails === 'string' && error.technicalDetails) {
+          resultsContainer.innerHTML += '<details class="check-attendance-error-details"><summary>Detalls tècnics</summary><pre>' + escapeHtml(error.technicalDetails) + '</pre></details>';
+        }
       })
       .finally(function() {
         btnText.style.display = 'inline';

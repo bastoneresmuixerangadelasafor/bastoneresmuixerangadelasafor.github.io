@@ -2,8 +2,8 @@
 layout: base.njk
 permalink: index.html
 development: false
-script_id: 1MygwiQrXzxFWbKJ1xmro8jJzB4dPjv0glaTXJ71O5nf6RtvX_Z_usW7B
-api_url: https://script.google.com/macros/s/AKfycbz9PxglZL_JO524qWuvkW9O1jeOHtlXdHs4IY9xJILTvOvCQXgJttqBEjr9RHiDwntw/exec
+script_id: 1LpUQNut9as9drwzAZXvjNLmgMynqvyfjVQSPw_m4lPrBzNRUizCONWfv
+api_url: https://script.google.com/macros/s/AKfycby4wP5Rd_KGpW5FGWZR3dtc9uKVGkV5ipWXQdKhdSweKaJmpudV5_l2kuFbEJ78fKjnlg/exec
 embedded: false
 language_code: ca
 title: Bastoneres de la Safor

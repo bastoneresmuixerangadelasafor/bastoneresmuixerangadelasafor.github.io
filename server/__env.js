@@ -1,8 +1,8 @@
 const LAYOUT = "base.njk";
 const PERMALINK = "index.html";
 const DEVELOPMENT = false;
-const SCRIPT_ID = "1MygwiQrXzxFWbKJ1xmro8jJzB4dPjv0glaTXJ71O5nf6RtvX_Z_usW7B";
-const API_URL = "https://script.google.com/macros/s/AKfycbz9PxglZL_JO524qWuvkW9O1jeOHtlXdHs4IY9xJILTvOvCQXgJttqBEjr9RHiDwntw/exec";
+const SCRIPT_ID = "1LpUQNut9as9drwzAZXvjNLmgMynqvyfjVQSPw_m4lPrBzNRUizCONWfv";
+const API_URL = "https://script.google.com/macros/s/AKfycby4wP5Rd_KGpW5FGWZR3dtc9uKVGkV5ipWXQdKhdSweKaJmpudV5_l2kuFbEJ78fKjnlg/exec";
 const EMBEDDED = false;
 const LANGUAGE_CODE = "ca";
 const TITLE = "Bastoneres de la Safor";

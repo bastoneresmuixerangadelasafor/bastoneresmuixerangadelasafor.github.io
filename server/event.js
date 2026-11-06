@@ -1115,11 +1115,24 @@ function checkFormAttendance_({spreadsheetId, eventId}) {
     return API.newError_({ error: 'Cal indicar l\'identificador de la fulla de respostes.', status: 400 });
   }
 
+  let data;
   try {
     const spreadsheet = SpreadsheetApp.openById(spreadsheetId);
     const sheet = spreadsheet.getSheets()[0];
-    const data = sheet.getDataRange().getValues();
+    data = sheet.getDataRange().getValues();
+  } catch (error) {
+    const technicalDetails = error.toString();
+    console.error('Error opening attendance response spreadsheet:', technicalDetails);
+    if (/Illegal spreadsheet id or key/i.test(technicalDetails)) {
+      return API.newError_({ error: 'L\'identificador de la fulla de respostes no és vàlid. Obri la fulla en Google Sheets i copia només el text de l\'adreça que apareix entre /d/ i /edit, no l\'adreça completa.', status: 400, technicalDetails });
+    }
+    if (/No tienes permiso para acceder|You do not have permission to access|No tens permís per accedir/i.test(technicalDetails)) {
+      return API.newError_({ error: 'El compte de Google que executa el servidor no té permisos de lectura sobre la fulla de respostes. Obri la fulla en Google Sheets, prem "Comparteix" i dona accés de lector a eixe compte. Si no saps quin compte és, contacta amb l\'administrador de l\'aplicació. Poder obrir la fulla amb el teu compte personal no dona accés al servidor.', status: 403, technicalDetails });
+    }
+    return API.newError_({ error: 'No s\'ha pogut obrir la fulla de respostes. Comprova que l\'identificador siga correcte i que el compte de Google que executa el servidor tinga permisos de lectura sobre la fulla.', technicalDetails });
+  }
 
+  try {
     if (data.length < 2) {
       return API.newResult_({ result: [] });
     }
