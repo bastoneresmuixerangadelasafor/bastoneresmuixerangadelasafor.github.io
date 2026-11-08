@@ -307,7 +307,7 @@ function getEventById_({eventId}) {
   
   try {
     const spreadsheet = SpreadsheetApp.openById(EVENTS_SPREADSHEET_ID);
-    const sheet = spreadsheet.getSheetByName(eventId);
+    let sheet = spreadsheet.getSheetByName(eventId);
     
     if (!sheet) {
       console.log('Event sheet not found, creating: ' + eventId);

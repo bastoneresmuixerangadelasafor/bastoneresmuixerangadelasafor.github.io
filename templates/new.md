@@ -2,19 +2,20 @@
 layout: base.njk
 permalink: new.html
 development: false
-script_id: 1RjSSW506qFMuVfksFLZIxeDexoWn-vAWyR8ChMfacdJDpQtREjw87P8E
-api_url: https://script.google.com/macros/s/AKfycbxaLx8_qY8qOhaKu25V_o0RP8DYpWVZB8Kf4UbMd4eQvb6twXdy0IWARet5nveRCFbk3g/exec
+script_id: 1LpUQNut9as9drwzAZXvjNLmgMynqvyfjVQSPw_m4lPrBzNRUizCONWfv
+api_url: https://script.google.com/macros/s/AKfycby4wP5Rd_KGpW5FGWZR3dtc9uKVGkV5ipWXQdKhdSweKaJmpudV5_l2kuFbEJ78fKjnlg/exec
 embedded: false
 language_code: ca
-title: NEW
-company: Fake company
-website_url: new.html
-members_spreadsheet_id: 1wk_-NOVh1LmUT5IafqtfFfcK7DS0j_wtS-KYMOZGzGs
+title: Bastoneres de la Safor
+company: Muixeranga de la Safor
+website_url: https://bastoneresmuixerangadelasafor.github.io
+members_spreadsheet_id: 1BP_epRRTwG7lDgWDb61qs4CDhHfDoZuWSSnLTBisuB4
 members_sheet_name: Membres
-events_spreadsheet_id: 1wpkYYOrzypsfdVDP5WGS1aX5OLjL5ITZj_ogtJgzHGE
+events_spreadsheet_id: 1blwF8V49tz2YtwXpjD6Zl5nlGrtm3bTGqgkhI1NPtCk
 events_sheet_name: Llistat
-training_spreadsheet_id: 1veNnPWgx4B1NQ1CMt1zejt-q_geJAKd-p2yAUcQObxg
+training_spreadsheet_id: 12zIHjHlOcMfpdembwGm7C60F0K9CjAIVS7ogNLJnKFA
 assistance_sheet_name: Assistencia
+positions_spreadsheet_id: 1On4jsBvr3oVan9WFhzgIcJPkxKq5Ph5wB8M6KNQpjrU
 member_cache: MEMBERS
 event_cache: EVENTS
 training_cache: TRAININGS
@@ -22,13 +23,17 @@ next_event: NEXT_EVENT
 next_training: NEXT_TRAINING
 user_creds: users_credentials
 user_session: users_session
-session_token: session_token
+session_token: supabase_preview_session_token
 data_versions: DATA_VERSIONS
-firebase_api_key: AIzaSyBFFEKNVFY7rVRr2I6QbdoPKYZMSKARXZo
-firebase_auth_domain: muixeranga-bastoneres-test.firebaseapp.com
-firebase_project_id: muixeranga-bastoneres-test
-firebase_messaging_sender_id: 781217597112
-firebase_app_id: 1:781217597112:web:8bd5fca7b37a3b4ff9964d
-fcm_vapid_key: BOD95S_AceAtX7xg_5t53h-xtTIMySMS-lUrg3eEf3Rkg_wDoTkMQrDO50xBz17Wd0W8eH1QY0XbYwRLuSBPPDk
+firebase_api_key: AIzaSyBxqQUnuIr7VmTIb31nWhjgQfadc0gwBkg
+firebase_auth_domain: muixeranga-bastoneres.firebaseapp.com
+firebase_project_id: muixeranga-bastoneres
+firebase_messaging_sender_id: 801589009119
+firebase_app_id: 1:801589009119:web:a989d8e66b0696f45e276a
+fcm_vapid_key: BLXic-fhHSXh69ntpasEXDRSCdrprqQgkRqGL2mJTn-IZXni-hId8bGbWPE33TNfEyPl8FJRH1Y8vBi_YVU6TUY
 push_tokens: PUSH_TOKENS
+api_backend: supabase
+supabase_url: https://zrbmjygncffiozmbqhst.supabase.co
+supabase_anon_key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyYm1qeWduY2ZmaW96bWJxaHN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNzcwMTYsImV4cCI6MjEwODk1MzAxNn0.WWT-VewvayHbyOeTO9ZzV7y_fxw6nWuss5RaZrybiFY
+supabase_function_name: api
 ---

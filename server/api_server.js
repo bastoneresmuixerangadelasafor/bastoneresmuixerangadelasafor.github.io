@@ -132,6 +132,41 @@ const API = class GAppsApiServer {
         const checkFormWorker = this.validateUserToken_({fn: checkFormAttendance_, requiresAuth: true, requiresAdmin: true, token: e.parameter?.token});
         data = checkFormWorker({ spreadsheetId: e.parameter?.spreadsheetId, eventId: e.parameter?.eventId });
         break;
+      case "migrationExport":
+        const migrationExportWorker = this.validateUserToken_({
+          fn: () => {
+            const events = CACHE.retrieveEventsFromDB().map(event => {
+              const detail = getEventById_({ eventId: event.id });
+              if (!detail?.success) {
+                throw new Error(`Could not export event ${event.id}: ${detail?.error || "unknown error"}`);
+              }
+              return { ...event, detail: detail.result };
+            });
+            return API.newResult_({ result: {
+              exportedAt: new Date().toISOString(),
+              members: CACHE.retrieveMembersFromDB(),
+              events,
+              trainings: Object.entries(CACHE.retrieveTrainingsFromDB()).map(([id, training]) => ({
+                id,
+                date: id,
+                ...training,
+              })),
+              memberPositions: CACHE.getMembers().reduce((positions, member) => {
+                if (member.alias) {
+                  positions[member.alias] = CACHE.retrieveMemberPositionsFromDB(member.alias);
+                }
+                return positions;
+              }, {}),
+              dataVersions: CACHE.getDataVersions(),
+              pushTokens: CACHE.getPushTokens(),
+            } });
+          },
+          requiresAuth: true,
+          requiresAdmin: true,
+          token: e.parameter?.token,
+        });
+        data = migrationExportWorker();
+        break;
       default:
         return API.newError_({ error: `Unknown GET action: ${action}`, status:404 });
     }

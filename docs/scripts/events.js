@@ -3,6 +3,7 @@ const EVENTS = new (class EventsManager {
   }
 
   resetEventsForm() {
+    APP.currentEventId = null;
     const eventNameInput = document.getElementById("event-name-input");
     const eventDatetimeInput = document.getElementById("event-datetime-input");
     const eventMeetingPlaceInput = document.getElementById(
@@ -373,6 +374,7 @@ const EVENTS = new (class EventsManager {
         }
         APP.currentEventData = eventData;
         const canonicalEventId = eventData.id || eventId;
+        APP.currentEventId = canonicalEventId;
         const eventHash = "events/" + encodeURIComponent(canonicalEventId);
         localStorage.setItem("currentRoute", eventHash);
 
@@ -3134,6 +3136,10 @@ ${backupHtml}
                     })
                 };
 
+                if (typeof API_BACKEND !== "undefined" && API_BACKEND === "supabase" && APP.currentEventId) {
+                    eventData.id = APP.currentEventId;
+                }
+
                 // Show saving state
                 floatingSaveBtn.disabled = true;
                 floatingSaveBtn.classList.add('saving');
@@ -3153,6 +3159,7 @@ ${backupHtml}
 
                         // Update URL hash with event ID so refresh works
                         if (result && result.sheetName) {
+                            APP.currentEventId = result.sheetName;
                             window.location.hash = 'events/' + encodeURIComponent(result.sheetName);
                             localStorage.setItem('currentRoute', 'events/' + encodeURIComponent(result.sheetName));
                         }

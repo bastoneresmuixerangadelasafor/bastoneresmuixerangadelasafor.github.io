@@ -29,6 +29,7 @@ const TRAININGS = new (class TrainingSession {
   
         // Navigate to edit-training view with training ID in hash
         const canonicalTrainingId = trainingData.id || trainingId;
+        APP.currentTrainingId = canonicalTrainingId;
         const trainingHash = "training/" + encodeURIComponent(canonicalTrainingId);
         localStorage.setItem("currentRoute", trainingHash);
         // Note: hash is already set by navigateToTraining(), don't set it again
@@ -551,13 +552,20 @@ const TRAININGS = new (class TrainingSession {
   
     const isEditing = !!APP.currentTrainingId;
     const trainingId = isEditing ? APP.currentTrainingId : trainingDatetimeInput.value;
+    const currentDate = isEditing && APP.currentTrainingData
+      ? APP.currentTrainingData.date
+      : trainingId;
   
     const training = {
-      date: trainingId,
+      date: currentDate,
       description: trainingDescriptionInput ? trainingDescriptionInput.value : "",
     };
 
-    if (isEditing && trainingDatetimeInput.value !== APP.currentTrainingId) {
+    if (isEditing && typeof API_BACKEND !== "undefined" && API_BACKEND === "supabase") {
+      training.id = trainingId;
+    }
+
+    if (isEditing && trainingDatetimeInput.value !== currentDate) {
       training.newDate = trainingDatetimeInput.value;
     }
   
@@ -587,6 +595,12 @@ const TRAININGS = new (class TrainingSession {
         if (response?.trainingId) {
           APP.currentTrainingId = response.trainingId;
         }
+        APP.currentTrainingData = {
+          ...APP.currentTrainingData,
+          id: APP.currentTrainingId,
+          date: trainingDatetimeInput.value,
+          description: training.description,
+        };
         TRAININGS.refreshPlanningTrainings();
 
         setTimeout(function () {

@@ -32,4 +32,8 @@ firebase_messaging_sender_id: 801589009119
 firebase_app_id: 1:801589009119:web:a989d8e66b0696f45e276a
 fcm_vapid_key: BLXic-fhHSXh69ntpasEXDRSCdrprqQgkRqGL2mJTn-IZXni-hId8bGbWPE33TNfEyPl8FJRH1Y8vBi_YVU6TUY
 push_tokens: PUSH_TOKENS
+api_backend: gas
+supabase_url: https://zrbmjygncffiozmbqhst.supabase.co
+supabase_anon_key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyYm1qeWduY2ZmaW96bWJxaHN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNzcwMTYsImV4cCI6MjEwODk1MzAxNn0.WWT-VewvayHbyOeTO9ZzV7y_fxw6nWuss5RaZrybiFY
+supabase_function_name: api
 ---

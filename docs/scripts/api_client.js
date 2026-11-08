@@ -1,4 +1,6 @@
 ////// BACKEND
+const USE_SUPABASE_API = typeof API_BACKEND !== "undefined" && API_BACKEND === "supabase";
+
 const API = new (class GAppsApiClient {
   constructor() {}
 
@@ -15,7 +17,15 @@ const API = new (class GAppsApiClient {
 
       console.log(`API Request - Action: ${action}, Method: ${method}, Requires Auth: ${requiresAuth}`);
 
-      if(requiresAuth && !this.isAuthenticated()) {
+      let token = CACHE.getToken() || "";
+      if (USE_SUPABASE_API && token) {
+        try {
+          token = await CACHE.refreshSupabaseToken() || "";
+        } catch (error) {
+          return reject(error.message);
+        }
+      }
+      if(requiresAuth && !token) {
         return reject("L'operació requereix autenticació. Si us plau, inicia sessió.");
       }
 
@@ -38,7 +48,6 @@ const API = new (class GAppsApiClient {
         );
       }
 
-      const token = CACHE.getToken() || "";
       const returnResult = (data) => {
         if (data?.success) {
           if(cache){
@@ -64,7 +73,26 @@ const API = new (class GAppsApiClient {
         }
       };
 
-      if (typeof google !== "undefined" && google.script && google.script.run) {
+      if (USE_SUPABASE_API) {
+        const url = `${SUPABASE_URL.replace(/\/$/, "")}/functions/v1/${SUPABASE_FUNCTION_NAME || "api"}`;
+        const options = {
+          method: "POST",
+          cache: "no-cache",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: SUPABASE_ANON_KEY,
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ action, method, body, parameters }),
+        };
+        try {
+          const response = await fetch(url, options);
+          const data = await response.json();
+          returnResult(data);
+        } catch (error) {
+          this._handleRequestError(error).then(returnResult).catch(reject);
+        }
+      } else if (typeof google !== "undefined" && google.script && google.script.run) {
         // Development mode using google.script.run
         const devParameters = { ...parameters, token };
         google.script.run
@@ -142,7 +170,9 @@ const API = new (class GAppsApiClient {
       return {
         success: false,
         error: navigator.onLine
-          ? "El navegador no ha pogut obtindre una resposta del servidor. Pot ser un problema de xarxa, un bloqueig del navegador (CORS) o de la configuració d'accés al desplegament de Google Apps Script. Sense esta resposta no es pot determinar la causa exacta de l'error. Torna a intentar-ho i, si el problema persistix, contacta amb l'administrador perquè revise el desplegament i els registres d'execució."
+          ? USE_SUPABASE_API
+            ? "El navegador no ha pogut obtindre una resposta de Supabase. Comprova la connexió, la configuració CORS i que l'Edge Function estiga desplegada."
+            : "El navegador no ha pogut obtindre una resposta del servidor. Pot ser un problema de xarxa, un bloqueig del navegador (CORS) o de la configuració d'accés al desplegament de Google Apps Script. Sense esta resposta no es pot determinar la causa exacta de l'error. Torna a intentar-ho i, si el problema persistix, contacta amb l'administrador perquè revise el desplegament i els registres d'execució."
           : "No tens connexió a Internet. Comprova la teua xarxa i torna a intentar-ho.",
         technicalDetails: error.toString(),
       };

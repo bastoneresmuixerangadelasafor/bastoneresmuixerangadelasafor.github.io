@@ -117,7 +117,11 @@ const AUTH = new (class AppAuthentication {
     API.loginWithEmailPassword({ email, password })
       .then(function (result) {
         
-        CACHE.saveToken({ token: result.token });
+        CACHE.saveToken({
+          token: result.token,
+          refreshToken: result.refreshToken,
+          expiresAt: result.expiresAt,
+        });
         if (submitBtn) {
           submitBtn.innerHTML = originalHtml;
           submitBtn.disabled = false;

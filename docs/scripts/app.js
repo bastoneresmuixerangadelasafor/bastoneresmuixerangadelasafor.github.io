@@ -94,10 +94,18 @@ const APP = new (class AppState{
 
   _configureSession() {
     const urlParams = new URLSearchParams(window.location.search);
-    const urlToken = urlParams.get('token');
+    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const urlToken = urlParams.get('token') || hashParams.get('access_token');
     if (urlToken) {
-      CACHE.saveToken({ token: urlToken });
-      history.replaceState({}, '', window.location.pathname + window.location.hash);
+      CACHE.saveToken({
+        token: urlToken,
+        refreshToken: hashParams.get('refresh_token'),
+        expiresAt: Number(hashParams.get('expires_at')) || undefined,
+      });
+      urlParams.delete('token');
+      const cleanHash = hashParams.has('access_token') ? '' : window.location.hash;
+      const cleanQuery = urlParams.toString();
+      history.replaceState({}, '', window.location.pathname + (cleanQuery ? `?${cleanQuery}` : '') + cleanHash);
     }
 
     API.getCurrentUser()
@@ -459,9 +467,6 @@ function updateAuthUI() {
 
   NOTIFICATIONS.updateBellState();
 }
-
-
-
 
 
 

@@ -25,6 +25,10 @@ try {
 
   const envConfig = dotenv.config({ path: envConfigPath });
   const parsedEnvConfig = dotenvParseVariables(envConfig.parsed);
+  parsedEnvConfig.API_BACKEND = parsedEnvConfig.API_BACKEND || 'gas';
+  parsedEnvConfig.SUPABASE_URL = parsedEnvConfig.SUPABASE_URL || '';
+  parsedEnvConfig.SUPABASE_ANON_KEY = parsedEnvConfig.SUPABASE_ANON_KEY || '';
+  parsedEnvConfig.SUPABASE_FUNCTION_NAME = parsedEnvConfig.SUPABASE_FUNCTION_NAME || 'api';
   const scriptId = parsedEnvConfig.SCRIPT_ID;
   if (!scriptId) {
     throw new Error(`SCRIPT_ID no definido en ${envConfigPath}`);
