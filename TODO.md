@@ -1,3 +1,11 @@
+- Migració de la DDBB:
+  - SOLID principles 
+  - Login
+  - Register
+  - Magic link
+  - Push notifications
+  - Google auth
+  - Apple auth
 - Informació sobre cada ball:
   - Pas a pas en text
   - "Recreació"

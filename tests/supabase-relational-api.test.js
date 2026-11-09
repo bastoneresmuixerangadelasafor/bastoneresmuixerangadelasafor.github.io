@@ -1,12 +1,30 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-import { test } from 'node:test';
 import { webcrypto } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { test } from 'node:test';
+import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 import ts from 'typescript';
 
-const source = readFileSync(new URL('../supabase/functions/api/index.ts', import.meta.url), 'utf8');
-const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
+const apiDirectory = fileURLToPath(new URL('../supabase/functions/api/', import.meta.url));
+
+function loadModule(filename, globals, client, cache) {
+  const resolvedFilename = resolve(filename);
+  if (cache.has(resolvedFilename)) return cache.get(resolvedFilename);
+  const module = { exports: {} };
+  cache.set(resolvedFilename, module.exports);
+  const source = readFileSync(resolvedFilename, 'utf8');
+  const compiled = ts.transpileModule(source, {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+  }).outputText;
+  const localRequire = specifier => {
+    if (specifier.startsWith('npm:')) return { createClient: () => client };
+    return loadModule(resolve(dirname(resolvedFilename), specifier), globals, client, cache);
+  };
+  vm.runInNewContext(compiled, { ...globals, exports: module.exports, module, require: localRequire });
+  return module.exports;
+}
 
 function createApi() {
   const tables = {
@@ -136,11 +154,10 @@ function createApi() {
   };
   let handler;
   const context = {
-    exports: {}, require: () => ({ createClient: () => client }),
     Deno: { env: { get: name => name }, serve: value => { handler = value; } },
     crypto: webcrypto, Request, Response, URLSearchParams, TextEncoder, console, btoa,
   };
-  vm.runInNewContext(compiled, context);
+  loadModule(resolve(apiDirectory, 'index.ts'), context, client, new Map());
   return {
     tables,
     async request(action, body = {}, parameters = {}) {
